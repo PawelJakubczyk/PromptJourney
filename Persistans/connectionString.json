@@ -1,5 +1,6 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=midjourney_base;Username=admin_0;Password=GR52MqngWxfT"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=midjourney_base;Username=admin_0;Password=GR52MqngWxfT",
+    "TestConnection": "Host=localhost; Database=midjourney_test; Username=admin_0; Password=GR52MqngWxfT"
   }
 }
