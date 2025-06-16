@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.MidjourneyStyles;
 using Domain.Entities.MidjourneyVersions;
-using System.ComponentModel.DataAnnotations;
+//using Domain.Entities.MidjourneyVersions;
 
 namespace Domain.Entities.MidjourneyPromtHistory;
 
@@ -14,7 +14,7 @@ public class MidjourneyPromptHistory
 
     // Navigation
     public required MidjourneyVersionsMaster VersionMaster { get; set; }
-    public ICollection<StyleData?> StyleData { get; set; } = [];
+    public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
 
     // Constructor
     public MidjourneyPromptHistory(Guid historyId, string prompt, string version, DateTime createdOn)

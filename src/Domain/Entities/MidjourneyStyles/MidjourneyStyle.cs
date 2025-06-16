@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Entities.MidjourneyPromtHistory;
 
 namespace Domain.Entities.MidjourneyStyles;
 
@@ -12,7 +12,7 @@ public class MidjourneyStyle
     public ICollection<string> ExampleLinks { get; set; }
 
     // Navigation
-    public required ICollection<StyleData?> MidjourneyPromptHistory { get; set; } = [];
+    public required List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
 
     // Constructor
     public MidjourneyStyle(string name, string type, string? description = null, ICollection<string>? tags = null, ICollection<string>? exampleLinks = null)
@@ -58,7 +58,7 @@ public class MidjourneyStyle
 
     public void RemoveTag(string tag)
     {
-        Tags.Remove(tag);
+        Tags?.Remove(tag);
     }
 
     public void AddLink(string link)

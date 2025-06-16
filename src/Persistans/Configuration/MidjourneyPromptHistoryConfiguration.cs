@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Entities.MidjourneyPromtHistory;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistans.Constants.Constants;
-using Domain.Entities.MidjourneyVersions;
-using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyStyles;
 
 namespace Persistans.Configuration;
 
-public class PromptHistoryConfiguration : IEntityTypeConfiguration<MidjourneyPromptHistory>
+public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<MidjourneyPromptHistory>
 {
     public void Configure(EntityTypeBuilder<MidjourneyPromptHistory> builder)
     {
@@ -17,13 +15,11 @@ public class PromptHistoryConfiguration : IEntityTypeConfiguration<MidjourneyPro
         builder
             .Property(history => history.HistoryId)
             .HasColumnName("history_id")
-            .HasColumnType(ColumnType.UniqueIdentifier)
-            .ValueGeneratedOnAdd();
+            .HasColumnType(ColumnType.UniqueIdentifier);
 
         builder
             .Property(history => history.Prompt)
             .HasColumnName("prompt")
-            .HasColumnType("text")
             .HasColumnType(ColumnType.NVarChar(1000))
             .IsRequired();
 
@@ -42,13 +38,13 @@ public class PromptHistoryConfiguration : IEntityTypeConfiguration<MidjourneyPro
 
         builder
             .HasOne(history => history.VersionMaster)
-            .WithMany(vm => vm.PromptHistories)
-            .HasForeignKey("version_master_id")
-            .IsRequired();
+            .WithMany(master => master.Histories)
+            .HasForeignKey(history => history.Version)
+            .HasPrincipalKey(master => master.Version)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .HasOne(sd => sd.StyleData)
-            .WithMany(mph => mph.HistoryID)
-            .HasForeignKey(sd => sd.HistoryID);
+            .HasMany(history => history.MidjourneyStyles)
+            .WithMany(style => style.MidjourneyPromptHistories);
     }
 }
