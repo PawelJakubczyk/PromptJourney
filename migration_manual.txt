@@ -2,4 +2,6 @@ Add-Migration new_migration -Project Persistans -StartupProject Runer
 update-database -Project Persistans -StartupProject Runer
 
 
+
+cd .\src\Persistans
 rm -r Migrations

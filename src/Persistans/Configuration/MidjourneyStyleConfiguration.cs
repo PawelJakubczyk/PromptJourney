@@ -15,28 +15,28 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
         builder
             .Property(style => style.Name)
             .HasColumnName("name")
-            .HasColumnType(ColumnType.NVarChar(150))
+            .HasColumnType(ColumnType.VarChar(150))
             .IsRequired();
 
         builder
             .Property(style => style.Type)
             .HasColumnName("type")
-            .HasColumnType(ColumnType.NVarChar(100))
+            .HasColumnType(ColumnType.VarChar(100))
             .IsRequired();
 
         builder
             .Property(style => style.Description)
             .HasColumnName("description")
-            .HasColumnType(ColumnType.NVarChar(800));
+            .HasColumnType(ColumnType.VarChar(800));
 
         builder
             .Property(style => style.Tags)
             .HasColumnName("tags")
-            .HasColumnType(ColumnType.TextArray);
+            .HasColumnType(ColumnType.textArray);
 
         builder
             .Property(style => style.ExampleLinks)
             .HasColumnName("example_links")
-            .HasColumnType(ColumnType.TextArray);
+            .HasColumnType(ColumnType.textArray);
     }
 }

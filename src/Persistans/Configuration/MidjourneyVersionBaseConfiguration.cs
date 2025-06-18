@@ -18,37 +18,37 @@ public abstract class MidjourneyVersionBaseConfiguration<T> : IEntityTypeConfigu
 
         builder.Property(version => version.Version)
             .HasColumnName("version")
-            .HasColumnType(ColumnType.NVarChar(10))
+            .HasColumnType(ColumnType.VarChar(10))
             .IsRequired();
 
         builder.Property(version => version.Parameter)
             .HasColumnName("parameter")
-            .HasColumnType(ColumnType.NVarChar(50))
+            .HasColumnType(ColumnType.VarChar(50))
             .IsRequired();
 
         builder.Property(version => version.DefaultValue)
             .HasColumnName("default_value")
-            .HasColumnType(ColumnType.NVarChar(50));
+            .HasColumnType(ColumnType.VarChar(50));
 
         builder.Property(version => version.MinValue)
             .HasColumnName("min_value")
-            .HasColumnType(ColumnType.NVarChar(50));
+            .HasColumnType(ColumnType.VarChar(50));
 
         builder.Property(version => version.MaxValue)
             .HasColumnName("max_value")
-            .HasColumnType(ColumnType.NVarChar(50));
+            .HasColumnType(ColumnType.VarChar(50));
 
         builder.Property(version => version.Description)
             .HasColumnName("description")
-            .HasColumnType(ColumnType.Text);
+            .HasColumnType(ColumnType.text);
 
         builder.Property(version => version.Modes)
             .HasColumnName("modes")
-            .HasColumnType(ColumnType.TextArray);
+            .HasColumnType(ColumnType.textArray);
 
         builder.Property(version => version.ParameterModes)
             .HasColumnName("parameter_modes")
-            .HasColumnType(ColumnType.TextArray);
+            .HasColumnType(ColumnType.textArray);
 
         builder.HasOne(version => version.VersionMaster)
             .WithMany()

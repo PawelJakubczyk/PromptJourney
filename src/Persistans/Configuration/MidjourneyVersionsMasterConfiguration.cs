@@ -14,18 +14,18 @@ public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<Mi
 
         builder.Property(master => master.Version)
             .HasColumnName("version")
-            .HasColumnType(ColumnType.NVarChar(10))
+            .HasColumnType(ColumnType.VarChar(10))
             .IsRequired();
 
         builder
             .Property(master => master.ReleaseDate)
             .HasColumnName("release_date")
-            .HasColumnType(ColumnType.DateTimeOffset(7));
+            .HasColumnType(ColumnType.TimestampWithTimeZone());
 
         builder
             .Property(master => master.Description)
             .HasColumnName("description")
-            .HasColumnType(ColumnType.Text);
+            .HasColumnType(ColumnType.text);
 
         //builder
         //    .HasMany(master => master.Versions1)

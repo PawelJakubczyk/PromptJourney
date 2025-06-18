@@ -15,12 +15,12 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
         builder
             .Property(history => history.HistoryId)
             .HasColumnName("history_id")
-            .HasColumnType(ColumnType.UniqueIdentifier);
+            .HasColumnType(ColumnType.uuid);
 
         builder
             .Property(history => history.Prompt)
             .HasColumnName("prompt")
-            .HasColumnType(ColumnType.NVarChar(1000))
+            .HasColumnType(ColumnType.VarChar(1000))
             .IsRequired();
 
         builder
@@ -32,7 +32,7 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
         builder
             .Property(history => history.CreatedOn)
             .HasColumnName("created_on")
-            .HasColumnType(ColumnType.DateTimeOffset(7))
+            .HasColumnType(ColumnType.TimestampWithTimeZone())
             .HasDefaultValueSql("NOW()")
             .IsRequired();
 
