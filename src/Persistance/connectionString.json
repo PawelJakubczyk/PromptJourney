@@ -1,0 +1,8 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=midjourney_prod;Username=admin_0;Password=GR52MqngWxfT",
+    "DevelopmentConnection": "Host=localhost;Port=5432;Database=midjourney_dev;Username=admin_0;Password=GR52MqngWxfT",
+    "TestConnection": "Host=localhost;Port=5432;Database=midjourney_test;Username=admin_0;Password=GR52MqngWxfT",
+    "StageConnection": "Host=localhost;Port=5432;Database=midjourney_stage;Username=admin_0;Password=GR52MqngWxfT"
+  }
+}

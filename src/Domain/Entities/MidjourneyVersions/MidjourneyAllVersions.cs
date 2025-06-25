@@ -2,7 +2,7 @@
 
 namespace Domain.Entities.MidjourneyVersions;
 
-public class MidjourneyAllVersion
+public class MidjourneyAllVersions
 {
     public class MidjourneyVersion1 : MidjourneyVersionsBase { }
     public class MidjourneyVersion2 : MidjourneyVersionsBase { }

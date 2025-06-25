@@ -1,7 +1,28 @@
-Add-Migration new_migration -Project Persistans -StartupProject Runer
-update-database -Project Persistans -StartupProject Runer
+
+update-database -Project Persistance -StartupProject App
 
 
+Remove migration
 
 cd .\src\Persistans
 rm -r Migrations
+
+# Wygeneruje migracje
+Add-Migration migration_init -Project Persistance -StartupProject App
+Add-Migration migration_init2 -Project Persistance -StartupProject App
+
+# Cofniêcie migracji
+remove-migration -Project Persistance -StartupProject App
+remove-migration -Project Persistance -StartupProject App -Force
+remove-migration -Project Persistance -StartupProject App -Name migration_init2
+
+# Wygeneruje skrympt migracyjny sql
+Script-Migration -Project Persistance -StartupProject App
+Script-Migration -Project Persistance -StartupProject App -From 20231020123456_migration_init -To 20231020123457_migration_init2
+Script-Migration -Project Persistance -StartupProject App -Idempotent
+
+ # Aplikowanie wszystkich migracji do bazy danych
+Update-Database -Project Persistance -StartupProject App
+
+# Cofniêcie migracji do konkretnej wersji / Aplikowanie migracji do konkretnej wersji w bazie danych 
+update-database -Project Persistance -StartupProject App -Migration 20231020123456_migration_init

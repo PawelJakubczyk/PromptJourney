@@ -17,7 +17,6 @@
     <PackageReference Include="NUlid" Version="1.7.3" />
   </ItemGroup>
 
-
 	<ItemGroup>
 		<ProjectReference Include="..\Domain\Domain.csproj" />
 	</ItemGroup>
