@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.ResultPattern;
+﻿namespace Utilities.ResultPattern;
 
 public class Result<T>
 {

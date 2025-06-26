@@ -12,8 +12,8 @@ using Persistans.Context;
 namespace Persistance.Migrations
 {
     [DbContext(typeof(MidjourneyDbContext))]
-    [Migration("20250625100107_init")]
-    partial class init
+    [Migration("20250625101220_versions_seeding")]
+    partial class versions_seeding
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,14 +105,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -145,14 +141,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -185,14 +177,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -225,14 +213,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -265,14 +249,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -305,14 +285,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -345,14 +321,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -385,14 +357,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -425,14 +393,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -465,14 +429,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -505,14 +465,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -545,14 +501,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()
@@ -585,14 +537,10 @@ namespace Persistance.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("min_value");
 
-                    b.PrimitiveCollection<string[]>("Parameter")
+                    b.PrimitiveCollection<string[]>("Parameters")
                         .IsRequired()
                         .HasColumnType("text[]")
-                        .HasColumnName("parameter");
-
-                    b.PrimitiveCollection<string[]>("ParameterModes")
-                        .HasColumnType("text[]")
-                        .HasColumnName("parameter_modes");
+                        .HasColumnName("parameters");
 
                     b.Property<string>("Version")
                         .IsRequired()

@@ -74,8 +74,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -100,8 +99,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -126,8 +124,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -152,8 +149,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -178,8 +174,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -204,8 +199,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -230,8 +224,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -256,8 +249,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -282,8 +274,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -308,8 +299,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -334,8 +324,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -360,8 +349,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -386,8 +374,7 @@ namespace Persistance.Migrations
                 {
                     PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
-                    parameter = table.Column<string[]>(type: "text[]", nullable: false),
-                    parameter_modes = table.Column<string[]>(type: "text[]", nullable: true),
+                    parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     min_value = table.Column<string>(type: "varchar(50)", nullable: true),
                     max_value = table.Column<string>(type: "varchar(50)", nullable: true),
