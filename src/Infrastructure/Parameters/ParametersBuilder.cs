@@ -1,6 +1,7 @@
-﻿using Infrastructure.ResultPattern;
+﻿using Utilities.ResultPattern;
 
 namespace Infrastructure.Parameters;
+
 public class ParametersBuilder
 {
     private Guid _parametersId = Guid.NewGuid();
