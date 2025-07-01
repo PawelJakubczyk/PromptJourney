@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Persistance.Migrations
 {
     /// <inheritdoc />
-    public partial class versions_seeding : Migration
+    public partial class migration_seeding : Migration
     {
 
         public string[] textArray(params string[] text)
@@ -48,7 +48,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_1",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "1", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -57,7 +57,7 @@ namespace Persistance.Migrations
                     { "no", "1", textArray("--no"), null, null, null, "Negative prompting to exclude concepts" },
                     { "stop", "1", textArray("--stop"), "100", "10", "100", "Stop generation at percentage" },
                     { "upscale", "1", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
-                    { "visibility", "2", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
                     { "performance", "1", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
 
@@ -65,7 +65,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_2",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "2", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -91,7 +91,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_3",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "3", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -116,7 +116,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_4",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "4", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -143,7 +143,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_5",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "5", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -174,7 +174,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_5_1",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "5.1", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -183,7 +183,7 @@ namespace Persistance.Migrations
                     { "no", "5.1", textArray("--no"), null, null, null, "Exclude specified elements" },
                     { "stop", "5.1", textArray("--stop"), "100", "10", "100", "Stop generation at percent" },
                     { "stylize", "5.1", textArray("--s", "--stylize"), "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "    ", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
+                    { "chaos", "5.1", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
                     { "repeat", "5.1", textArray("--r", "--repeat"), "1", "1", "40", "Generate multiple jobs" },
                     { "raw", "5.1", textArray("--raw", "--style raw"), null, null, null, "Raw Mode: minimal styling" },
                     { "tile", "5.1", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
@@ -204,7 +204,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_5_2",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "5.2", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -234,7 +234,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_6",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "6", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -262,7 +262,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_6_1",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "6.1", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -279,7 +279,7 @@ namespace Persistance.Migrations
                     { "characterWeight", "6.1", textArray("--cw"), "100", "0", "100", "Strength of character reference image" },
                     { "weird", "6.1", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
                     { "imageWeight", "6.1", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "imageStyleRandom", "6.1  ", textArray("--style random"), null, null, null, "Apply a random base style" },
+                    { "imageStyleRandom", "6.1", textArray("--style random"), null, null, null, "Apply a random base style" },
                     { "draft", "6.1", textArray("--draft"), null, null, null, "Generate draft images at lower GPU cost" },
                     { "visibility", "6.1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
                     { "upscale", "6.1", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
@@ -293,7 +293,7 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_7",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
                     { "aspectRatio", "7", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
@@ -335,85 +335,85 @@ namespace Persistance.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_niji_4",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
-                    { "aspectRatio", "niji4", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "niji4", textArray("--q", "--quality"), "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "niji4", textArray("--seed"), null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "niji4", textArray("--no"), null, null, null, "Exclude specified elements" },
-                    { "stop", "niji4", textArray("--stop"), "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "niji4", textArray("--s", "--stylize"), "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "niji4", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "niji4", textArray("--r", "--repeat"), "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "niji4", textArray("--raw"), null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "niji4", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "niji4", textArray("--iw"), "1", "0.5", "2", "Relative importance of image prompt vs. text" },
-                    { "weird", "niji4", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
-                    { "oref", "niji4", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "personalization", "niji4", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "niji4", textArray("--sref"), null, null, null, "Use style reference image" },
-                    { "visibility", "niji4", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
-                    { "upscale", "niji4", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "niji4", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
+                    { "aspectRatio", "niji 4", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
+                    { "quality", "niji 4", textArray("--q", "--quality"), "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed", "niji 4", textArray("--seed"), null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no", "niji 4", textArray("--no"), null, null, null, "Exclude specified elements" },
+                    { "stop", "niji 4", textArray("--stop"), "100", "10", "100", "Stop generation at percent" },
+                    { "stylize", "niji 4", textArray("--s", "--stylize"), "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos", "niji 4", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat", "niji 4", textArray("--r", "--repeat"), "1", "1", "40", "Generate multiple jobs" },
+                    { "raw", "niji 4", textArray("--raw"), null, null, null, "Raw Mode: minimal styling" },
+                    { "tile", "niji 4", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight", "niji 4", textArray("--iw"), "1", "0.5", "2", "Relative importance of image prompt vs. text" },
+                    { "weird", "niji 4", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
+                    { "oref", "niji 4", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "personalization", "niji 4", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference", "niji 4", textArray("--sref"), null, null, null, "Use style reference image" },
+                    { "visibility", "niji 4", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "upscale", "niji 4", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
+                    { "performance", "niji 4", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
 
             // Version niji_5 seeding
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_niji_5",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
-                    { "aspectRatio", "niji5", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "niji5", textArray("--q", "--quality"), "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "niji5", textArray("--seed"), null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "niji5", textArray("--no"), null, null, null, "Exclude specified elements" },
-                    { "stop", "niji5", textArray("--stop"), "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "niji5", textArray("--s", "--stylize"), "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "niji5", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "niji5", textArray("--r", "--repeat"), "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "niji5", textArray("--raw", "--style raw"), null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "niji5", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "niji5", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "styleWeight", "niji5", textArray("--sw"), "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "niji5", textArray("--cw"), "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "niji5", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
-                    { "omniReference", "niji5", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "profile", "niji5", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "niji5", textArray("--sref"), null, null, null, "Use style reference image" },
-                    { "video", "niji5", textArray("--video"), null, null, null, "Generate grid creation video" },
-                    { "visibility", "niji5", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
-                    { "upscale", "niji5", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "niji5", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
+                    { "aspectRatio", "niji 5", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
+                    { "quality", "niji 5", textArray("--q", "--quality"), "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed", "niji 5", textArray("--seed"), null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no", "niji 5", textArray("--no"), null, null, null, "Exclude specified elements" },
+                    { "stop", "niji 5", textArray("--stop"), "100", "10", "100", "Stop generation at percent" },
+                    { "stylize", "niji 5", textArray("--s", "--stylize"), "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos", "niji 5", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat", "niji 5", textArray("--r", "--repeat"), "1", "1", "40", "Generate multiple jobs" },
+                    { "raw", "niji 5", textArray("--raw", "--style raw"), null, null, null, "Raw Mode: minimal styling" },
+                    { "tile", "niji 5", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight", "niji 5", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "styleWeight", "niji 5", textArray("--sw"), "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight", "niji 5", textArray("--cw"), "100", "0", "100", "Strength of character reference image" },
+                    { "weird", "niji 5", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
+                    { "omniReference", "niji 5", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "profile", "niji 5", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference", "niji 5", textArray("--sref"), null, null, null, "Use style reference image" },
+                    { "video", "niji 5", textArray("--video"), null, null, null, "Generate grid creation video" },
+                    { "visibility", "niji 5", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "upscale", "niji 5", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
+                    { "performance", "niji 5", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
 
             // Version niji_6 seeding
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "version_niji_6",
-                columns: ["PropertyName", "version", "parameter", "default_value", "min_value", "max_value", "description"],
+                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
-                    { "aspectRatio", "niji6", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "niji6", textArray("--q", "--quality"), "1", "0.25", "0.5", "Rendering quality/time" },
-                    { "seed", "niji6", textArray("--seed"), null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "niji6", textArray("--no"), null, null, null, "Exclude specified elements" },
-                    { "stop", "niji6", textArray("--stop"), "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "niji6", textArray("--s", "--stylize"), "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "niji6", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "niji6", textArray("--r", "--repeat"), "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "niji6", textArray("--raw", "--style raw"), null, null, null, "Raw Mode: minimal styling / photorealistic" },
-                    { "tile", "niji6", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
-                    { "styleWeight", "niji6", textArray("--sw"), "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "niji6", textArray("--cw"), "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "niji6", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
-                    { "imageWeight", "niji6", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "imageStyleRandom", "niji6", textArray("--style random"), null, null, null, "Apply a random base style" },
-                    { "draft", "niji6", textArray("--draft"), null, null, null, "Generate draft images at lower GPU cost" },
-                    { "visibility", "niji6", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
-                    { "upscale", "niji6", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "niji6", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
+                    { "aspectRatio", "niji 6", textArray("--ar", "--aspect"), "1:1", null, null, "Image aspect ratio" },
+                    { "quality", "niji 6", textArray("--q", "--quality"), "1", "0.25", "0.5", "Rendering quality/time" },
+                    { "seed", "niji 6", textArray("--seed"), null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no", "niji 6", textArray("--no"), null, null, null, "Exclude specified elements" },
+                    { "stop", "niji 6", textArray("--stop"), "100", "10", "100", "Stop generation at percent" },
+                    { "stylize", "niji 6", textArray("--s", "--stylize"), "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos", "niji 6", textArray("--c", "--chaos"), "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat", "niji 6", textArray("--r", "--repeat"), "1", "1", "40", "Generate multiple jobs" },
+                    { "raw", "niji 6", textArray("--raw", "--style raw"), null, null, null, "Raw Mode: minimal styling / photorealistic" },
+                    { "tile", "niji 6", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
+                    { "styleWeight", "niji 6", textArray("--sw"), "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight", "niji 6", textArray("--cw"), "100", "0", "100", "Strength of character reference image" },
+                    { "weird", "niji 6", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
+                    { "imageWeight", "niji 6", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "imageStyleRandom", "niji 6", textArray("--style random"), null, null, null, "Apply a random base style" },
+                    { "draft", "niji 6", textArray("--draft"), null, null, null, "Generate draft images at lower GPU cost" },
+                    { "visibility", "niji 6", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "upscale", "niji 6", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
+                    { "performance", "niji 6", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
         }
 
@@ -424,82 +424,82 @@ namespace Persistance.Migrations
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_niji_6",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: ["aspectRatio", "quality", "seed", "no", "stylize", "stop", "profile", "niji", "characterReference", "styleReference"]);
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_niji_5",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "profile", "niji" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_niji_4",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "niji" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_7",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos", "weird", "tile",
                            "profile", "repeat", "characterReference", "styleReference", "blend", "raw" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_6_1",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos", "weird", "tile",
                            "profile", "repeat", "characterReference", "styleReference" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_6",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos", "weird", "tile",
                            "profile", "repeat" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_5_2",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos", "weird", "tile", "profile" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_5_1",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos", "weird", "tile", "profile" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_5",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos", "weird", "tile" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_4",
-                keyColumn: "PropertyName",
+                keyColumn: "property_n                                                                      ",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_3",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_2",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop" });
 
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_1",
-                keyColumn: "PropertyName",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stop", "upscale", "performance" });
 
             // Remove seeded data from version_master

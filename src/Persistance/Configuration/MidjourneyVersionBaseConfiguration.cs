@@ -16,6 +16,12 @@ public abstract class MidjourneyVersionBaseConfiguration<T> : IEntityTypeConfigu
 
         builder.HasKey(versin => versin.PropertyName);
 
+        builder
+            .Property(version => version.PropertyName)
+            .HasColumnName("property_name")
+            .HasColumnType(ColumnType.VarChar(25))
+            .IsRequired();
+
         builder.Property(version => version.Version)
             .HasColumnName("version")
             .HasColumnType(ColumnType.VarChar(10))

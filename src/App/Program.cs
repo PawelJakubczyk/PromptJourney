@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using Persistans.Context;
+using Application.Registrations;
+using Persistance.Registrations;
+using Presentation.Registrations;
 
 try
 {
@@ -17,12 +18,12 @@ try
 
     //Configure Services
 
-    //builder.Services
+    builder.Services
         //.RegisterAppOptions()
-        //.RegisterApplicationLayer()
-        //.RegisterPersistenceLayer(builder.Environment, builder.Logging)
+        .RegisterApplicationLayer()
+        .RegisterPersistenceLayer()
         //.RegisterInfrastructureLayer()
-        //.RegisterPresentationLayer();
+        .RegisterPresentationLayer();
 
     //Build the application
 
@@ -30,31 +31,15 @@ try
 
     //Configure HTTP request pipeline
 
-    //webApplication
+    webApplication
         //.UseHttpsRedirection()
         //.UseApplicationLayer()
-        //.UsePresentationLayer(builder.Environment)
+        .UsePresentationLayer();
         //.UsePersistenceLayer();
 
     webApplication.MapControllers();
 
     //Run the application
-
-    using var scope = webApplication.Services.CreateScope();
-    var dbcontext = scope.ServiceProvider.GetRequiredService<MidjourneyDbContext>();
-    var pendingMigrations = dbcontext.Database.GetPendingMigrations();
-
-    if (pendingMigrations.Any())
-    {
-        Console.WriteLine("Applying pending migrations...");
-        dbcontext.Database.Migrate();
-        Console.WriteLine("Migrations applied successfully.");
-    }
-    else
-    {
-        Console.WriteLine("No pending migrations found.");
-    }
-
     webApplication.Run();
 }
 catch (Exception exception)

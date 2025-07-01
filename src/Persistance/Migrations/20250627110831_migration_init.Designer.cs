@@ -12,8 +12,8 @@ using Persistans.Context;
 namespace Persistance.Migrations
 {
     [DbContext(typeof(MidjourneyDbContext))]
-    [Migration("20250625101220_versions_seeding")]
-    partial class versions_seeding
+    [Migration("20250627110831_migration_init")]
+    partial class migration_init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,7 +87,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion1", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -116,6 +117,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_1", "public");
                 });
@@ -123,7 +126,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion2", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -152,6 +156,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_2", "public");
                 });
@@ -159,7 +165,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion3", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -188,6 +195,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_3", "public");
                 });
@@ -195,7 +204,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion4", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -224,6 +234,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_4", "public");
                 });
@@ -231,7 +243,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion5", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -260,6 +273,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_5", "public");
                 });
@@ -267,7 +282,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion51", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -296,6 +312,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_5_1", "public");
                 });
@@ -303,7 +321,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion52", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -332,6 +351,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_5_2", "public");
                 });
@@ -339,7 +360,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion6", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -368,6 +390,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_6", "public");
                 });
@@ -375,7 +399,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion61", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -404,6 +429,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_6_1", "public");
                 });
@@ -411,7 +438,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersion7", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -440,6 +468,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_7", "public");
                 });
@@ -447,7 +477,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersionNiji4", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -476,6 +507,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_niji_4", "public");
                 });
@@ -483,7 +516,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersionNiji5", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -512,6 +546,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_niji_5", "public");
                 });
@@ -519,7 +555,8 @@ namespace Persistance.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyAllVersions+MidjourneyVersionNiji6", b =>
                 {
                     b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("varchar(50)")
@@ -548,6 +585,8 @@ namespace Persistance.Migrations
                         .HasColumnName("version");
 
                     b.HasKey("PropertyName");
+
+                    b.HasIndex("Version");
 
                     b.ToTable("version_niji_6", "public");
                 });
@@ -606,7 +645,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions1")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -617,7 +656,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions2")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -628,7 +667,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions3")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -639,7 +678,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions4")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -650,7 +689,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions5")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -661,7 +700,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions51")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -672,7 +711,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions52")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -683,7 +722,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions6")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -694,7 +733,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions61")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -705,7 +744,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("Versions7")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -716,7 +755,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("VersionsNiji4")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -727,7 +766,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("VersionsNiji5")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -738,7 +777,7 @@ namespace Persistance.Migrations
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersionsMaster", "VersionMaster")
                         .WithMany("VersionsNiji6")
-                        .HasForeignKey("PropertyName")
+                        .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

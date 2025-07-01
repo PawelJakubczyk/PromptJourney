@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Persistance.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class migration_init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,7 +72,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -82,10 +82,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_1", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_1", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_1_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_1_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -97,7 +97,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -107,10 +107,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_2", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_2", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_2_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_2_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -122,7 +122,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -132,10 +132,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_3", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_3", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_3_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_3_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -147,7 +147,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -157,10 +157,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_4", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_4", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_4_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_4_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -172,7 +172,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -182,10 +182,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_5", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_5", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_5_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_5_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -197,7 +197,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -207,10 +207,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_5_1", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_5_1", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_5_1_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_5_1_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -222,7 +222,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -232,10 +232,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_5_2", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_5_2", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_5_2_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_5_2_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -247,7 +247,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -257,10 +257,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_6", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_6", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_6_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_6_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -272,7 +272,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -282,10 +282,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_6_1", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_6_1", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_6_1_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_6_1_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -297,7 +297,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -307,10 +307,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_7", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_7", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_7_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_7_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -322,7 +322,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -332,10 +332,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_niji_4", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_niji_4", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_niji_4_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_niji_4_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -347,7 +347,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -357,10 +357,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_niji_5", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_niji_5", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_niji_5_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_niji_5_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -372,7 +372,7 @@ namespace Persistance.Migrations
                 schema: "public",
                 columns: table => new
                 {
-                    PropertyName = table.Column<string>(type: "varchar(10)", nullable: false),
+                    property_name = table.Column<string>(type: "varchar(25)", nullable: false),
                     version = table.Column<string>(type: "varchar(10)", nullable: false),
                     parameters = table.Column<string[]>(type: "text[]", nullable: false),
                     default_value = table.Column<string>(type: "varchar(50)", nullable: true),
@@ -382,10 +382,10 @@ namespace Persistance.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_version_niji_6", x => x.PropertyName);
+                    table.PrimaryKey("PK_version_niji_6", x => x.property_name);
                     table.ForeignKey(
-                        name: "FK_version_niji_6_version_master_PropertyName",
-                        column: x => x.PropertyName,
+                        name: "FK_version_niji_6_version_master_version",
+                        column: x => x.version,
                         principalSchema: "public",
                         principalTable: "version_master",
                         principalColumn: "version",
@@ -430,6 +430,84 @@ namespace Persistance.Migrations
                 schema: "public",
                 table: "MidjourneyPromptHistoryMidjourneyStyle",
                 column: "MidjourneyStylesName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_1_version",
+                schema: "public",
+                table: "version_1",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_2_version",
+                schema: "public",
+                table: "version_2",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_3_version",
+                schema: "public",
+                table: "version_3",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_4_version",
+                schema: "public",
+                table: "version_4",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_5_version",
+                schema: "public",
+                table: "version_5",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_5_1_version",
+                schema: "public",
+                table: "version_5_1",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_5_2_version",
+                schema: "public",
+                table: "version_5_2",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_6_version",
+                schema: "public",
+                table: "version_6",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_6_1_version",
+                schema: "public",
+                table: "version_6_1",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_7_version",
+                schema: "public",
+                table: "version_7",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_niji_4_version",
+                schema: "public",
+                table: "version_niji_4",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_niji_5_version",
+                schema: "public",
+                table: "version_niji_5",
+                column: "version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_version_niji_6_version",
+                schema: "public",
+                table: "version_niji_6",
+                column: "version");
         }
 
         /// <inheritdoc />

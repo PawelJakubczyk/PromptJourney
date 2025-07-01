@@ -35,91 +35,91 @@ public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<Mi
         builder
             .HasMany(master => master.Versions1)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions2)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions3)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions4)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions5)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions51)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions52)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions6)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions61)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Versions7)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.VersionsNiji4)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.VersionsNiji5)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.VersionsNiji6)
             .WithOne(version => version.VersionMaster)
-            .HasForeignKey(version => version.PropertyName)
+            .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
     }

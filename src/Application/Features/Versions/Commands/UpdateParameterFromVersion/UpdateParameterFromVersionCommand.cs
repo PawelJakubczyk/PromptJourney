@@ -1,9 +1,9 @@
-﻿using FluentResults;
+using FluentResults;
 using MediatR;
 
-namespace Application.Features.Versions.Commands.AddParameterToVersion;
+namespace Application.Features.Versions.Commands.UpdateParameterFromVersion;
 
-public record AddParameterToVersionCommand : IRequest<Result<ParameterDetails>>
+public record UpdateParameterFromVersionCommand : IRequest<Result<ParameterDetails>>
 {
     public required string Version { get; init; }
     public required string PropertyName { get; init; }

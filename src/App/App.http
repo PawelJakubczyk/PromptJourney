@@ -1,6 +1,13 @@
 @App_HostAddress = http://localhost:5294
+@version = "6.1"
 
-GET {{App_HostAddress}}/weatherforecast/
+GET {{App_HostAddress}}/api/versions/add-parameter/{{version}}
 Accept: application/json
+
+{ 
+   PropertyName", "7", 
+   Parameters,
+    "Content reference image" 
+},
 
 ###

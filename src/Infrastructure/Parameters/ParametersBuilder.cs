@@ -1,4 +1,4 @@
-﻿using Utilities.ResultPattern;
+﻿using FluentResults;
 
 namespace Infrastructure.Parameters;
 
@@ -187,7 +187,7 @@ public class ParametersBuilder
     public Result<Parameters> Build()
     {
         if (_errors.Any())
-            return Result<Parameters>.Failure(_errors.ToArray());
+            return Result.Fail<Parameters>(_errors);
 
         string aspectRatio = $"{_aspectRatioX}:{_aspectRatioY}";
 
@@ -216,6 +216,6 @@ public class ParametersBuilder
             _visibilityMode
         );
 
-        return Result<Parameters>.Success(parameters);
+        return Result.Ok(parameters);
     }
 }

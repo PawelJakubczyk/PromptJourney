@@ -1,4 +1,5 @@
 ﻿namespace Domain.Entities.MidjourneyVersions;
+
 public class MidjourneyVersionsBase
 {
     // Columns
@@ -14,7 +15,7 @@ public class MidjourneyVersionsBase
     public required MidjourneyVersionsMaster VersionMaster { get; set; }
 
     // Constructor
-    internal MidjourneyVersionsBase()
+    public MidjourneyVersionsBase()
     {
 
     }
