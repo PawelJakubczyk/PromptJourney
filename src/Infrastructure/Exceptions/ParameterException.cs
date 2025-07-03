@@ -1,6 +1,6 @@
-﻿namespace Infrastructure.Exceptions;
+﻿//namespace Infrastructure.Exceptions;
 
-public class ParameterException(string message) : Exception(message)
-{
+//public class ParameterException(string message) : Exception(message)
+//{
 
-}
+//}

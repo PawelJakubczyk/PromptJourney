@@ -2,11 +2,8 @@
 using Application.Features.Versions;
 using Domain.Entities.MidjourneyVersions;
 using FluentResults;
-using Infrastructure.Parameters;
 using Microsoft.EntityFrameworkCore;
 using Persistans.Context;
-using System.Linq.Expressions;
-using static Domain.Entities.MidjourneyVersions.MidjourneyAllVersions;
 
 namespace Persistance.Repositories;
 
@@ -300,13 +297,14 @@ public sealed class VersionRepository : IVersionRepository
                     break;
             }
 
-            object? _ = characteristicToUpdate.ToLowerInvariant() switch
+            object? updated = characteristicToUpdate.ToLowerInvariant() switch
             {
                 "defaultvalue" => parameter!.DefaultValue = newValue,
                 "minvalue" => parameter!.MinValue = newValue,
                 "maxvalue" => parameter!.MaxValue = newValue,
                 "description" => parameter!.Description = newValue,
                 "parameters" => parameter!.Parameters = newValue?.Split(',', StringSplitOptions.RemoveEmptyEntries),
+                _ => null
             };
 
 

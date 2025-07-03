@@ -8,7 +8,7 @@ public class Validate
 {
     public static class Version
     {
-        public static async Task ShouldExists(string version, IVersionRepository repository)
+        public static async Task ShouldExists( string version, IVersionRepository repository)
         {
             var versionExistsResult = await repository.CheckVersionExistsInVersionMasterAsync(version);
 
@@ -55,4 +55,3 @@ public class Validate
         }
     }
 }
-

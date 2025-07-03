@@ -10,8 +10,4 @@
     <PackageReference Include="FluentResults" Version="4.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentResults" Version="3.16.0" />
-  </ItemGroup>
-
 </Project>

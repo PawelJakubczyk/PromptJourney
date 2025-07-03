@@ -52,7 +52,7 @@ public class MidjourneyStyle
 
     public void AddTag(string tag)
     {
-        if (!Tags.Contains(tag))
+        if (!Tags!.Contains(tag))
             Tags.Add(tag);
     }
 
