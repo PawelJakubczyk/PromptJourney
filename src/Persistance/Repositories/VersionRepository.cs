@@ -4,12 +4,32 @@ using Domain.Entities.MidjourneyVersions;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistans.Context;
+using System.Reflection;
 
 namespace Persistance.Repositories;
 
 public sealed class VersionRepository : IVersionRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext;
+    private static string[] _supportedVersions = [];
+
+    // Version mappings dictionary for eliminating switch statements
+    private static readonly Dictionary<string, VersionMapping> _versionMappings = new()
+    {
+        ["1"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion1), "MidjourneyVersion1"),
+        ["2"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion2), "MidjourneyVersion2"),
+        ["3"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion3), "MidjourneyVersion3"),
+        ["4"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion4), "MidjourneyVersion4"),
+        ["5"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion5), "MidjourneyVersion5"),
+        ["5.1"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion51), "MidjourneyVersion51"),
+        ["5.2"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion52), "MidjourneyVersion52"),
+        ["6"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion6), "MidjourneyVersion6"),
+        ["6.1"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion61), "MidjourneyVersion61"),
+        ["7"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion7), "MidjourneyVersion7"),
+        ["niji 4"] = new(typeof(MidjourneyAllVersions.MidjourneyVersionNiji4), "MidjourneyVersionNiji4"),
+        ["niji 5"] = new(typeof(MidjourneyAllVersions.MidjourneyVersionNiji5), "MidjourneyVersionNiji5"),
+        ["niji 6"] = new(typeof(MidjourneyAllVersions.MidjourneyVersionNiji6), "MidjourneyVersionNiji6")
+    };
 
     public VersionRepository(MidjourneyDbContext midjourneyDbContext)
     {
@@ -23,12 +43,7 @@ public sealed class VersionRepository : IVersionRepository
             if (string.IsNullOrWhiteSpace(version))
                 return Result.Fail<MidjourneyVersionsMaster>("Version cannot be null or empty");
 
-            var versionMasterQuery = _midjourneyDbContext
-                                    .MidjourneyVersionsMaster
-                                    .Where(v => v.Version == version)
-                                    .AsQueryable();
-
-            var versionMaster = await versionMasterQuery
+            var versionMaster = await _midjourneyDbContext.MidjourneyVersionsMaster
                 .FirstOrDefaultAsync(v => v.Version == version);
 
             if (versionMaster == null)
@@ -42,7 +57,26 @@ public sealed class VersionRepository : IVersionRepository
         }
     }
 
-    private static string[] SupportedVersions = [];
+    public async Task<Result<List<MidjourneyVersionsBase>>> GetAllParametersByVersionMasterAsync(string version)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(version))
+                return Result.Fail<List<MidjourneyVersionsBase>>("Version cannot be null or empty");
+
+            var parameters = await ExecuteVersionOperation<List<MidjourneyVersionsBase>>(version, async (dbSet) =>
+            {
+                var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
+                return await queryable.ToListAsync();
+            });
+
+            return Result.Ok(parameters ?? []);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<List<MidjourneyVersionsBase>>($"Database error while retrieving version parameters '{version}': {ex.Message}");
+        }
+    }
 
     public async Task<Result<bool>> CheckVersionExistsInVersionMasterAsync(string version)
     {
@@ -51,13 +85,14 @@ public sealed class VersionRepository : IVersionRepository
             if (string.IsNullOrWhiteSpace(version))
                 return Result.Fail<bool>("Version cannot be null or empty");
 
-            if (SupportedVersions is null || SupportedVersions.Length == 0)
+            if (_supportedVersions.Length == 0)
             {
-                SupportedVersions = await _midjourneyDbContext.MidjourneyVersionsMaster.Select(x => x.Version).ToArrayAsync();
+                _supportedVersions = await _midjourneyDbContext.MidjourneyVersionsMaster
+                    .Select(x => x.Version)
+                    .ToArrayAsync();
             }
 
-            var exists = SupportedVersions.Contains(version);
-
+            var exists = _supportedVersions.Contains(version);
             return Result.Ok(exists);
         }
         catch (Exception ex)
@@ -72,68 +107,36 @@ public sealed class VersionRepository : IVersionRepository
         {
             // Validation
             if (string.IsNullOrWhiteSpace(version))
-                Result.Fail<ParameterDetails>("Version cannot be null or empty");
+                return Result.Fail<ParameterDetails>("Version cannot be null or empty");
 
             if (string.IsNullOrWhiteSpace(propertyName))
-                Result.Fail<ParameterDetails>("Property name cannot be null or empty");
+                return Result.Fail<ParameterDetails>("Property name cannot be null or empty");
 
             if (parameters == null || parameters.Length == 0)
-                Result.Fail<ParameterDetails>("Parameters array cannot be null or empty");
+                return Result.Fail<ParameterDetails>("Parameters array cannot be null or empty");
 
             // Check if version exists
-            var versionResult = await GetAllParametersByVersionMasterAsync(version);
-            if (versionResult.IsFailed)
-                Result.Fail<ParameterDetails>(versionResult.Errors);
+            var versionExistsResult = await CheckVersionExistsInVersionMasterAsync(version);
+            if (versionExistsResult.IsFailed || !versionExistsResult.Value)
+                return Result.Fail<ParameterDetails>($"Version '{version}' does not exist");
 
             // Check if parameter already exists
             var existsResult = await CheckParameterExistsInVersionAsync(version, propertyName);
             if (existsResult.IsFailed)
-                Result.Fail<ParameterDetails>(existsResult.Errors);
+                return Result.Fail<ParameterDetails>(existsResult.Errors);
 
             if (existsResult.Value)
-                Result.Fail<ParameterDetails>($"Parameter '{propertyName}' already exists for version '{version}'");
+                return Result.Fail<ParameterDetails>($"Parameter '{propertyName}' already exists for version '{version}'");
 
-            var versionMaster = versionResult.Value;
+            // Get VersionMaster
+            var versionMaster = await _midjourneyDbContext.MidjourneyVersionsMaster
+                .FirstAsync(v => v.Version == version);
 
-            var parameter = new MidjourneyVersionsBase
-            {
-                Version = version,
-                PropertyName = propertyName,
-                Parameters = parameters,
-                DefaultValue = defaultValue,
-                MinValue = minValue,
-                MaxValue = maxValue,
-                Description = description,
-                VersionMaster = new()
-                {
-                    Version = version
-                }
-                //VersionMaster = versionMaster.First()
-            };
-
-            bool success = version switch
-            {
-                "1" => _midjourneyDbContext.MidjourneyVersion1.Add((MidjourneyAllVersions.MidjourneyVersion1)parameter) != null,
-                "2" => _midjourneyDbContext.MidjourneyVersion2.Add((MidjourneyAllVersions.MidjourneyVersion2)parameter) != null,
-                "3" => _midjourneyDbContext.MidjourneyVersion3.Add((MidjourneyAllVersions.MidjourneyVersion3)parameter) != null,
-                "4" => _midjourneyDbContext.MidjourneyVersion4.Add((MidjourneyAllVersions.MidjourneyVersion4)parameter) != null,
-                "5" => _midjourneyDbContext.MidjourneyVersion5.Add((MidjourneyAllVersions.MidjourneyVersion5)parameter) != null,
-                "5.1" => _midjourneyDbContext.MidjourneyVersion51.Add((MidjourneyAllVersions.MidjourneyVersion51)parameter) != null,
-                "5.2" => _midjourneyDbContext.MidjourneyVersion52.Add((MidjourneyAllVersions.MidjourneyVersion52)parameter) != null,
-                "6" => _midjourneyDbContext.MidjourneyVersion6.Add((MidjourneyAllVersions.MidjourneyVersion6)parameter) != null,
-                "6.1" => _midjourneyDbContext.MidjourneyVersion61.Add((MidjourneyAllVersions.MidjourneyVersion61)parameter) != null,
-                "7" => _midjourneyDbContext.MidjourneyVersion7.Add((MidjourneyAllVersions.MidjourneyVersion7)parameter) != null,
-                "niji4" => _midjourneyDbContext.MidjourneyVersionNiji4.Add((MidjourneyAllVersions.MidjourneyVersionNiji4)parameter) != null,
-                "niji5" => _midjourneyDbContext.MidjourneyVersionNiji5.Add((MidjourneyAllVersions.MidjourneyVersionNiji5)parameter) != null,
-                "niji6" => _midjourneyDbContext.MidjourneyVersionNiji6.Add((MidjourneyAllVersions.MidjourneyVersionNiji6)parameter) != null,
-                _ => false
-            };
-
-            await _midjourneyDbContext.SaveChangesAsync();
-
+            // Create and add parameter using generic method
+            var success = await CreateAndAddParameterAsync(version, versionMaster, propertyName, parameters, defaultValue, minValue, maxValue, description);
 
             if (!success)
-                return Result.Fail<ParameterDetails>($"Unsupported version '{version}' or failed to add parameter");
+                return Result.Fail<ParameterDetails>($"Failed to add parameter to version '{version}'");
 
             var parameterDetails = new ParameterDetails
             {
@@ -168,31 +171,11 @@ public sealed class VersionRepository : IVersionRepository
                 return Result.Fail<ParameterDetails>("Parameters array cannot be null or empty");
 
             var versionExistsResult = await CheckVersionExistsInVersionMasterAsync(version);
-
             if (versionExistsResult.IsFailed || !versionExistsResult.Value)
-            {
                 return Result.Fail<ParameterDetails>($"Version '{version}' does not exist");
-            }
 
-            // Find the parameter
-            MidjourneyVersionsBase? parameter = version switch
-            {
-                "1" => await _midjourneyDbContext.MidjourneyVersion1.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "2" => await _midjourneyDbContext.MidjourneyVersion2.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "3" => await _midjourneyDbContext.MidjourneyVersion3.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "4" => await _midjourneyDbContext.MidjourneyVersion4.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5" => await _midjourneyDbContext.MidjourneyVersion5.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5.1" => await _midjourneyDbContext.MidjourneyVersion51.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5.2" => await _midjourneyDbContext.MidjourneyVersion52.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "6" => await _midjourneyDbContext.MidjourneyVersion6.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "6.1" => await _midjourneyDbContext.MidjourneyVersion61.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "7" => await _midjourneyDbContext.MidjourneyVersion7.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 4" => await _midjourneyDbContext.MidjourneyVersionNiji4.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 5" => await _midjourneyDbContext.MidjourneyVersionNiji5.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 6" => await _midjourneyDbContext.MidjourneyVersionNiji6.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                _ => null
-            };
-
+            // Find the parameter using generic method
+            var parameter = await FindParameterAsync(version, propertyName);
             if (parameter == null)
                 return Result.Fail<ParameterDetails>($"Parameter '{propertyName}' not found for version '{version}'");
 
@@ -238,69 +221,20 @@ public sealed class VersionRepository : IVersionRepository
                 return Result.Fail<ParameterDetails>("Property to update cannot be null or empty");
 
             var versionExistsResult = await CheckVersionExistsInVersionMasterAsync(version);
-
             if (versionExistsResult.IsFailed || !versionExistsResult.Value)
-            {
                 return Result.Fail<ParameterDetails>($"Version '{version}' does not exist");
-            }
 
             var allowedProperties = new[] { "DefaultValue", "MinValue", "MaxValue", "Description", "Parameters" };
-            if (!allowedProperties.Contains(characteristicToUpdate))
-            {
-                return Result.Fail<ParameterDetails>($"Property '{characteristicToUpdate}' is not supported for patching. Supported properties: DefaultValue, MinValue, MaxValue, Description, Parameters");
-            }
+            if (!allowedProperties.Contains(characteristicToUpdate, StringComparer.OrdinalIgnoreCase))
+                return Result.Fail<ParameterDetails>($"Property '{characteristicToUpdate}' is not supported for patching. Supported properties: {string.Join(", ", allowedProperties)}");
 
             // Find the parameter
-            MidjourneyVersionsBase? parameter = version switch
-            {
-                "1" => await _midjourneyDbContext.MidjourneyVersion1.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "2" => await _midjourneyDbContext.MidjourneyVersion2.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "3" => await _midjourneyDbContext.MidjourneyVersion3.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "4" => await _midjourneyDbContext.MidjourneyVersion4.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5" => await _midjourneyDbContext.MidjourneyVersion5.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5.1" => await _midjourneyDbContext.MidjourneyVersion51.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5.2" => await _midjourneyDbContext.MidjourneyVersion52.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "6" => await _midjourneyDbContext.MidjourneyVersion6.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "6.1" => await _midjourneyDbContext.MidjourneyVersion61.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "7" => await _midjourneyDbContext.MidjourneyVersion7.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 4" => await _midjourneyDbContext.MidjourneyVersionNiji4.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 5" => await _midjourneyDbContext.MidjourneyVersionNiji5.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 6" => await _midjourneyDbContext.MidjourneyVersionNiji6.FirstOrDefaultAsync(p => p.PropertyName == propertyName)
-            };
+            var parameter = await FindParameterAsync(version, propertyName);
+            if (parameter == null)
+                return Result.Fail<ParameterDetails>($"Parameter '{propertyName}' not found for version '{version}'");
 
             // Update specific property
-            switch (characteristicToUpdate.ToLowerInvariant())
-            {
-                case "defaultvalue":
-                    parameter!.DefaultValue = newValue;
-                    break;
-                case "minvalue":
-                    parameter!.MinValue = newValue;
-                    break;
-                case "maxvalue":
-                    parameter!.MaxValue = newValue;
-                    break;
-                case "description":
-                    parameter!.Description = newValue;
-                    break;
-                case "parameters":
-                    if (newValue != null)
-                    {
-                        parameter!.Parameters = newValue.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    }
-                    break;
-            }
-
-            object? updated = characteristicToUpdate.ToLowerInvariant() switch
-            {
-                "defaultvalue" => parameter!.DefaultValue = newValue,
-                "minvalue" => parameter!.MinValue = newValue,
-                "maxvalue" => parameter!.MaxValue = newValue,
-                "description" => parameter!.Description = newValue,
-                "parameters" => parameter!.Parameters = newValue?.Split(',', StringSplitOptions.RemoveEmptyEntries),
-                _ => null
-            };
-
+            UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
 
             await _midjourneyDbContext.SaveChangesAsync();
 
@@ -327,40 +261,20 @@ public sealed class VersionRepository : IVersionRepository
     {
         try
         {
-            var versionExistsResult = await CheckVersionExistsInVersionMasterAsync(version);
-
-            if (versionExistsResult.IsFailed || !versionExistsResult.Value)
-            {
-                Result.Fail<ParameterDetails>($"Version '{version}' does not exist");
-            }
-
             if (string.IsNullOrWhiteSpace(version))
-                Result.Fail<ParameterDetails>("Version cannot be null or empty");
+                return Result.Fail<ParameterDetails>("Version cannot be null or empty");
 
             if (string.IsNullOrWhiteSpace(propertyName))
-                Result.Fail<ParameterDetails>("Property name cannot be null or empty");
+                return Result.Fail<ParameterDetails>("Property name cannot be null or empty");
 
-            //// Find the parameter first to get its details
-            MidjourneyVersionsBase? parameter = version switch
-            {
-                "1" => await _midjourneyDbContext.MidjourneyVersion1.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "2" => await _midjourneyDbContext.MidjourneyVersion2.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "3" => await _midjourneyDbContext.MidjourneyVersion3.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "4" => await _midjourneyDbContext.MidjourneyVersion4.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5" => await _midjourneyDbContext.MidjourneyVersion5.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5.1" => await _midjourneyDbContext.MidjourneyVersion51.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "5.2" => await _midjourneyDbContext.MidjourneyVersion52.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "6" => await _midjourneyDbContext.MidjourneyVersion6.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "6.1" => await _midjourneyDbContext.MidjourneyVersion61.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "7" => await _midjourneyDbContext.MidjourneyVersion7.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 4" => await _midjourneyDbContext.MidjourneyVersionNiji4.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 5" => await _midjourneyDbContext.MidjourneyVersionNiji5.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                "niji 6" => await _midjourneyDbContext.MidjourneyVersionNiji6.FirstOrDefaultAsync(p => p.PropertyName == propertyName),
-                _ => null
-            };
+            var versionExistsResult = await CheckVersionExistsInVersionMasterAsync(version);
+            if (versionExistsResult.IsFailed || !versionExistsResult.Value)
+                return Result.Fail<ParameterDetails>($"Version '{version}' does not exist");
 
+            // Find the parameter
+            var parameter = await FindParameterAsync(version, propertyName);
             if (parameter == null)
-                return Result.Fail<ParameterDetails>($"Parameter '{propertyName}' not found for version '{version}' or unsupported version");
+                return Result.Fail<ParameterDetails>($"Parameter '{propertyName}' not found for version '{version}'");
 
             // Store details before deletion
             var parameterDetails = new ParameterDetails
@@ -396,23 +310,11 @@ public sealed class VersionRepository : IVersionRepository
             if (string.IsNullOrWhiteSpace(propertyName))
                 return Result.Fail<bool>("Property name cannot be null or empty");
 
-            var exists = version switch
+            var exists = await ExecuteVersionOperation<bool>(version, async (dbSet) =>
             {
-                "1" => await _midjourneyDbContext.MidjourneyVersion1.AnyAsync(p => p.PropertyName == propertyName),
-                "2" => await _midjourneyDbContext.MidjourneyVersion2.AnyAsync(p => p.PropertyName == propertyName),
-                "3" => await _midjourneyDbContext.MidjourneyVersion3.AnyAsync(p => p.PropertyName == propertyName),
-                "4" => await _midjourneyDbContext.MidjourneyVersion4.AnyAsync(p => p.PropertyName == propertyName),
-                "5" => await _midjourneyDbContext.MidjourneyVersion5.AnyAsync(p => p.PropertyName == propertyName),
-                "5.1" => await _midjourneyDbContext.MidjourneyVersion51.AnyAsync(p => p.PropertyName == propertyName),
-                "5.2" => await _midjourneyDbContext.MidjourneyVersion52.AnyAsync(p => p.PropertyName == propertyName),
-                "6" => await _midjourneyDbContext.MidjourneyVersion6.AnyAsync(p => p.PropertyName == propertyName),
-                "6.1" => await _midjourneyDbContext.MidjourneyVersion61.AnyAsync(p => p.PropertyName == propertyName),
-                "7" => await _midjourneyDbContext.MidjourneyVersion7.AnyAsync(p => p.PropertyName == propertyName),
-                "niji 4" => await _midjourneyDbContext.MidjourneyVersionNiji4.AnyAsync(p => p.PropertyName == propertyName),
-                "niji 5" => await _midjourneyDbContext.MidjourneyVersionNiji5.AnyAsync(p => p.PropertyName == propertyName),
-                "niji 6" => await _midjourneyDbContext.MidjourneyVersionNiji6.AnyAsync(p => p.PropertyName == propertyName),
-                _ => false
-            };
+                var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
+                return await queryable.AnyAsync(p => p.PropertyName == propertyName);
+            });
 
             return Result.Ok(exists);
         }
@@ -421,4 +323,90 @@ public sealed class VersionRepository : IVersionRepository
             return Result.Fail<bool>($"Database error while checking parameter existence: {ex.Message}");
         }
     }
+
+    private async Task<T?> ExecuteVersionOperation<T>(string version, Func<IQueryable, Task<T>> operation)
+    {
+        if (!_versionMappings.TryGetValue(version, out var mapping))
+            return default;
+
+        var dbSetProperty = typeof(MidjourneyDbContext).GetProperty(mapping.DbSetPropertyName);
+        if (dbSetProperty == null)
+            return default;
+
+        var dbSet = dbSetProperty.GetValue(_midjourneyDbContext);
+        if (dbSet is not IQueryable queryable)
+            return default;
+
+        var castMethod = typeof(Queryable).GetMethods()
+            .First(m => m.Name == "Cast" && m.IsGenericMethodDefinition);
+        var genericCastMethod = castMethod.MakeGenericMethod(typeof(MidjourneyVersionsBase));
+        var castedQueryable = (IQueryable)genericCastMethod.Invoke(null, [queryable])!;
+
+        return await operation(castedQueryable);
+    }
+
+    private async Task<MidjourneyVersionsBase?> FindParameterAsync(string version, string propertyName)
+    {
+        return await ExecuteVersionOperation<MidjourneyVersionsBase?>(version, async (dbSet) =>
+        {
+            var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
+            return await queryable.FirstOrDefaultAsync(p => p.PropertyName == propertyName);
+        });
+    }
+
+    private async Task<bool> CreateAndAddParameterAsync(string version, MidjourneyVersionsMaster versionMaster, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description)
+    {
+        if (!_versionMappings.TryGetValue(version, out var mapping))
+            return false;
+
+        if (Activator.CreateInstance(mapping.EntityType) is not MidjourneyVersionsBase instance)
+            return false;
+
+        // Set properties
+        instance.PropertyName = propertyName;
+        instance.Version = version;
+        instance.Parameters = parameters;
+        instance.DefaultValue = defaultValue;
+        instance.MinValue = minValue;
+        instance.MaxValue = maxValue;
+        instance.Description = description;
+        instance.VersionMaster = versionMaster;
+
+        // Get DbSet and add entity
+        var dbSetProperty = typeof(MidjourneyDbContext).GetProperty(mapping.DbSetPropertyName);
+        if (dbSetProperty?.GetValue(_midjourneyDbContext) is not IQueryable dbSet)
+            return false;
+
+        // Use reflection to call Add method
+        var addMethod = dbSet.GetType().GetMethod("Add");
+        addMethod?.Invoke(dbSet, [instance]);
+
+        await _midjourneyDbContext.SaveChangesAsync();
+        return true;
+    }
+
+    private static void UpdateParameterProperty(MidjourneyVersionsBase parameter, string propertyToUpdate, string? newValue)
+    {
+        switch (propertyToUpdate.ToLowerInvariant())
+        {
+            case "defaultvalue":
+                parameter.DefaultValue = newValue;
+                break;
+            case "minvalue":
+                parameter.MinValue = newValue;
+                break;
+            case "maxvalue":
+                parameter.MaxValue = newValue;
+                break;
+            case "description":
+                parameter.Description = newValue;
+                break;
+            case "parameters":
+                parameter.Parameters = newValue?.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                break;
+        }
+    }
+
+    // Version mapping record
+    private record VersionMapping(Type EntityType, string DbSetPropertyName);
 }

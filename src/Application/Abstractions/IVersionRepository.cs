@@ -10,7 +10,6 @@ public interface IVersionRepository
     Task<Result<List<MidjourneyVersionsBase>>> GetAllParametersByVersionMasterAsync(string version);
     Task<Result<bool>> CheckVersionExistsInVersionMasterAsync(string version);
     Task<Result<MidjourneyVersionsMaster>> GetMasterVersionByVersionAsync(string version);
-    Task<Result<MidjourneyVersionsMaster>> (string version, string? description);
 
     // Versions methods
     Task<Result<ParameterDetails>> AddParameterToVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description);
