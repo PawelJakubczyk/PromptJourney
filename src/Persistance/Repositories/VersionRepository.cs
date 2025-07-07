@@ -25,25 +25,8 @@ public sealed class VersionRepository : IVersionRepository
 
             var versionMasterQuery = _midjourneyDbContext
                                     .MidjourneyVersionsMaster
+                                    .Where(v => v.Version == version)
                                     .AsQueryable();
-
-            versionMasterQuery = version switch
-            {
-                "1" => versionMasterQuery.Include(v => v.Versions1),
-                "2" => versionMasterQuery.Include(v => v.Versions2),
-                "3" => versionMasterQuery.Include(v => v.Versions3),
-                "4" => versionMasterQuery.Include(v => v.Versions4),
-                "5" => versionMasterQuery.Include(v => v.Versions5),
-                "5.1" => versionMasterQuery.Include(v => v.Versions51),
-                "5.2" => versionMasterQuery.Include(v => v.Versions52),
-                "6" => versionMasterQuery.Include(v => v.Versions6),
-                "6.1" => versionMasterQuery.Include(v => v.Versions61),
-                "7" => versionMasterQuery.Include(v => v.Versions7),
-                "niji 4" => versionMasterQuery.Include(v => v.VersionsNiji4),
-                "niji 5" => versionMasterQuery.Include(v => v.VersionsNiji5),
-                "niji 6" => versionMasterQuery.Include(v => v.VersionsNiji6),
-                _ => versionMasterQuery
-            };
 
             var versionMaster = await versionMasterQuery
                 .FirstOrDefaultAsync(v => v.Version == version);
@@ -59,6 +42,8 @@ public sealed class VersionRepository : IVersionRepository
         }
     }
 
+    private static string[] SupportedVersions = [];
+
     public async Task<Result<bool>> CheckVersionExistsInVersionMasterAsync(string version)
     {
         try
@@ -66,7 +51,12 @@ public sealed class VersionRepository : IVersionRepository
             if (string.IsNullOrWhiteSpace(version))
                 return Result.Fail<bool>("Version cannot be null or empty");
 
-            var exists = await _midjourneyDbContext.MidjourneyVersionsMaster.AnyAsync(v => v.Version == version);
+            if (SupportedVersions is null || SupportedVersions.Length == 0)
+            {
+                SupportedVersions = await _midjourneyDbContext.MidjourneyVersionsMaster.Select(x => x.Version).ToArrayAsync();
+            }
+
+            var exists = SupportedVersions.Contains(version);
 
             return Result.Ok(exists);
         }
@@ -91,7 +81,7 @@ public sealed class VersionRepository : IVersionRepository
                 Result.Fail<ParameterDetails>("Parameters array cannot be null or empty");
 
             // Check if version exists
-            var versionResult = await GetMasterVersionByVersionAsync(version);
+            var versionResult = await GetAllParametersByVersionMasterAsync(version);
             if (versionResult.IsFailed)
                 Result.Fail<ParameterDetails>(versionResult.Errors);
 
@@ -114,7 +104,11 @@ public sealed class VersionRepository : IVersionRepository
                 MinValue = minValue,
                 MaxValue = maxValue,
                 Description = description,
-                VersionMaster = versionMaster
+                VersionMaster = new()
+                {
+                    Version = version
+                }
+                //VersionMaster = versionMaster.First()
             };
 
             bool success = version switch

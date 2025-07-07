@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Domain.Entities.MidjourneyVersions;
+﻿namespace Domain.Entities.MidjourneyVersions;
 
 public class MidjourneyAllVersions
 {

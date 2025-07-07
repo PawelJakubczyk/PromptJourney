@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
+using System.Linq.Expressions;
 
 namespace Domain.Entities.MidjourneyVersions;
 
@@ -28,7 +29,7 @@ public class MidjourneyVersionsMaster
     public List<MidjourneyAllVersions.MidjourneyVersionNiji6> VersionsNiji6 { get; set; }
 
     // Constructor
-    private MidjourneyVersionsMaster()
+    public MidjourneyVersionsMaster()
     {
 
     }
