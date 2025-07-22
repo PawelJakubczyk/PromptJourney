@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Persistans.Context;
 using System.Reflection;
 
-namespace Persistance.Repositories;
+namespace Persistance.Repositories.Versions;
 
-public sealed class VersionRepository : IVersionRepository
+public sealed class VersionsRepository : IVersionRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext;
     private static string[] _supportedVersions = [];
@@ -31,7 +31,7 @@ public sealed class VersionRepository : IVersionRepository
         ["niji 6"] = new(typeof(MidjourneyAllVersions.MidjourneyVersionNiji6), "MidjourneyVersionNiji6")
     };
 
-    public VersionRepository(MidjourneyDbContext midjourneyDbContext)
+    public VersionsRepository(MidjourneyDbContext midjourneyDbContext)
     {
         _midjourneyDbContext = midjourneyDbContext;
     }
@@ -40,9 +40,6 @@ public sealed class VersionRepository : IVersionRepository
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(version))
-                return Result.Fail<MidjourneyVersionsMaster>("Version cannot be null or empty");
-
             var versionMaster = await _midjourneyDbContext.MidjourneyVersionsMaster
                 .FirstOrDefaultAsync(v => v.Version == version);
 
@@ -64,7 +61,7 @@ public sealed class VersionRepository : IVersionRepository
             if (string.IsNullOrWhiteSpace(version))
                 return Result.Fail<List<MidjourneyVersionsBase>>("Version cannot be null or empty");
 
-            var parameters = await ExecuteVersionOperation<List<MidjourneyVersionsBase>>(version, async (dbSet) =>
+            var parameters = await ExecuteVersionOperation(version, async (dbSet) =>
             {
                 var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
                 return await queryable.ToListAsync();
@@ -310,7 +307,7 @@ public sealed class VersionRepository : IVersionRepository
             if (string.IsNullOrWhiteSpace(propertyName))
                 return Result.Fail<bool>("Property name cannot be null or empty");
 
-            var exists = await ExecuteVersionOperation<bool>(version, async (dbSet) =>
+            var exists = await ExecuteVersionOperation(version, async (dbSet) =>
             {
                 var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
                 return await queryable.AnyAsync(p => p.PropertyName == propertyName);
@@ -347,7 +344,7 @@ public sealed class VersionRepository : IVersionRepository
 
     private async Task<MidjourneyVersionsBase?> FindParameterAsync(string version, string propertyName)
     {
-        return await ExecuteVersionOperation<MidjourneyVersionsBase?>(version, async (dbSet) =>
+        return await ExecuteVersionOperation(version, async (dbSet) =>
         {
             var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
             return await queryable.FirstOrDefaultAsync(p => p.PropertyName == propertyName);

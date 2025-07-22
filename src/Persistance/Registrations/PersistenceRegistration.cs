@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Persistance.Repositories;
+using Persistance.Repositories.Versions;
 using Persistans.Context;
 
 namespace Persistance.Registrations;
@@ -15,7 +15,7 @@ public static class PersistenceRegistration
             options.UseNpgsql("Host=localhost;Port=5432;Database=midjourney_test;Username=admin_0;Password=GR52MqngWxfT");
         });
 
-        services.AddScoped<IVersionRepository, VersionRepository>();
+        services.AddScoped<IVersionRepository, VersionsRepository>();
         return services;
     }
 }
