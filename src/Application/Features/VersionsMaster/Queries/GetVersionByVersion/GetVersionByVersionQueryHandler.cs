@@ -14,11 +14,11 @@ public sealed class GetVersionByVersionQueryHandler : IRequestHandler<GetVersion
         _versionRepository = versionRepository;
     }
 
-    public async Task<Result<MidjourneyVersionsMaster>> Handle(GetVersionByVersionQuery request, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyVersionsMaster>> Handle(GetVersionByVersionQuery query, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _versionRepository.GetMasterVersionByVersionAsync(request.Version);
+            var result = await _versionRepository.GetMasterVersionByVersionAsync(query.Version);
             return result;
         }
         catch (Exception ex)

@@ -13,11 +13,11 @@ public sealed class CheckVersionExistsQueryHandler : IRequestHandler<CheckVersio
         _versionRepository = versionRepository;
     }
 
-    public async Task<Result<bool>> Handle(CheckVersionExistsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(CheckVersionExistsQuery query, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _versionRepository.CheckVersionExistsInVersionMasterAsync(request.Version);
+            var result = await _versionRepository.CheckVersionExistsInVersionMasterAsync(query.Version);
             return result;
         }
         catch (Exception ex)

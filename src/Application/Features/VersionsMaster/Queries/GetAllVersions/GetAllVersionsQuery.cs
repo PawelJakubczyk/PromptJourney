@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.VersionsMaster.Queries.GetAllVersions;
 
-public record GetAllVersionsQuery : IRequest<Result<MidjourneyVersionsMaster>>
+public record GetStyleByTypeQuery : IRequest<Result<List<MidjourneyVersionsMaster>>>
 {
 
 }

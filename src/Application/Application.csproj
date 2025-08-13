@@ -24,6 +24,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Features\ExampleLinks\Commands\AddExapleLink\" />
+	  <Folder Include="Features\ExampleLinks\Commands\DeleteExampleLink\" />
 	  <Folder Include="Features\PromptHistory\Commands\AddPrompToPromptHistory\" />
 	  <Folder Include="Features\PromptHistory\Commands\DeletePromptInPromptHistory\" />
 	  <Folder Include="Features\PromptHistory\Queries\GetPromptHistoryRecent\" />
@@ -35,13 +37,8 @@
 	  <Folder Include="Features\Styles\Commands\EditDescriptionInStyle\" />
 	  <Folder Include="Features\Styles\Commands\AddTagToStyle\" />
 	  <Folder Include="Features\Styles\Commands\AddExampleLink\" />
-	  <Folder Include="Features\Styles\Commands\RomoveExamleLink\" />
 	  <Folder Include="Features\Styles\Commands\RemoveTagInStyle\" />
-	  <Folder Include="Features\Styles\Queries\GetStyleByType\" />
-	  <Folder Include="Features\Styles\Queries\GetStyleByName\" />
-	  <Folder Include="Features\Styles\Queries\GetStyleByTag\" />
-	  <Folder Include="Features\Styles\Queries\GetStyleByDescriptionKeyword\" />
-	  <Folder Include="Features\VersionsMaster\Commands\AddVersion\" />
+	  <Folder Include="Features\Styles\Commands\RomoveExamleLink\" />
 	</ItemGroup>
 
 </Project>
