@@ -12,6 +12,7 @@ public static partial class Constants
         internal const string uuidArray = $"{uuid}[]";
         internal const string jsonb = nameof(jsonb);
         internal static string bytea = nameof(bytea);
+        internal static string TextArray => $"{text}[]";
 
         internal static string TimestampWithTimeZone() => "timestamp with time zone";
         internal static string Char(int length) => $"char({length})";

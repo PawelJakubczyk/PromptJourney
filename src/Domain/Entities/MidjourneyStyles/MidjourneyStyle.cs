@@ -11,34 +11,32 @@ public class MidjourneyStyle
     public string Type { get; set; }
     public string? Description { get; set; }
     public ICollection<string>? Tags { get; set; }
-    public ICollection<string> ExampleLinks { get; set; }
-
-    // Navigation
+    
+    // Navigation properties
     public List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
+    public List<MidjourneyStyleExampleLink> ExampleLinks { get; set; } = [];
 
     // Errors
     private static List<DomainError> _errors = [];
 
-    // Constructor
+    // Constructors
+    private MidjourneyStyle()
+    {
+        // Parameterless constructor for EF Core
+    }
+
     private MidjourneyStyle
     (
         string name,
         string type, 
         string? description = null, 
-        ICollection<string>? tags = null,
-        ICollection<string>? exampleLinks = null
+        ICollection<string>? tags = null
     )
     {
         Name = name;
         Type = type;
         Description = description;
         Tags = tags!;
-        ExampleLinks = exampleLinks!;
-    }
-
-    private MidjourneyStyle()
-    {
-        // Parameterless constructor for EF Core
     }
 
     public static Result<MidjourneyStyle> Create
@@ -46,8 +44,7 @@ public class MidjourneyStyle
         string name,
         string type,
         string? description = null,
-        ICollection<string>? tags = null,
-        ICollection<string>? exampleLinks = null
+        ICollection<string>? tags = null
     )
     {
         _errors.Clear();
@@ -56,7 +53,6 @@ public class MidjourneyStyle
         ValidateType(type);
         ValidateDescription(description);
         ValidateTags(tags);
-        ValidateExampleLinks(exampleLinks);
 
         if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
         
@@ -65,15 +61,13 @@ public class MidjourneyStyle
             name,
             type,
             description,
-            tags,
-            exampleLinks
+            tags
         );
 
         return Result.Ok(style);
     }
 
     // Validation methods
-
     private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -126,36 +120,7 @@ public class MidjourneyStyle
         }
     }
 
-    private static void ValidateExampleLinks(ICollection<string>? exampleLinks)
-    {
-        if (exampleLinks?.Count > 10)
-            _errors.Add(ExampleLinksTooManyError.WithDetail($"link count: {exampleLinks.Count}"));
-
-        foreach (var link in exampleLinks!)
-        {
-            if (link.Length > 200)
-                _errors.Add(ExampleLinkTooLongError.WithDetail($"link length: {link.Length}"));
-        }
-    }
-
-    private static void ValidateExampleLinkExists(ICollection<string> exampleLinks, string expectedLink)
-    {
-        if (!exampleLinks.Contains(expectedLink))
-        {
-            _errors.Add(ExampleLinkNotFoundError.WithDetail($"link: '{expectedLink}'"));
-        }
-    }
-
-    private static void ValidateExampleLinkNotExists(ICollection<string> exampleLinks, string expectedLink)
-    {
-        if (exampleLinks.Contains(expectedLink))
-        {
-            _errors.Add(ExampleLinkDuplicateError.WithDetail($"link: '{expectedLink}'"));
-        }
-    }
-
     // Edit methods
-
     public Result<MidjourneyStyle> EditName(string newName)
     {
         ValidateName(newName);
@@ -201,28 +166,6 @@ public class MidjourneyStyle
         if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
 
         Tags?.Remove(tag);
-        return Result.Ok(this);
-    }
-
-    public Result<MidjourneyStyle>? AddLink(string link)
-    {
-        ValidateExampleLinks([link]);
-        ValidateExampleLinkNotExists(ExampleLinks, link);
-
-        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
-
-        ExampleLinks.Add(link);
-        return Result.Ok(this);
-    }
-
-    public Result<MidjourneyStyle>? RemoveLink(string link)
-    {
-        ValidateExampleLinks([link]);
-        ValidateExampleLinkExists(ExampleLinks, link);
-
-        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
-
-        ExampleLinks.Remove(link);
         return Result.Ok(this);
     }
 }

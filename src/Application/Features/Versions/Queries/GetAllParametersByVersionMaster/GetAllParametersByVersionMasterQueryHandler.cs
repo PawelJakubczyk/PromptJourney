@@ -1,11 +1,11 @@
 using Application.Abstractions;
-using Domain.Entities.MidjourneyVersions;
+using Domain.Entities.MidjourneyProperties;
 using FluentResults;
 using MediatR;
 
 namespace Application.Features.Versions.Queries.GetMasterVersionByVersion;
 
-public sealed class GetAllParametersByVersionMasterQueryHandler : IRequestHandler<GetAllParametersByVersionMasterQuery, Result<List<MidjourneyVersionsBase>>>
+public sealed class GetAllParametersByVersionMasterQueryHandler : IRequestHandler<GetAllParametersByVersionMasterQuery, Result<List<MidjourneyPropertiesBase>>>
 {
     private readonly IVersionRepository _versionRepository;
 
@@ -14,7 +14,7 @@ public sealed class GetAllParametersByVersionMasterQueryHandler : IRequestHandle
         _versionRepository = versionRepository;
     }
 
-    public async Task<Result<List<MidjourneyVersionsBase>>> Handle(GetAllParametersByVersionMasterQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<MidjourneyPropertiesBase>>> Handle(GetAllParametersByVersionMasterQuery request, CancellationToken cancellationToken)
     {
         try
         {
@@ -23,7 +23,7 @@ public sealed class GetAllParametersByVersionMasterQueryHandler : IRequestHandle
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyVersionsBase>>($"Error retrieving version: {ex.Message}");
+            return Result.Fail<List<MidjourneyPropertiesBase>>($"Error retrieving version: {ex.Message}");
         }
     }
 }

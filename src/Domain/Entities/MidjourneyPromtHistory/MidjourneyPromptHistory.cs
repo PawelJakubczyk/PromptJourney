@@ -20,7 +20,12 @@ public class MidjourneyPromptHistory
     // Errors
     private static List<DomainError> _errors = [];
 
-    // Constructor
+    // Constructors
+    private MidjourneyPromptHistory()
+    {
+        // Parameterless constructor for EF Core
+    }
+
     private MidjourneyPromptHistory
     (
         string prompt,
@@ -34,11 +39,6 @@ public class MidjourneyPromptHistory
         Prompt = prompt;
         Version = version;
         CreatedOn = createdOn;
-    }
-
-    private MidjourneyPromptHistory()
-    {
-        // Parameterless constructor for EF Core
     }
 
     public static Result<MidjourneyPromptHistory> Create
@@ -67,7 +67,6 @@ public class MidjourneyPromptHistory
     }
 
     // Validation methods
-
     private static void ValidatePrompt(string prompt)
     {
         if (string.IsNullOrEmpty(prompt))

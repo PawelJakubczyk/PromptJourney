@@ -1,4 +1,4 @@
-﻿using Domain.Entities.MidjourneyVersions;
+﻿using Domain.Entities.MidjourneyProperties;
 using FluentAssertions;
 
 namespace Domain.Unit.Tests.Entities.MidjourneyVersions;
@@ -12,7 +12,7 @@ public sealed class MidjourneyVersionBaseTests
         var version = "5.1";
 
         // Act
-        var result = MidjourneyVersionsBase.Create
+        var result = MidjourneyPropertiesBase.Create
         (
             string.Empty, // Empty property name
             version

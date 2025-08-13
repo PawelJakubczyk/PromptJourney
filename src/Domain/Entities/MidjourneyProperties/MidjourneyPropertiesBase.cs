@@ -1,9 +1,10 @@
-﻿using FluentResults;
+﻿using Domain.Entities.MidjourneyVersions;
+using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
-namespace Domain.Entities.MidjourneyVersions;
+namespace Domain.Entities.MidjourneyProperties;
 
-public class MidjourneyVersionsBase
+public class MidjourneyPropertiesBase
 {
     // Columns
     public string PropertyName { get; set; }
@@ -20,13 +21,13 @@ public class MidjourneyVersionsBase
     // Errors
     private static List<DomainError> _errors = [];
 
-    // Constructor
-    protected MidjourneyVersionsBase()
+    // Constructors
+    protected MidjourneyPropertiesBase()
     {
         // Parameterless constructor for EF Core
     }
 
-    protected MidjourneyVersionsBase
+    protected MidjourneyPropertiesBase
     (
         string propertyName, 
         string version,
@@ -46,7 +47,7 @@ public class MidjourneyVersionsBase
         Description = description;
     }
 
-    public static Result<MidjourneyVersionsBase> Create
+    public static Result<MidjourneyPropertiesBase> Create
     (
         string propertyName, 
         string version,
@@ -69,10 +70,10 @@ public class MidjourneyVersionsBase
 
         if (_errors.Count > 0)
         {
-            return Result.Fail<MidjourneyVersionsBase>(_errors.Select(e => e.Message));
+            return Result.Fail<MidjourneyPropertiesBase>(_errors.Select(e => e.Message));
         }
 
-        var versionBase = new MidjourneyVersionsBase
+        var versionBase = new MidjourneyPropertiesBase
         (
             propertyName, 
             version, 
@@ -86,6 +87,7 @@ public class MidjourneyVersionsBase
         return Result.Ok(versionBase);
     }
 
+    // Validation methods
     private static void ValidatePropertyName(string? propertyName)
     {
         if (string.IsNullOrEmpty(propertyName))

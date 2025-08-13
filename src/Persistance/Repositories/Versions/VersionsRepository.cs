@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Features.Versions;
+using Domain.Entities.MidjourneyProperties;
 using Domain.Entities.MidjourneyVersions;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -16,19 +17,19 @@ public sealed class VersionsRepository : IVersionRepository
     // Version mappings dictionary for eliminating switch statements
     private static readonly Dictionary<string, VersionMapping> _versionMappings = new()
     {
-        ["1"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion1), "MidjourneyVersion1"),
-        ["2"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion2), "MidjourneyVersion2"),
-        ["3"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion3), "MidjourneyVersion3"),
-        ["4"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion4), "MidjourneyVersion4"),
-        ["5"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion5), "MidjourneyVersion5"),
-        ["5.1"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion51), "MidjourneyVersion51"),
-        ["5.2"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion52), "MidjourneyVersion52"),
-        ["6"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion6), "MidjourneyVersion6"),
-        ["6.1"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion61), "MidjourneyVersion61"),
-        ["7"] = new(typeof(MidjourneyAllVersions.MidjourneyVersion7), "MidjourneyVersion7"),
-        ["niji 4"] = new(typeof(MidjourneyAllVersions.MidjourneyVersionNiji4), "MidjourneyVersionNiji4"),
-        ["niji 5"] = new(typeof(MidjourneyAllVersions.MidjourneyVersionNiji5), "MidjourneyVersionNiji5"),
-        ["niji 6"] = new(typeof(MidjourneyAllVersions.MidjourneyVersionNiji6), "MidjourneyVersionNiji6")
+        ["1"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1), "MidjourneyVersion1"),
+        ["2"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2), "MidjourneyVersion2"),
+        ["3"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion3), "MidjourneyVersion3"),
+        ["4"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion4), "MidjourneyVersion4"),
+        ["5"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion5), "MidjourneyVersion5"),
+        ["5.1"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion51), "MidjourneyVersion51"),
+        ["5.2"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion52), "MidjourneyVersion52"),
+        ["6"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion6), "MidjourneyVersion6"),
+        ["6.1"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion61), "MidjourneyVersion61"),
+        ["7"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion7), "MidjourneyVersion7"),
+        ["niji 4"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji4), "MidjourneyVersionNiji4"),
+        ["niji 5"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji5), "MidjourneyVersionNiji5"),
+        ["niji 6"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6), "MidjourneyVersionNiji6")
     };
 
     public VersionsRepository(MidjourneyDbContext midjourneyDbContext)
@@ -54,16 +55,16 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyVersionsBase>>> GetAllParametersByVersionMasterAsync(string version)
+    public async Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionMasterAsync(string version)
     {
         try
         {
             if (string.IsNullOrWhiteSpace(version))
-                return Result.Fail<List<MidjourneyVersionsBase>>("Version cannot be null or empty");
+                return Result.Fail<List<MidjourneyPropertiesBase>>("Version cannot be null or empty");
 
             var parameters = await ExecuteVersionOperation(version, async (dbSet) =>
             {
-                var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
+                var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
                 return await queryable.ToListAsync();
             });
 
@@ -71,7 +72,7 @@ public sealed class VersionsRepository : IVersionRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyVersionsBase>>($"Database error while retrieving version parameters '{version}': {ex.Message}");
+            return Result.Fail<List<MidjourneyPropertiesBase>>($"Database error while retrieving version parameters '{version}': {ex.Message}");
         }
     }
 
@@ -309,7 +310,7 @@ public sealed class VersionsRepository : IVersionRepository
 
             var exists = await ExecuteVersionOperation(version, async (dbSet) =>
             {
-                var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
+                var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
                 return await queryable.AnyAsync(p => p.PropertyName == propertyName);
             });
 
@@ -336,17 +337,17 @@ public sealed class VersionsRepository : IVersionRepository
 
         var castMethod = typeof(Queryable).GetMethods()
             .First(m => m.Name == "Cast" && m.IsGenericMethodDefinition);
-        var genericCastMethod = castMethod.MakeGenericMethod(typeof(MidjourneyVersionsBase));
+        var genericCastMethod = castMethod.MakeGenericMethod(typeof(MidjourneyPropertiesBase));
         var castedQueryable = (IQueryable)genericCastMethod.Invoke(null, [queryable])!;
 
         return await operation(castedQueryable);
     }
 
-    private async Task<MidjourneyVersionsBase?> FindParameterAsync(string version, string propertyName)
+    private async Task<MidjourneyPropertiesBase?> FindParameterAsync(string version, string propertyName)
     {
         return await ExecuteVersionOperation(version, async (dbSet) =>
         {
-            var queryable = (IQueryable<MidjourneyVersionsBase>)dbSet;
+            var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
             return await queryable.FirstOrDefaultAsync(p => p.PropertyName == propertyName);
         });
     }
@@ -356,7 +357,7 @@ public sealed class VersionsRepository : IVersionRepository
         if (!_versionMappings.TryGetValue(version, out var mapping))
             return false;
 
-        if (Activator.CreateInstance(mapping.EntityType) is not MidjourneyVersionsBase instance)
+        if (Activator.CreateInstance(mapping.EntityType) is not MidjourneyPropertiesBase instance)
             return false;
 
         // Set properties
@@ -382,7 +383,7 @@ public sealed class VersionsRepository : IVersionRepository
         return true;
     }
 
-    private static void UpdateParameterProperty(MidjourneyVersionsBase parameter, string propertyToUpdate, string? newValue)
+    private static void UpdateParameterProperty(MidjourneyPropertiesBase parameter, string propertyToUpdate, string? newValue)
     {
         switch (propertyToUpdate.ToLowerInvariant())
         {

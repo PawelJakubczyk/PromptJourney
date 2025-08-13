@@ -1,4 +1,4 @@
-﻿using Domain.Entities.MidjourneyVersions;
+﻿using Domain.Entities.MidjourneyProperties;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistans.Constants.Constants;
@@ -6,7 +6,7 @@ using static Persistans.Constants.Constants;
 namespace Persistans.Configuration;
 
 public abstract class MidjourneyVersionBaseConfiguration<T> : IEntityTypeConfiguration<T>
-    where T : MidjourneyVersionsBase
+    where T : MidjourneyPropertiesBase
 {
     internal static string? TableName { get; set; }
 
@@ -50,14 +50,14 @@ public abstract class MidjourneyVersionBaseConfiguration<T> : IEntityTypeConfigu
     }
 }
 
-public class Version1Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion1> 
+public class Version1Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1> 
 {
     static Version1Configuration()
     {
         TableName = "version_1";
     }
 }
-public class Version2Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion2>
+public class Version2Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2>
 {
     static Version2Configuration()
     {
@@ -65,7 +65,7 @@ public class Version2Configuration : MidjourneyVersionBaseConfiguration<Midjourn
     }
 }
 
-public class Version3Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion3>
+public class Version3Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion3>
 {
     static Version3Configuration()
     {
@@ -73,7 +73,7 @@ public class Version3Configuration : MidjourneyVersionBaseConfiguration<Midjourn
     }
 }
 
-public class Version4Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion4>
+public class Version4Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion4>
 {
     static Version4Configuration()
     {
@@ -81,7 +81,7 @@ public class Version4Configuration : MidjourneyVersionBaseConfiguration<Midjourn
     }
 }
 
-public class Version5Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion5>
+public class Version5Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion5>
 {
     static Version5Configuration()
     {
@@ -89,7 +89,7 @@ public class Version5Configuration : MidjourneyVersionBaseConfiguration<Midjourn
     }
 }
 
-public class Version51Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion51>
+public class Version51Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion51>
 {
     static Version51Configuration()
     {
@@ -97,7 +97,7 @@ public class Version51Configuration : MidjourneyVersionBaseConfiguration<Midjour
     }
 }
 
-public class Version52Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion52>
+public class Version52Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion52>
 {
     static Version52Configuration()
     {
@@ -105,7 +105,7 @@ public class Version52Configuration : MidjourneyVersionBaseConfiguration<Midjour
     }
 }
 
-public class Version6Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion6>
+public class Version6Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion6>
 {
     static Version6Configuration()
     {
@@ -113,7 +113,7 @@ public class Version6Configuration : MidjourneyVersionBaseConfiguration<Midjourn
     }
 }
 
-public class Version61Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion61>
+public class Version61Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion61>
 {
     static Version61Configuration()
     {
@@ -121,7 +121,7 @@ public class Version61Configuration : MidjourneyVersionBaseConfiguration<Midjour
     }
 }
 
-public class Version7Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersion7>
+public class Version7Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion7>
 {
     static Version7Configuration()
     {
@@ -129,7 +129,7 @@ public class Version7Configuration : MidjourneyVersionBaseConfiguration<Midjourn
     }
 }
 
-public class VersionNiji4Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersionNiji4>
+public class VersionNiji4Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji4>
 {
     static VersionNiji4Configuration()
     {
@@ -137,7 +137,7 @@ public class VersionNiji4Configuration : MidjourneyVersionBaseConfiguration<Midj
     }
 }
 
-public class VersionNiji5Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersionNiji5>
+public class VersionNiji5Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji5>
 {
     static VersionNiji5Configuration()
     {
@@ -145,7 +145,7 @@ public class VersionNiji5Configuration : MidjourneyVersionBaseConfiguration<Midj
     }
 }
 
-public class VersionNiji6Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllVersions.MidjourneyVersionNiji6>
+public class VersionNiji6Configuration : MidjourneyVersionBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6>
 {
     static VersionNiji6Configuration()
     {

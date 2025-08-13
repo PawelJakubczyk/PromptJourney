@@ -35,7 +35,7 @@ public static class DomainErrorMessages
     public static readonly DomainError VersionToLongError = new("Version is too long.");
     public static readonly DomainError VersionNotFoundError = new("Version not found.");
 
-    // # Style-specific errors #
+    // Example link errors
 
     // Name errors
     public static readonly DomainError NameNullOrEmptyError = new("Name cannot be null or empty.");
@@ -50,13 +50,15 @@ public static class DomainErrorMessages
     public static readonly DomainError TagsTooManyError = new("Tags cannot exceed 10 items.");
     public static readonly DomainError TagNotFoundError = new("Tag not found in the collection.");
     public static readonly DomainError TagDuplicateError = new("Tag already exists in the collection.");
-        
+
+    // # Style-specific errors #
+
     // Example link errors
     public static readonly DomainError ExampleLinkTooLongError = new("Example link is too long. It must not exceed 200 characters.");
     public static readonly DomainError ExampleLinksTooManyError = new("Example links cannot exceed 10 items.");
     public static readonly DomainError ExampleLinkNotFoundError = new("Example link not found in the collection.");
     public static readonly DomainError ExampleLinkDuplicateError = new("Example link already exists in the collection.");
-
+    public static readonly DomainError ExampleLinkNullOrEmptyError = new("Example link cannot be null or empty.");
 
     // # Prompt history-specific errors #
 
@@ -84,5 +86,7 @@ public static class DomainErrorMessages
 
     // # Version master-specific errors #
     public static readonly DomainError ReleaseDateInFutureError = new("Release date cannot be in the future.");
+
+
 }
 

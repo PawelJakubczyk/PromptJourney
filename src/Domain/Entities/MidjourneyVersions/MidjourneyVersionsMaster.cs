@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities.MidjourneyProperties;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -15,24 +16,24 @@ public class MidjourneyVersionsMaster
     // Navigation
     public List<MidjourneyPromptHistory> Histories { get; set; }
 
-    public List<MidjourneyAllVersions.MidjourneyVersion1> Versions1 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion2> Versions2 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion3> Versions3 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion4> Versions4 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion5> Versions5 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion51> Versions51 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion52> Versions52 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion6> Versions6 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion61> Versions61 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersion7> Versions7 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersionNiji4> VersionsNiji4 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersionNiji5> VersionsNiji5 { get; set; }
-    public List<MidjourneyAllVersions.MidjourneyVersionNiji6> VersionsNiji6 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1> Versions1 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2> Versions2 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion3> Versions3 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion4> Versions4 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion5> Versions5 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion51> Versions51 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion52> Versions52 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion6> Versions6 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion61> Versions61 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion7> Versions7 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji4> VersionsNiji4 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji5> VersionsNiji5 { get; set; }
+    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6> VersionsNiji6 { get; set; }
 
     // Errors
     private static List<DomainError> _errors = [];
 
-    // Constructor
+    // Constructors
     private MidjourneyVersionsMaster()
     {
         // Parameterless constructor for EF Core
@@ -83,6 +84,7 @@ public class MidjourneyVersionsMaster
         return Result.Ok(versionMaster);
     }
 
+    // Validation methods
     private static void ValidateVersion(string? version)
     {
         if (string.IsNullOrEmpty(version))

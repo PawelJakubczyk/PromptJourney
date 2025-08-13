@@ -51,3 +51,77 @@
 //    }
 //}
 
+// Assuming you have a styles repository, add these methods:
+//public async Task<Result<MidjourneyStyleExampleLink>> AddLinkToStyleAsync(
+//    string styleName, 
+//    string link, 
+//    string version, 
+//    CancellationToken cancellationToken = default)
+//{
+//    try
+//    {
+//        // Check if style exists
+//        var style = await _context.Styles.FindAsync(styleName);
+//        if (style == null)
+//            return Result.Fail<MidjourneyStyleExampleLink>($"Style with name '{styleName}' not found");
+        
+//        // Check if version exists
+//        var versionExists = await _context.VersionMasters.AnyAsync(vm => vm.Version == version);
+//        if (!versionExists)
+//            return Result.Fail<MidjourneyStyleExampleLink>($"Version '{version}' not found");
+        
+//        // Check if link already exists
+//        var existingLink = await _context.StyleExampleLinks
+//            .FirstOrDefaultAsync(el => el.StyleName == styleName && el.Link == link && el.Version == version);
+            
+//        if (existingLink != null)
+//            return Result.Fail<MidjourneyStyleExampleLink>($"Link '{link}' already exists for style '{styleName}' and version '{version}'");
+        
+//        // Check number of links
+//        var linkCount = await _context.StyleExampleLinks.CountAsync(el => el.StyleName == styleName);
+//        if (linkCount >= 10)
+//            return Result.Fail<MidjourneyStyleExampleLink>($"Style '{styleName}' already has the maximum number of links (10)");
+        
+//        // Create and add the link
+//        var linkResult = MidjourneyStyleExampleLink.Create(link, styleName, version);
+//        if (linkResult.IsFailed)
+//            return Result.Fail<MidjourneyStyleExampleLink>(linkResult.Errors);
+        
+//        await _context.StyleExampleLinks.AddAsync(linkResult.Value, cancellationToken);
+//        await _context.SaveChangesAsync(cancellationToken);
+        
+//        return Result.Ok(linkResult.Value);
+//    }
+//    catch (Exception ex)
+//    {
+//        return Result.Fail<MidjourneyStyleExampleLink>($"Failed to add link: {ex.Message}");
+//    }
+//}
+
+//public async Task<Result> RemoveLinkFromStyleAsync(
+//    string styleName, 
+//    string link, 
+//    string version, 
+//    CancellationToken cancellationToken = default)
+//{
+//    try
+//    {
+//        // Find the link
+//        var existingLink = await _context.StyleExampleLinks
+//            .FirstOrDefaultAsync(el => el.StyleName == styleName && el.Link == link && el.Version == version);
+            
+//        if (existingLink == null)
+//            return Result.Fail($"Link '{link}' not found for style '{styleName}' and version '{version}'");
+        
+//        // Remove the link
+//        _context.StyleExampleLinks.Remove(existingLink);
+//        await _context.SaveChangesAsync(cancellationToken);
+        
+//        return Result.Ok();
+//    }
+//    catch (Exception ex)
+//    {
+//        return Result.Fail($"Failed to remove link: {ex.Message}");
+//    }
+//}
+
