@@ -42,8 +42,6 @@
 	  <Folder Include="Features\Styles\Queries\GetStyleByTag\" />
 	  <Folder Include="Features\Styles\Queries\GetStyleByDescriptionKeyword\" />
 	  <Folder Include="Features\VersionsMaster\Commands\AddVersion\" />
-	  <Folder Include="Features\VersionsMaster\Queries\GetAllVersions\" />
-	  <Folder Include="Features\VersionsMaster\Queries\GetVersionByVersion\" />
 	</ItemGroup>
 
 </Project>

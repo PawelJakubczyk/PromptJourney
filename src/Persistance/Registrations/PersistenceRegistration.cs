@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistance.Repositories.Versions;
-using Persistans.Context;
+using Persistance.Context;
 
 namespace Persistance.Registrations;
 
