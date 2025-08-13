@@ -1,10 +1,6 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyVersions;
-using Domain.Entities.MidjourneyVersions.Exceptions;
-using Domain.ErrorMassages;
-using Domain.Exceptions;
 using FluentResults;
-using System.Xml.Linq;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Entities.MidjourneyStyles;
 
@@ -21,7 +17,7 @@ public class MidjourneyStyle
     public List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
 
     // Errors
-    private static List<MidjourneyEntitiesException> _errors = [];
+    private static List<DomainError> _errors = [];
 
     // Constructor
     private MidjourneyStyle
@@ -42,9 +38,8 @@ public class MidjourneyStyle
 
     private MidjourneyStyle()
     {
-
+        // Parameterless constructor for EF Core
     }
-
 
     public static Result<MidjourneyStyle> Create
     (
@@ -55,130 +50,179 @@ public class MidjourneyStyle
         ICollection<string>? exampleLinks = null
     )
     {
+        _errors.Clear();
+
         ValidateName(name);
         ValidateType(type);
         ValidateDescription(description);
         ValidateTags(tags);
         ValidateExampleLinks(exampleLinks);
 
-        if (_errors.Count > 0)
-        {
-            return Result.Fail<MidjourneyStyle>(_errors.Select(e => e.Message));
-        }
-
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
+        
         var style = new MidjourneyStyle
         (
-        name,
-        type,
-        description = null,
-        tags = null,
-        exampleLinks = null
+            name,
+            type,
+            description,
+            tags,
+            exampleLinks
         );
 
         return Result.Ok(style);
     }
 
+    // Validation methods
+
     private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            _errors.Add(new VersionValidationException("Name", ErrorMessages.NameEmpty));
+            _errors.Add(NameNullOrEmptyError);
         else if (name.Length > 100)
-            _errors.Add(new VersionValidationException("Name", ErrorMessages.NameTooLong));
+            _errors.Add(NameToLongError.WithDetail($"name: '{name}' (length: {name.Length})"));
     }
 
     private static void ValidateType(string type)
     {
         if (string.IsNullOrWhiteSpace(type))
-            _errors.Add(new VersionValidationException("Type", ErrorMessages.TypeEmpty));
+            _errors.Add(TypeNullOrEmptyError);
         else if (type.Length > 50)
-            _errors.Add(new VersionValidationException("Type", ErrorMessages.TypeTooLong));
+            _errors.Add(TypeToLongError.WithDetail($"type: '{type}' (length: {type.Length})"));
     }
 
     private static void ValidateDescription(string? description)
     {
         if (description != null && description.Length == 0)
-            _errors.Add(new VersionValidationException("Description", ErrorMessages.DescriptionEmpty));
+            _errors.Add(DescriptionEmptyError);
         else if (description != null && description.Length > 500)
-            _errors.Add(new VersionValidationException("Description", ErrorMessages.DescriptionTooLong));
+            _errors.Add(DescriptionToLongError.WithDetail($"description length: {description.Length}"));
     }
 
     private static void ValidateTags(ICollection<string>? tags)
     {
-        if (tags == null || tags.Count == 0)
-            _errors.Add(new VersionValidationException("Tags", ErrorMessages.TagsEmpty));
-        else if (tags.Count > 10)
-            _errors.Add(new VersionValidationException("Tags", ErrorMessages.TagsTooMany));
+        if (tags?.Count > 10)
+            _errors.Add(TagsTooManyError.WithDetail($"tag count: {tags.Count}"));
 
         foreach (var tag in tags!)
         {
-            if (string.IsNullOrWhiteSpace(tag))
-                _errors.Add(new VersionValidationException("Tag", ErrorMessages.TagEmpty));
-            else if (tag.Length > 50)
-                _errors.Add(new VersionValidationException("Tag", ErrorMessages.TagTooLong));
+            if (tag.Length > 50)
+                _errors.Add(TagTooLongError.WithDetail($"tag: '{tag}' (length: {tag.Length})"));
+        }
+    }
+
+    private static void ValidateTagExists(ICollection<string> tags, string expectedTag)
+    {
+        if (!tags.Contains(expectedTag))
+        {
+            _errors.Add(TagNotFoundError.WithDetail($"tag: '{expectedTag}'"));
+        }
+    }
+
+    private static void ValidateTagNotExists(ICollection<string> tags, string expectedTag)
+    {
+        if (tags.Contains(expectedTag))
+        {
+            _errors.Add(TagDuplicateError.WithDetail($"tag: '{expectedTag}'"));
         }
     }
 
     private static void ValidateExampleLinks(ICollection<string>? exampleLinks)
     {
-        if (exampleLinks == null || exampleLinks.Count == 0)
-            _errors.Add(new VersionValidationException("ExampleLinks", ErrorMessages.ExampleLinksEmpty));
-        else if (exampleLinks.Count > 10)
-            _errors.Add(new VersionValidationException("ExampleLinks", ErrorMessages.ExampleLinksTooMany));
+        if (exampleLinks?.Count > 10)
+            _errors.Add(ExampleLinksTooManyError.WithDetail($"link count: {exampleLinks.Count}"));
 
         foreach (var link in exampleLinks!)
         {
-            if (string.IsNullOrWhiteSpace(link))
-                _errors.Add(new VersionValidationException("ExampleLink", ErrorMessages.ExampleLinkEmpty));
-            else if (link.Length > 200)
-                _errors.Add(new VersionValidationException("ExampleLink", ErrorMessages.ExampleLinkTooLong));
+            if (link.Length > 200)
+                _errors.Add(ExampleLinkTooLongError.WithDetail($"link length: {link.Length}"));
         }
     }
 
-
-
-
-
-
-    public void EditName(string newName)
+    private static void ValidateExampleLinkExists(ICollection<string> exampleLinks, string expectedLink)
     {
-        if (string.IsNullOrWhiteSpace(newName))
-            throw new ArgumentException("Name cannot be empty.", nameof(newName));
+        if (!exampleLinks.Contains(expectedLink))
+        {
+            _errors.Add(ExampleLinkNotFoundError.WithDetail($"link: '{expectedLink}'"));
+        }
+    }
+
+    private static void ValidateExampleLinkNotExists(ICollection<string> exampleLinks, string expectedLink)
+    {
+        if (exampleLinks.Contains(expectedLink))
+        {
+            _errors.Add(ExampleLinkDuplicateError.WithDetail($"link: '{expectedLink}'"));
+        }
+    }
+
+    // Edit methods
+
+    public Result<MidjourneyStyle> EditName(string newName)
+    {
+        ValidateName(newName);
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
 
         Name = newName.Trim();
+        return Result.Ok(this);
     }    
     
-    public void EditType(string newType)
+    public Result<MidjourneyStyle>? EditType(string newType)
     {
-        if (string.IsNullOrWhiteSpace(newType))
-            throw new ArgumentException("Type cannot be empty.", nameof(newType));
+        ValidateType(newType);
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
 
         Name = newType.Trim();
+        return Result.Ok(this);
     }
 
-    public void EditDescription(string newDescription)
+    public Result<MidjourneyStyle>? EditDescription(string newDescription)
     {
+        ValidateDescription(newDescription);
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
+
         Description = newDescription;
+        return Result.Ok(this);
     }
 
-    public void AddTag(string tag)
+    public Result<MidjourneyStyle>? AddTag(string tag)
     {
-        if (!Tags!.Contains(tag))
-            Tags.Add(tag);
+        ValidateTags([tag]);
+        ValidateTagNotExists(Tags!, tag);
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
+
+        Tags!.Add(tag);
+        return Result.Ok(this);
+
     }
 
-    public void RemoveTag(string tag)
+    public Result<MidjourneyStyle>? RemoveTag(string tag)
     {
+        ValidateTags([tag]);
+        ValidateTagExists(Tags!, tag);
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
+
         Tags?.Remove(tag);
+        return Result.Ok(this);
     }
 
-    public void AddLink(string link)
+    public Result<MidjourneyStyle>? AddLink(string link)
     {
-        if (!ExampleLinks.Contains(link))
-            ExampleLinks.Add(link);
+        ValidateExampleLinks([link]);
+        ValidateExampleLinkNotExists(ExampleLinks, link);
+
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
+
+        ExampleLinks.Add(link);
+        return Result.Ok(this);
     }
 
-    public void RemoveLink(string link)
+    public Result<MidjourneyStyle>? RemoveLink(string link)
     {
+        ValidateExampleLinks([link]);
+        ValidateExampleLinkExists(ExampleLinks, link);
+
+        if (_errors.Count > 0) return Result.Fail<MidjourneyStyle>(_errors);
+
         ExampleLinks.Remove(link);
+        return Result.Ok(this);
     }
 }

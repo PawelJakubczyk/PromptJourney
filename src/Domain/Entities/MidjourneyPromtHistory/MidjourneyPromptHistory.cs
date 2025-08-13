@@ -1,31 +1,29 @@
 ﻿using Domain.Entities.MidjourneyStyles;
 using Domain.Entities.MidjourneyVersions;
-using Domain.Entities.MidjourneyVersions.Exceptions;
-using Domain.ErrorMassages;
-using Domain.Exceptions;
 using FluentResults;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Entities.MidjourneyPromtHistory;
 
 public class MidjourneyPromptHistory
 {
     // Columns
-    public Guid HistoryId { get; set; }
-    public string Prompt { get; set; }
-    public string Version { get; set; }
-    public DateTime CreatedOn { get; set; }
+    public Guid HistoryId { get; }
+    public string Prompt { get; }
+    public string Version { get; }
+    public DateTime CreatedOn { get; }
 
     // Navigation
     public MidjourneyVersionsMaster VersionMaster { get; set; }
     public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
 
     // Errors
-    private static List<MidjourneyEntitiesException> _errors = [];
+    private static List<DomainError> _errors = [];
 
     // Constructor
     private MidjourneyPromptHistory
     (
-        string prompt, 
+        string prompt,
         string version
     )
     {
@@ -40,7 +38,7 @@ public class MidjourneyPromptHistory
 
     private MidjourneyPromptHistory()
     {
-
+        // Parameterless constructor for EF Core
     }
 
     public static Result<MidjourneyPromptHistory> Create
@@ -49,6 +47,8 @@ public class MidjourneyPromptHistory
         string version
     )
     {
+        _errors.Clear();
+
         ValidatePrompt(prompt);
         ValidateVersion(version);
 
@@ -66,19 +66,26 @@ public class MidjourneyPromptHistory
         return Result.Ok(history);
     }
 
+    // Validation methods
+
     private static void ValidatePrompt(string prompt)
     {
         if (string.IsNullOrEmpty(prompt))
-            _errors.Add(new VersionValidationException("Prompt", ErrorMessages.PromptNullOrEmpty));
+            _errors.Add(PromptNullOrEmptyError);
         else if (prompt.Length > 1000)
-            _errors.Add(new VersionValidationException("Prompt", ErrorMessages.PromptTooLong));
+            _errors.Add(PromptToLongError.WithDetail($"prompt: {prompt}."));
     }
 
     private static void ValidateVersion(string? version)
     {
         if (string.IsNullOrEmpty(version))
-            _errors.Add(new VersionValidationException("Version", ErrorMessages.VersionNullOrEmpty));
+            _errors.Add(VersionNullOrEmptyError);
         else if (version.Length > 10)
-            _errors.Add(new VersionValidationException("Version", ErrorMessages.VersionTooLong));
+            _errors.Add(VersionToLongError.WithDetail($"version: {version}."));
     }
 }
+
+
+
+
+

@@ -1,7 +1,5 @@
-﻿using Domain.Entities.MidjourneyVersions.Exceptions;
-using Domain.ErrorMassages;
-using Domain.Exceptions;
-using FluentResults;
+﻿using FluentResults;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Entities.MidjourneyVersions;
 
@@ -20,11 +18,12 @@ public class MidjourneyVersionsBase
     public MidjourneyVersionsMaster VersionMaster { get; set; }
 
     // Errors
-    private static List<MidjourneyEntitiesException> _errors = [];
+    private static List<DomainError> _errors = [];
 
     // Constructor
     protected MidjourneyVersionsBase()
     {
+        // Parameterless constructor for EF Core
     }
 
     protected MidjourneyVersionsBase
@@ -58,6 +57,8 @@ public class MidjourneyVersionsBase
         string? description = null
     )
     {
+        _errors.Clear();
+        
         ValidatePropertyName(propertyName);
         ValidateVersion(version);
         ValidateParameters(parameters);
@@ -88,64 +89,64 @@ public class MidjourneyVersionsBase
     private static void ValidatePropertyName(string? propertyName)
     {
         if (string.IsNullOrEmpty(propertyName))
-            _errors.Add(new VersionValidationException($"PropertyName: {propertyName}", ErrorMessages.PropertyNameNullOrEmpty));
+            _errors.Add(PropertyNameNullOrEmptyError);
         else if (propertyName.Length > 25)
-            _errors.Add(new VersionValidationException($"PropertyName: {propertyName}", ErrorMessages.PropertyNameTooLong));
+            _errors.Add(PropertyNameTooLongError.WithDetail($"property name: '{propertyName}' (length: {propertyName.Length})"));
     }
 
     private static void ValidateVersion(string? version)
     {
         if (string.IsNullOrEmpty(version))
-            _errors.Add(new VersionValidationException("Version", ErrorMessages.VersionNullOrEmpty));
+            _errors.Add(VersionNullOrEmptyError);
         else if (version.Length > 10)
-            _errors.Add(new VersionValidationException("Version", ErrorMessages.VersionTooLong));
+            _errors.Add(VersionToLongError.WithDetail($"version: '{version}' (length: {version.Length})"));
     }
 
     private static void ValidateParameters(string[]? parameters)
     {
         if (parameters != null && parameters.Length == 0)
-            _errors.Add(new VersionValidationException("Parameters", ErrorMessages.ParametersEmpty));
+            _errors.Add(ParametersEmptyError);
         else if (parameters != null && parameters.Length > 10)
-            _errors.Add(new VersionValidationException("Parameters", ErrorMessages.ParametersTooMany));
+            _errors.Add(ParametersTooManyError.WithDetail($"parameter count: {parameters.Length}"));
 
         foreach (var parameter in parameters ?? [])
         {
             if (string.IsNullOrEmpty(parameter))
-                _errors.Add(new VersionValidationException($"Parameter: {parameter}", ErrorMessages.ParameterNullOrEmpty));
+                _errors.Add(ParameterNullOrEmptyError);
             else if (parameter.Length > 100)
-                _errors.Add(new VersionValidationException($"Parameter: {parameter}", ErrorMessages.ParameterTooLong));
+                _errors.Add(ParameterTooLongError.WithDetail($"parameter: '{parameter}' (length: {parameter.Length})"));
         }
     }
 
     private static void ValidateDefaultValue(string? defaultValue)
     {
         if (defaultValue != null && defaultValue.Length == 0)
-            _errors.Add(new VersionValidationException("DefaultValue", ErrorMessages.DefaultValueEmpty));
+            _errors.Add(DefaultValueEmptyError);
         else if (defaultValue != null && defaultValue.Length > 50)
-            _errors.Add(new VersionValidationException("DefaultValue", ErrorMessages.DefaultValueTooLong));
+            _errors.Add(DefaultValueTooLongError.WithDetail($"default value length: {defaultValue.Length}"));
     }
 
     private static void ValidateMinValue(string? minValue)
     {
         if (minValue != null && minValue.Length == 0)
-            _errors.Add(new VersionValidationException("MinValue", ErrorMessages.MinValueEmpty));
+            _errors.Add(MinValueEmptyError);
         else if (minValue != null && minValue.Length > 50)
-            _errors.Add(new VersionValidationException("MinValue", ErrorMessages.MinValueTooLong));
+            _errors.Add(MinValueTooLongError.WithDetail($"min value: '{minValue}' (length: {minValue.Length})"));
     }
 
     private static void ValidateMaxValue(string? maxValue)
     {
         if (maxValue != null && maxValue.Length == 0)
-            _errors.Add(new VersionValidationException("MaxValue", ErrorMessages.MaxValueEmpty));
+            _errors.Add(MaxValueEmptyError);
         else if (maxValue != null && maxValue.Length > 50)
-            _errors.Add(new VersionValidationException("MaxValue", ErrorMessages.MaxValueTooLong));
+            _errors.Add(MaxValueTooLongError.WithDetail($"max value: '{maxValue}' (length: {maxValue.Length})"));
     }
 
     private static void ValidateDescription(string? description)
     {
         if (description != null && description.Length == 0)
-            _errors.Add(new VersionValidationException("Description", ErrorMessages.DescriptionEmpty));
+            _errors.Add(DescriptionEmptyError);
         else if (description != null && description.Length > 500)
-            _errors.Add(new VersionValidationException("Description", ErrorMessages.DescriptionTooLong));
+            _errors.Add(DescriptionToLongError.WithDetail($"description length: {description.Length}"));
     }
 }

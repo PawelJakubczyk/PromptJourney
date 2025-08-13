@@ -1,8 +1,6 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyVersions.Exceptions;
-using Domain.ErrorMassages;
-using Domain.Exceptions;
 using FluentResults;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Entities.MidjourneyVersions;
 
@@ -32,12 +30,12 @@ public class MidjourneyVersionsMaster
     public List<MidjourneyAllVersions.MidjourneyVersionNiji6> VersionsNiji6 { get; set; }
 
     // Errors
-    private static List<MidjourneyEntitiesException> _errors = [];
+    private static List<DomainError> _errors = [];
 
     // Constructor
     private MidjourneyVersionsMaster()
     {
-
+        // Parameterless constructor for EF Core
     }
 
     private MidjourneyVersionsMaster
@@ -62,6 +60,8 @@ public class MidjourneyVersionsMaster
         string? description = null
     )
     {
+        _errors.Clear();
+
         ValidateVersion(version);
         ValidateParameter(parameter);
         ValidateReleaseDate(releaseDate);
@@ -86,30 +86,30 @@ public class MidjourneyVersionsMaster
     private static void ValidateVersion(string? version)
     {
         if (string.IsNullOrEmpty(version))
-            _errors.Add(new VersionValidationException("Version", ErrorMessages.VersionNullOrEmpty));
+            _errors.Add(VersionNullOrEmptyError);
         else if (version.Length > 10)
-            _errors.Add(new VersionValidationException("Version", ErrorMessages.VersionTooLong));
+            _errors.Add(VersionToLongError.WithDetail($"version: '{version}' (length: {version.Length})"));
     }
 
     private static void ValidateReleaseDate(DateTime? releaseDate)
     {
         if (releaseDate != null && releaseDate > DateTime.Now)
-            _errors.Add(new VersionValidationException("ReleaseDate", ErrorMessages.ReleaseDateInFuture));
+            _errors.Add(ReleaseDateInFutureError.WithDetail($"release date: {releaseDate:yyyy-MM-dd}, current date: {DateTime.Now:yyyy-MM-dd}"));
     }
 
     private static void ValidateParameter(string? parameter)
     {
         if (string.IsNullOrEmpty(parameter))
-            _errors.Add(new VersionValidationException("Parameter", ErrorMessages.ParameterNullOrEmpty));
+            _errors.Add(ParameterNullOrEmptyError);
         if (parameter!.Length > 100)
-            _errors.Add(new VersionValidationException("Parameter", ErrorMessages.ParameterTooLong));
+            _errors.Add(ParameterTooLongError.WithDetail($"parameter: '{parameter}' (length: {parameter.Length})"));
     }
 
     private static void ValidateDescription(string? description)
     {
         if (description != null && description.Length == 0)
-            _errors.Add(new VersionValidationException("Description", ErrorMessages.DescriptionEmpty));
+            _errors.Add(DescriptionEmptyError);
         else if (description != null && description.Length > 500)
-            _errors.Add(new VersionValidationException("Description", ErrorMessages.DescriptionTooLong));
+            _errors.Add(DescriptionToLongError.WithDetail($"description length: {description.Length}"));
     }
 }

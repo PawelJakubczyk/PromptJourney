@@ -16,8 +16,4 @@
 	<ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Entities\MidjourneyVersions\Exceptions\MidjourneyVersionBaseException\" />
-  </ItemGroup>
-
 </Project>
