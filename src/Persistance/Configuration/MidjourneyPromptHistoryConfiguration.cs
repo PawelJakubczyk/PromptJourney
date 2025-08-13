@@ -1,9 +1,9 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Persistans.Constants.Constants;
+using static Persistance.Constants.PersistansConstants;
 
-namespace Persistans.Configuration;
+namespace Persistance.Configuration;
 
 public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<MidjourneyPromptHistory>
 {

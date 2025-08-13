@@ -1,9 +1,9 @@
 ﻿using Domain.Entities.MidjourneyStyles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Persistans.Constants.Constants;
+using static Persistance.Constants.PersistansConstants;
 
-namespace Persistans.Configuration;
+namespace Persistance.Configuration;
 
 public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyStyle>
 {
@@ -28,6 +28,6 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
             
         builder.Property(style => style.Tags)
             .HasColumnName("tags")
-            .HasColumnType(ColumnType.TextArray);
+            .HasColumnType(ColumnType.textArray);
     }
 }

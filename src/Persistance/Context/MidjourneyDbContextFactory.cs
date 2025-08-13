@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace Persistans.Context;
+namespace Persistance.Context;
 
 internal class MidjourneyDbContextFactory : IDesignTimeDbContextFactory<MidjourneyDbContext>
 {
