@@ -1,8 +1,8 @@
-﻿using Application.Abstractions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Persistance.Repositories.Versions;
 using Persistance.Context;
+using Application.Abstractions.IRepository;
+using Persistance.Repositories;
 
 namespace Persistance.Registrations;
 

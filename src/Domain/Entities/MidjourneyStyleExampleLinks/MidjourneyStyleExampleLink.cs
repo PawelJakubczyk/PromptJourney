@@ -15,7 +15,7 @@ public class MidjourneyStyleExampleLink
     
     // Navigation
     public MidjourneyStyle Style { get; private set; } = null!;
-    public MidjourneyVersionsMaster VersionMaster { get; private set; } = null!;
+    public MidjourneyVersions.MidjourneyVersions VersionMaster { get; private set; } = null!;
 
     // Errors
     private static List<DomainError> _errors = [];

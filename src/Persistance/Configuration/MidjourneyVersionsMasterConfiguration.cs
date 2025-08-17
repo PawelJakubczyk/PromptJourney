@@ -5,9 +5,9 @@ using static Persistance.Constants.PersistansConstants;
 
 namespace Persistance.Configuration;
 
-public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<MidjourneyVersionsMaster>
+public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<MidjourneyVersions>
 {
-    public void Configure(EntityTypeBuilder<MidjourneyVersionsMaster> builder)
+    public void Configure(EntityTypeBuilder<MidjourneyVersions> builder)
     {
         builder.ToTable("version_master", schema: "public");
         builder.HasKey(master => master.Version);

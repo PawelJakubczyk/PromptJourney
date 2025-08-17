@@ -1,0 +1,37 @@
+using Application.Abstractions;
+using Application.Abstractions.IRepository;
+using FluentResults;
+
+namespace Application.Features.Properties.Commands;
+
+public static class PatchPropertyInVersion
+{
+    public sealed record Command
+    (
+        string Version,
+        string PropertyName,
+        string CharacteristicToUpdate,
+        string? NewValue
+    ) : ICommand<PropertyDetails>;
+
+    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRopository propertiesRepository)
+        : ICommandHandler<Command, PropertyDetails>
+    {
+        private readonly IVersionRepository _versionRepository = versionRepository;
+        private readonly IPropertiesRopository _propertiesRepository = propertiesRepository;
+
+        public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
+        {
+            await Validate.Version.ShouldExists(command.Version, _versionRepository);
+            await Validate.Property.ShouldExists(command.Version, command.PropertyName, _propertiesRepository);
+
+            return await _propertiesRepository.PatchParameterInVersionAsync
+            (
+                command.Version,
+                command.PropertyName,
+                command.CharacteristicToUpdate,
+                command.NewValue
+            );
+        }
+    }
+}

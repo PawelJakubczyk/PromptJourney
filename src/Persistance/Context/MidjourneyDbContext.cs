@@ -9,7 +9,7 @@ namespace Persistance.Context;
 
 public class MidjourneyDbContext : DbContext
 {
-    public DbSet<MidjourneyVersionsMaster> MidjourneyVersionsMaster { get; set; }
+    public DbSet<MidjourneyVersions> MidjourneyVersionsMaster { get; set; }
     public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1> MidjourneyPropertiesVersion1 { get; set; }
     public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2> MidjourneyPropertiesVersion2 { get; set; }
     public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion3> MidjourneyPropertiesVersion3 { get; set; }

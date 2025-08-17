@@ -8,6 +8,45 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\PromptHistory\Commands\AddPrompToPromptHistory\**" />
+    <Compile Remove="Features\PromptHistory\Commands\DeletePromptInPromptHistory\**" />
+    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryAll\**" />
+    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryByDate\**" />
+    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryByPromptKeyword\**" />
+    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryByVersion\**" />
+    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryRecent\**" />
+    <Compile Remove="Features\Styles\Commands\AddExampleLink\**" />
+    <Compile Remove="Features\Styles\Commands\AddStyle\**" />
+    <Compile Remove="Features\Styles\Commands\AddTagToStyle\**" />
+    <Compile Remove="Features\Styles\Commands\EditDescriptionInStyle\**" />
+    <Compile Remove="Features\Styles\Commands\RemoveTagInStyle\**" />
+    <EmbeddedResource Remove="Features\PromptHistory\Commands\AddPrompToPromptHistory\**" />
+    <EmbeddedResource Remove="Features\PromptHistory\Commands\DeletePromptInPromptHistory\**" />
+    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryAll\**" />
+    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryByDate\**" />
+    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryByPromptKeyword\**" />
+    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryByVersion\**" />
+    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryRecent\**" />
+    <EmbeddedResource Remove="Features\Styles\Commands\AddExampleLink\**" />
+    <EmbeddedResource Remove="Features\Styles\Commands\AddStyle\**" />
+    <EmbeddedResource Remove="Features\Styles\Commands\AddTagToStyle\**" />
+    <EmbeddedResource Remove="Features\Styles\Commands\EditDescriptionInStyle\**" />
+    <EmbeddedResource Remove="Features\Styles\Commands\RemoveTagInStyle\**" />
+    <None Remove="Features\PromptHistory\Commands\AddPrompToPromptHistory\**" />
+    <None Remove="Features\PromptHistory\Commands\DeletePromptInPromptHistory\**" />
+    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryAll\**" />
+    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryByDate\**" />
+    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryByPromptKeyword\**" />
+    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryByVersion\**" />
+    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryRecent\**" />
+    <None Remove="Features\Styles\Commands\AddExampleLink\**" />
+    <None Remove="Features\Styles\Commands\AddStyle\**" />
+    <None Remove="Features\Styles\Commands\AddTagToStyle\**" />
+    <None Remove="Features\Styles\Commands\EditDescriptionInStyle\**" />
+    <None Remove="Features\Styles\Commands\RemoveTagInStyle\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentResults" Version="4.0.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
@@ -21,24 +60,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Domain\Domain.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Features\ExampleLinks\Commands\AddExapleLink\" />
-	  <Folder Include="Features\ExampleLinks\Commands\DeleteExampleLink\" />
-	  <Folder Include="Features\PromptHistory\Commands\AddPrompToPromptHistory\" />
-	  <Folder Include="Features\PromptHistory\Commands\DeletePromptInPromptHistory\" />
-	  <Folder Include="Features\PromptHistory\Queries\GetPromptHistoryRecent\" />
-	  <Folder Include="Features\PromptHistory\Queries\GetPromptHistoryByDate\" />
-	  <Folder Include="Features\PromptHistory\Queries\GetPromptHistoryByVersion\" />
-	  <Folder Include="Features\PromptHistory\Queries\GetPromptHistoryByPromptKeyword\" />
-	  <Folder Include="Features\PromptHistory\Queries\GetPromptHistoryAll\" />
-	  <Folder Include="Features\Styles\Commands\AddStyle\" />
-	  <Folder Include="Features\Styles\Commands\EditDescriptionInStyle\" />
-	  <Folder Include="Features\Styles\Commands\AddTagToStyle\" />
-	  <Folder Include="Features\Styles\Commands\AddExampleLink\" />
-	  <Folder Include="Features\Styles\Commands\RemoveTagInStyle\" />
-	  <Folder Include="Features\Styles\Commands\RomoveExamleLink\" />
 	</ItemGroup>
 
 </Project>

@@ -16,7 +16,7 @@ public class MidjourneyPropertiesBase
     public string? Description { get; set; }
 
     // Navigation
-    public MidjourneyVersionsMaster VersionMaster { get; set; }
+    public MidjourneyVersions.MidjourneyVersions VersionMaster { get; set; }
 
     // Errors
     private static List<DomainError> _errors = [];

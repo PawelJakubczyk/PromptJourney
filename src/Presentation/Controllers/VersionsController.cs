@@ -1,10 +1,5 @@
-﻿using Application.Features.Versions.Commands.AddParameterToVersion;
-using Application.Features.Versions.Commands.UpdateParameterFromVersion;
-using Application.Features.Versions.Commands.DeleteParameterInVersion;
-using Application.Features.Versions.Commands.PatchParameterInVersion;
-using Application.Features.Versions.Queries.CheckParameterExistsInVersion;
-using Application.Features.Versions.Queries.CheckVersionExistsInVersionMaster;
-using Application.Features.Versions.Queries.GetMasterVersionByVersion;
+﻿using Application.Features.VersionsMaster.Commands;
+using Application.Features.VersionsMaster.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Requests;
@@ -99,7 +94,7 @@ public sealed class VersionsController : ControllerBase
             return BadRequest(new { Error = "PropertyName parameter cannot be null or empty" });
         }
 
-        var command = new UpdateParameterFromVersionCommand
+        var command = new UpdateParameterFromVersion.Command
         {
             Version = version,
             PropertyName = propertyName,

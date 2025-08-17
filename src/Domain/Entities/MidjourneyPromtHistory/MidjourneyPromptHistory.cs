@@ -14,7 +14,7 @@ public class MidjourneyPromptHistory
     public DateTime CreatedOn { get; }
 
     // Navigation
-    public MidjourneyVersionsMaster VersionMaster { get; set; }
+    public MidjourneyVersions.MidjourneyVersions VersionMaster { get; set; }
     public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
 
     // Errors
