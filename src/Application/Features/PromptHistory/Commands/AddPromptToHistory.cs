@@ -27,10 +27,10 @@ public static class AddPromptToHistory
             );
 
             await Validate.History.Input.MustNotBeNullOrEmpty(command.Version);
-            await Validate.History.Input.MustHaveMaximumLenght(command.Version);
+            await Validate.History.Input.MustHaveMaximumLength(command.Version);
 
             await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
-            await Validate.Version.Input.MustHaveMaximumLenght(command.Version);
+            await Validate.Version.Input.MustHaveMaximumLength(command.Version);
             await Validate.Version.ShouldExists(command.Version, _versionRepository);
 
             return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value);

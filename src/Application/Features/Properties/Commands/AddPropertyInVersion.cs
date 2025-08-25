@@ -26,10 +26,10 @@ public static class AddPropertyInVersion
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
             await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
-            await Validate.Version.Input.MustHaveMaximumLenght(command.Version);
+            await Validate.Version.Input.MustHaveMaximumLength(command.Version);
 
             await Validate.Property.Name.Input.MustNotBeNullOrEmpty(command.PropertyName);
-            await Validate.Property.Name.Input.MustHaveMaximumLenght(command.PropertyName);
+            await Validate.Property.Name.Input.MustHaveMaximumLength(command.PropertyName);
 
             await Validate.Property.Parameters.Input.MustNotBeNull(command.Parameters);
             await Validate.Property.Parameters.Input.MustHaveAtLeastOneElement(command.Parameters);

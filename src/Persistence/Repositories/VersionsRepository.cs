@@ -2,9 +2,9 @@
 using Domain.Entities.MidjourneyVersions;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using Persistance.Context;
+using Persistence.Context;
 
-namespace Persistance.Repositories;
+namespace Persistence.Repositories;
 
 public sealed class VersionsRepository : IVersionRepository
 {
@@ -22,9 +22,7 @@ public sealed class VersionsRepository : IVersionRepository
     {
         try
         {
-            await Validate.Version.ShouldBeNotNullOrEmpty(version);
-
-            var exists = _supportedVersions.Contains(version);
+            var exists = await Task.Run(() => _supportedVersions.Contains(version));
             return Result.Ok(exists);
         }
         catch (Exception ex)
@@ -33,20 +31,31 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
+    public async Task<Result<bool>> CheckIfAnySupportedVersionExistsAsync()
+    {
+        try
+        {
+            var hasAny = await _midjourneyDbContext
+                .MidjourneyVersionsMaster
+                .AnyAsync();
+
+            return Result.Ok(hasAny);
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<bool>( $"Database error while checking for supported versions: {ex.Message}");
+        }
+    }
+
     public async Task<Result<MidjourneyVersions>> GetMasterVersionByVersionAsync(string version)
     {
         try
         {
-            await Validate.Version.ShouldBeNotNullOrEmpty(version);
-
             var versionMaster = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
                 .FirstOrDefaultAsync(v => v.Version == version);
 
-            if (versionMaster == null)
-                return Result.Fail<MidjourneyVersions>($"Version '{version}' not found");
-
-            return Result.Ok(versionMaster);
+            return Result.Ok(versionMaster!);
         }
         catch (Exception ex)
         {
@@ -78,11 +87,6 @@ public sealed class VersionsRepository : IVersionRepository
                 .Select(x => x.Version)
                 .ToListAsync();
 
-            if (supportedVersions.Count == 0)
-            {
-                return Result.Fail("No supported version was found.");
-            }
-
             return Result.Ok(supportedVersions);
         }
         catch (Exception ex)
@@ -91,16 +95,23 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<MidjourneyVersions>> AddVersionAsync(MidjourneyVersions version)
+    public async Task<Result<MidjourneyVersions>> AddVersionAsync
+    (
+        string version, 
+        string parameter, 
+        DateTime? releaseDate = null, 
+        string? description = null
+    )
     {
         try
         {
-            await Validate.Version.ShouldBeNotNullOrEmpty(version);
-            await Validate.Version.ShouldNotCountainNullOrEmptyProperties(version);
+            var newVersion = MidjourneyVersions.Create(version, parameter, releaseDate, description).Value;
 
-            await _midjourneyDbContext.MidjourneyVersionsMaster.AddAsync(version);
+            await _midjourneyDbContext.MidjourneyVersionsMaster.AddAsync(newVersion);
             await _midjourneyDbContext.SaveChangesAsync();
-            return Result.Ok(version);
+
+            _supportedVersions.Add(version);
+            return Result.Ok(newVersion);
         }
         catch (Exception ex)
         {

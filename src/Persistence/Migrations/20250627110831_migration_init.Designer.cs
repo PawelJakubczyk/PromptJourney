@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Persistance.Context;
+using Persistence.Context;
 
 #nullable disable
 
-namespace Persistance.Migrations
+namespace Persistence.Migrations
 {
     [DbContext(typeof(MidjourneyDbContext))]
     [Migration("20250627110831_migration_init")]

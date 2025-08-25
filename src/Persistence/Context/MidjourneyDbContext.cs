@@ -5,7 +5,7 @@ using Domain.Entities.MidjourneyVersions;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistance.Context;
+namespace Persistence.Context;
 
 public class MidjourneyDbContext : DbContext
 {

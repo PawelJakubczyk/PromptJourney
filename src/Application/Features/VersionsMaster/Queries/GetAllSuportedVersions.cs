@@ -15,6 +15,8 @@ public static class GetAllSuportedVersions
 
         public async Task<Result<List<string>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            await Validate.Version.ShouldHaveAnySuportedVersion(_versionRepository);
+
             return await _versionRepository.GetAllSuportedVersionsAsync();
         }
     }

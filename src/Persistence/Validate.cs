@@ -2,9 +2,9 @@
 using Domain.Entities.MidjourneyStyles;
 using Domain.Entities.MidjourneyVersions;
 using FluentResults;
-using static Persistance.Validate.Property;
+using static Persistence.Validate.Property;
 
-namespace Persistance;
+namespace Persistence;
 
 public class Validate
 {

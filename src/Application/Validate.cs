@@ -18,14 +18,28 @@ public class Validate
             return Task.FromResult(Result.Ok<string>($"The input '{parameterName}' is valid – it is not null or empty. You may proceed with the operation."));
         }
 
-        public static Task<Result<string>> MustHaveMaximumLenght(string input, int maxlenght, string parameterName)
+        public static Task<Result<string>> MustHaveMaximumLength(string input, int maxLength, string parameterName)
         {
-            if (input.Length > maxlenght)
+            if (input.Length > maxLength)
             {
-                return Task.FromResult(Result.Fail<string>($"The input '{parameterName}' is invalid - it does exceed the maximum length of {maxlenght} characters."));
+                return Task.FromResult(Result.Fail<string>($"The input '{parameterName}' is invalid - it does exceed the maximum length of {maxLength} characters."));
             }
-            return Task.FromResult(Result.Ok<string>($"The input '{parameterName}' is valid – it does not exceed the maximum length of {maxlenght} characters. You may proceed with the operation."));
+            return Task.FromResult(Result.Ok<string>($"The input '{parameterName}' is valid – it does not exceed the maximum length of {maxLength} characters. You may proceed with the operation."));
         }
+    }
+
+    public static class Entity
+    {
+        public static Task<Result<string>> MustNotBeNull(object entity, string entityName)
+        {
+            if (entity is null)
+            {
+                return Task.FromResult(Result.Fail<string>($"The entity '{entityName}' cannot be null."));
+            }
+            return Task.FromResult(Result.Ok<string>($"The entity '{entityName}' is valid – it is not null. You may proceed with the operation."));
+        }
+
+
     }
 
     public static class Link
@@ -37,9 +51,9 @@ public class Validate
                 return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Link));
             }
 
-            public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+            public static async Task<Result<string>> MustHaveMaximumLength(string input)
             {
-                return await Validate.Input.MustHaveMaximumLenght(input, 100, nameof(Link));
+                return await Validate.Input.MustHaveMaximumLength(input, 100, nameof(Link));
             }
         }
         
@@ -114,9 +128,9 @@ public class Validate
                 return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Link));
             }
 
-            public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+            public static async Task<Result<string>> MustHaveMaximumLength(string input)
             {
-                return await Validate.Input.MustHaveMaximumLenght(input, 1000, nameof(Link));
+                return await Validate.Input.MustHaveMaximumLength(input, 1000, nameof(Link));
             }
 
             public class Keyword
@@ -185,9 +199,9 @@ public class Validate
                 {
                     return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Link));
                 }
-                public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+                public static async Task<Result<string>> MustHaveMaximumLength(string input)
                 {
-                    return await Validate.Input.MustHaveMaximumLenght(input, 100, nameof(Link));
+                    return await Validate.Input.MustHaveMaximumLength(input, 100, nameof(Link));
                 }
             }
         }
@@ -285,7 +299,7 @@ public class Validate
 
             public static async Task<Result<string>> MustHaveMaximumLenght(string input)
             {
-                return await Validate.Input.MustHaveMaximumLenght(input, 100, nameof(Link));
+                return await Validate.Input.MustHaveMaximumLength(input, 100, nameof(Link));
             }
         }
 
@@ -356,9 +370,24 @@ public class Validate
                 return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Version));
             }
 
-            public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+            public static async Task<Result<string>> MustHaveMaximumLength(string input)
             {
-                return await Validate.Input.MustHaveMaximumLenght(input, 10, nameof(Version));
+                return await Validate.Input.MustHaveMaximumLength(input, 10, nameof(Version));
+            }
+        }
+
+        public static class Parameter
+        {
+            public static class Input
+            {
+                public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
+                {
+                    return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Parameter));
+                }
+                public static async Task<Result<string>> MustHaveMaximumLength(string input)
+                {
+                    return await Validate.Input.MustHaveMaximumLength(input, 15, nameof(Parameter));
+                }
             }
         }
 
@@ -376,6 +405,17 @@ public class Validate
                 return Result.Fail<string>($"Version '{version}' not found");
             }
             return Result.Ok<string>($"Version: '{version}' does exist, You may proceed with the operation.");
+        }
+
+        public static async Task<Result<string>> ShouldHaveAnySuportedVersion(IVersionRepository repository)
+        {
+            var suportedVersionExistResult = await repository.CheckIfAnySupportedVersionExistsAsync();
+
+            if (suportedVersionExistResult.Value)
+            {
+                return Result.Fail<string>("No supported versions found.");
+            }
+            return Result.Ok<string>($"Supported versions are available. You may proceed with the operation.");
         }
     }
 }

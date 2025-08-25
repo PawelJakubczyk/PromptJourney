@@ -60,19 +60,19 @@ namespace Presentation.Controllers
             return Ok(new { exists = result.Value });
         }
 
-        // POST api/versions
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] MidjourneyVersions version)
-        {
-            var result = await _repo.AddVersionAsync(version);
-            if (result.IsFailed)
-                return BadRequest(result.Errors);
+        //// POST api/versions
+        //[HttpPost]
+        //public async Task<IActionResult> Create([FromBody] MidjourneyVersions version)
+        //{
+        //    var result = await _repo.AddVersionAsync(version);
+        //    if (result.IsFailed)
+        //        return BadRequest(result.Errors);
 
-            return CreatedAtAction(
-                nameof(GetByVersion),
-                new { version = result.Value.Version },
-                result.Value
-            );
-        }
+        //    return CreatedAtAction(
+        //        nameof(GetByVersion),
+        //        new { version = result.Value.Version },
+        //        result.Value
+        //    );
+        //}
     }
 }

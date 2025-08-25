@@ -19,7 +19,7 @@ public class CheckExampleLinksAreNotEmpty
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
             await Validate.Link.Input.MustNotBeNullOrEmpty(query.Link);
-            await Validate.Link.Input.MustHaveMaximumLenght(query.Link);
+            await Validate.Link.Input.MustHaveMaximumLength(query.Link);
 
             return await _exampleLinksRepository.CheckExampleLinksAreNotEmpty();
         }

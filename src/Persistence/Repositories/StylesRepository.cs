@@ -2,9 +2,9 @@
 using Domain.Entities.MidjourneyStyles;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using Persistance.Context;
+using Persistence.Context;
 
-namespace Persistance.Repositories;
+namespace Persistence.Repositories;
 
 public class StylesRepository : IStyleRepository
 {
@@ -35,16 +35,11 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(name);
-
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
                 .FirstOrDefaultAsync(s => s.Name == name);
 
-            if (style is null)
-                return Result.Fail<MidjourneyStyle>($"Style with name '{name}' not found");
-
-            return Result.Ok<MidjourneyStyle>(style);
+            return Result.Ok<MidjourneyStyle>(style!);
         }
         catch (Exception ex)
         {

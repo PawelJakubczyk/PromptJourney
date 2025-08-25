@@ -6,7 +6,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace Persistance.Repositories;
+//namespace Persistence.Repositories;
 //internal class Class1
 //{
 

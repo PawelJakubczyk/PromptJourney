@@ -11,11 +11,11 @@
 //        internal const string TextArray = "text[]";
 //        internal const string UuidArray = "uuid[]";
 //        internal const string Jsonb = "jsonb";
-//        internal static string DateTimeOffset(int lenght) => $"{nameof(DateTimeOffset)}({lenght})";
-//        internal static string NChar(int lenght) => $"{nameof(NChar)}({lenght})";
-//        internal static string VarChar(int lenght) => $"{nameof(VarChar)}({lenght})";
-//        internal static string NVarChar(int lenght) => $"{nameof(NVarChar)}({lenght})";
-//        internal static string Char(int lenght) => $"{nameof(Char)}({lenght})";
-//        internal static string Binary(int lenght) => $"{nameof(Binary)}({lenght})";
+//        internal static string DateTimeOffset(int length) => $"{nameof(DateTimeOffset)}({length})";
+//        internal static string NChar(int length) => $"{nameof(NChar)}({length})";
+//        internal static string VarChar(int length) => $"{nameof(VarChar)}({length})";
+//        internal static string NVarChar(int length) => $"{nameof(NVarChar)}({length})";
+//        internal static string Char(int length) => $"{nameof(Char)}({length})";
+//        internal static string Binary(int length) => $"{nameof(Binary)}({length})";
 //    }
 //}

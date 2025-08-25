@@ -23,7 +23,7 @@
 //    public double? ImageWeight { get; }
 //    public string? Mode { get; }
 //    public string? VisibilityMode { get; }
-//    public string? ParrametersString { get; }
+//    public string? ParametersString { get; }
 
 //    internal Parameters
 //    (
@@ -71,10 +71,10 @@
 //        Mode = mode;
 //        Niji = niji;
 //        VisibilityMode = visibilityMode;
-//        ParrametersString = buildParameterString();
+//        ParrametersString = BuildParameterString();
 //    }
 
-//    private string buildParameterString()
+//    private string BuildParameterString()
 //    {
 //        return "";
 //    }

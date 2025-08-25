@@ -1,6 +1,6 @@
-﻿namespace Persistance.Constants;
+﻿namespace Persistence.Constants;
 
-public static partial class PersistansConstants
+public static partial class PersistenceConstants
 {
     internal static class ColumnType
     {
@@ -18,12 +18,12 @@ public static partial class PersistansConstants
         internal static string VarChar(int length) => $"varchar({length})";
 
         ////internal const string Bit = nameof(Bit);
-        //internal static string TimestampWithTimeZone(int lenght) => $"{nameof(TimestampWithTimeZone)}({lenght})";
-        //internal static string NChar(int lenght) => $"{nameof(NChar)}({lenght})";
-        //internal static string VarChar(int lenght) => $"{nameof(VarChar)}({lenght})";
-        ////internal static string VarChar(int lenght) => $"{nameof(VarChar)}({lenght})";
-        //internal static string Char(int lenght) => $"{nameof(Char)}({lenght})";
-        //internal static string Binary(int lenght) => $"{nameof(Binary)}({lenght})";
+        //internal static string TimestampWithTimeZone(int length) => $"{nameof(TimestampWithTimeZone)}({length})";
+        //internal static string NChar(int length) => $"{nameof(NChar)}({length})";
+        //internal static string VarChar(int length) => $"{nameof(VarChar)}({length})";
+        ////internal static string VarChar(int length) => $"{nameof(VarChar)}({length})";
+        //internal static string Char(int length) => $"{nameof(Char)}({length})";
+        //internal static string Binary(int length) => $"{nameof(Binary)}({length})";
     }
 }
 

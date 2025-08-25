@@ -15,6 +15,9 @@ public static class GetStylesByName
 
         public async Task<Result<MidjourneyStyle>> Handle(Query query, CancellationToken cancellationToken)
         {
+            await Validate.Style.Input.MustNotBeNullOrEmpty(query.Name);
+            await Validate.Style.Input.MustHaveMaximumLenght(query.Name);
+            await Validate.Style.ShouldExists(query.Name, _styleRepository);
 
             return await _styleRepository.GetStyleByNameAsync(query.Name);
         }

@@ -18,7 +18,7 @@ public static class DeleteExampleLink
         {
 
             await Validate.Link.Input.MustNotBeNullOrEmpty(command.Link);
-            await Validate.Link.Input.MustHaveMaximumLenght(command.Link);
+            await Validate.Link.Input.MustHaveMaximumLength(command.Link);
             await Validate.Link.ShouldExists(command.Link, _exampleLinkRepository);
 
             return await _exampleLinkRepository.DeleteExampleLinkAsync(command.Link);

@@ -23,7 +23,7 @@ public static class AddExampleLink
         public async Task<Result<MidjourneyStyleExampleLink>> Handle(Command command, CancellationToken cancellationToken)
         {
             await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
-            await Validate.Version.Input.MustHaveMaximumLenght(command.Version);
+            await Validate.Version.Input.MustHaveMaximumLength(command.Version);
             await Validate.Version.ShouldExists(command.Version, _versionRepository);
 
             await Validate.Style.Input.MustNotBeNullOrEmpty(command.Style);
@@ -31,7 +31,7 @@ public static class AddExampleLink
             await Validate.Style.ShouldExists(command.Style, _styleRepository);
 
             await Validate.Link.Input.MustNotBeNullOrEmpty(command.Link);
-            await Validate.Link.Input.MustHaveMaximumLenght(command.Link);
+            await Validate.Link.Input.MustHaveMaximumLength(command.Link);
             await Validate.Link.ShouldNotExists(command.Link, _exampleLinkRepository);
 
             var link = MidjourneyStyleExampleLink.Create

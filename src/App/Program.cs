@@ -1,10 +1,10 @@
 using Application.Registrations;
-using Persistance.Registrations;
+using Persistence.Registrations;
 using Presentation.Registrations;
 
 try
 {
-    Console.WriteLine("Staring the web host");
+    Console.WriteLine("Starting the web host");
 
     //Initial configuration
 

@@ -15,6 +15,9 @@ public static class GetStylesByType
 
         public async Task<Result<List<MidjourneyStyle>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            Validate.Style.Type.Input.MustNotBeNullOrEmpty(query.Type);
+            Validate.Style.Type.Input.MustNotBeNullOrEmpty(query.Type);
+
             return await _styleRepository.GetStylesByTypeAsync(query.Type);
         }
     }

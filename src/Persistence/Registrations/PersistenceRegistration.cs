@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Persistance.Context;
+using Persistence.Context;
 using Application.Abstractions.IRepository;
-using Persistance.Repositories;
+using Persistence.Repositories;
 
-namespace Persistance.Registrations;
+namespace Persistence.Registrations;
 
 public static class PersistenceRegistration
 {

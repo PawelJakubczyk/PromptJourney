@@ -4,9 +4,9 @@ using Domain.Entities.MidjourneyProperties;
 using Domain.Entities.MidjourneyVersions;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using Persistance.Context;
+using Persistence.Context;
 
-namespace Persistance.Repositories;
+namespace Persistence.Repositories;
 
 public sealed class PropertiesRepository : IPropertiesRopository
 {

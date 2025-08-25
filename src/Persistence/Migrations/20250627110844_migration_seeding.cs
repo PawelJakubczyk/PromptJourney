@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Persistance.Migrations
+namespace Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class migration_seeding : Migration
@@ -57,7 +57,7 @@ namespace Persistance.Migrations
                     { "no", "1", textArray("--no"), null, null, null, "Negative prompting to exclude concepts" },
                     { "stop", "1", textArray("--stop"), "100", "10", "100", "Stop generation at percentage" },
                     { "upscale", "1", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
-                    { "visibility", "1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "performance", "1", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
 
@@ -79,8 +79,8 @@ namespace Persistance.Migrations
                     { "tile", "2", textArray("--tile"), null, null, null, "Seamless repeating pattern" },
                     { "imageWeight", "2", textArray("--iw"), "1", "0.5", "2", "Relative importance of image prompt vs. text" },
                     { "weird", "2", textArray("--weird", "--w"), "0", "0", "3000", "Level of strange/unconventional output" },
-                    { "styleRef", "2", textArray("--sref"), null, null, null, "Use style reference image for output guidance" },
-                    { "visibility", "2", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "styleReference", "2", textArray("--sref"), null, null, null, "Use style reference image for output guidance" },
+                    { "visibility", "2", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "2", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "2", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -107,7 +107,7 @@ namespace Persistance.Migrations
                     { "imageWeight", "3", textArray("--iw"), "1", "0.5", "2", "Relative importance of image prompt vs. text" },
                     { "styleReference", "3", textArray("--sref"), null, null, null, "Use style reference image for output guidance" },
                     { "weird", "3", textArray("--weird", "--w"), "0", "0", "3000", "Level of unconventional creativity" },
-                    { "visibility", "3", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "3", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "3", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "3", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -134,7 +134,7 @@ namespace Persistance.Migrations
                     { "oref", "4", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
                     { "personalization", "4", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
                     { "styleReference", "4", textArray("--sref"), null, null, null, "Use style reference image" },
-                    { "visibility", "4", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "4", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "4", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "4", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -164,7 +164,7 @@ namespace Persistance.Migrations
                     { "profile", "5", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
                     { "styleReference", "5", textArray("--sref"), null, null, null, "Use style reference image" },
                     { "video", "5", textArray("--video"), null, null, null, "Generate grid creation video" },
-                    { "visibility", "5", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "5", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "5", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "5", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -195,7 +195,7 @@ namespace Persistance.Migrations
                     { "profile", "5.1", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
                     { "styleReference", "5.1", textArray("--sref"), null, null, null, "Use style reference image" },
                     { "video", "5.1", textArray("--video"), null, null, null, "Generate grid creation video" },
-                    { "visibility", "5.1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "5.1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "5.1", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "5.1", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -225,7 +225,7 @@ namespace Persistance.Migrations
                     { "profile", "5.2", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
                     { "styleReference", "5.2", textArray("--sref"), null, null, null, "Use style reference image" },
                     { "video", "5.2", textArray("--video"), null, null, null, "Generate grid creation video" },
-                    { "visibility", "5.2", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "5.2", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "5.2", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "5.2", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -253,7 +253,7 @@ namespace Persistance.Migrations
                     { "imageWeight", "6", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
                     { "imageStyleRandom", "6", textArray("--style random"), null, null, null, "Apply a random base style" },
                     { "draft", "6", textArray("--draft"), null, null, null, "Generate draft images at lower GPU cost" },
-                    { "visibility", "6", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "6", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "6", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "6", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -281,7 +281,7 @@ namespace Persistance.Migrations
                     { "imageWeight", "6.1", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
                     { "imageStyleRandom", "6.1", textArray("--style random"), null, null, null, "Apply a random base style" },
                     { "draft", "6.1", textArray("--draft"), null, null, null, "Generate draft images at lower GPU cost" },
-                    { "visibility", "6.1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "6.1", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "6.1", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "6.1", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -310,7 +310,7 @@ namespace Persistance.Migrations
                     { "weird", "7", textArray("--weird", "--w"), "0", "0", "3000", "Experimental/unconventional creativity" },
                     { "niji", "7", textArray("--niji"), null, null, null, "Switch to anime‑focused model" },
                     { "draft", "7", textArray("--draft"), null, null, null, "Draft Mode: fast, low‑cost prototyping" },
-                    { "omeComplex", "7", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "omniReference", "7", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
                     { "styleReference", "7", textArray("--sref"), null, null, null, "Style reference image" },
                     { "styleWeight", "7", textArray("--sw"), "100", "0", "1000", "Strength of style reference" },
                     { "versionFlag", "7", textArray("--v", "--version"), "7", null, null, "Explicit version flag" },
@@ -324,7 +324,7 @@ namespace Persistance.Migrations
                     { "sv", "7", textArray("--sv"), "7", "4", "7", "Style‑version for sref codes" },
                     { "profile", "7", textArray("--style", "--profile"), null, null, null, "Base style for the generation" },
                     { "blend", "7", textArray("--blend"), null, null, null, "Blend multiple images together" },
-                    { "visibility", "7", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "7", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "7", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "7", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
 
@@ -353,7 +353,7 @@ namespace Persistance.Migrations
                     { "oref", "niji 4", textArray("--oref"), null, null, null, "Omni‑reference (image/person likeness)" },
                     { "personalization", "niji 4", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
                     { "styleReference", "niji 4", textArray("--sref"), null, null, null, "Use style reference image" },
-                    { "visibility", "niji 4", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "niji 4", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "niji 4", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "niji 4", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -383,7 +383,7 @@ namespace Persistance.Migrations
                     { "profile", "niji 5", textArray("--profile", "--p"), null, null, null, "Use personalization profile/moodboard" },
                     { "styleReference", "niji 5", textArray("--sref"), null, null, null, "Use style reference image" },
                     { "video", "niji 5", textArray("--video"), null, null, null, "Generate grid creation video" },
-                    { "visibility", "niji 5", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "niji 5", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "niji 5", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "niji 5", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -411,7 +411,7 @@ namespace Persistance.Migrations
                     { "imageWeight", "niji 6", textArray("--iw"), "1", "0", "2", "Relative importance of image prompt vs. text" },
                     { "imageStyleRandom", "niji 6", textArray("--style random"), null, null, null, "Apply a random base style" },
                     { "draft", "niji 6", textArray("--draft"), null, null, null, "Generate draft images at lower GPU cost" },
-                    { "visibility", "niji 6", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stelth" },
+                    { "visibility", "niji 6", textArray("--public", "--stealth"), null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "niji 6", textArray("--upbeta", "--uplight"), null, null, null, "Use the light/beta upscaler" },
                     { "performance", "niji 6", textArray("--relax", "--fast", "--turbo"), null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
@@ -481,7 +481,7 @@ namespace Persistance.Migrations
             migrationBuilder.DeleteData(
                 schema: "public",
                 table: "version_4",
-                keyColumn: "property_n                                                                      ",
+                keyColumn: "property_name",
                 keyValues: new string[] { "aspectRatio", "quality", "seed", "no", "stylize", "stop", "imageWeight", "chaos" });
 
             migrationBuilder.DeleteData(

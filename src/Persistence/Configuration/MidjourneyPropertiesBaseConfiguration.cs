@@ -1,9 +1,9 @@
 ﻿using Domain.Entities.MidjourneyProperties;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Persistance.Constants.PersistansConstants;
+using static Persistence.Constants.PersistenceConstants;
 
-namespace Persistance.Configuration;
+namespace Persistence.Configuration;
 
 public abstract class MidjourneyPropertiesBaseConfiguration<T> : IEntityTypeConfiguration<T>
     where T : MidjourneyPropertiesBase
