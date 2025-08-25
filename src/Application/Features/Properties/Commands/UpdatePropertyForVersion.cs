@@ -4,14 +4,17 @@ using FluentResults;
 
 namespace Application.Features.Properties.Commands;
 
-public static class PatchPropertyInVersion
+public static class UpdatePropertyForVersion
 {
     public sealed record Command
     (
         string Version,
         string PropertyName,
-        string CharacteristicToUpdate,
-        string? NewValue
+        string[] Parameters,
+        string? DefaultValue,
+        string? MinValue,
+        string? MaxValue,
+        string? Description
     ) : ICommand<PropertyDetails>;
 
     public sealed class Handler(IVersionRepository versionRepository, IPropertiesRopository propertiesRepository)
@@ -25,12 +28,15 @@ public static class PatchPropertyInVersion
             await Validate.Version.ShouldExists(command.Version, _versionRepository);
             await Validate.Property.ShouldExists(command.Version, command.PropertyName, _propertiesRepository);
 
-            return await _propertiesRepository.PatchParameterInVersionAsync
+            return await _propertiesRepository.UpdateParameterForVersionAsync
             (
                 command.Version,
                 command.PropertyName,
-                command.CharacteristicToUpdate,
-                command.NewValue
+                command.Parameters,
+                command.DefaultValue,
+                command.MinValue,
+                command.MaxValue,
+                command.Description
             );
         }
     }

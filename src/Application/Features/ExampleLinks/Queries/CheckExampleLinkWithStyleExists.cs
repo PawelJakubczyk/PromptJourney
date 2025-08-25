@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace Application.Features.ExampleLinks.Queries;
 
-public class CheckExampleLinkExist
+public class CheckExampleLinkWithStyleExists
 {
     public sealed record Query(string Link) : IQuery<bool>;
 
@@ -16,7 +16,7 @@ public class CheckExampleLinkExist
             await Validate.Link.Input.MustNotBeNullOrEmpty(query.Link);
             await Validate.Link.Input.MustHaveMaximumLenght(query.Link);
 
-            return await _exampleLinksRepository.CheckExampleLinkExistsAsync(query.Link);
+            return await _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(query.Link);
         }
     }
 }

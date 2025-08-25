@@ -1,148 +1,381 @@
 ﻿using Application.Abstractions.IRepository;
 using Application.Features.Properties;
 using FluentResults;
-using static Application.Validate;
+using System.Reflection;
 
 namespace Application;
 
-public partial class Validate
+public class Validate
 {
-    public static class History
+    public static class Input
     {
-    }
-
-
-    public static class Property
-    {
-        public static async Task ShouldNotExists(string version, string parameterName, IPropertiesRopository repository)
+        public static Task<Result<string>> MustNotBeNullOrEmpty(string input, string parameterName)
         {
-            var parameterExistsResult = await repository.CheckParameterExistsInVersionAsync(version, parameterName);
-            if (parameterExistsResult.IsFailed)
+            if (string.IsNullOrEmpty(input))
             {
-                Result.Fail<PropertyDetails>($"Failed to check if parameter exists for version '{version}'");
+                return Task.FromResult(Result.Fail<string>($"The input '{parameterName}' cannot be null or empty."));
             }
-
-            if (parameterExistsResult.Value)
-            {
-                Result.Fail<PropertyDetails>($"Parameter '{parameterName}' already exists for version '{version}'");
-            }
+            return Task.FromResult(Result.Ok<string>($"The input '{parameterName}' is valid – it is not null or empty. You may proceed with the operation."));
         }
 
-        public static async Task ShouldExists(string version, string parameterName, IPropertiesRopository repository)
+        public static Task<Result<string>> MustHaveMaximumLenght(string input, int maxlenght, string parameterName)
         {
-            var parameterExistsResult = await repository.CheckParameterExistsInVersionAsync(version, parameterName);
-            if (parameterExistsResult.IsFailed)
+            if (input.Length > maxlenght)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if parameter exists for version '{version}'");
+                return Task.FromResult(Result.Fail<string>($"The input '{parameterName}' is invalid - it does exceed the maximum length of {maxlenght} characters."));
             }
-
-            if (!parameterExistsResult.Value)
-            {
-                Result.Fail<PropertyDetails>($"Parameter '{parameterName}' does not exist for version '{version}'");
-            }
+            return Task.FromResult(Result.Ok<string>($"The input '{parameterName}' is valid – it does not exceed the maximum length of {maxlenght} characters. You may proceed with the operation."));
         }
     }
 
     public static class Link
     {
-        public static async Task ShouldExists(string link, IExampleLinksRepository repository)
+        public static class Input
+        {
+            public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
+            {
+                return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Link));
+            }
+
+            public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+            {
+                return await Validate.Input.MustHaveMaximumLenght(input, 100, nameof(Link));
+            }
+        }
+        
+        public static async Task<Result<string>> ShouldExists(string link, IExampleLinksRepository repository)
         {
             var exampleLinkExistsResult = await repository.CheckExampleLinkExistsAsync(link);
             if (exampleLinkExistsResult.IsFailed)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if example link '{link}' exists");
+                return Result.Fail<string>($"Failed to check if example link '{link}' exists");
             }
             if (!exampleLinkExistsResult.Value)
             {
-                Result.Fail<PropertyDetails>($"Example link '{link}' does not exist'");
+                return Result.Fail<string>($"Example link '{link}' does not exist'");
             }
+            return Result.Ok<string>($"Example link '{link}' does exist. You may proceed with the operation.");
         }
 
-        public static async Task ShouldNotExists(string link, IExampleLinksRepository repository)
+        public static async Task<Result<string>> ShouldNotExists(string link, IExampleLinksRepository repository)
         {
             var exampleLinkExistsResult = await repository.CheckExampleLinkExistsAsync(link);
             if (exampleLinkExistsResult.IsFailed)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if example link '{link}' exists");
+                return Result.Fail<string>($"Failed to check if example link '{link}' exists");
             }
             if (exampleLinkExistsResult.Value)
             {
-                Result.Fail<PropertyDetails>($"Example link '{link}' already exists");
+                return Result.Fail<string>($"Example link '{link}' already exists.");
             }
+            return Result.Ok<string>($"Example link '{link}' does not exist. You may proceed with the operation.");
+
+        }
+    }
+
+    public static class Links
+    {
+        public static async Task<Result<string>> ShouldHaveAtLastOneElementWithStyle(string style, IExampleLinksRepository repository)
+        {
+            var exampleLinkWithStyleExistsResult = await repository.CheckExampleLinkWithStyleExistsAsync(style);
+            if (exampleLinkWithStyleExistsResult.IsFailed)
+            {
+                return Result.Fail<string>($"Failed to check if example link '{style}' exists");
+            }
+            if (!exampleLinkWithStyleExistsResult.Value)
+            {
+                return Result.Fail<string>($"Example link with '{style}' does not exist'");
+            }
+
+            return Result.Ok<string>($"Example link with '{style}' exist. You may proceed with the operation.'");
+        }
+
+        public static async Task<Result<string>> ShouldHaveAtLastOneElement(IExampleLinksRepository repository)
+        {
+            var exampleLinkExistsResult = await repository.CheckExampleLinksAreNotEmpty();
+            if (exampleLinkExistsResult.IsFailed)
+            {
+                return Result.Fail<string>($"Failed to check if example links have any element");
+            }
+            if (exampleLinkExistsResult.Value)
+            {
+                return Result.Fail<string>($"Example links have no elemements");
+            }
+            return Result.Ok<string>($"Example links have at last one element. You may proceed with the operation.'");
+        }
+    }
+
+    public static class History
+    {
+        public static class Input
+        {
+            public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
+            {
+                return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Link));
+            }
+
+            public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+            {
+                return await Validate.Input.MustHaveMaximumLenght(input, 1000, nameof(Link));
+            }
+
+            public class Keyword
+            {
+                public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
+                {
+                    return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Keyword));
+                }
+            }
+        }
+
+        public static Task<Result<string>> LimitMustBeGreaterThanZero(int limit)
+        {
+            if (limit < 0)
+            {
+                return Task.FromResult(Result.Fail<string>("The limit must be greater than zero."));
+            }
+            return Task.FromResult(Result.Ok<string>("The limit is valid – it is greater than zero. You may proceed with the operation."));
+        }
+
+        public static Task<Result<string>> CountMustNotExceedHistoricalRecords(int cout, IPromptHistoryRepository repository)
+        {
+            if (cout > repository.CalculateHistoricalRecordCountAsync().Result.Value)
+            {
+                return Task.FromResult(Result.Fail<string>($"The count ({cout}) exceeds the number of historical records available."));
+            }
+            return Task.FromResult(Result.Ok<string>($"The count ({cout}) is within the available historical records. You may proceed with the operation."));
+        }
+    }
+
+    public static class Date
+    {
+        public static Task<Result<string>> ShouldNotBeInFuture(DateTime inputDate)
+        {
+            if (inputDate > DateTime.UtcNow)
+            {
+                return Task.FromResult(Result.Fail<string>("The provided date cannot be in the future."));
+            }
+
+            return Task.FromResult(Result.Ok<string>("The date is valid – it is not in the future. You may proceed with the operation."));
+        }
+
+        public static class Range
+        {
+            public static Task<Result<string>> ShouldBeChronological(DateTime startDate, DateTime endDate)
+            {
+                if (startDate >= endDate)
+                {
+                    return Task.FromResult(Result.Fail<string>(
+                        $"Invalid date range: the start date ({startDate:yyyy-MM-dd}) must be earlier than the end date ({endDate:yyyy-MM-dd})."));
+                }
+
+                return Task.FromResult(Result.Ok<string>(
+                    $"Valid date range: from {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}. You may proceed with the operation."));
+            }
+        }
+    }
+
+    public static class Property
+    {
+        public static class Name
+        {
+            public static class Input
+            {
+                public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
+                {
+                    return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Link));
+                }
+                public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+                {
+                    return await Validate.Input.MustHaveMaximumLenght(input, 100, nameof(Link));
+                }
+            }
+        }
+
+        public static class Parameters
+        {
+            public static class Input
+            {
+                public static async Task<Result<string>> MustNotBeNull(string[] input)
+                {
+                    if (input is null)
+                    {
+                        return Result.Fail<string>($"The input 'Parameters' cannot be null.");
+                    }
+                    return Result.Ok<string>($"The input 'Parameters' is valid – it is not null. You may proceed with the operation.");
+                }
+                public static async Task<Result<string>> MustHaveAtLeastOneElement(string[] input)
+                {
+                    if (input.Length < 1)
+                    {
+                        return Result.Fail<string>($"The input 'Parameters' must have at least one element.");
+                    }
+                    return Result.Ok<string>($"The input 'Parameters' is valid – it has at least one element. You may proceed with the operation.");
+                }
+                public static async Task<Result<string>> MustNotHaveMoreThanXElements(string[] input, int x)
+                {
+                    if (input.Length > x)
+                    {
+                        return Result.Fail<string>($"The input 'Parameters' must not have more than {x} elements.");
+                    }
+                    return Result.Ok<string>($"The input 'Parameters' is valid – it does not have more than {x} elements. You may proceed with the operation.");
+                }
+                public static async Task<Result<string>> MustNotHaveElementsThatAreNullOrEmpty(string[] input)
+                {
+                    if (input.Any(string.IsNullOrEmpty))
+                    {
+                        return Result.Fail<string>($"The input 'Parameters' must not contain elements that are null or empty.");
+                    }
+                    return Result.Ok<string>($"The input 'Parameters' is valid – it does not contain elements that are null or empty. You may proceed with the operation.");
+                }
+            }
+        }
+
+        public static async Task<Result<string>> ShouldNotExists(string version, string parameterName, IPropertiesRopository repository)
+        {
+            var parameterExistsResult = await repository.CheckParameterExistsInVersionAsync(version, parameterName);
+            if (parameterExistsResult.IsFailed)
+            {
+                return Result.Fail<string>($"Failed to check if parameter exists for version '{version}'");
+            }
+
+            if (parameterExistsResult.Value)
+            {
+                return Result.Fail<string>($"Parameter '{parameterName}' already exists for version '{version}'");
+            }
+            return Result.Ok<string>($"Parameter '{parameterName}' does not exist for version '{version}', You may proceed with the operation.");
+        }
+
+        public static async Task<Result<string>> ShouldExists(string version, string parameterName, IPropertiesRopository repository)
+        {
+            var parameterExistsResult = await repository.CheckParameterExistsInVersionAsync(version, parameterName);
+            if (parameterExistsResult.IsFailed)
+            {
+                return Result.Fail<string>($"Failed to check if parameter exists for version '{version}'");
+            }
+
+            if (!parameterExistsResult.Value)
+            {
+               return Result.Fail<string>($"Parameter '{parameterName}' does not exist for version '{version}'");
+            }
+            return Result.Ok<string>($"Parameter '{parameterName}' does exists for version '{version}', You may proceed with the operation.");
+        }
+
+        public static async Task<Result<string>> ShouldMatchingPropertyName(string input)
+        {
+            var propertyNames = typeof(PropertyDetails)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(p => p.Name);
+            if (propertyNames is null || !propertyNames.Any())
+            {
+                return Result.Fail<string>("No public instance properties found in PropertyDetails.");
+            }
+            return Result.Ok<string>($"The input '{input}' is valid – it matches a property name in PropertyDetails. You may proceed with the operation.");
         }
     }
 
     public static class Style
     {
-        public static async Task ShouldExists(string styleName, IStyleRepository repository)
+        public static class Input
+        {
+            public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
+            {
+                return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Link));
+            }
+
+            public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+            {
+                return await Validate.Input.MustHaveMaximumLenght(input, 100, nameof(Link));
+            }
+        }
+
+        public static async Task<Result<string>> ShouldExists(string styleName, IStyleRepository repository)
         {
             var styleExistsResult = await repository.CheckStyleExistsAsync(styleName);
             if (styleExistsResult.IsFailed)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if style '{styleName}' exists");
+                return Result.Fail<string>($"Failed to check if style '{styleName}' exists");
             }
             if (!styleExistsResult.Value)
             {
-                Result.Fail<PropertyDetails>($"Style '{styleName}' does not exist");
+                return Result.Fail<string>($"Style '{styleName}' does not exist");
             }
+            return Result.Ok<string>($"Style '{styleName}' does exists, You may proceed with the operation.");
         }
-        public static async Task ShouldNotExists(string styleName, IStyleRepository repository)
+        public static async Task<Result<string>> ShouldNotExists(string styleName, IStyleRepository repository)
         {
             var styleExistsResult = await repository.CheckStyleExistsAsync(styleName);
             if (styleExistsResult.IsFailed)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if style '{styleName}' exists");
+                return Result.Fail<string>($"Failed to check if style '{styleName}' exists");
             }
             if (styleExistsResult.Value)
             {
-                Result.Fail<PropertyDetails>($"Style '{styleName}' already exists");
+                return Result.Fail<string>($"Style '{styleName}' already exists");
             }
+            return Result.Ok<string>($"Style '{styleName}' does not exist, You may proceed with the operation.");
         }
     }
 
     public static class Tag
     {
-        public static async Task ShouldExists(string styleName, string tag, IStyleRepository repository)
+        public static async Task<Result<string>> ShouldExists(string styleName, string tag, IStyleRepository repository)
         {
-            var tagExistsResult = await repository.CheckTagExistsAsync(styleName, tag);
+            var tagExistsResult = await repository.CheckTagExistsInStyleAsync(styleName, tag);
             if (tagExistsResult.IsFailed)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if tag '{tag}' exists");
+                return Result.Fail<string>($"Failed to check if tag: '{tag}' for style:'{styleName}' exists");
             }
             if (!tagExistsResult.Value)
             {
-                Result.Fail<PropertyDetails>($"Tag '{tag}' does not exist");
+                return Result.Fail<string>($"Tag: '{tag}' for style:'{styleName}' does not exist");
             }
+            return Result.Ok<string>($"Tag: '{tag}' for  Style: '{styleName}' does exist, You may proceed with the operation.");
         }
-        public static async Task ShouldNotExists(string styleName, string tag, IStyleRepository repository)
+        public static async Task<Result<string>> ShouldNotExists(string styleName, string tag, IStyleRepository repository)
         {
-            var tagExistsResult = await repository.CheckTagExistsAsync(styleName, tag);
+            var tagExistsResult = await repository.CheckTagExistsInStyleAsync(styleName, tag);
             if (tagExistsResult.IsFailed)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if tag '{tag}' exists");
+                return Result.Fail<string>($"Failed to check if tag: '{tag}' for  style: '{styleName}' exists");
             }
             if (tagExistsResult.Value)
             {
-                Result.Fail<PropertyDetails>($"Tag '{tag}' already exists");
+                return Result.Fail<string>($"Tag: '{tag}' for  Style: '{styleName}' already exists");
             }
+            return Result.Ok<string>($"Tag: '{tag}' for  Style: '{styleName}' does not exist, You may proceed with the operation.");
         }
     }
 
     public static class Version
     {
-        public static async Task ShouldExists(string version, IVersionRepository repository)
+        public static class Input
+        {
+            public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
+            {
+                return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Version));
+            }
+
+            public static async Task<Result<string>> MustHaveMaximumLenght(string input)
+            {
+                return await Validate.Input.MustHaveMaximumLenght(input, 10, nameof(Version));
+            }
+        }
+
+        public static async Task<Result<string>> ShouldExists(string version, IVersionRepository repository)
         {
             var versionExistsResult = await repository.CheckVersionExistsInVersionsAsync(version);
 
             if (versionExistsResult.IsFailed)
             {
-                Result.Fail<PropertyDetails>($"Failed to check if version exists");
+                return Result.Fail<string>($"Failed to check if version exists");
             }
 
             if (!versionExistsResult.Value)
             {
-                Result.Fail<PropertyDetails>($"Version '{version}' not found");
+                return Result.Fail<string>($"Version '{version}' not found");
             }
+            return Result.Ok<string>($"Version: '{version}' does exist, You may proceed with the operation.");
         }
     }
 }

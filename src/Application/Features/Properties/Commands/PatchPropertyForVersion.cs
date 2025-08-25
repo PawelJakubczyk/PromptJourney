@@ -4,17 +4,14 @@ using FluentResults;
 
 namespace Application.Features.Properties.Commands;
 
-public static class UpdatePropertyInVersion
+public static class PatchPropertyForVersion
 {
     public sealed record Command
     (
         string Version,
         string PropertyName,
-        string[] Parameters,
-        string? DefaultValue,
-        string? MinValue,
-        string? MaxValue,
-        string? Description
+        string CharacteristicToUpdate,
+        string? NewValue
     ) : ICommand<PropertyDetails>;
 
     public sealed class Handler(IVersionRepository versionRepository, IPropertiesRopository propertiesRepository)
@@ -25,18 +22,23 @@ public static class UpdatePropertyInVersion
 
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
+            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
+            await Validate.Version.Input.MustHaveMaximumLenght(command.Version);
             await Validate.Version.ShouldExists(command.Version, _versionRepository);
+
+            await Validate.Property.Name.Input.MustNotBeNullOrEmpty(command.PropertyName);
+            await Validate.Property.Name.Input.MustHaveMaximumLenght(command.PropertyName);
             await Validate.Property.ShouldExists(command.Version, command.PropertyName, _propertiesRepository);
 
-            return await _propertiesRepository.UpdateParameterFromVersionAsync
+            await Validate.Input.MustNotBeNullOrEmpty(command.CharacteristicToUpdate, nameof(command.CharacteristicToUpdate));
+            await Validate.Property.ShouldMatchingPropertyName(command.CharacteristicToUpdate);
+
+            return await _propertiesRepository.PatchParameterForVersionAsync
             (
                 command.Version,
                 command.PropertyName,
-                command.Parameters,
-                command.DefaultValue,
-                command.MinValue,
-                command.MaxValue,
-                command.Description
+                command.CharacteristicToUpdate,
+                command.NewValue
             );
         }
     }

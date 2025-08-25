@@ -20,6 +20,9 @@ public static class GetExampleLinksByStyle
 
         public async Task<Result<List<MidjourneyStyleExampleLink>>> Handle(Query query, CancellationToken cancellationToken)
         {
+
+            await Validate.Style.Input.MustNotBeNullOrEmpty(query.Style);
+            await Validate.Style.Input.MustHaveMaximumLenght(query.Style);
             await Validate.Style.ShouldExists(query.Style, _styleRepository);
 
             return await _exampleLinkRepository.GetExampleLinksByStyleAsync(query.Style);

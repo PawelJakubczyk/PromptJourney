@@ -16,8 +16,8 @@ public static class GetHistoryByDateRange
 
         public async Task<Result<List<MidjourneyPromptHistory>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            //Validate.Date.RangeShouldBeChronological(query.From, query.To);
-            //Validate.Date.ShouldNotBeInFuture(query.To);
+            await Validate.Date.Range.ShouldBeChronological(query.From, query.To);
+            await Validate.Date.ShouldNotBeInFuture(query.To);
 
             return await _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To);
         }

@@ -20,7 +20,7 @@ public static class DeleteStyle
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
             await Validate.Style.ShouldExists(command.StyleName, _styleRepository);
-            await _exampleLinksRepository.DeleteAllExampleLinkWithStyleAsync(command.StyleName);
+            await _exampleLinksRepository.DeleteAllExampleLinkByStyleAsync(command.StyleName);
 
             return await _styleRepository.DeleteStyleAsync(command.StyleName);
         }

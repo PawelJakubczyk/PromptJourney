@@ -11,7 +11,7 @@ public interface IPropertiesRopository
     Task<Result<bool>> CheckParameterExistsInVersionAsync(string version, string propertyName);
     // For Commands
     Task<Result<PropertyDetails>> AddParameterToVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description);
-    Task<Result<PropertyDetails>> UpdateParameterFromVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description);
-    Task<Result<PropertyDetails>> PatchParameterInVersionAsync(string version, string propertyName, string characteristicToUpdate, string? newValue);
+    Task<Result<PropertyDetails>> UpdateParameterForVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description);
+    Task<Result<PropertyDetails>> PatchParameterForVersionAsync(string version, string propertyName, string characteristicToUpdate, string? newValue);
     Task<Result<PropertyDetails>> DeleteParameterInVersionAsync(string version, string propertyName);
 }

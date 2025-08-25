@@ -16,6 +16,9 @@ public static class GetLastHistoryRecords
 
         public async Task<Result<List<MidjourneyPromptHistory>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            await Validate.History.LimitMustBeGreaterThanZero(query.Count);
+            await Validate.History.CountMustNotExceedHistoricalRecords(query.Count, _promptHistoryRepository);
+
             return await _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count);
         }
     }

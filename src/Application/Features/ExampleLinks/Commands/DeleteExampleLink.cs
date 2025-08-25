@@ -16,6 +16,9 @@ public static class DeleteExampleLink
 
         public async Task<Result<MidjourneyStyleExampleLink>> Handle(Command command, CancellationToken cancellationToken)
         {
+
+            await Validate.Link.Input.MustNotBeNullOrEmpty(command.Link);
+            await Validate.Link.Input.MustHaveMaximumLenght(command.Link);
             await Validate.Link.ShouldExists(command.Link, _exampleLinkRepository);
 
             return await _exampleLinkRepository.DeleteExampleLinkAsync(command.Link);

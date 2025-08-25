@@ -15,7 +15,7 @@ public static class GetAllVersions
 
         public async Task<Result<List<MidjourneyVersions>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            return await _versionRepository.GetAllVersions();
+            return await _versionRepository.GetAllVersionsAsync();
         }
     }
 }

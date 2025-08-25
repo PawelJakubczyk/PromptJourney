@@ -1,345 +1,78 @@
-﻿using Application.Features.VersionsMaster.Commands;
-using Application.Features.VersionsMaster.Queries;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Presentation.Requests;
+﻿using Application.Abstractions.IRepository;
+using Domain.Entities.MidjourneyVersions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Controllers;
-
-[ApiController]
-[Route("api/versions")]
-public sealed class VersionsController : ControllerBase
+namespace Presentation.Controllers
 {
-    private readonly ISender _sender;
-
-    public VersionsController(ISender sender)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class VersionsController : ControllerBase
     {
-        _sender = sender;
-    }
+        private readonly IVersionRepository _repo;
 
-    [HttpPost("{version}/parameters")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddParameterToVersion
-    (
-        [FromRoute] string version,
-        [FromBody] AddParameterToVersionRequest request,
-        CancellationToken cancellationToken
-    )
-    {
-        if (request is null)
+        public VersionsController(IVersionRepository repo)
         {
-            return BadRequest(new { Error = "Request body cannot be null" });
+            _repo = repo;
         }
 
-        if (string.IsNullOrWhiteSpace(version))
+        // GET api/versions
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
+            var result = await _repo.GetAllVersionsAsync();
+            if (result.IsFailed)
+                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+
+            return Ok(result.Value);
         }
 
-        var command = new AddParameterToVersionCommand
+        // GET api/versions/supported
+        [HttpGet("supported")]
+        public async Task<IActionResult> GetSupported()
         {
-            Version = version,
-            PropertyName = request.PropertyName,
-            Parameters = request.Parameters,
-            DefaultValue = request.DefaultValue,
-            MinValue = request.MinValue,
-            MaxValue = request.MaxValue,
-            Description = request.Description
-        };
+            var result = await _repo.GetAllSuportedVersionsAsync();
+            if (result.IsFailed)
+                return NotFound(result.Errors);
 
-        var result = await _sender.Send(command, cancellationToken);
+            return Ok(result.Value);
+        }
 
-        if (result.IsSuccess)
+        // GET api/versions/{version}
+        [HttpGet("{version}")]
+        public async Task<IActionResult> GetByVersion(string version)
         {
+            var result = await _repo.GetMasterVersionByVersionAsync(version);
+            if (result.IsFailed)
+                return NotFound(result.Errors);
+
+            return Ok(result.Value);
+        }
+
+        // GET api/versions/{version}/exists
+        [HttpGet("{version}/exists")]
+        public async Task<IActionResult> CheckExists(string version)
+        {
+            var result = await _repo.CheckVersionExistsInVersionsAsync(version);
+            if (result.IsFailed)
+                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+
+            return Ok(new { exists = result.Value });
+        }
+
+        // POST api/versions
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] MidjourneyVersions version)
+        {
+            var result = await _repo.AddVersionAsync(version);
+            if (result.IsFailed)
+                return BadRequest(result.Errors);
+
             return CreatedAtAction(
-                nameof(CheckParameterExists),
-                new { version, propertyName = request.PropertyName },
+                nameof(GetByVersion),
+                new { version = result.Value.Version },
                 result.Value
             );
         }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
-    }
-
-    [HttpPut("{version}/parameters/{propertyName}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateParameterFromVersion
-    (
-        [FromRoute] string version,
-        [FromRoute] string propertyName,
-        [FromBody] UpdateParameterFromVersionRequest request,
-        CancellationToken cancellationToken
-    )
-    {
-        if (request is null)
-        {
-            return BadRequest(new { Error = "Request body cannot be null" });
-        }
-
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyName))
-        {
-            return BadRequest(new { Error = "PropertyName parameter cannot be null or empty" });
-        }
-
-        var command = new UpdateParameterFromVersion.Command
-        {
-            Version = version,
-            PropertyName = propertyName,
-            Parameters = request.Parameters,
-            DefaultValue = request.DefaultValue,
-            MinValue = request.MinValue,
-            MaxValue = request.MaxValue,
-            Description = request.Description
-        };
-
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (result.IsSuccess)
-        {
-            return Ok(result.Value);
-        }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
-    }
-
-    [HttpPatch("{version}/parameters/{propertyName}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> PatchParameterInVersion
-    (
-        [FromRoute] string version,
-        [FromRoute] string propertyName,
-        [FromBody] PatchParameterInVersionRequest request,
-        CancellationToken cancellationToken
-    )
-    {
-        if (request is null)
-        {
-            return BadRequest(new { Error = "Request body cannot be null" });
-        }
-
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyName))
-        {
-            return BadRequest(new { Error = "PropertyName parameter cannot be null or empty" });
-        }
-
-        var command = new PatchParameterInVersionCommand
-        {
-            Version = version,
-            PropertyName = propertyName,
-            PropertyToUpdate = request.PropertyToUpdate,
-            NewValue = request.NewValue
-        };
-
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (result.IsSuccess)
-        {
-            return Ok(result.Value);
-        }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
-    }
-
-    [HttpDelete("{version}/parameters/{propertyName}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteParameterInVersion
-    (
-        [FromRoute] string version,
-        [FromRoute] string propertyName,
-        CancellationToken cancellationToken
-    )
-    {
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyName))
-        {
-            return BadRequest(new { Error = "PropertyName parameter cannot be null or empty" });
-        }
-
-        var command = new DeleteParameterInVersionCommand
-        {
-            Version = version,
-            PropertyName = propertyName
-        };
-
-        var result = await _sender.Send(command, cancellationToken);
-
-        if (result.IsSuccess)
-        {
-            return Ok(result.Value);
-        }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
-    }
-
-    [HttpGet("{version}/parameters/{propertyName}/exists")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckParameterExists
-    (
-        [FromRoute] string version,
-        [FromRoute] string propertyName,
-        CancellationToken cancellationToken
-    )
-    {
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyName))
-        {
-            return BadRequest(new { Error = "PropertyName parameter cannot be null or empty" });
-        }
-
-        var query = new CheckParameterExistsInVersionQuery
-        {
-            Version = version,
-            PropertyName = propertyName
-        };
-
-        var result = await _sender.Send(query, cancellationToken);
-
-        if (result.IsSuccess)
-        {
-            return Ok(new { Exists = result.Value });
-        }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
-    }
-
-    [HttpGet("{version}/exists")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckVersionExists
-    (
-        [FromRoute] string version,
-        CancellationToken cancellationToken
-    )
-    {
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
-        }
-
-        var query = new CheckVersionExistsInVersionMasterQuery
-        {
-            Version = version
-        };
-
-        var result = await _sender.Send(query, cancellationToken);
-
-        if (result.IsSuccess)
-        {
-            return Ok(new { Exists = result.Value });
-        }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
-    }
-
-    [HttpGet("{version}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetMasterVersionByVersion
-    (
-        [FromRoute] string version,
-        CancellationToken cancellationToken
-    )
-    {
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
-        }
-
-        var query = new GetMasterVersionByVersionQuery
-        {
-            Version = version
-        };
-
-        var result = await _sender.Send(query, cancellationToken);
-
-        if (result.IsSuccess)
-        {
-            return Ok(result.Value);
-        }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
-    }
-
-    [HttpGet("{version}/parameters")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllParametersByVersionMaster
-    (
-        [FromRoute] string version,
-        CancellationToken cancellationToken
-    )
-    {
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            return BadRequest(new { Error = "Version parameter cannot be null or empty" });
-        }
-
-        var query = new GetAllParametersByVersionMasterQuery
-        {
-            Version = version
-        };
-
-        var result = await _sender.Send(query, cancellationToken);
-
-        if (result.IsSuccess)
-        {
-            return Ok(result.Value);
-        }
-
-        return BadRequest(new
-        {
-            Errors = result.Errors.Select(e => e.Message).ToList()
-        });
     }
 }

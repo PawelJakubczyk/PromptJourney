@@ -7,17 +7,16 @@ namespace Application.Features.PromptHistory.Commands;
 
 public static class AddPromptToHistory
 {
-    public sealed record Command(
-        string Prompt,
-        string Style,
-        string Version,
-        DateTime CreatedAt
-    ) : ICommand<MidjourneyPromptHistory>;
+    public sealed record Command(string Prompt, string Version) : ICommand<MidjourneyPromptHistory>;
 
-    public sealed class Handler(IPromptHistoryRepository promptHistoryRepository)
-        : ICommandHandler<Command, MidjourneyPromptHistory>
+    public sealed class Handler
+    (
+        IPromptHistoryRepository promptHistoryRepository,
+        IVersionRepository versionRepository
+    ) : ICommandHandler<Command, MidjourneyPromptHistory>
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
+        private readonly IVersionRepository _versionRepository = versionRepository;
 
         public async Task<Result<MidjourneyPromptHistory>> Handle(Command command, CancellationToken cancellationToken)
         {
@@ -26,6 +25,13 @@ public static class AddPromptToHistory
                 command.Prompt,
                 command.Version
             );
+
+            await Validate.History.Input.MustNotBeNullOrEmpty(command.Version);
+            await Validate.History.Input.MustHaveMaximumLenght(command.Version);
+
+            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
+            await Validate.Version.Input.MustHaveMaximumLenght(command.Version);
+            await Validate.Version.ShouldExists(command.Version, _versionRepository);
 
             return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value);
         }

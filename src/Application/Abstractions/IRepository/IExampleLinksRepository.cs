@@ -9,8 +9,10 @@ public interface IExampleLinksRepository
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(string styleName);
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync(string styleName, string version);
     Task<Result<bool>> CheckExampleLinkExistsAsync(string link);
+    Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(string link);
+    Task<Result<bool>> CheckExampleLinksAreNotEmpty();
     // For Commands
     Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(MidjourneyStyleExampleLink link);
     Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(string style);
-    Task<Result<List<MidjourneyStyleExampleLink>>> DeleteAllExampleLinkWithStyleAsync(string style);
+    Task<Result<List<MidjourneyStyleExampleLink>>> DeleteAllExampleLinkByStyleAsync(string style);
 }

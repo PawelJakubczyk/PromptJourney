@@ -5,9 +5,10 @@ using FluentResults;
 
 namespace Application.Features.Styles.Commands.AddStyle;
 
-public static class AddStyle
+public static class UpdateStyle
 {
-    public sealed record Command(
+    public sealed record Command
+    (
         string Name,
         string Type,
         string? Description = null,
@@ -20,7 +21,7 @@ public static class AddStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.ShouldNotExists(command.Name, _styleRepository);
+            await Validate.Style.ShouldExists(command.Name, _styleRepository);
 
             var style = MidjourneyStyle.Create(
                 command.Name,
@@ -32,7 +33,7 @@ public static class AddStyle
             if (style.IsFailed)
                 return Result.Fail<MidjourneyStyle>(style.Errors);
 
-            return await _styleRepository.AddStyleAsync(style.Value);
+            return await _styleRepository.UpdateStyleAsync(style.Value);
         }
     }
 }
