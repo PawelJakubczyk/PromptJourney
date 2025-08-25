@@ -14,7 +14,7 @@ public static class CheckVersionExists
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.Version.Input.MustNotBeNullOrEmpty(query.Version);
+            await Validate.Version.Input.CannotBeNullOrEmpty(query.Version);
 
             return await _versionRepository.CheckVersionExistsInVersionsAsync(query.Version);
         }

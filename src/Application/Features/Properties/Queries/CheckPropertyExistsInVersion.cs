@@ -8,9 +8,9 @@ public static class CheckPropertyExistsInVersion
 {
     public sealed record Query(string Version, string PropertyName) : IQuery<bool>;
 
-    public sealed class Handler(IPropertiesRopository propertiesRepository) : IQueryHandler<Query, bool>
+    public sealed class Handler(IPropertiesRepository propertiesRepository) : IQueryHandler<Query, bool>
     {
-        private readonly IPropertiesRopository _propertiesRepository = propertiesRepository;
+        private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {

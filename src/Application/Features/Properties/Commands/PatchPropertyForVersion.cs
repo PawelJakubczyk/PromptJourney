@@ -14,24 +14,24 @@ public static class PatchPropertyForVersion
         string? NewValue
     ) : ICommand<PropertyDetails>;
 
-    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRopository propertiesRepository)
+    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRepository propertiesRepository)
         : ICommandHandler<Command, PropertyDetails>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
-        private readonly IPropertiesRopository _propertiesRepository = propertiesRepository;
+        private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
+            await Validate.Version.Input.CannotBeNullOrEmpty(command.Version);
             await Validate.Version.Input.MustHaveMaximumLength(command.Version);
-            await Validate.Version.ShouldExists(command.Version, _versionRepository);
+            await Validate.Version.MustExists(command.Version, _versionRepository);
 
             await Validate.Property.Name.Input.MustNotBeNullOrEmpty(command.PropertyName);
             await Validate.Property.Name.Input.MustHaveMaximumLength(command.PropertyName);
             await Validate.Property.ShouldExists(command.Version, command.PropertyName, _propertiesRepository);
 
             await Validate.Input.MustNotBeNullOrEmpty(command.CharacteristicToUpdate, nameof(command.CharacteristicToUpdate));
-            await Validate.Property.ShouldMatchingPropertyName(command.CharacteristicToUpdate);
+            await Validate.Property.MustMatchPropertyName(command.CharacteristicToUpdate);
 
             return await _propertiesRepository.PatchParameterForVersionAsync
             (

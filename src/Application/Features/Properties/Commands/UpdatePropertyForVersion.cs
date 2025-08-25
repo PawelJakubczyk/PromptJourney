@@ -17,15 +17,15 @@ public static class UpdatePropertyForVersion
         string? Description
     ) : ICommand<PropertyDetails>;
 
-    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRopository propertiesRepository)
+    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRepository propertiesRepository)
         : ICommandHandler<Command, PropertyDetails>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
-        private readonly IPropertiesRopository _propertiesRepository = propertiesRepository;
+        private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Version.ShouldExists(command.Version, _versionRepository);
+            await Validate.Version.MustExists(command.Version, _versionRepository);
             await Validate.Property.ShouldExists(command.Version, command.PropertyName, _propertiesRepository);
 
             return await _propertiesRepository.UpdateParameterForVersionAsync

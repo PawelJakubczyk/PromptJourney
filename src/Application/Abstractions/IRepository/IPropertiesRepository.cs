@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace Application.Abstractions.IRepository;
 
-public interface IPropertiesRopository
+public interface IPropertiesRepository
 {
     // For Queries
     Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(string version);

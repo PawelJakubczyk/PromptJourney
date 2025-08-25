@@ -8,7 +8,7 @@ using Persistence.Context;
 
 namespace Persistence.Repositories;
 
-public sealed class PropertiesRepository : IPropertiesRopository
+public sealed class PropertiesRepository : IPropertiesRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext;
     private static List<string> _supportedVersions = [];

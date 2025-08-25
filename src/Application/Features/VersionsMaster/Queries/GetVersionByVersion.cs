@@ -15,8 +15,8 @@ public static class GetVersionByVersion
 
         public async Task<Result<MidjourneyVersions>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.Version.Input.MustNotBeNullOrEmpty(query.Version);
-            await Validate.Version.ShouldExists(query.Version, _versionRepository);
+            await Validate.Version.Input.CannotBeNullOrEmpty(query.Version);
+            await Validate.Version.MustExists(query.Version, _versionRepository);
 
             return await _versionRepository.GetMasterVersionByVersionAsync(query.Version);
         }

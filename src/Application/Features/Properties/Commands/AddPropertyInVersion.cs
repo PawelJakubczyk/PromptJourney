@@ -17,15 +17,15 @@ public static class AddPropertyInVersion
         string? Description
     ) : ICommand<PropertyDetails>;
 
-    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRopository propertiesRepository)
+    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRepository propertiesRepository)
         : ICommandHandler<Command, PropertyDetails>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
-        private readonly IPropertiesRopository _propertiesRepository = propertiesRepository;
+        private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
+            await Validate.Version.Input.CannotBeNullOrEmpty(command.Version);
             await Validate.Version.Input.MustHaveMaximumLength(command.Version);
 
             await Validate.Property.Name.Input.MustNotBeNullOrEmpty(command.PropertyName);
@@ -36,8 +36,8 @@ public static class AddPropertyInVersion
             await Validate.Property.Parameters.Input.MustNotHaveMoreThanXElements(command.Parameters, 5);
             await Validate.Property.Parameters.Input.MustNotHaveElementsThatAreNullOrEmpty(command.Parameters);
 
-            await Validate.Version.ShouldExists(command.Version, _versionRepository);
-            await Validate.Property.ShouldNotExists(command.Version, command.PropertyName, _propertiesRepository);
+            await Validate.Version.MustExists(command.Version, _versionRepository);
+            await Validate.Property.CannotExists(command.Version, command.PropertyName, _propertiesRepository);
 
             return await _propertiesRepository.AddParameterToVersionAsync
             (

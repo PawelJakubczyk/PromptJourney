@@ -15,8 +15,8 @@ public static class DeleteTagInStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.ShouldExists(command.StyleName, _styleRepository);
-            await Validate.Tag.ShouldExists(command.StyleName, command.Tag, _styleRepository);
+            await Validate.Style.MustExists(command.StyleName, _styleRepository);
+            await Validate.Tag.MustExists(command.StyleName, command.Tag, _styleRepository);
 
             return await _styleRepository.DeleteTagFromStyleAsync(command.StyleName, command.Tag);
         }
