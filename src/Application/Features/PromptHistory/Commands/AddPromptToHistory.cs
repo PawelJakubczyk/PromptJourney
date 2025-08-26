@@ -29,9 +29,9 @@ public static class AddPromptToHistory
             await Validate.History.Input.MustNotBeNullOrEmpty(command.Version);
             await Validate.History.Input.MustHaveMaximumLength(command.Version);
 
-            await Validate.Version.Input.CannotBeNullOrEmpty(command.Version);
+            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
             await Validate.Version.Input.MustHaveMaximumLength(command.Version);
-            await Validate.Version.MustExists(command.Version, _versionRepository);
+            await Validate.Version.ShouldExists(command.Version, _versionRepository);
 
             return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value);
         }

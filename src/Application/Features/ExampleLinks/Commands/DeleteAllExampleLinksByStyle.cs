@@ -20,12 +20,12 @@ public static class DeleteAllExampleLinksByStyle
 
         public async Task<Result<List<MidjourneyStyleExampleLink>>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.Input.CannotBeNullOrEmpty(command.Style);
+            await Validate.Style.Input.MustNotBeNullOrEmpty(command.Style);
             await Validate.Style.Input.MustHaveMaximumLenght(command.Style);
-            await Validate.Style.MustExists(command.Style, _styleRepository);
+            await Validate.Style.ShouldExists(command.Style, _styleRepository);
 
-            await Validate.Links.MustHaveAtLastOneElement(_exampleLinkRepository);
-            await Validate.Links.MustHaveAtLastOneElementWithStyle(command.Style, _exampleLinkRepository);
+            await Validate.Links.ShouldHaveAtLastOneElement(_exampleLinkRepository);
+            await Validate.Links.ShouldHaveAtLastOneElementWithStyle(command.Style, _exampleLinkRepository);
 
             return await _exampleLinkRepository.DeleteAllExampleLinkByStyleAsync(command.Style);
         }

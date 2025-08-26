@@ -74,7 +74,7 @@ public class Validate
 
         public static Task<Result<string>> NameAndTypeShouldNotBeNullOrEmpty(MidjourneyStyle style)
         {
-            if (string.IsNullOrEmpty(style.Name))
+            if (string.IsNullOrEmpty(style.StyleName))
                 return Task.FromResult(Result.Fail<string>("Style name cannot be null or empty."));
             if (string.IsNullOrEmpty(style.Type))
                 return Task.FromResult(Result.Fail<string>("Style type cannot be null or empty."));

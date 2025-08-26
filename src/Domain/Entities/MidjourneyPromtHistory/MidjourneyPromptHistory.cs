@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.MidjourneyStyles;
-using Domain.Entities.MidjourneyVersions;
+using Domain.ValueObjects;
+using Domain.ValueObjects;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -9,16 +10,13 @@ public class MidjourneyPromptHistory
 {
     // Columns
     public Guid HistoryId { get; }
-    public string Prompt { get; }
-    public string Version { get; }
+    public Prompt Prompt { get; }
+    public ModelVersion Version { get; }
     public DateTime CreatedOn { get; }
 
     // Navigation
     public MidjourneyVersions.MidjourneyVersions VersionMaster { get; set; }
     public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
-
-    // Errors
-    private static List<DomainError> _errors = [];
 
     // Constructors
     private MidjourneyPromptHistory()
@@ -28,8 +26,8 @@ public class MidjourneyPromptHistory
 
     private MidjourneyPromptHistory
     (
-        string prompt,
-        string version
+        Prompt prompt,
+        ModelVersion version
     )
     {
         var historyId = Guid.NewGuid();
@@ -43,44 +41,17 @@ public class MidjourneyPromptHistory
 
     public static Result<MidjourneyPromptHistory> Create
     (
-        string prompt,
-        string version
+        Prompt prompt,
+        ModelVersion version
     )
     {
-        _errors.Clear();
-
-        ValidatePrompt(prompt);
-        ValidateVersion(version);
-
-        if (_errors.Count > 0)
-        {
-            return Result.Fail<MidjourneyPromptHistory>(_errors.Select(e => e.Message));
-        }
-
         var history = new MidjourneyPromptHistory
         (
-            version,
+            prompt,
             version
         );
 
         return Result.Ok(history);
-    }
-
-    // Validation methods
-    private static void ValidatePrompt(string prompt)
-    {
-        if (string.IsNullOrEmpty(prompt))
-            _errors.Add(PromptNullOrEmptyError);
-        else if (prompt.Length > 1000)
-            _errors.Add(PromptToLongError.WithDetail($"prompt: {prompt}."));
-    }
-
-    private static void ValidateVersion(string? version)
-    {
-        if (string.IsNullOrEmpty(version))
-            _errors.Add(VersionNullOrEmptyError);
-        else if (version.Length > 10)
-            _errors.Add(VersionToLongError.WithDetail($"version: {version}."));
     }
 }
 

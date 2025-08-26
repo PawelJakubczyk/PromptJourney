@@ -16,9 +16,9 @@ public static class DeletePropertyInVersion
 
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Version.Input.CannotBeNullOrEmpty(command.Version);
+            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
             await Validate.Version.Input.MustHaveMaximumLength(command.Version);
-            await Validate.Version.MustExists(command.Version, _versionRepository);
+            await Validate.Version.ShouldExists(command.Version, _versionRepository);
 
             await Validate.Property.Name.Input.MustNotBeNullOrEmpty(command.PropertyName);
             await Validate.Property.Name.Input.MustHaveMaximumLength(command.PropertyName);

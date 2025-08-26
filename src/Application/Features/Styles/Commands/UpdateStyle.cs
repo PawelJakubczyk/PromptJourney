@@ -21,7 +21,7 @@ public static class UpdateStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.MustExists(command.Name, _styleRepository);
+            await Validate.Style.ShouldExists(command.Name, _styleRepository);
 
             var style = MidjourneyStyle.Create(
                 command.Name,

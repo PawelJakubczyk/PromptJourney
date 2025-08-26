@@ -33,20 +33,41 @@ public sealed class PropertiesRepository : IPropertiesRepository
     public PropertiesRepository(MidjourneyDbContext midjourneyDbContext)
     {
         _midjourneyDbContext = midjourneyDbContext;
-        _supportedVersions = _midjourneyDbContext
-            .MidjourneyVersionsMaster
-            .Select(x => x.Version)
-            .ToListAsync().Result;
+        InitializeSupportedVersionsAsync().ConfigureAwait(false);
     }
 
+    private async Task InitializeSupportedVersionsAsync()
+    {
+        try
+        {
+            _supportedVersions = await _midjourneyDbContext
+                .MidjourneyVersionsMaster
+                .Select(x => x.Version)
+                .ToListAsync();
+        }
+        catch
+        {
+            _supportedVersions = _versionMappings.Keys.ToList();
+        }
+    }
+
+    // For Queries
     public async Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(string version)
     {
         try
         {
+            //await Validate.Version.Input.CannotBeNullOrEmpty(version);
+
+            //var versionExistsResult = await CheckVersionExistsInVersionsAsync(version);
+            //if (versionExistsResult.IsFailed || !versionExistsResult.Value)
+            //    return Result.Fail<List<MidjourneyPropertiesBase>>($"Version '{version}' does not exist");
+
             var parameters = await ExecuteVersionOperation(version, async (dbSet) =>
             {
                 var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
-                return await queryable.ToListAsync();
+                return await queryable
+                    .Include(p => p.VersionMaster)
+                    .ToListAsync();
             });
 
             return Result.Ok(parameters ?? []);
@@ -61,6 +82,9 @@ public sealed class PropertiesRepository : IPropertiesRepository
     {
         try
         {
+            //await Validate.Version.Input.CannotBeNullOrEmpty(version);
+            //await Validate.Property.Name.Input.MustNotBeNullOrEmpty(propertyName);
+
             var exists = await ExecuteVersionOperation(version, async (dbSet) =>
             {
                 var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
@@ -75,37 +99,41 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
-    //public async Task<Result<PropertyDetails>> AddParameterToVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description)
-    public async Task<Result<PropertyDetails>> AddParameterToVersionAsync(MidjourneyPropertiesBase property)
+    // For Commands
+    public async Task<Result<PropertyDetails>> AddParameterToVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description)
     {
         try
         {
-            await Validate.Property.ShouldBeNotNull(property);
-            await Validate.Property.Version.ShouldBeNotNullOrEmpty(property.Version);
-            await Validate.Property.Name.ShouldBeNotNullOrEmpty(property.PropertyName);
+            // Input validation
+            //await Validate.Version.Input.CannotBeNullOrEmpty(version);
+            //await Validate.Property.Name.Input.MustNotBeNullOrEmpty(propertyName);
+            //await Validate.Property.Parameters.Input.MustNotBeNull(parameters);
+            //await Validate.Property.Parameters.Input.MustHaveAtLeastOneElement(parameters);
 
-            // Validation
-
-
-            // Check if version exists
-            var versionCheckResult = CheckVersionIsSupportedVersions(property.Version);
-
-
-            var versionExistsResult =  CheckVersionExistsInVersionsAsync(property.Version);
-            if (versionExistsResult.IsFailed || !versionExistsResult.Value)
-                return Result.Fail<PropertyDetails>($"Version '{property.Version}' does not exist");
+            //// Check if version exists
+            //var versionExistsResult = await CheckVersionExistsInVersionsAsync(version);
+            //if (versionExistsResult.IsFailed || !versionExistsResult.Value)
+            //    return Result.Fail<PropertyDetails>($"Version '{version}' does not exist");
 
             // Check if parameter already exists
-            var existsResult = await CheckParameterExistsInVersionAsync(property.Version, property.propertyName);
+            var existsResult = await CheckParameterExistsInVersionAsync(version, propertyName);
             if (existsResult.IsFailed)
                 return Result.Fail<PropertyDetails>(existsResult.Errors);
 
             if (existsResult.Value)
                 return Result.Fail<PropertyDetails>($"Parameter '{propertyName}' already exists for version '{version}'");
 
+            // Create domain entity first for validation
+            var propertyResult = MidjourneyPropertiesBase.Create(propertyName, version, parameters, defaultValue, minValue, maxValue, description);
+            if (propertyResult.IsFailed)
+                return Result.Fail<PropertyDetails>(propertyResult.Errors);
+
             // Get VersionMaster
             var versionMaster = await _midjourneyDbContext.MidjourneyVersionsMaster
-                .FirstAsync(v => v.Version == version);
+                .FirstOrDefaultAsync(v => v.Version == version);
+
+            if (versionMaster == null)
+                return Result.Fail<PropertyDetails>($"Version master '{version}' not found");
 
             // Create and add parameter using generic method
             var success = await CreateAndAddParameterAsync(version, versionMaster, propertyName, parameters, defaultValue, minValue, maxValue, description);
@@ -136,23 +164,25 @@ public sealed class PropertiesRepository : IPropertiesRepository
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(version))
-                return Result.Fail<PropertyDetails>("Version cannot be null or empty");
+            // Input validation
+            //await Validate.Version.Input.CannotBeNullOrEmpty(version);
+            //await Validate.Property.Name.Input.MustNotBeNullOrEmpty(propertyName);
+            //await Validate.Property.Parameters.Input.MustNotBeNull(parameters);
+            //await Validate.Property.Parameters.Input.MustHaveAtLeastOneElement(parameters);
 
-            if (string.IsNullOrWhiteSpace(propertyName))
-                return Result.Fail<PropertyDetails>("Property name cannot be null or empty");
-
-            if (parameters == null || parameters.Length == 0)
-                return Result.Fail<PropertyDetails>("Parameters array cannot be null or empty");
-
-            var versionExistsResult = await CheckVersionExistsInVersionsAsync(version);
-            if (versionExistsResult.IsFailed || !versionExistsResult.Value)
-                return Result.Fail<PropertyDetails>($"Version '{version}' does not exist");
+            //var versionExistsResult = await CheckVersionExistsInVersionsAsync(version);
+            //if (versionExistsResult.IsFailed || !versionExistsResult.Value)
+            //    return Result.Fail<PropertyDetails>($"Version '{version}' does not exist");
 
             // Find the parameter using generic method
             var parameter = await FindParameterAsync(version, propertyName);
             if (parameter == null)
                 return Result.Fail<PropertyDetails>($"Parameter '{propertyName}' not found for version '{version}'");
+
+            // Validate new values using domain validation
+            var validationResult = MidjourneyPropertiesBase.Create(propertyName, version, parameters, defaultValue, minValue, maxValue, description);
+            if (validationResult.IsFailed)
+                return Result.Fail<PropertyDetails>(validationResult.Errors);
 
             // Update properties
             parameter.Parameters = parameters;
@@ -186,9 +216,17 @@ public sealed class PropertiesRepository : IPropertiesRepository
     {
         try
         {
-            var allowedProperties = new[] { "DefaultValue", "MinValue", "MaxValue", "Description", "Parameters" };
-            if (!allowedProperties.Contains(characteristicToUpdate, StringComparer.OrdinalIgnoreCase))
-                return Result.Fail<PropertyDetails>($"Property '{characteristicToUpdate}' is not supported for patching. Supported properties: {string.Join(", ", allowedProperties)}");
+            // Input validation
+            //await Validate.Version.Input.CannotBeNullOrEmpty(version);
+            //await Validate.Property.Name.Input.MustNotBeNullOrEmpty(propertyName);
+
+            //var allowedProperties = new[] { "DefaultValue", "MinValue", "MaxValue", "Description", "Parameters" };
+            //if (!allowedProperties.Contains(characteristicToUpdate, StringComparer.OrdinalIgnoreCase))
+            //    return Result.Fail<PropertyDetails>($"Property '{characteristicToUpdate}' is not supported for patching. Supported properties: {string.Join(", ", allowedProperties)}");
+
+            //var versionExistsResult = await CheckVersionExistsInVersionsAsync(version);
+            //if (versionExistsResult.IsFailed || !versionExistsResult.Value)
+            //    return Result.Fail<PropertyDetails>($"Version '{version}' does not exist");
 
             // Find the parameter
             var parameter = await FindParameterAsync(version, propertyName);
@@ -197,6 +235,19 @@ public sealed class PropertiesRepository : IPropertiesRepository
 
             // Update specific property
             UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
+
+            // Validate after update
+            var validationResult = MidjourneyPropertiesBase.Create(
+                parameter.PropertyName,
+                parameter.Version,
+                parameter.Parameters,
+                parameter.DefaultValue,
+                parameter.MinValue,
+                parameter.MaxValue,
+                parameter.Description);
+
+            if (validationResult.IsFailed)
+                return Result.Fail<PropertyDetails>(validationResult.Errors);
 
             await _midjourneyDbContext.SaveChangesAsync();
 
@@ -223,15 +274,13 @@ public sealed class PropertiesRepository : IPropertiesRepository
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(version))
-                return Result.Fail<PropertyDetails>("Version cannot be null or empty");
+            // Input validation
+            //await Validate.Version.Input.CannotBeNullOrEmpty(version);
+            //await Validate.Property.Name.Input.MustNotBeNullOrEmpty(propertyName);
 
-            if (string.IsNullOrWhiteSpace(propertyName))
-                return Result.Fail<PropertyDetails>("Property name cannot be null or empty");
-
-            var versionExistsResult = await CheckVersionExistsInVersionsAsync(version);
-            if (versionExistsResult.IsFailed || !versionExistsResult.Value)
-                return Result.Fail<PropertyDetails>($"Version '{version}' does not exist");
+            //var versionExistsResult = await CheckVersionExistsInVersionsAsync(version);
+            //if (versionExistsResult.IsFailed || !versionExistsResult.Value)
+            //    return Result.Fail<PropertyDetails>($"Version '{version}' does not exist");
 
             // Find the parameter
             var parameter = await FindParameterAsync(version, propertyName);
@@ -250,9 +299,8 @@ public sealed class PropertiesRepository : IPropertiesRepository
                 Description = parameter.Description
             };
 
-            // Remove the parameter
-            _midjourneyDbContext.Remove(parameter);
-            await _midjourneyDbContext.SaveChangesAsync();
+            // Remove the parameter using generic method
+            await RemoveParameterAsync(version, parameter);
 
             return Result.Ok(parameterDetails);
         }
@@ -262,7 +310,21 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
+    private async Task<bool> CheckVersionExistsInVersionsAsync(string version)
+    {
+        try
+        {
+            if (_supportedVersions.Count == 0)
+                await InitializeSupportedVersionsAsync();
 
+            return await _midjourneyDbContext.MidjourneyVersionsMaster
+                .AnyAsync(v => v.Version == version);
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     private async Task<T?> ExecuteVersionOperation<T>(string version, Func<IQueryable, Task<T>> operation)
     {
@@ -325,6 +387,22 @@ public sealed class PropertiesRepository : IPropertiesRepository
         return true;
     }
 
+    private async Task RemoveParameterAsync(string version, MidjourneyPropertiesBase parameter)
+    {
+        if (!_versionMappings.TryGetValue(version, out var mapping))
+            throw new InvalidOperationException($"Version '{version}' not supported");
+
+        var dbSetProperty = typeof(MidjourneyDbContext).GetProperty(mapping.DbSetPropertyName);
+        if (dbSetProperty?.GetValue(_midjourneyDbContext) is not IQueryable dbSet)
+            throw new InvalidOperationException($"DbSet for version '{version}' not found");
+
+        // Use reflection to call Remove method
+        var removeMethod = dbSet.GetType().GetMethod("Remove");
+        removeMethod?.Invoke(dbSet, [parameter]);
+
+        await _midjourneyDbContext.SaveChangesAsync();
+    }
+
     private static void UpdateParameterProperty(MidjourneyPropertiesBase parameter, string propertyToUpdate, string? newValue)
     {
         switch (propertyToUpdate.ToLowerInvariant())
@@ -346,36 +424,6 @@ public sealed class PropertiesRepository : IPropertiesRepository
                 break;
         }
     }
-
-    public static Result<PropertyDetails> CheckVersionIsSupportedVersions(string version)
-    {
-        if (string.IsNullOrWhiteSpace(version))
-            return Result.Fail<PropertyDetails>("Version cannot be null or empty");
-
-        if (_supportedVersions.Count == 0)
-            return Result.Fail<PropertyDetails>("No supported versions available");
-
-        if (!_supportedVersions.Contains(version, StringComparer.OrdinalIgnoreCase))
-            return Result.Fail<PropertyDetails>($"Version '{version}' is not supported. Supported versions: {string.Join(", ", _supportedVersions)}");
-
-        PropertyDetails propertyDetails = new()
-        {
-            Version = version,
-            PropertyName = string.Empty,
-            Parameters = [],
-            DefaultValue = null,
-            MinValue = null,
-            MaxValue = null,
-            Description = null
-        };
-
-        return Result.Ok(propertyDetails);
-    }
-
-    //public static Result<bool> ParameterShouldExist(string parameter)
-    //{
-
-    //}
 
     // Version mapping record
     private record PropertiesVersionMapping(Type EntityType, string DbSetPropertyName);

@@ -25,6 +25,7 @@ public class MidjourneyDbContext : DbContext
     public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6> MidjourneyPropertiesVersionNiji6 { get; set; }
     public DbSet<MidjourneyStyle> MidjourneyStyle { get; set; }
     public DbSet<MidjourneyPromptHistory> MidjourneyPromptHistory { get; set; }
+    public DbSet<MidjourneyStyleExampleLink> MidjourneyStyleExampleLinks { get; set; }
 
     public MidjourneyDbContext(DbContextOptions<MidjourneyDbContext> options)
         : base(options) { }

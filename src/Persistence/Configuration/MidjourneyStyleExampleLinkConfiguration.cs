@@ -2,6 +2,7 @@ using Domain.Entities.MidjourneyStyles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
+using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
 
 namespace Persistence.Configuration;
 
@@ -25,6 +26,7 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
             .IsRequired();
             
         builder.Property(el => el.Version)
+            .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
             .HasColumnType(ColumnType.VarChar(10))
             .IsRequired();
@@ -33,7 +35,7 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
         builder.HasOne(el => el.Style)
             .WithMany(s => s.ExampleLinks)
             .HasForeignKey(el => el.StyleName)
-            .HasPrincipalKey(s => s.Name)
+            .HasPrincipalKey(s => s.StyleName)
             .OnDelete(DeleteBehavior.Cascade);
             
         builder.HasOne(el => el.VersionMaster)

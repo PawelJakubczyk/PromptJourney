@@ -21,9 +21,9 @@ public static class AddVersion
 
         public async Task<Result<MidjourneyVersions>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Version.Input.CannotBeNullOrEmpty(command.Version);
+            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
             await Validate.Version.Input.MustHaveMaximumLength(command.Version);
-            await Validate.Version.Parameter.Input.CannotBeNullOrEmpty(command.Parameter);
+            await Validate.Version.Parameter.Input.MustNotBeNullOrEmpty(command.Parameter);
             await Validate.Version.Parameter.Input.MustHaveMaximumLength(command.Parameter);
 
             return await _versionRepository.AddVersionAsync(command.Version, command.Parameter, command.ReleaseDate, command.Description);

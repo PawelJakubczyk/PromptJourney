@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
+using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
+using static Persistence.Mapping.ValueObjects.PromptMapping;
 
 namespace Persistence.Configuration;
 
@@ -19,12 +21,14 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
 
         builder
             .Property(history => history.Prompt)
+            .HasConversion<PromptConverter, PromptComparer>()
             .HasColumnName("prompt")
             .HasColumnType(ColumnType.VarChar(1000))
             .IsRequired();
 
         builder
             .Property(history => history.Version)
+            .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("properties")
             .HasColumnType(ColumnType.VarChar(7))
             .IsRequired();

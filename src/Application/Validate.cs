@@ -57,7 +57,7 @@ public class Validate
             }
         }
         
-        public static async Task<Result<string>> MustExists(string link, IExampleLinksRepository repository)
+        public static async Task<Result<string>> ShouldExists(string link, IExampleLinksRepository repository)
         {
             var exampleLinkExistsResult = await repository.CheckExampleLinkExistsAsync(link);
             if (exampleLinkExistsResult.IsFailed)
@@ -71,7 +71,7 @@ public class Validate
             return Result.Ok<string>($"Example link '{link}' does exist. You may proceed with the operation.");
         }
 
-        public static async Task<Result<string>> CannotExist(string link, IExampleLinksRepository repository)
+        public static async Task<Result<string>> ShouldNotExists(string link, IExampleLinksRepository repository)
         {
             var exampleLinkExistsResult = await repository.CheckExampleLinkExistsAsync(link);
             if (exampleLinkExistsResult.IsFailed)
@@ -89,7 +89,7 @@ public class Validate
 
     public static class Links
     {
-        public static async Task<Result<string>> MustHaveAtLastOneElementWithStyle(string style, IExampleLinksRepository repository)
+        public static async Task<Result<string>> ShouldHaveAtLastOneElementWithStyle(string style, IExampleLinksRepository repository)
         {
             var exampleLinkWithStyleExistsResult = await repository.CheckExampleLinkWithStyleExistsAsync(style);
             if (exampleLinkWithStyleExistsResult.IsFailed)
@@ -104,7 +104,7 @@ public class Validate
             return Result.Ok<string>($"Example link with '{style}' exist. You may proceed with the operation.'");
         }
 
-        public static async Task<Result<string>> MustHaveAtLastOneElement(IExampleLinksRepository repository)
+        public static async Task<Result<string>> ShouldHaveAtLastOneElement(IExampleLinksRepository repository)
         {
             var exampleLinkExistsResult = await repository.CheckExampleLinksAreNotEmpty();
             if (exampleLinkExistsResult.IsFailed)
@@ -163,7 +163,7 @@ public class Validate
 
     public static class Date
     {
-        public static Task<Result<string>> CannotBeInFuture(DateTime inputDate)
+        public static Task<Result<string>> ShouldNotBeInFuture(DateTime inputDate)
         {
             if (inputDate > DateTime.UtcNow)
             {
@@ -175,7 +175,7 @@ public class Validate
 
         public static class Range
         {
-            public static Task<Result<string>> MustBeChronological(DateTime startDate, DateTime endDate)
+            public static Task<Result<string>> ShouldBeChronological(DateTime startDate, DateTime endDate)
             {
                 if (startDate >= endDate)
                 {
@@ -245,7 +245,7 @@ public class Validate
             }
         }
 
-        public static async Task<Result<string>> CannotExists(string version, string parameterName, IPropertiesRepository repository)
+        public static async Task<Result<string>> ShouldNotExists(string version, string parameterName, IPropertiesRepository repository)
         {
             var parameterExistsResult = await repository.CheckParameterExistsInVersionAsync(version, parameterName);
             if (parameterExistsResult.IsFailed)
@@ -275,7 +275,7 @@ public class Validate
             return Result.Ok<string>($"Parameter '{parameterName}' does exists for version '{version}', You may proceed with the operation.");
         }
 
-        public static async Task<Result<string>> MustMatchPropertyName(string input)
+        public static async Task<Result<string>> ShouldMatchingPropertyName(string input)
         {
             var propertyNames = typeof(PropertyDetails)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -292,7 +292,7 @@ public class Validate
     {
         public static class Input
         {
-            public static async Task<Result<string>> CannotBeNullOrEmpty(string input)
+            public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
             {
                 return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Style));
             }
@@ -303,7 +303,7 @@ public class Validate
             }
         }
 
-        public static async Task<Result<string>> MustExists(string styleName, IStyleRepository repository)
+        public static async Task<Result<string>> ShouldExists(string styleName, IStyleRepository repository)
         {
             var styleExistsResult = await repository.CheckStyleExistsAsync(styleName);
             if (styleExistsResult.IsFailed)
@@ -316,7 +316,7 @@ public class Validate
             }
             return Result.Ok<string>($"Style '{styleName}' does exists, You may proceed with the operation.");
         }
-        public static async Task<Result<string>> CannotExists(string styleName, IStyleRepository repository)
+        public static async Task<Result<string>> ShouldNotExists(string styleName, IStyleRepository repository)
         {
             var styleExistsResult = await repository.CheckStyleExistsAsync(styleName);
             if (styleExistsResult.IsFailed)
@@ -333,7 +333,7 @@ public class Validate
 
     public static class Tag
     {
-        public static async Task<Result<string>> MustExists(string styleName, string tag, IStyleRepository repository)
+        public static async Task<Result<string>> ShouldExists(string styleName, string tag, IStyleRepository repository)
         {
             var tagExistsResult = await repository.CheckTagExistsInStyleAsync(styleName, tag);
             if (tagExistsResult.IsFailed)
@@ -346,7 +346,7 @@ public class Validate
             }
             return Result.Ok<string>($"Tag: '{tag}' for  Style: '{styleName}' does exist, You may proceed with the operation.");
         }
-        public static async Task<Result<string>> CannotExists(string styleName, string tag, IStyleRepository repository)
+        public static async Task<Result<string>> ShouldNotExists(string styleName, string tag, IStyleRepository repository)
         {
             var tagExistsResult = await repository.CheckTagExistsInStyleAsync(styleName, tag);
             if (tagExistsResult.IsFailed)
@@ -365,7 +365,7 @@ public class Validate
     {
         public static class Input
         {
-            public static async Task<Result<string>> CannotBeNullOrEmpty(string input)
+            public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
             {
                 return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Version));
             }
@@ -380,7 +380,7 @@ public class Validate
         {
             public static class Input
             {
-                public static async Task<Result<string>> CannotBeNullOrEmpty(string input)
+                public static async Task<Result<string>> MustNotBeNullOrEmpty(string input)
                 {
                     return await Validate.Input.MustNotBeNullOrEmpty(input, nameof(Parameter));
                 }
@@ -391,7 +391,7 @@ public class Validate
             }
         }
 
-        public static async Task<Result<string>> MustExists(string version, IVersionRepository repository)
+        public static async Task<Result<string>> ShouldExists(string version, IVersionRepository repository)
         {
             var versionExistsResult = await repository.CheckVersionExistsInVersionsAsync(version);
 
@@ -407,7 +407,7 @@ public class Validate
             return Result.Ok<string>($"Version: '{version}' does exist, You may proceed with the operation.");
         }
 
-        public static async Task<Result<string>> MustHaveAnySuportedVersion(IVersionRepository repository)
+        public static async Task<Result<string>> ShouldHaveAnySuportedVersion(IVersionRepository repository)
         {
             var suportedVersionExistResult = await repository.CheckIfAnySupportedVersionExistsAsync();
 

@@ -15,8 +15,8 @@ public static class AddTagToStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.MustExists(command.StyleName, _styleRepository);
-            await Validate.Tag.CannotExists(command.StyleName, command.Tag, _styleRepository);
+            await Validate.Style.ShouldExists(command.StyleName, _styleRepository);
+            await Validate.Tag.ShouldNotExists(command.StyleName, command.Tag, _styleRepository);
 
             return await _styleRepository.AddTagToStyleAsync(command.StyleName, command.Tag);
         }

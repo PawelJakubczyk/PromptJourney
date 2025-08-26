@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
 using Domain.Entities.MidjourneyProperties;
+using Domain.ValueObjects;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -8,7 +9,7 @@ namespace Domain.Entities.MidjourneyVersions;
 public class MidjourneyVersions
 {
     // Columns
-    public string Version { get; set; }
+    public ModelVersion Version { get; set; }
     public string Parameter { get; set; }
     public DateTime? ReleaseDate { get; set; }
     public string? Description { get; set; }
@@ -41,7 +42,7 @@ public class MidjourneyVersions
 
     private MidjourneyVersions
     (
-        string version,
+        ModelVersion version,
         string parameter,
         DateTime? releaseDate = null,
         string? description = null
@@ -55,7 +56,7 @@ public class MidjourneyVersions
 
     public static Result<MidjourneyVersions> Create
     (
-        string version,
+        ModelVersion version,
         string parameter,
         DateTime? releaseDate = null,
         string? description = null
@@ -63,7 +64,6 @@ public class MidjourneyVersions
     {
         _errors.Clear();
 
-        ValidateVersion(version);
         ValidateParameter(parameter);
         ValidateReleaseDate(releaseDate);
         ValidateDescription(description);
@@ -85,14 +85,6 @@ public class MidjourneyVersions
     }
 
     // Validation methods
-    private static void ValidateVersion(string? version)
-    {
-        if (string.IsNullOrEmpty(version))
-            _errors.Add(VersionNullOrEmptyError);
-        else if (version.Length > 10)
-            _errors.Add(VersionToLongError.WithDetail($"version: '{version}' (length: {version.Length})"));
-    }
-
     private static void ValidateReleaseDate(DateTime? releaseDate)
     {
         if (releaseDate != null && releaseDate > DateTime.Now)

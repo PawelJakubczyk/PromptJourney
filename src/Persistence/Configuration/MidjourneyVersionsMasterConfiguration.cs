@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
+using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
 
 namespace Persistence.Configuration;
 
@@ -13,6 +14,7 @@ public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<Mi
         builder.HasKey(master => master.Version);
 
         builder.Property(master => master.Version)
+            .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
             .HasColumnType(ColumnType.VarChar(10))
             .IsRequired();

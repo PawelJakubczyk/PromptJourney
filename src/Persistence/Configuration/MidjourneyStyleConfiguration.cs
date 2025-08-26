@@ -10,9 +10,9 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
     public void Configure(EntityTypeBuilder<MidjourneyStyle> builder)
     {
         builder.ToTable("midjourney_styles", schema: "public");
-        builder.HasKey(style => style.Name);
+        builder.HasKey(style => style.StyleName);
         
-        builder.Property(style => style.Name)
+        builder.Property(style => style.StyleName)
             .HasColumnName("name")
             .HasColumnType(ColumnType.VarChar(100))
             .IsRequired();

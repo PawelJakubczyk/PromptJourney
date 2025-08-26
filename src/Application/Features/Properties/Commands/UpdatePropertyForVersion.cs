@@ -25,7 +25,7 @@ public static class UpdatePropertyForVersion
 
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Version.MustExists(command.Version, _versionRepository);
+            await Validate.Version.ShouldExists(command.Version, _versionRepository);
             await Validate.Property.ShouldExists(command.Version, command.PropertyName, _propertiesRepository);
 
             return await _propertiesRepository.UpdateParameterForVersionAsync

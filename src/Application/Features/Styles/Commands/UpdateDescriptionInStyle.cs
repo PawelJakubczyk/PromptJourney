@@ -15,7 +15,7 @@ public static class UpdateDescriptionInStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.MustExists(command.StyleName, _styleRepository);
+            await Validate.Style.ShouldExists(command.StyleName, _styleRepository);
 
             return await _styleRepository.UpadteStyleDescription(command.StyleName, command.NewDescription);
         }

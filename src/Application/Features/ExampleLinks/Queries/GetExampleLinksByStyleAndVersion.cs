@@ -22,13 +22,13 @@ public static class GetExampleLinksByStyleAndVersion
 
         public async Task<Result<List<MidjourneyStyleExampleLink>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.Version.Input.CannotBeNullOrEmpty(query.Version);
+            await Validate.Version.Input.MustNotBeNullOrEmpty(query.Version);
             await Validate.Version.Input.MustHaveMaximumLength(query.Version);
-            await Validate.Version.MustExists(query.Version, _versionRepository);
+            await Validate.Version.ShouldExists(query.Version, _versionRepository);
 
-            await Validate.Style.Input.CannotBeNullOrEmpty(query.Style);
+            await Validate.Style.Input.MustNotBeNullOrEmpty(query.Style);
             await Validate.Style.Input.MustHaveMaximumLenght(query.Style);
-            await Validate.Style.MustExists(query.Style, _styleRepository);
+            await Validate.Style.ShouldExists(query.Style, _styleRepository);
 
             return await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(query.Style, query.Version);
         }

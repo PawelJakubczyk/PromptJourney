@@ -83,14 +83,14 @@ public class StylesController : ControllerBase
         var result = await _styleRepository.AddStyleAsync(style);
         if (result.IsFailed)
             return BadRequest(result.Errors);
-        return CreatedAtAction(nameof(GetByName), new { name = result.Value.Name }, result.Value);
+        return CreatedAtAction(nameof(GetByName), new { name = result.Value.StyleName }, result.Value);
     }
 
     // PUT api/styles/{name}
     [HttpPut("{name}")]
     public async Task<IActionResult> Update(string name, [FromBody] MidjourneyStyle style)
     {
-        if (name != style.Name)
+        if (name != style.StyleName)
             return BadRequest("Route name and payload name must match");
 
         var result = await _styleRepository.UpdateStyleAsync(style);

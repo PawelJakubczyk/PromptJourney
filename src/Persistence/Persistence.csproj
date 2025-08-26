@@ -9,6 +9,7 @@
   <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
   <ItemGroup>
