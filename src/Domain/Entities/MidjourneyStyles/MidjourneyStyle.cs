@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
@@ -11,7 +12,7 @@ public class MidjourneyStyle
     public StyleName Name { get; set; }
     public StyleType Type { get; set; }
     public Description? Description { get; set; }
-    public ICollection<Tag>? Tags { get; set; }
+    public Tag[]? Tags { get; set; }
     
     // Navigation properties
     public List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
@@ -27,14 +28,14 @@ public class MidjourneyStyle
     (
         StyleName name,
         StyleType type,
-        Description? description = null, 
-        ICollection<Tag>? tags = null
+        Description? description = null,
+        Tag[]? tags = null
     )
     {
         Name = name;
         Type = type;
         Description = description;
-        Tags = tags ?? [];
+        Tags = tags;
     }
 
     public static Result<MidjourneyStyle> Create
@@ -42,9 +43,17 @@ public class MidjourneyStyle
         StyleName name,
         StyleType type,
         Description? description = null,
-        ICollection<Tag>? tags = null
+        Tag[]? tags = null
     )
     {
+        List<DomainError> errors = [];
+
+        errors
+            .IfEmptyItems<Tag>(tags);
+
+        if (errors.Count != 0)
+            return Result.Fail<MidjourneyStyle>(errors);
+
         var style = new MidjourneyStyle
         (
             name,

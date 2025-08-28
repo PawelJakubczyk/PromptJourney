@@ -1,5 +1,6 @@
 ﻿using Application.Features.Properties;
 using Domain.Entities.MidjourneyProperties;
+using Domain.ValueObjects;
 using FluentResults;
 
 namespace Application.Abstractions.IRepository;
@@ -7,11 +8,11 @@ namespace Application.Abstractions.IRepository;
 public interface IPropertiesRepository
 {
     // For Queries
-    Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(string version);
-    Task<Result<bool>> CheckParameterExistsInVersionAsync(string version, string propertyName);
+    Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(ModelVersion version);
+    Task<Result<bool>> CheckParameterExistsInVersionAsync(ModelVersion version, PropertyName propertyName);
     // For Commands
-    Task<Result<PropertyDetails>> AddParameterToVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description);
-    Task<Result<PropertyDetails>> UpdateParameterForVersionAsync(string version, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description);
-    Task<Result<PropertyDetails>> PatchParameterForVersionAsync(string version, string propertyName, string characteristicToUpdate, string? newValue);
-    Task<Result<PropertyDetails>> DeleteParameterInVersionAsync(string version, string propertyName);
+    Task<Result<PropertyDetails>> AddParameterToVersionAsync(MidjourneyPropertiesBase property);
+    Task<Result<PropertyDetails>> UpdateParameterForVersionAsync(MidjourneyPropertiesBase property);
+    Task<Result<PropertyDetails>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue);
+    Task<Result<PropertyDetails>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName);
 }

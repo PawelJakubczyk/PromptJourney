@@ -1,3 +1,4 @@
+using Domain.Extensions;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -6,8 +7,6 @@ namespace Domain.ValueObjects;
 public sealed class Param
 {
     public const int MaxLength = 100;
-
-    private readonly static List<DomainError> _errors = [];
     public string Value { get; }
 
     private Param(string value)
@@ -17,31 +16,16 @@ public sealed class Param
 
     public static Result<Param> Create(string value)
     {
-        _errors.Clear();
+        List<DomainError> errors = [];
 
-        ValidateParameterNotEmpty(value);
-        ValidateParameterLength(value);
+        errors
+            .IfNullOrWhitespace<Param>(value)
+            .IfLenghtToLong<Param>(value, MaxLength);
 
-        if (_errors.Any())
-            return Result.Fail<Param>(_errors);
+        if (errors.Count != 0)
+            return Result.Fail<Param>(errors);
 
         return Result.Ok(new Param(value));
-    }
-
-    private static void ValidateParameterNotEmpty(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            _errors.Add(ParameterNullOrEmptyError);
-        }
-    }
-
-    private static void ValidateParameterLength(string value)
-    {
-        if (value?.Length > MaxLength)
-        {
-            _errors.Add(ParameterTooLongError.WithDetail($"parameter: '{value}' (length: {value.Length})"));
-        }
     }
 
     public override string ToString() => Value;

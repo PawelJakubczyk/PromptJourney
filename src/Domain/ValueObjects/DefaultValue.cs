@@ -1,3 +1,4 @@
+using Domain.Extensions;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -6,8 +7,6 @@ namespace Domain.ValueObjects;
 public sealed class DefaultValue
 {
     public const int MaxLength = 50;
-
-    private readonly static List<DomainError> _errors = [];
     public string? Value { get; }
 
     private DefaultValue(string? value)
@@ -15,37 +14,19 @@ public sealed class DefaultValue
         Value = value;
     }
 
-    public static Result<DefaultValue> Create(string? value)
+    public static Result<DefaultValue> Create(string value)
     {
-        _errors.Clear();
+        List<DomainError> errors = [];
 
-        if (value == null)
-            return Result.Ok(new DefaultValue(null));
+        errors
+            .IfWhitespace<DefaultValue>(value)
+            .IfLenghtToLong<DefaultValue>(value, MaxLength);
 
-        ValidateDefaultValueNotEmpty(value);
-        ValidateDefaultValueLength(value);
-
-        if (_errors.Any())
-            return Result.Fail<DefaultValue>(_errors);
+        if (errors.Count != 0)
+            return Result.Fail<DefaultValue>(errors);
 
         return Result.Ok(new DefaultValue(value));
     }
 
-    private static void ValidateDefaultValueNotEmpty(string value)
-    {
-        if (value.Length == 0)
-        {
-            _errors.Add(DefaultValueEmptyError);
-        }
-    }
-
-    private static void ValidateDefaultValueLength(string value)
-    {
-        if (value.Length > MaxLength)
-        {
-            _errors.Add(DefaultValueTooLongError.WithDetail($"default value length: {value.Length}"));
-        }
-    }
-
-    public override string? ToString() => Value ?? null;
+    public override string ToString() => Value ?? string.Empty;
 }

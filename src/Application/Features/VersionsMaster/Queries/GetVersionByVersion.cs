@@ -7,13 +7,13 @@ namespace Application.Features.VersionsMaster.Queries;
 
 public static class GetVersionByVersion
 {
-    public sealed record Query(string Version) : IQuery<MidjourneyVersions>;
+    public sealed record Query(string Version) : IQuery<MidjourneyVersion>;
 
-    public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, MidjourneyVersions>
+    public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, MidjourneyVersion>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<MidjourneyVersions>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<MidjourneyVersion>> Handle(Query query, CancellationToken cancellationToken)
         {
             await Validate.Version.Input.MustNotBeNullOrEmpty(query.Version);
             await Validate.Version.ShouldExists(query.Version, _versionRepository);

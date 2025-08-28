@@ -1,13 +1,15 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Features.ExampleLinks.Responses;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
 
 namespace Application.Features.ExampleLinks.Commands;
 
 public static class DeleteAllExampleLinksByStyle
 {
-    public sealed record Command(string Style) : ICommand<List<MidjourneyStyleExampleLink>>;
+    public sealed record Command(StyleName Style) : ICommand<List<MidjourneyStyleExampleLink>>;
 
     public sealed class Handler
     (
@@ -20,12 +22,7 @@ public static class DeleteAllExampleLinksByStyle
 
         public async Task<Result<List<MidjourneyStyleExampleLink>>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.Input.MustNotBeNullOrEmpty(command.Style);
-            await Validate.Style.Input.MustHaveMaximumLenght(command.Style);
             await Validate.Style.ShouldExists(command.Style, _styleRepository);
-
-            await Validate.Links.ShouldHaveAtLastOneElement(_exampleLinkRepository);
-            await Validate.Links.ShouldHaveAtLastOneElementWithStyle(command.Style, _exampleLinkRepository);
 
             return await _exampleLinkRepository.DeleteAllExampleLinkByStyleAsync(command.Style);
         }

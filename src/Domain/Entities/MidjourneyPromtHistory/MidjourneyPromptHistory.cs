@@ -1,8 +1,6 @@
 ﻿using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
-using Domain.ValueObjects;
 using FluentResults;
-using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Entities.MidjourneyPromtHistory;
 
@@ -15,7 +13,7 @@ public class MidjourneyPromptHistory
     public DateTime CreatedOn { get; }
 
     // Navigation
-    public MidjourneyVersions.MidjourneyVersions VersionMaster { get; set; }
+    public MidjourneyVersions.MidjourneyVersion VersionMaster { get; set; }
     public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
 
     // Constructors

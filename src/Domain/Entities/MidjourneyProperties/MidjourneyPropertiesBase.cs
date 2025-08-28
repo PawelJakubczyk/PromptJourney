@@ -1,4 +1,5 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Extensions;
+using Domain.ValueObjects;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -16,7 +17,7 @@ public class MidjourneyPropertiesBase
     public Description? Description { get; set; }
 
     // Navigation
-    public MidjourneyVersions.MidjourneyVersions VersionMaster { get; set; }
+    public MidjourneyVersions.MidjourneyVersion VersionMaster { get; set; }
 
     // Constructors
     protected MidjourneyPropertiesBase()
@@ -55,6 +56,14 @@ public class MidjourneyPropertiesBase
         Description? description = null
     )
     {
+        List<DomainError> errors = [];
+
+        errors
+            .IfEmptyItems<Param>(parameters);
+
+        if (errors.Count != 0)
+            return Result.Fail<MidjourneyPropertiesBase>(errors);
+
         var versionBase = new MidjourneyPropertiesBase
         (
             propertyName, 

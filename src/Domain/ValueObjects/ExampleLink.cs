@@ -1,17 +1,14 @@
+using Domain.Extensions;
 using FluentResults;
-using static Domain.Errors.DomainErrorMessages;
 using System.Text.RegularExpressions;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.ValueObjects;
 
 public sealed partial class ExampleLink
 {
     public const int MaxLength = 200;
-
-    private readonly static List<DomainError> _errors = [];
     public string Value { get; }
-
-    private readonly bool isFailed;
 
     private ExampleLink(string value)
     {
@@ -20,50 +17,19 @@ public sealed partial class ExampleLink
 
     public static Result<ExampleLink> Create(string value)
     {
-        _errors.Clear();
+        List<DomainError> errors = [];
 
-        ValidateLinkNotEmpty(value);
-        ValidateLinkLength(value);
-        ValidateLinkFormat(value);
+        errors
+            .IfNullOrWhitespace<ExampleLink>(value)
+            .IfLenghtToLong<ExampleLink>(value, MaxLength)
+            .IfLinkFormatInvalid(value);
 
-        if (_errors.Any())
-            return Result.Fail<ExampleLink>(_errors);
+        if (errors.Count != 0)
+            return Result.Fail<ExampleLink>(errors);
 
         return Result.Ok(new ExampleLink(value));
     }
 
-    private static void ValidateLinkNotEmpty(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            _errors.Add(ExampleLinkNullOrEmptyError);
-        }
-    }
-
-    private static void ValidateLinkLength(string value)
-    {
-        if (value?.Length > MaxLength)
-        {
-            _errors.Add(ExampleLinkTooLongError.WithDetail($"link length: {value.Length}"));
-        }
-    }
-
-    private static void ValidateLinkFormat(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return;
-
-        if (!IsValidUrl(value))
-        {
-            _errors.Add(new DomainError($"Invalid URL format: {value}"));
-        }
-    }
-
-    private static bool IsValidUrl(string value)
-    {
-        return Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
-               (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
-    }
-
     public override string ToString() => Value;
+    public Uri ToUri() => new(Value);
 }

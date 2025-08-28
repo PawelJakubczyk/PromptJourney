@@ -1,13 +1,14 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyPromtHistory;
+using Domain.ValueObjects;
 using FluentResults;
 
 namespace Application.Features.PromptHistory.Commands;
 
 public static class AddPromptToHistory
 {
-    public sealed record Command(string Prompt, string Version) : ICommand<MidjourneyPromptHistory>;
+    public sealed record Command(Prompt Prompt, ModelVersion Version) : ICommand<MidjourneyPromptHistory>;
 
     public sealed class Handler
     (
@@ -26,11 +27,6 @@ public static class AddPromptToHistory
                 command.Version
             );
 
-            await Validate.History.Input.MustNotBeNullOrEmpty(command.Version);
-            await Validate.History.Input.MustHaveMaximumLength(command.Version);
-
-            await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
-            await Validate.Version.Input.MustHaveMaximumLength(command.Version);
             await Validate.Version.ShouldExists(command.Version, _versionRepository);
 
             return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value);

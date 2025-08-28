@@ -47,7 +47,7 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<MidjourneyVersions>> GetMasterVersionByVersionAsync(string version)
+    public async Task<Result<MidjourneyVersion>> GetMasterVersionByVersionAsync(string version)
     {
         try
         {
@@ -59,11 +59,11 @@ public sealed class VersionsRepository : IVersionRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyVersions>($"Database error while retrieving version '{version}': {ex.Message}");
+            return Result.Fail<MidjourneyVersion>($"Database error while retrieving version '{version}': {ex.Message}");
         }
     }
 
-    public async Task<Result<List<MidjourneyVersions>>> GetAllVersionsAsync()
+    public async Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync()
     {
         try
         {
@@ -74,7 +74,7 @@ public sealed class VersionsRepository : IVersionRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyVersions>>($"Database error while retrieving all versions: {ex.Message}");
+            return Result.Fail<List<MidjourneyVersion>>($"Database error while retrieving all versions: {ex.Message}");
         }
     }
 
@@ -95,7 +95,7 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<MidjourneyVersions>> AddVersionAsync
+    public async Task<Result<MidjourneyVersion>> AddVersionAsync
     (
         string version, 
         string parameter, 
@@ -105,7 +105,7 @@ public sealed class VersionsRepository : IVersionRepository
     {
         try
         {
-            var newVersion = MidjourneyVersions.Create(version, parameter, releaseDate, description).Value;
+            var newVersion = MidjourneyVersion.Create(version, parameter, releaseDate, description).Value;
 
             await _midjourneyDbContext.MidjourneyVersionsMaster.AddAsync(newVersion);
             await _midjourneyDbContext.SaveChangesAsync();
@@ -115,7 +115,7 @@ public sealed class VersionsRepository : IVersionRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyVersions>($"Database error while adding version: {ex.Message}");
+            return Result.Fail<MidjourneyVersion>($"Database error while adding version: {ex.Message}");
         }
     }
 

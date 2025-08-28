@@ -356,7 +356,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
         });
     }
 
-    private async Task<bool> CreateAndAddParameterAsync(string version, MidjourneyVersions versionMaster, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description)
+    private async Task<bool> CreateAndAddParameterAsync(string version, MidjourneyVersion versionMaster, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description)
     {
         if (!_versionMappings.TryGetValue(version, out var mapping))
             return false;

@@ -6,9 +6,9 @@ using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
 
 namespace Persistence.Configuration;
 
-public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<MidjourneyVersions>
+public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<MidjourneyVersion>
 {
-    public void Configure(EntityTypeBuilder<MidjourneyVersions> builder)
+    public void Configure(EntityTypeBuilder<MidjourneyVersion> builder)
     {
         builder.ToTable("version_master", schema: "public");
         builder.HasKey(master => master.Version);

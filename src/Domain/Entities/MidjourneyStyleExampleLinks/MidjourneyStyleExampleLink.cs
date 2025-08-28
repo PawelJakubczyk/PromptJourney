@@ -14,7 +14,7 @@ public class MidjourneyStyleExampleLink
     
     // Navigation
     public MidjourneyStyle Style { get; private set; } = null!;
-    public MidjourneyVersions.MidjourneyVersions VersionMaster { get; private set; } = null!;
+    public MidjourneyVersions.MidjourneyVersion VersionMaster { get; private set; } = null!;
 
     // Constructors
     private MidjourneyStyleExampleLink() 

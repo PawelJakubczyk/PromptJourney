@@ -2,17 +2,16 @@
 using Domain.Entities.MidjourneyProperties;
 using Domain.ValueObjects;
 using FluentResults;
-using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Entities.MidjourneyVersions;
 
-public class MidjourneyVersions
+public class MidjourneyVersion
 {
     // Columns
     public ModelVersion Version { get; set; }
-    public string Parameter { get; set; }
+    public Param Parameter { get; set; }
     public DateTime? ReleaseDate { get; set; }
-    public string? Description { get; set; }
+    public Description? Description { get; set; }
 
     // Navigation
     public List<MidjourneyPromptHistory> Histories { get; set; }
@@ -31,21 +30,18 @@ public class MidjourneyVersions
     public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji5> VersionsNiji5 { get; set; }
     public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6> VersionsNiji6 { get; set; }
 
-    // Errors
-    private static List<DomainError> _errors = [];
-
     // Constructors
-    private MidjourneyVersions()
+    private MidjourneyVersion()
     {
         // Parameterless constructor for EF Core
     }
 
-    private MidjourneyVersions
+    private MidjourneyVersion
     (
         ModelVersion version,
-        string parameter,
+        Param parameter,
         DateTime? releaseDate = null,
-        string? description = null
+        Description? description = null
     )
     {
         Version = version;
@@ -54,26 +50,15 @@ public class MidjourneyVersions
         Description = description;
     }
 
-    public static Result<MidjourneyVersions> Create
+    public static Result<MidjourneyVersion> Create
     (
         ModelVersion version,
-        string parameter,
+        Param parameter,
         DateTime? releaseDate = null,
-        string? description = null
+        Description? description = null
     )
     {
-        _errors.Clear();
-
-        ValidateParameter(parameter);
-        ValidateReleaseDate(releaseDate);
-        ValidateDescription(description);
-
-        if (_errors.Count > 0)
-        {
-            return Result.Fail<MidjourneyVersions>(_errors.Select(e => e.Message));
-        }
-
-        var versionMaster = new MidjourneyVersions
+        var versionMaster = new MidjourneyVersion
         (
             version,
             parameter,
@@ -82,28 +67,5 @@ public class MidjourneyVersions
         );
 
         return Result.Ok(versionMaster);
-    }
-
-    // Validation methods
-    private static void ValidateReleaseDate(DateTime? releaseDate)
-    {
-        if (releaseDate != null && releaseDate > DateTime.Now)
-            _errors.Add(ReleaseDateInFutureError.WithDetail($"release date: {releaseDate:yyyy-MM-dd}, current date: {DateTime.Now:yyyy-MM-dd}"));
-    }
-
-    private static void ValidateParameter(string? parameter)
-    {
-        if (string.IsNullOrEmpty(parameter))
-            _errors.Add(ParameterNullOrEmptyError);
-        if (parameter!.Length > 100)
-            _errors.Add(ParameterTooLongError.WithDetail($"parameter: '{parameter}' (length: {parameter.Length})"));
-    }
-
-    private static void ValidateDescription(string? description)
-    {
-        if (description != null && description.Length == 0)
-            _errors.Add(DescriptionEmptyError);
-        else if (description != null && description.Length > 500)
-            _errors.Add(DescriptionToLongError.WithDetail($"description length: {description.Length}"));
     }
 }

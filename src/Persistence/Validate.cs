@@ -145,7 +145,7 @@ public class Validate
             return Task.FromResult(Result.Ok<string>("Version was found."));
         }
 
-        public static Task<Result<string>> ShouldBeNotNullOrEmpty(MidjourneyVersions version)
+        public static Task<Result<string>> ShouldBeNotNullOrEmpty(MidjourneyVersion version)
         {
             if (version is null)
                 return Task.FromResult(Result.Fail<string>("Version cannot be null."));
@@ -153,7 +153,7 @@ public class Validate
             return Task.FromResult(Result.Ok<string>("Version was found."));
         }
 
-        public static Task<Result<string>> ShouldNotCountainNullOrEmptyProperties(MidjourneyVersions version)
+        public static Task<Result<string>> ShouldNotCountainNullOrEmptyProperties(MidjourneyVersion version)
         {
             if (string.IsNullOrWhiteSpace(version.Version))
                 return Task.FromResult(Result.Fail<string>("Version name cannot be null or empty."));

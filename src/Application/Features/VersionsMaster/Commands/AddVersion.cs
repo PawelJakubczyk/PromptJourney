@@ -13,13 +13,13 @@ public static class AddVersion
         string Parameter,
         DateTime? ReleaseDate = null,
         string? Description = null
-    ) : ICommand<MidjourneyVersions>;
+    ) : ICommand<MidjourneyVersion>;
 
-    public sealed class Handler(IVersionRepository versionRepository) : ICommandHandler<Command, MidjourneyVersions>
+    public sealed class Handler(IVersionRepository versionRepository) : ICommandHandler<Command, MidjourneyVersion>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<MidjourneyVersions>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<MidjourneyVersion>> Handle(Command command, CancellationToken cancellationToken)
         {
             await Validate.Version.Input.MustNotBeNullOrEmpty(command.Version);
             await Validate.Version.Input.MustHaveMaximumLength(command.Version);

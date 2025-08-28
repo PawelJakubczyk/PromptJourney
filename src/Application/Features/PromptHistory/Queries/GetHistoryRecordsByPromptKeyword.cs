@@ -16,7 +16,7 @@ public static class GetHistoryRecordsByPromptKeyword
 
         public async Task<Result<List<MidjourneyPromptHistory>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.History.Input.Keyword.MustNotBeNullOrEmpty(query.Keyword);
+            await Validate.Keyword.MustNotBeNullOrEmpty(query.Keyword);
 
             return await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(query.Keyword);
         }

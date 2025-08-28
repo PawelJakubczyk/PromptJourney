@@ -1,13 +1,14 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
 
 namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyle
 {
-    public sealed record Query(string Style) : IQuery<List<MidjourneyStyleExampleLink>>;
+    public sealed record Query(StyleName Style) : IQuery<List<MidjourneyStyleExampleLink>>;
 
     public sealed class Handler
     (
@@ -20,9 +21,6 @@ public static class GetExampleLinksByStyle
 
         public async Task<Result<List<MidjourneyStyleExampleLink>>> Handle(Query query, CancellationToken cancellationToken)
         {
-
-            await Validate.Style.Input.MustNotBeNullOrEmpty(query.Style);
-            await Validate.Style.Input.MustHaveMaximumLenght(query.Style);
             await Validate.Style.ShouldExists(query.Style, _styleRepository);
 
             return await _exampleLinkRepository.GetExampleLinksByStyleAsync(query.Style);
