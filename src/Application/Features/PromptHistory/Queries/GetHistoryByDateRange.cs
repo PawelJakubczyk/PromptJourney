@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyPromtHistory;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -16,8 +18,11 @@ public static class GetHistoryByDateRange
 
         public async Task<Result<List<MidjourneyPromptHistory>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.Date.Range.ShouldBeChronological(query.From, query.To);
-            await Validate.Date.ShouldNotBeInFuture(query.To);
+            List<ApplicationError> applicationErrors = [];
+
+            applicationErrors
+                .IfDateRangeNotChronological(query.From, query.To)
+                .IfDateInFuture(query.To);
 
             return await _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To);
         }

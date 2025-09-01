@@ -1,17 +1,21 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.Styles.Commands.AddStyle;
 
 public static class AddStyle
 {
-    public sealed record Command(
-        string Name,
-        string Type,
-        string? Description = null,
-        ICollection<string>? Tags = null
+    public sealed record Command
+    (
+        StyleName Name,
+        StyleType Type,
+        Description? Description = null,
+        List<Tag>? Tags = null
     ) : ICommand<MidjourneyStyle>;
 
     public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, MidjourneyStyle>
@@ -20,19 +24,29 @@ public static class AddStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.ShouldNotExists(command.Name, _styleRepository);
+            List<ApplicationError> applicationErrors = [];
 
-            var style = MidjourneyStyle.Create(
+            applicationErrors
+                .IfStyleAlreadyExists(command.Name, _styleRepository);
+
+            var styleResult = MidjourneyStyle.Create(
                 command.Name,
                 command.Type,
                 command.Description,
                 command.Tags
             );
 
-            if (style.IsFailed)
-                return Result.Fail<MidjourneyStyle>(style.Errors);
+            var domainErrors = styleResult.Errors;
 
-            return await _styleRepository.AddStyleAsync(style.Value);
+            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
+            {
+                var error = new Error("Validation failed")
+                    .WithMetadata("Application Errors", applicationErrors)
+                    .WithMetadata("Domain Errors", domainErrors);
+                return Result.Fail<MidjourneyStyle>(error);
+            }
+
+            return await _styleRepository.AddStyleAsync(styleResult.Value);
         }
     }
 }

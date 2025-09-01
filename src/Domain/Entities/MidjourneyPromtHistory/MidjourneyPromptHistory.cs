@@ -1,6 +1,11 @@
-﻿using Domain.Entities.MidjourneyStyles;
+﻿using Domain.Entities.MidjourneyProperties;
+using Domain.Entities.MidjourneyStyles;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static Domain.Errors.DomainErrorMessages;
+
 
 namespace Domain.Entities.MidjourneyPromtHistory;
 
@@ -43,6 +48,15 @@ public class MidjourneyPromptHistory
         ModelVersion version
     )
     {
+        List<DomainError> errors = [];
+
+        errors
+            .CollectErrors<Prompt>(prompt)
+            .CollectErrors<ModelVersion>(version);
+
+        if (errors.Count != 0)
+            return Result.Fail<MidjourneyPromptHistory>(errors);
+
         var history = new MidjourneyPromptHistory
         (
             prompt,

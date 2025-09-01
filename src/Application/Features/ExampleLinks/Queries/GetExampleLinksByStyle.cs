@@ -1,14 +1,18 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
+using  Domain.Errors;
+using static Application.Errors.ApplicationErrorMessages;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyle
 {
-    public sealed record Query(StyleName Style) : IQuery<List<MidjourneyStyleExampleLink>>;
+    public sealed record Query(StyleName StyleName) : IQuery<List<MidjourneyStyleExampleLink>>;
 
     public sealed class Handler
     (
@@ -21,9 +25,26 @@ public static class GetExampleLinksByStyle
 
         public async Task<Result<List<MidjourneyStyleExampleLink>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.Style.ShouldExists(query.Style, _styleRepository);
+            List<DomainError> domainErrors = [];
 
-            return await _exampleLinkRepository.GetExampleLinksByStyleAsync(query.Style);
+            domainErrors
+                .CollectErrors<StyleName>(query.StyleName);
+
+            List<ApplicationError> applicationErrors = [];
+
+            applicationErrors
+                .IfStyleNotExists(query.StyleName, _styleRepository);
+
+            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
+            {
+                var error = new Error("Validation failed")
+                    .WithMetadata("Application Errors", applicationErrors)
+                    .WithMetadata("Domain Errors", domainErrors);
+
+                return Result.Fail<List<MidjourneyStyleExampleLink>>(error);
+            }
+
+            return await _exampleLinkRepository.GetExampleLinksByStyleAsync(query.StyleName);
         }
     }
 }

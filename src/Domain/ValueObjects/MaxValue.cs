@@ -1,4 +1,4 @@
-using Domain.Extensions;
+using Domain.Errors;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -20,7 +20,7 @@ public sealed class MaxValue
 
         errors
             .IfWhitespace<MaxValue>(value)
-            .IfLenghtToLong<MaxValue>(value, MaxLength);
+            .IfLengthTooLong<MaxValue>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<MaxValue>(errors);

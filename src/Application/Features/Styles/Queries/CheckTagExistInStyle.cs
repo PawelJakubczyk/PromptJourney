@@ -1,17 +1,20 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
+using Domain.ValueObjects;
 using FluentResults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.Styles.Queries;
 
 public class CheckTagExistInStyle
 {
-    public sealed record Query(string Style, string Tag) : IQuery<bool>;
+    public sealed record Query(StyleName StyleName, Tag Tag) : IQuery<bool>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, bool>
     {
@@ -19,7 +22,12 @@ public class CheckTagExistInStyle
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            return await _styleRepository.CheckTagExistsInStyleAsync(query.Style, query.Tag);
+            List<ApplicationError> applicationErrors = [];
+
+            applicationErrors
+                .IfTagNotExists(query.StyleName, query.Tag, _styleRepository);
+
+            return await _styleRepository.CheckTagExistsInStyleAsync(query.StyleName, query.Tag);
         }
     }
 }

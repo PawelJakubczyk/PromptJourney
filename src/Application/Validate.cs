@@ -167,8 +167,6 @@ public class Validate
 
     public static class Style
     {
-
-
         public static async Task<Result<string>> ShouldExists(StyleName styleName, IStyleRepository repository)
         {
             var styleExistsResult = await repository.CheckStyleExistsAsync(styleName);
@@ -229,11 +227,6 @@ public class Validate
 
     public static class Version
     {
-        public static class Parameter
-        {
-
-        }
-
         public static async Task<Result<string>> ShouldExists(ModelVersion version, IVersionRepository repository)
         {
             var versionExistsResult = await repository.CheckVersionExistsInVersionsAsync(version);
@@ -261,17 +254,5 @@ public class Validate
             return Result.Ok<string>($"Supported versions are available. You may proceed with the operation.");
         }
 
-    }
-
-    public static class Keyword
-    {
-        public static Task<Result<string>> MustNotBeNullOrEmpty(string keyword)
-        {
-            if (string.IsNullOrWhiteSpace(keyword))
-            {
-                return Task.FromResult(Result.Fail<string>("The keyword cannot be empty or whitespace."));
-            }
-            return Task.FromResult(Result.Ok<string>("The keyword is valid – it is not empty or whitespace. You may proceed with the operation."));
-        }
     }
 }

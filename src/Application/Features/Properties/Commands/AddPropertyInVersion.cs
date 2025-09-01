@@ -1,6 +1,12 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
+using Domain.Entities.MidjourneyProperties;
+using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
+using System.Reflection.Metadata;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.Properties.Commands;
 
@@ -8,13 +14,13 @@ public static class AddPropertyInVersion
 {
     public sealed record Command
     (
-        string Version,
-        string PropertyName,
-        string[] Parameters,
-        string? DefaultValue,
-        string? MinValue,
-        string? MaxValue,
-        string? Description
+        ModelVersion Version,
+        PropertyName PropertyName,
+        List<Param> Parameters,
+        DefaultValue? DefaultValue,
+        MinValue? MinValue,
+        MaxValue? MaxValue,
+        Description? Description
     ) : ICommand<PropertyDetails>;
 
     public sealed class Handler(IVersionRepository versionRepository, IPropertiesRepository propertiesRepository)
@@ -25,19 +31,35 @@ public static class AddPropertyInVersion
 
         public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Version.ShouldExists(command.Version, _versionRepository);
-            await Validate.Property.ShouldNotExists(command.Version, command.PropertyName, _propertiesRepository);
+            List<ApplicationError> applicationErrors = [];
 
-            return await _propertiesRepository.AddParameterToVersionAsync
+            applicationErrors
+                .IfVersionNotExists(command.Version, _versionRepository)
+                .IfPropertyAlreadyExists(command.Version, command.PropertyName, _propertiesRepository);
+
+            var propertyResoult = MidjourneyPropertiesBase.Create
             (
-                command.Version,
                 command.PropertyName,
+                command.Version,
                 command.Parameters,
                 command.DefaultValue,
                 command.MinValue,
                 command.MaxValue,
                 command.Description
             );
+
+            var domainErrors = propertyResoult.Errors;
+
+            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
+            {
+                var error = new Error("Validation failed")
+                    .WithMetadata("Application Errors", applicationErrors)
+                    .WithMetadata("Domain Errors", domainErrors);
+
+                return Result.Fail<PropertyDetails>(error);
+            }
+
+            return await _propertiesRepository.AddParameterToVersionAsync(propertyResoult.Value);
         }
     }
 }

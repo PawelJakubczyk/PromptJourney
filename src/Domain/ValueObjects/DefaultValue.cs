@@ -1,4 +1,4 @@
-using Domain.Extensions;
+using Domain.Errors;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -20,7 +20,7 @@ public sealed class DefaultValue
 
         errors
             .IfWhitespace<DefaultValue>(value)
-            .IfLenghtToLong<DefaultValue>(value, MaxLength);
+            .IfLengthTooLong<DefaultValue>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<DefaultValue>(errors);

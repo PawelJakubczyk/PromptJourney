@@ -1,5 +1,6 @@
-﻿using Domain.Extensions;
+﻿using Domain.Errors;
 using FluentResults;
+using System.Text.RegularExpressions;
 using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.ValueObjects;
@@ -20,7 +21,7 @@ public sealed class ModelVersion
 
         errors
             .IfNullOrWhitespace<ModelVersion>(value)
-            .IfLenghtToLong<ModelVersion>(value, MaxLength)
+            .IfLengthTooLong<ModelVersion>(value, MaxLength)
             .IfVersionFormatInvalid(value);
 
         if (errors.Count != 0)
@@ -32,3 +33,21 @@ public sealed class ModelVersion
     public override string ToString() => Value;
 };
 
+public static class ErrorsExtensions
+{
+    internal static List<DomainError> IfVersionFormatInvalid(this List<DomainError> domainErrors, string value)
+    {
+        bool isValidNumeric = Regex.IsMatch(value, @"^[1-9](\.[0-9])?$");
+        bool isValidNiji = Regex.IsMatch(value, @"^niji [4-6]$");
+
+        if (!isValidNumeric && !isValidNiji)
+        {
+            domainErrors.Add(new DomainError
+            (
+                $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')"
+            ));
+        }
+
+        return domainErrors;
+    }
+}

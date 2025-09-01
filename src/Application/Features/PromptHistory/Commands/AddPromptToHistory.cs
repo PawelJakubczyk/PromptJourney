@@ -1,8 +1,13 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities.MidjourneyStyles;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.PromptHistory.Commands;
 
@@ -21,15 +26,29 @@ public static class AddPromptToHistory
 
         public async Task<Result<MidjourneyPromptHistory>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var promptHistory = MidjourneyPromptHistory.Create
+            List<ApplicationError> applicationErrors = [];
+
+            applicationErrors
+                .IfVersionNotExists(command.Version, _versionRepository);
+
+            var promptHistoryResult = MidjourneyPromptHistory.Create
             (
                 command.Prompt,
                 command.Version
             );
 
-            await Validate.Version.ShouldExists(command.Version, _versionRepository);
+            var domainErrors = promptHistoryResult.Errors;
 
-            return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value);
+            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
+            {
+                var error = new Error("Validation failed")
+                    .WithMetadata("Application Errors", applicationErrors)
+                    .WithMetadata("Domain Errors", domainErrors);
+
+                return Result.Fail<MidjourneyPromptHistory>(error);
+            }
+
+            return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistoryResult.Value);
         }
     }
 }

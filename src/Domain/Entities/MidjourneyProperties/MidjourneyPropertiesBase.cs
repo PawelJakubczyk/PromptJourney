@@ -1,7 +1,8 @@
-﻿using Domain.Extensions;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
+using Domain.Errors;
+
 
 namespace Domain.Entities.MidjourneyProperties;
 
@@ -10,7 +11,7 @@ public class MidjourneyPropertiesBase
     // Columns
     public PropertyName PropertyName { get; set; }
     public ModelVersion Version { get; set; }
-    public Param[]? Parameters { get; set; }
+    public List<Param>? Parameters { get; set; }
     public DefaultValue? DefaultValue { get; set; }
     public MinValue? MinValue { get; set; }
     public MaxValue? MaxValue { get; set; }
@@ -29,7 +30,7 @@ public class MidjourneyPropertiesBase
     (
         PropertyName propertyName,
         ModelVersion version,
-        Param[]? parameters = null,
+        List<Param>? parameters = null,
         DefaultValue? defaultValue = null,
         MinValue? minValue = null,
         MaxValue? maxValue = null,
@@ -49,7 +50,7 @@ public class MidjourneyPropertiesBase
     (
         PropertyName propertyName,
         ModelVersion version,
-        Param[]? parameters = null,
+        List<Param>? parameters = null,
         DefaultValue? defaultValue = null,
         MinValue? minValue = null,
         MaxValue? maxValue = null,
@@ -59,7 +60,13 @@ public class MidjourneyPropertiesBase
         List<DomainError> errors = [];
 
         errors
-            .IfEmptyItems<Param>(parameters);
+            .CollectErrors<PropertyName>(propertyName)
+            .CollectErrors<ModelVersion>(version)
+            .CollectErrors<List<Param>?>(parameters)
+            .CollectErrors<DefaultValue?>(defaultValue)
+            .CollectErrors<MinValue?>(minValue)
+            .CollectErrors<MaxValue?>(maxValue)
+            .CollectErrors<Description?>(description);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyPropertiesBase>(errors);

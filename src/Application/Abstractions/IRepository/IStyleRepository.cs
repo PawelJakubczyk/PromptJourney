@@ -11,9 +11,9 @@ public interface IStyleRepository
     // For Queries
     Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync();
     Task<Result<MidjourneyStyle>> GetStyleByNameAsync(StyleName name);
-    Task<Result<List<MidjourneyStyle>>> GetStylesByTypeAsync(Type type);
+    Task<Result<List<MidjourneyStyle>>> GetStylesByTypeAsync(StyleType type);
     Task<Result<List<MidjourneyStyle>>> GetStylesByTagsAsync(List<Tag> tags);
-    Task<Result<List<MidjourneyStyle>>> GetStylesByDescriptionKeywordAsync(string keyword);
+    Task<Result<List<MidjourneyStyle>>> GetStylesByDescriptionKeywordAsync(Keyword keyword);
     Task<Result<bool>> CheckStyleExistsAsync(StyleName name);
     Task<Result<bool>> CheckTagExistsInStyleAsync(StyleName styleName, Tag tag);
     // For Commands

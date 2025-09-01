@@ -1,5 +1,10 @@
+using Domain.Entities.MidjourneyProperties;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static Domain.Errors.DomainErrorMessages;
+
 
 namespace Domain.Entities.MidjourneyStyles;
 
@@ -36,6 +41,23 @@ public class MidjourneyStyleExampleLink
         ModelVersion version
     )
     {
-        return Result.Ok(new MidjourneyStyleExampleLink(link, styleName, version));
+        List<DomainError> errors = [];
+
+        errors
+            .CollectErrors<ExampleLink>(link)
+            .CollectErrors<StyleName>(styleName)
+            .CollectErrors<ModelVersion?>(version);
+
+        if (errors.Count != 0)
+            return Result.Fail<MidjourneyStyleExampleLink>(errors);
+
+        var exampleLink = new MidjourneyStyleExampleLink
+        (
+            link,
+            styleName,
+            version
+        );
+
+        return Result.Ok(exampleLink);
     }
 }

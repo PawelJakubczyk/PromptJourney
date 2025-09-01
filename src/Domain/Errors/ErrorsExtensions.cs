@@ -1,7 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using FluentResults;
+using System.Text.RegularExpressions;
 using static Domain.Errors.DomainErrorMessages;
 
-namespace Domain.Extensions;
+namespace Domain.Errors;
 
 public static class ErrorsExtensions
 {
@@ -35,7 +36,7 @@ public static class ErrorsExtensions
         return domainErrors;
     }
 
-    public static List<DomainError> IfLenghtToLong<TValue>(this List<DomainError> domainErrors, string value, int maxLength)
+    public static List<DomainError> IfLengthTooLong<TValue>(this List<DomainError> domainErrors, string value, int maxLength)
     {
         if (value?.Length > maxLength)
         {
@@ -58,31 +59,6 @@ public static class ErrorsExtensions
         return domainErrors;
     }
 
-    public static List<DomainError> IfVersionFormatInvalid(this List<DomainError> domainErrors, string value)
-    {
-        bool isValidNumeric = Regex.IsMatch(value, @"^[1-9](\.[0-9])?$");
-        bool isValidNiji = Regex.IsMatch(value, @"^niji [4-6]$");
-
-        if (!isValidNumeric && !isValidNiji)
-        {
-            domainErrors.Add(new DomainError
-            (
-                $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')"
-            ));
-        }
-
-        return domainErrors;
-    }
-
-    public static List<DomainError> IfTooManyItems<TValue>(this List<DomainError> domainErrors, TValue[]? items, int maxItems)
-    {
-        if (items != null && items.Length > maxItems)
-        {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: Cannot have more than {maxItems} items."));
-        }
-        return domainErrors;
-    }
-
     public static List<DomainError> IfEmptyItems<TValue>(this List<DomainError> domainErrors, TValue[]? items)
     {
         if (items != null && items.Length == 0)
@@ -92,5 +68,18 @@ public static class ErrorsExtensions
         return domainErrors;
     }
 
+    public static List<DomainError> CollectErrors<T>(
+        this List<DomainError> errors,
+        Result<T>? result
+    )
+    {
+        if (result is not null && result.IsFailed)
+        {
+            errors.AddRange(
+                result.Errors.OfType<DomainError>()
+            );
+        }
 
+        return errors;
+    }
 }

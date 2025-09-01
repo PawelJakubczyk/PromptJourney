@@ -2,6 +2,8 @@
 using Domain.Entities.MidjourneyProperties;
 using Domain.ValueObjects;
 using FluentResults;
+using static Domain.Errors.DomainErrorMessages;
+using Domain.Errors;
 
 namespace Domain.Entities.MidjourneyVersions;
 
@@ -58,6 +60,16 @@ public class MidjourneyVersion
         Description? description = null
     )
     {
+        List<DomainError> errors = [];
+
+        errors
+        .CollectErrors<ModelVersion>(version)
+        .CollectErrors<Param>(parameter)
+        .CollectErrors<Description?>(description);
+
+        if (errors.Count != 0)
+            return Result.Fail<MidjourneyVersion>(errors);
+
         var versionMaster = new MidjourneyVersion
         (
             version,

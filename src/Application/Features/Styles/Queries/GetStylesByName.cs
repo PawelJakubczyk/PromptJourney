@@ -1,13 +1,16 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.Styles.Queries;
 
 public static class GetStylesByName
 {
-    public sealed record Query(string Name) : IQuery<MidjourneyStyle>;
+    public sealed record Query(StyleName StyleName) : IQuery<MidjourneyStyle>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, MidjourneyStyle>
     {
@@ -15,11 +18,12 @@ public static class GetStylesByName
 
         public async Task<Result<MidjourneyStyle>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.Style.Input.MustNotBeNullOrEmpty(query.Name);
-            await Validate.Style.Input.MustHaveMaximumLenght(query.Name);
-            await Validate.Style.ShouldExists(query.Name, _styleRepository);
+            List<ApplicationError> applicationErrors = [];
 
-            return await _styleRepository.GetStyleByNameAsync(query.Name);
+            applicationErrors
+                .IfStyleNotExists(query.StyleName, _styleRepository);
+
+            return await _styleRepository.GetStyleByNameAsync(query.StyleName);
         }
     }
 }

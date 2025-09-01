@@ -1,13 +1,14 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
 
 namespace Application.Features.Styles.Queries;
 
 public static class GetStylesByDescriptionKeyword
 {
-    public sealed record Query(string DescriptionKeyword) : IQuery<List<MidjourneyStyle>>;
+    public sealed record Query(Keyword DescriptionKeyword) : IQuery<List<MidjourneyStyle>>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<MidjourneyStyle>>
     {

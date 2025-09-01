@@ -1,4 +1,4 @@
-using Domain.Extensions;
+using Domain.Errors;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -20,7 +20,7 @@ public sealed partial class StyleType
 
         errors
             .IfNullOrWhitespace<StyleType>(value)
-            .IfLenghtToLong<StyleType>(value, MaxLength);
+            .IfLengthTooLong<StyleType>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<StyleType>(errors);

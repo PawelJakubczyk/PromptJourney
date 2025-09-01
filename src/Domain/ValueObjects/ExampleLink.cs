@@ -1,6 +1,5 @@
-using Domain.Extensions;
+using Domain.Errors;
 using FluentResults;
-using System.Text.RegularExpressions;
 using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.ValueObjects;
@@ -21,7 +20,7 @@ public sealed partial class ExampleLink
 
         errors
             .IfNullOrWhitespace<ExampleLink>(value)
-            .IfLenghtToLong<ExampleLink>(value, MaxLength)
+            .IfLengthTooLong<ExampleLink>(value, MaxLength)
             .IfLinkFormatInvalid(value);
 
         if (errors.Count != 0)

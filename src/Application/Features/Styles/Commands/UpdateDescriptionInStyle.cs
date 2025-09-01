@@ -1,13 +1,16 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.Styles.Commands.EditDescriptionInStyle;
 
 public static class UpdateDescriptionInStyle
 {
-    public sealed record Command(string StyleName, string NewDescription) : ICommand<MidjourneyStyle>;
+    public sealed record Command(StyleName StyleName, Description NewDescription) : ICommand<MidjourneyStyle>;
 
     public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, MidjourneyStyle>
     {
@@ -15,7 +18,10 @@ public static class UpdateDescriptionInStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.ShouldExists(command.StyleName, _styleRepository);
+            List<ApplicationError> applicationErrors = [];
+
+            applicationErrors
+                .IfStyleNotExists(command.StyleName, _styleRepository);
 
             return await _styleRepository.UpadteStyleDescription(command.StyleName, command.NewDescription);
         }

@@ -1,31 +1,31 @@
-using Domain.Errors;
+﻿using Domain.Errors;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class Tag
+public class Keyword
 {
     public const int MaxLength = 50;
     public string Value { get; }
 
-    private Tag(string value)
+    private Keyword(string value)
     {
         Value = value;
     }
 
-    public static Result<Tag> Create(string value)
+    public static Result<Keyword> Create(string value)
     {
         List<DomainError> errors = [];
 
         errors
-            .IfNullOrWhitespace<Tag>(value)
-            .IfLengthTooLong<Tag>(value, MaxLength);
+            .IfNullOrWhitespace<Keyword>(value)
+            .IfLengthTooLong<Keyword>(value, MaxLength);
 
         if (errors.Count != 0)
-            return Result.Fail<Tag>(errors);
+            return Result.Fail<Keyword>(errors);
 
-        return Result.Ok(new Tag(value));
+        return Result.Ok(new Keyword(value));
     }
 
     public override string ToString() => Value;

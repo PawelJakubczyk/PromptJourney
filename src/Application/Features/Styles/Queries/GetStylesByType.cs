@@ -1,13 +1,15 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.Styles.Queries;
 
 public static class GetStylesByType
 {
-    public sealed record Query(string Type) : IQuery<List<MidjourneyStyle>>;
+    public sealed record Query(StyleType StyleType) : IQuery<List<MidjourneyStyle>>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<MidjourneyStyle>>
     {
@@ -15,10 +17,9 @@ public static class GetStylesByType
 
         public async Task<Result<List<MidjourneyStyle>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            Validate.Style.Type.Input.MustNotBeNullOrEmpty(query.Type);
-            Validate.Style.Type.Input.MustNotBeNullOrEmpty(query.Type);
+            List<ApplicationError> applicationErrors = [];
 
-            return await _styleRepository.GetStylesByTypeAsync(query.Type);
+            return await _styleRepository.GetStylesByTypeAsync(query.StyleType);
         }
     }
 }

@@ -4,9 +4,9 @@ namespace Application.Features.ExampleLinks.Responses;
 
 public sealed record ExampleLinkRespose
 (
-    ExampleLink Link,
-    StyleName Style, 
-    ModelVersion Version
+    string Link,
+    string Style, 
+    string Version
 )
 {
 

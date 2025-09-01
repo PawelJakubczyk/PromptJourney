@@ -1,4 +1,4 @@
-﻿using Domain.Extensions;
+﻿using Domain.Errors;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -20,7 +20,7 @@ public sealed partial class Prompt
 
         errors
             .IfNullOrWhitespace<Prompt>(value)
-            .IfLenghtToLong<Prompt>(value, MaxLength);
+            .IfLengthTooLong<Prompt>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<Prompt>(errors);

@@ -1,13 +1,16 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.Styles.Commands.RemoveTagInStyle;
 
 public static class DeleteTagInStyle
 {
-    public sealed record Command(string StyleName, string Tag) : ICommand<MidjourneyStyle>;
+    public sealed record Command(StyleName StyleName, Tag Tag) : ICommand<MidjourneyStyle>;
 
     public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, MidjourneyStyle>
     {
@@ -15,8 +18,11 @@ public static class DeleteTagInStyle
 
         public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
         {
-            await Validate.Style.ShouldExists(command.StyleName, _styleRepository);
-            await Validate.Tags.ShouldExists(command.StyleName, command.Tag, _styleRepository);
+            List<ApplicationError> applicationErrors = [];
+
+            applicationErrors
+                .IfStyleNotExists(command.StyleName, _styleRepository)
+                .IfTagNotExists(command.StyleName, command.Tag, _styleRepository);
 
             return await _styleRepository.DeleteTagFromStyleAsync(command.StyleName, command.Tag);
         }

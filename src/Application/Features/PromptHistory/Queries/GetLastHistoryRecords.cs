@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.Entities.MidjourneyPromtHistory;
 using FluentResults;
+using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -16,8 +18,11 @@ public static class GetLastHistoryRecords
 
         public async Task<Result<List<MidjourneyPromptHistory>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            await Validate.History.LimitMustBeGreaterThanZero(query.Count);
-            await Validate.History.CountMustNotExceedHistoricalRecords(query.Count, _promptHistoryRepository);
+            List<ApplicationError> applicationErrors = [];
+
+            applicationErrors
+                .IfHistoryLimitNotGreaterThanZero(query.Count)
+                .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository);
 
             return await _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count);
         }

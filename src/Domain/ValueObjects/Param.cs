@@ -1,4 +1,4 @@
-using Domain.Extensions;
+using Domain.Errors;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -20,7 +20,7 @@ public sealed class Param
 
         errors
             .IfNullOrWhitespace<Param>(value)
-            .IfLenghtToLong<Param>(value, MaxLength);
+            .IfLengthTooLong<Param>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<Param>(errors);

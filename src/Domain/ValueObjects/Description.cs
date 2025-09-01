@@ -1,4 +1,4 @@
-using Domain.Extensions;
+using Domain.Errors;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
 
@@ -20,7 +20,7 @@ public sealed class Description
 
         errors
             .IfWhitespace<Description>(value)
-            .IfLenghtToLong<Description>(value, MaxLength);
+            .IfLengthTooLong<Description>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<Description>(errors);
