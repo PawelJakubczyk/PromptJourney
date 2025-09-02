@@ -1,10 +1,12 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Errors;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
 using static Domain.Errors.DomainErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Styles.Queries;
 
@@ -18,17 +20,13 @@ public static class GetStylesByDescriptionKeyword
 
         public async Task<Result<List<MidjourneyStyle>>> Handle(Query query, CancellationToken cancellationToken)
         {
-                List<DomainError> domainErrors = [];
+            List<DomainError> domainErrors = [];
 
-                domainErrors
-                    .CollectErrors<Keyword>(query.DescriptionKeyword);
+            domainErrors
+                .CollectErrors<Keyword>(query.DescriptionKeyword);
 
-                if (domainErrors.Count != 0)
-                {
-                    var error = new Error("Validation failed")
-                        .WithMetadata("Domain Errors", domainErrors);
-                    return Result.Fail<List<MidjourneyStyle>>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyStyle>>(domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _styleRepository.GetStylesByDescriptionKeywordAsync(query.DescriptionKeyword);
         }

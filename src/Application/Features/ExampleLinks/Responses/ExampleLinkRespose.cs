@@ -1,4 +1,5 @@
-﻿namespace Application.Features.ExampleLinks.Responses;
+﻿using Domain.Entities.MidjourneyStyles;
+namespace Application.Features.ExampleLinks.Responses;
 
 public sealed record ExampleLinkRespose
 (
@@ -7,5 +8,6 @@ public sealed record ExampleLinkRespose
     string Version
 )
 {
-
+    public static ExampleLinkRespose FromDomain(MidjourneyStyleExampleLink exampleLink) =>
+        new(exampleLink.Link.Value, exampleLink.Style.Name.Value, exampleLink.Version.Value);
 }

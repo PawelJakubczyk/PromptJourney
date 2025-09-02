@@ -1,10 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Styles.Commands.AddStyle;
 
@@ -38,13 +39,8 @@ public static class AddStyle
 
             var domainErrors = styleResult.Errors;
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-                return Result.Fail<MidjourneyStyle>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<MidjourneyStyle>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _styleRepository.AddStyleAsync(styleResult.Value);
         }

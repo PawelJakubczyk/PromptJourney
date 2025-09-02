@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Errors;
 using FluentResults;
 using Domain.Errors;
 using static Domain.Errors.DomainErrorMessages;
 using Domain.ValueObjects;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.VersionsMaster.Queries;
 
@@ -22,13 +24,8 @@ public static class CheckVersionExists
             domainErrors
                 .CollectErrors<ModelVersion>(query.Version);
 
-            if (domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<bool>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _versionRepository.CheckVersionExistsInVersionsAsync(query.Version);
         }

@@ -1,12 +1,13 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
 using static Application.Errors.ApplicationErrorMessages;
 using static Domain.Errors.DomainErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Styles.Commands.RemoveTagInStyle;
 
@@ -32,13 +33,8 @@ public static class DeleteTagInStyle
                 .IfStyleNotExists(command.StyleName, _styleRepository)
                 .IfTagNotExists(command.StyleName, command.Tag, _styleRepository);
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-                return Result.Fail<MidjourneyStyle>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<MidjourneyStyle>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _styleRepository.DeleteTagFromStyleAsync(command.StyleName, command.Tag);
         }

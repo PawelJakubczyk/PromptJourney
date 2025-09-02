@@ -1,10 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyProperties;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Properties.Commands;
 
@@ -48,14 +49,8 @@ public static class AddPropertyInVersion
 
             var domainErrors = propertyResoult.Errors;
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<PropertyDetails>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<PropertyDetails>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _propertiesRepository.AddParameterToVersionAsync(propertyResoult.Value);
         }

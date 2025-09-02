@@ -1,5 +1,4 @@
 ﻿using FluentResults;
-using System.Text.RegularExpressions;
 using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Errors;

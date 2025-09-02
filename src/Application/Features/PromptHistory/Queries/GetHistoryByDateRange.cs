@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyPromtHistory;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -23,6 +24,9 @@ public static class GetHistoryByDateRange
             applicationErrors
                 .IfDateRangeNotChronological(query.From, query.To)
                 .IfDateInFuture(query.To);
+
+            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyPromptHistory>>(applicationErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To);
         }

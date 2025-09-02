@@ -1,56 +1,56 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
+using Application.Features.ExampleLinks.Responses;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Commands;
 
 public static class AddExampleLink
 {
-    public sealed record Command(ExampleLink Link, StyleName Style, ModelVersion Version) : ICommand<MidjourneyStyleExampleLink>;
+    public sealed record Command(string Link, string Style, string Version) : ICommand<ExampleLinkRespose>;
 
     public sealed class Handler
     (
         IExampleLinksRepository exampleLinkRepository,
         IStyleRepository styleRepository,
         IVersionRepository versionRepository
-    ) : ICommandHandler<Command, MidjourneyStyleExampleLink>
+    ) : ICommandHandler<Command, ExampleLinkRespose>
     {
         private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
         private readonly IStyleRepository _styleRepository = styleRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<MidjourneyStyleExampleLink>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<ExampleLinkRespose>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var linkResult = MidjourneyStyleExampleLink.Create
-            (
-                command.Link,
-                command.Style,
-                command.Version
-            );
+            var link = ExampleLink.Create(command.Link);
+            var style = StyleName.Create(command.Style);
+            var version = ModelVersion.Create(command.Version);
 
+            var linkResult = MidjourneyStyleExampleLink.Create(link.Value, style.Value, version.Value);
             var domainErrors = linkResult.Errors;
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionNotExists(command.Version, _versionRepository)
-                .IfStyleNotExists(command.Style, _styleRepository)
-                .IfLinkAlreadyExists(command.Link, _exampleLinkRepository);
+                .IfVersionNotExists(version.Value, _versionRepository)
+                .IfStyleNotExists(style.Value, _styleRepository)
+                .IfLinkAlreadyExists(link.Value, _exampleLinkRepository);
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<ExampleLinkRespose>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
-                return Result.Fail<MidjourneyStyleExampleLink>(error);
-            }
+            var exampleLink = await _exampleLinkRepository.AddExampleLinkAsync(linkResult);
 
-            return await _exampleLinkRepository.AddExampleLinkAsync(linkResult);
+            if (exampleLink.IsFailed) return Result.Fail<ExampleLinkRespose>(exampleLink.Errors);
+
+            var dto = ExampleLinkRespose.FromDomain(exampleLink.Value);
+
+            return Result.Ok(dto);
         }
     }
 }

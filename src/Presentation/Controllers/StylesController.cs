@@ -1,20 +1,20 @@
 ﻿using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Abstraction;
 
 namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class StylesController : ControllerBase
+public sealed class StylesController(ISender sender, IStyleRepository styleRepository) : ApiController(sender)
 {
-    private readonly IStyleRepository _styleRepository;
+    private readonly IStyleRepository _styleRepository = styleRepository;
 
-    public StylesController(IStyleRepository styleRepository)
-    {
-        _styleRepository = styleRepository;
-    }
 
     // GET api/styles
     [HttpGet]
@@ -30,7 +30,7 @@ public class StylesController : ControllerBase
     [HttpGet("{name}")]
     public async Task<IActionResult> GetByName(string name)
     {
-        var result = await _styleRepository.GetStyleByNameAsync(name);
+        var result = await _styleRepository.GetStyleByNameAsync(StyleName.Create(name).Value);
         if (result.IsFailed)
             return NotFound(result.Errors);
         return Ok(result.Value);
@@ -40,7 +40,7 @@ public class StylesController : ControllerBase
     [HttpGet("by-type/{type}")]
     public async Task<IActionResult> GetByType(string type)
     {
-        var result = await _styleRepository.GetStylesByTypeAsync(type);
+        var result = await _styleRepository.GetStylesByTypeAsync(StyleType.Create(type).Value);
         if (result.IsFailed)
             return NotFound(result.Errors);
         return Ok(result.Value);
@@ -50,7 +50,7 @@ public class StylesController : ControllerBase
     [HttpGet("by-tags")]
     public async Task<IActionResult> GetByTags([FromQuery] List<string> tags)
     {
-        var result = await _styleRepository.GetStylesByTagsAsync(tags);
+        var result = await _styleRepository.GetStylesByTagsAsync();
         if (result.IsFailed)
             return NotFound(result.Errors);
         return Ok(result.Value);

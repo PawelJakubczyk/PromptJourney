@@ -1,10 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyPromtHistory;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.PromptHistory.Commands;
 
@@ -36,14 +37,8 @@ public static class AddPromptToHistory
 
             var domainErrors = promptHistoryResult.Errors;
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<MidjourneyPromptHistory>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<MidjourneyPromptHistory>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistoryResult.Value);
         }

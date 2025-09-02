@@ -1,11 +1,12 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
 using static Domain.Errors.DomainErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Properties.Commands;
 
@@ -40,14 +41,8 @@ public static class PatchPropertyForVersion
                 .IfPropertyNotExists(command.Version, command.PropertyName, _propertiesRepository)
                 .IfNoPropertyDetailsFound(command.CharacteristicToUpdate);
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<PropertyDetails>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<PropertyDetails>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _propertiesRepository.PatchParameterForVersionAsync
             (

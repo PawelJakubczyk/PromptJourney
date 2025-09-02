@@ -1,10 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyVersions;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.VersionsMaster.Commands;
 
@@ -39,14 +40,8 @@ public static class AddVersion
 
             var domainErrors = VersionResult.Errors;
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<MidjourneyVersion>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<MidjourneyVersion>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _versionRepository.AddVersionAsync(VersionResult.Value);
         }

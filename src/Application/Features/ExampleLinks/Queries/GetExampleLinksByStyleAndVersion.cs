@@ -1,12 +1,13 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
 using static Application.Errors.ApplicationErrorMessages;
 using static Domain.Errors.DomainErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Queries;
 
@@ -39,14 +40,8 @@ public static class GetExampleLinksByStyleAndVersion
                 .IfVersionNotExists(query.Version, _versionRepository)
                 .IfStyleNotExists(query.Style, _styleRepository);
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<List<MidjourneyStyleExampleLink>>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyStyleExampleLink>>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(query.Style, query.Version);
         }

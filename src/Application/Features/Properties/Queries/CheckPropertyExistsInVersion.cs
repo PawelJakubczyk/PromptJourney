@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Errors;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using static Domain.Errors.DomainErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Properties.Queries;
 
@@ -23,13 +25,8 @@ public static class CheckPropertyExistsInVersion
                 .CollectErrors<ModelVersion>(query.Version)
                 .CollectErrors<PropertyName>(query.PropertyName);
 
-            if (domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<bool>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _propertiesRepository.CheckParameterExistsInVersionAsync(query.Version, query.PropertyName);
         }

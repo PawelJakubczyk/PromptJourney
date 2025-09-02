@@ -1,10 +1,12 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Errors;
 using Domain.Entities.MidjourneyPromtHistory;
 using FluentResults;
 using Domain.ValueObjects;
 using Domain.Errors;
 using static Domain.Errors.DomainErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -24,13 +26,8 @@ public static class GetHistoryRecordsByPromptKeyword
             domainErrors
                 .CollectErrors<Keyword>(query.Keyword);
 
-            if (domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<List<MidjourneyPromptHistory>>(error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyPromptHistory>>(domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(query.Keyword);
         }

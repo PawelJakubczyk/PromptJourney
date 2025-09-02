@@ -1,12 +1,13 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Application.Errors;
 using Domain.Entities.MidjourneyVersions;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
 using static Domain.Errors.DomainErrorMessages;
+using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.VersionsMaster.Queries;
 
@@ -30,14 +31,8 @@ public static class GetVersionByVersion
             domainErrors
                 .CollectErrors<ModelVersion>(query.Version);
 
-            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
-            {
-                var error = new Error("Validation failed")
-                    .WithMetadata("Application Errors", applicationErrors)
-                    .WithMetadata("Domain Errors", domainErrors);
-
-                return Result.Fail<MidjourneyVersion> (error);
-            }
+            var validationErrors = CreateValidationErrorIfAny<MidjourneyVersion>(applicationErrors, domainErrors);
+            if (validationErrors is not null) return validationErrors;
 
             return await _versionRepository.GetMasterVersionByVersionAsync(query.Version);
         }

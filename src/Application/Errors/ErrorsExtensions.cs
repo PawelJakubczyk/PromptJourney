@@ -3,11 +3,75 @@ using Application.Features.Properties;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
+using static Domain.Errors.DomainErrorMessages;
 
-namespace Application.Extensions;
+namespace Application.Errors;
 
 public static class ErrorsExtensions
 {
+    public static Result<T>? CreateValidationErrorIfAny<T>
+    (
+        List<ApplicationError> applicationErrors,
+        List<DomainError> domainErrors)
+    {
+        if (applicationErrors.Count == 0 && domainErrors.Count == 0)
+            return null;
+
+        var error = new Error("Validation failed");
+        
+        if (applicationErrors.Count > 0)
+            error = error.WithMetadata("Application Errors", applicationErrors);
+            
+        if (domainErrors.Count > 0)
+            error = error.WithMetadata("Domain Errors", domainErrors);
+
+        return Result.Fail<T>(error);
+    }
+
+    public static Result<T>? CreateValidationErrorIfAny<T>
+    (
+        List<ApplicationError> applicationErrors,
+        IReadOnlyList<IError> domainErrors)
+    {
+        if (applicationErrors.Count == 0 && domainErrors.Count == 0)
+            return null;
+
+        var error = new Error("Validation failed");
+        
+        if (applicationErrors.Count > 0)
+            error = error.WithMetadata("Application Errors", applicationErrors);
+            
+        if (domainErrors.Count > 0)
+            error = error.WithMetadata("Domain Errors", domainErrors);
+
+        return Result.Fail<T>(error);
+    }
+
+    public static Result<T>? CreateValidationErrorIfAny<T>
+    (
+        List<DomainError> domainErrors)
+    {
+        if (domainErrors.Count == 0)
+            return null;
+
+        var error = new Error("Validation failed")
+            .WithMetadata("Domain Errors", domainErrors);
+
+        return Result.Fail<T>(error);
+    }
+
+    public static Result<T>? CreateValidationErrorIfAny<T>
+    (
+        List<ApplicationError> applicationErrors)
+    {
+        if (applicationErrors.Count == 0)
+            return null;
+
+        var error = new Error("Validation failed")
+            .WithMetadata("Domain Errors", applicationErrors);
+
+        return Result.Fail<T>(error);
+    }
 
     public static List<ApplicationError> IfLinkNotExists(
         this List<ApplicationError> applicationErrors,
@@ -252,7 +316,7 @@ public static class ErrorsExtensions
     )
     {
         var result = repository.CheckIfAnySupportedVersionExistsAsync();
-        if (result.Result.Value) // oryginalnie zwraca true gdy *nie* ma wersji
+        if (result.Result.Value)
             applicationErrors.Add(new ApplicationError("No supported versions found."));
         return applicationErrors;
     }
