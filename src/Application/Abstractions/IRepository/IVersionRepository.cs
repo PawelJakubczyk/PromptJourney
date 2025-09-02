@@ -1,5 +1,4 @@
-﻿using Domain.Entities.MidjourneyProperties;
-using Domain.Entities.MidjourneyVersions;
+﻿using Domain.Entities.MidjourneyVersions;
 using Domain.ValueObjects;
 using FluentResults;
 

@@ -1,5 +1,4 @@
 ﻿using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 
 namespace Application.Errors;
 

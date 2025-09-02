@@ -1,7 +1,6 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
-using Domain.Entities.MidjourneyStyles;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;

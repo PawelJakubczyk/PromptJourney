@@ -3,6 +3,8 @@ using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
+using Domain.Errors;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.Styles.Queries;
 
@@ -16,7 +18,19 @@ public static class GetStylesByDescriptionKeyword
 
         public async Task<Result<List<MidjourneyStyle>>> Handle(Query query, CancellationToken cancellationToken)
         {
-                return await _styleRepository.GetStylesByDescriptionKeywordAsync(query.DescriptionKeyword);
+                List<DomainError> domainErrors = [];
+
+                domainErrors
+                    .CollectErrors<Keyword>(query.DescriptionKeyword);
+
+                if (domainErrors.Count != 0)
+                {
+                    var error = new Error("Validation failed")
+                        .WithMetadata("Domain Errors", domainErrors);
+                    return Result.Fail<List<MidjourneyStyle>>(error);
+            }
+
+            return await _styleRepository.GetStylesByDescriptionKeywordAsync(query.DescriptionKeyword);
         }
     }
 }

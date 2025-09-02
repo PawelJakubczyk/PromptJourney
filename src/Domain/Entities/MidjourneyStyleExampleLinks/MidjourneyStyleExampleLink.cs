@@ -1,8 +1,6 @@
-using Domain.Entities.MidjourneyProperties;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static Domain.Errors.DomainErrorMessages;
 
 

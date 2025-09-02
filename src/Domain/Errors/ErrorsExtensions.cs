@@ -59,9 +59,9 @@ public static class ErrorsExtensions
         return domainErrors;
     }
 
-    public static List<DomainError> IfEmptyItems<TValue>(this List<DomainError> domainErrors, TValue[]? items)
+    public static List<DomainError> IfListIsEmpty<TValue>(this List<DomainError> domainErrors, List<TValue>? items)
     {
-        if (items != null && items.Length == 0)
+        if (items != null && items.Count == 0)
         {
             domainErrors.Add(new DomainError($"{nameof(TValue)}: Cannot be an empty collection."));
         }

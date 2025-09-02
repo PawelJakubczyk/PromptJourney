@@ -1,8 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
+using Domain.Errors;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.Styles.Queries;
 
@@ -16,6 +17,17 @@ public static class CheckStyleExist
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
+            List<DomainError> domainErrors = [];
+            domainErrors
+                .CollectErrors<StyleName>(query.StyleName);
+
+            if (domainErrors.Count != 0)
+            {
+                var error = new Error("Validation failed")
+                    .WithMetadata("Domain Errors", domainErrors);
+                return Result.Fail<bool>(error);
+            }
+
             return await _styleRepository.CheckStyleExistsAsync(query.StyleName);
         }
     }

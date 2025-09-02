@@ -231,6 +231,21 @@ public static class ErrorsExtensions
         return applicationErrors;
     }
 
+    public static List<ApplicationError> IfVersionAlreadyExists(
+        this List<ApplicationError> applicationErrors,
+        ModelVersion version,
+        IVersionRepository repository
+    )
+    {
+        var result = repository.CheckVersionExistsInVersionsAsync(version);
+        if (result.Result.IsFailed)
+            applicationErrors.Add(new ApplicationError("Failed to check if version exists"));
+        if (result.Result.Value)
+            applicationErrors.Add(new ApplicationError(
+                $"Version '{version}' already exist"));
+        return applicationErrors;
+    }
+
     public static List<ApplicationError> IfNoSupportedVersions(
         this List<ApplicationError> applicationErrors,
         IVersionRepository repository

@@ -2,12 +2,9 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyStyles;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
-using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.PromptHistory.Commands;
 

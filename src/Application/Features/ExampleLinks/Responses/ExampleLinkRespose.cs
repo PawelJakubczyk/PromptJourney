@@ -1,6 +1,4 @@
-﻿using Domain.ValueObjects;
-
-namespace Application.Features.ExampleLinks.Responses;
+﻿namespace Application.Features.ExampleLinks.Responses;
 
 public sealed record ExampleLinkRespose
 (

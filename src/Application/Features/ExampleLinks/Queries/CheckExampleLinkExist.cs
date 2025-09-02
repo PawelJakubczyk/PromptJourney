@@ -1,10 +1,8 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyles;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.ExampleLinks.Queries;

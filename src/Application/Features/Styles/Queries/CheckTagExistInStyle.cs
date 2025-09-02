@@ -3,12 +3,9 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Domain.Errors;
 using static Application.Errors.ApplicationErrorMessages;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.Styles.Queries;
 
@@ -22,10 +19,24 @@ public class CheckTagExistInStyle
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
+
+            List<DomainError> domainErrors = [];
+            domainErrors
+                .CollectErrors<StyleName>(query.StyleName)
+                .CollectErrors<Tag>(query.Tag);
+
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
                 .IfTagNotExists(query.StyleName, query.Tag, _styleRepository);
+
+            if (applicationErrors.Count != 0 || domainErrors.Count != 0)
+            {
+                var error = new Error("Validation failed")
+                    .WithMetadata("Application Errors", applicationErrors)
+                    .WithMetadata("Domain Errors", domainErrors);
+                return Result.Fail<bool>(error);
+            }
 
             return await _styleRepository.CheckTagExistsInStyleAsync(query.StyleName, query.Tag);
         }
