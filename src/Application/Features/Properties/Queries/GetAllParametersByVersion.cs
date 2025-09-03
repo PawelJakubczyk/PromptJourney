@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyProperties;
+using Application.Features.Properties.Responses;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
@@ -13,31 +13,43 @@ namespace Application.Features.Properties.Queries;
 
 public class GetAllParametersByVersion
 {
-    public sealed record Query(ModelVersion Version) : IQuery<List<MidjourneyPropertiesBase>>;
+    public sealed record Query(string Version) : IQuery<List<PropertyResponse>>;
 
     public sealed class Handler(
         IPropertiesRepository propertiesRepository,
         IVersionRepository versionRepository
-        ) : IQueryHandler<Query, List<MidjourneyPropertiesBase>>
+        ) : IQueryHandler<Query, List<PropertyResponse>>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
-        public async Task<Result<List<MidjourneyPropertiesBase>>> Handle(Query query, CancellationToken cancellationToken)
+
+        public async Task<Result<List<PropertyResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var version = ModelVersion.Create(query.Version);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<ModelVersion>(query.Version);
+                .CollectErrors<ModelVersion>(version);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionNotExists(query.Version, _versionRepository);
+                .IfVersionNotExists(version.Value, _versionRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyPropertiesBase>>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<PropertyResponse>>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _propertiesRepository.GetAllParametersByVersionAsync(query.Version);
+            var result = await _propertiesRepository.GetAllParametersByVersionAsync(version.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<List<PropertyResponse>>(result.Errors);
+
+            var responses = result.Value
+                .Select(PropertyResponse.FromDomain)
+                .ToList();
+
+            return Result.Ok(responses);
         }
     }
 }

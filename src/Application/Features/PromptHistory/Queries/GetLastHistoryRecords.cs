@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyPromtHistory;
+using Application.Features.PromptHistory.Responses;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
 using static Application.Errors.ErrorsExtensions;
@@ -10,14 +10,14 @@ namespace Application.Features.PromptHistory.Queries;
 
 public static class GetLastHistoryRecords
 {
-    public sealed record Query(int Count) : IQuery<List<MidjourneyPromptHistory>>;
+    public sealed record Query(int Count) : IQuery<List<PromptHistoryResponse>>;
 
     public sealed class Handler(IPromptHistoryRepository promptHistoryRepository)
-        : IQueryHandler<Query, List<MidjourneyPromptHistory>>
+        : IQueryHandler<Query, List<PromptHistoryResponse>>
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
 
-        public async Task<Result<List<MidjourneyPromptHistory>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
             List<ApplicationError> applicationErrors = [];
 
@@ -25,10 +25,19 @@ public static class GetLastHistoryRecords
                 .IfHistoryLimitNotGreaterThanZero(query.Count)
                 .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyPromptHistory>>(applicationErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>(applicationErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count);
+            var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count);
+
+            if (result.IsFailed)
+                return Result.Fail<List<PromptHistoryResponse>>(result.Errors);
+
+            var responses = result.Value
+                .Select(PromptHistoryResponse.FromDomain)
+                .ToList();
+
+            return Result.Ok(responses);
         }
     }
 }

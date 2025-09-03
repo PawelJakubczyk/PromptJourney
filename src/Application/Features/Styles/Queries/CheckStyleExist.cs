@@ -11,7 +11,7 @@ namespace Application.Features.Styles.Queries;
 
 public static class CheckStyleExist
 {
-    public sealed record Query(StyleName StyleName) : IQuery<bool>;
+    public sealed record Query(string StyleName) : IQuery<bool>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, bool>
     {
@@ -19,14 +19,16 @@ public static class CheckStyleExist
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var styleName = StyleName.Create(query.StyleName);
+
             List<DomainError> domainErrors = [];
             domainErrors
-                .CollectErrors<StyleName>(query.StyleName);
+                .CollectErrors<StyleName>(styleName);
 
             var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _styleRepository.CheckStyleExistsAsync(query.StyleName);
+            return await _styleRepository.CheckStyleExistsAsync(styleName.Value);
         }
     }
 }

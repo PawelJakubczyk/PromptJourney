@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
+using Application.Features.VersionsMaster.Responses;
 using Domain.Entities.MidjourneyVersions;
 using Domain.ValueObjects;
 using FluentResults;
@@ -13,37 +14,48 @@ public static class AddVersion
 {
     public sealed record Command
     (
-        ModelVersion Version,
-        Param Parameter,
+        string Version,
+        string Parameter,
         DateTime? ReleaseDate = null,
-        Description? Description = null
-    ) : ICommand<MidjourneyVersion>;
+        string? Description = null
+    ) : ICommand<VersionResponse>;
 
-    public sealed class Handler(IVersionRepository versionRepository) : ICommandHandler<Command, MidjourneyVersion>
+    public sealed class Handler(IVersionRepository versionRepository) : ICommandHandler<Command, VersionResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<MidjourneyVersion>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<VersionResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var version = ModelVersion.Create(command.Version);
+            var parameter = Param.Create(command.Parameter);
+            var description = command.Description != null ? Description.Create(command.Description) : null;
+
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionAlreadyExists(command.Version, _versionRepository);
+                .IfVersionAlreadyExists(version.Value, _versionRepository);
 
-            var VersionResult = MidjourneyVersion.Create
+            var versionResult = MidjourneyVersion.Create
             (
-                command.Version,
-                command.Parameter,
+                version.Value,
+                parameter.Value,
                 command.ReleaseDate,
-                command.Description
+                description?.Value
             );
 
-            var domainErrors = VersionResult.Errors;
+            var domainErrors = versionResult.Errors;
 
-            var validationErrors = CreateValidationErrorIfAny<MidjourneyVersion>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<VersionResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _versionRepository.AddVersionAsync(VersionResult.Value);
+            var result = await _versionRepository.AddVersionAsync(versionResult.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<VersionResponse>(result.Errors);
+
+            var response = VersionResponse.FromDomain(result.Value);
+
+            return Result.Ok(response);
         }
     }
 }

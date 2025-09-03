@@ -1,7 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyStyles;
+using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
@@ -13,27 +13,36 @@ namespace Application.Features.Styles.Queries;
 
 public static class GetStylesByName
 {
-    public sealed record Query(StyleName StyleName) : IQuery<MidjourneyStyle>;
+    public sealed record Query(string StyleName) : IQuery<StyleResponse>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, MidjourneyStyle>
+    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, StyleResponse>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<MidjourneyStyle>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<StyleResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var styleName = StyleName.Create(query.StyleName);
+
             List<DomainError> domainErrors = [];
             domainErrors
-                .CollectErrors<StyleName>(query.StyleName);
+                .CollectErrors<StyleName>(styleName);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfStyleNotExists(query.StyleName, _styleRepository);
+                .IfStyleNotExists(styleName.Value, _styleRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<MidjourneyStyle>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<StyleResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _styleRepository.GetStyleByNameAsync(query.StyleName);
+            var result = await _styleRepository.GetStyleByNameAsync(styleName.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<StyleResponse>(result.Errors);
+
+            var response = StyleResponse.FromDomain(result.Value);
+
+            return Result.Ok(response);
         }
     }
 }

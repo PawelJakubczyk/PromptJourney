@@ -1,7 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyStyles;
+using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
@@ -12,23 +12,34 @@ namespace Application.Features.Styles.Queries;
 
 public static class GetStylesByDescriptionKeyword
 {
-    public sealed record Query(Keyword DescriptionKeyword) : IQuery<List<MidjourneyStyle>>;
+    public sealed record Query(string DescriptionKeyword) : IQuery<List<StyleResponse>>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<MidjourneyStyle>>
+    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<StyleResponse>>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<List<MidjourneyStyle>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var keyword = Keyword.Create(query.DescriptionKeyword);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<Keyword>(query.DescriptionKeyword);
+                .CollectErrors<Keyword>(keyword);
 
-            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyStyle>>(domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<StyleResponse>>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _styleRepository.GetStylesByDescriptionKeywordAsync(query.DescriptionKeyword);
+            var result = await _styleRepository.GetStylesByDescriptionKeywordAsync(keyword.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<List<StyleResponse>>(result.Errors);
+
+            var responses = result.Value
+                .Select(StyleResponse.FromDomain)
+                .ToList();
+
+            return Result.Ok(responses);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Application.Features.Styles.Queries;
 
 public class CheckTagExistInStyle
 {
-    public sealed record Query(StyleName StyleName, Tag Tag) : IQuery<bool>;
+    public sealed record Query(string StyleName, string Tag) : IQuery<bool>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, bool>
     {
@@ -20,20 +20,23 @@ public class CheckTagExistInStyle
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var styleName = StyleName.Create(query.StyleName);
+            var tag = Tag.Create(query.Tag);
+
             List<DomainError> domainErrors = [];
             domainErrors
-                .CollectErrors<StyleName>(query.StyleName)
-                .CollectErrors<Tag>(query.Tag);
+                .CollectErrors<StyleName>(styleName)
+                .CollectErrors<Tag>(tag);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfTagNotExists(query.StyleName, query.Tag, _styleRepository);
+                .IfTagNotExists(styleName.Value, tag.Value, _styleRepository);
 
             var validationErrors = CreateValidationErrorIfAny<bool>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _styleRepository.CheckTagExistsInStyleAsync(query.StyleName, query.Tag);
+            return await _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value);
         }
     }
 }

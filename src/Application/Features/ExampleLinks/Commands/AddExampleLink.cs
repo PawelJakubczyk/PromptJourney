@@ -44,13 +44,13 @@ public static class AddExampleLink
             var validationErrors = CreateValidationErrorIfAny<ExampleLinkRespose>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var exampleLink = await _exampleLinkRepository.AddExampleLinkAsync(linkResult);
+            var addExampleLinkResult = await _exampleLinkRepository.AddExampleLinkAsync(linkResult);
 
-            if (exampleLink.IsFailed) return Result.Fail<ExampleLinkRespose>(exampleLink.Errors);
+            if (addExampleLinkResult.IsFailed) return Result.Fail<ExampleLinkRespose>(addExampleLinkResult.Errors);
 
-            var dto = ExampleLinkRespose.FromDomain(exampleLink.Value);
+            var responses = ExampleLinkRespose.FromDomain(addExampleLinkResult.Value);
 
-            return Result.Ok(dto);
+            return Result.Ok(responses);
         }
     }
 }

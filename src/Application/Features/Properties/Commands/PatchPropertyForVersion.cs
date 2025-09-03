@@ -1,6 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
+using Application.Features.Properties.Responses;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
@@ -14,43 +15,53 @@ public static class PatchPropertyForVersion
 {
     public sealed record Command
     (
-        ModelVersion Version,
-        PropertyName PropertyName,
+        string Version,
+        string PropertyName,
         string CharacteristicToUpdate,
         string? NewValue
-    ) : ICommand<PropertyDetails>;
+    ) : ICommand<PropertyResponse>;
 
     public sealed class Handler(IVersionRepository versionRepository, IPropertiesRepository propertiesRepository)
-        : ICommandHandler<Command, PropertyDetails>
+        : ICommandHandler<Command, PropertyResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
-        public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var version = ModelVersion.Create(command.Version);
+            var propertyName = PropertyName.Create(command.PropertyName);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<ModelVersion>(command.Version)
-                .CollectErrors<PropertyName>(command.PropertyName);
+                .CollectErrors<ModelVersion>(version)
+                .CollectErrors<PropertyName>(propertyName);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionNotExists(command.Version, _versionRepository)
-                .IfPropertyNotExists(command.Version, command.PropertyName, _propertiesRepository)
+                .IfVersionNotExists(version.Value, _versionRepository)
+                .IfPropertyNotExists(version.Value, propertyName.Value, _propertiesRepository)
                 .IfNoPropertyDetailsFound(command.CharacteristicToUpdate);
 
-            var validationErrors = CreateValidationErrorIfAny<PropertyDetails>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<PropertyResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _propertiesRepository.PatchParameterForVersionAsync
+            var result = await _propertiesRepository.PatchParameterForVersionAsync
             (
-                command.Version,
-                command.PropertyName,
+                version.Value,
+                propertyName.Value,
                 command.CharacteristicToUpdate,
                 command.NewValue
             );
+
+            if (result.IsFailed)
+                return Result.Fail<PropertyResponse>(result.Errors);
+
+            var response = PropertyResponse.FromDomain(result.Value);
+
+            return Result.Ok(response);
         }
     }
 }

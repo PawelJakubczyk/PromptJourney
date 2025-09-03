@@ -7,37 +7,48 @@ using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
 using static Domain.Errors.DomainErrorMessages;
 using static Application.Errors.ErrorsExtensions;
+using Application.Features.Common.Responses;
 
 namespace Application.Features.Properties.Commands;
 
 public static class DeletePropertyInVersion
 {
-    public sealed record Command(ModelVersion Version, PropertyName PropertyName) : ICommand<PropertyDetails>;
+    public sealed record Command(string Version, string PropertyName) : ICommand<DeleteResponse>;
 
     public sealed class Handler(IVersionRepository versionRepository, IPropertiesRepository propertiesRepository)
-        : ICommandHandler<Command, PropertyDetails>
+        : ICommandHandler<Command, DeleteResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
-        public async Task<Result<PropertyDetails>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<DeleteResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var version = ModelVersion.Create(command.Version);
+            var propertyName = PropertyName.Create(command.PropertyName);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<ModelVersion>(command.Version)
-                .CollectErrors<PropertyName>(command.PropertyName);
+                .CollectErrors<ModelVersion>(version)
+                .CollectErrors<PropertyName>(propertyName);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionNotExists(command.Version, _versionRepository)
-                .IfPropertyNotExists(command.Version, command.PropertyName, _propertiesRepository);
+                .IfVersionNotExists(version.Value, _versionRepository)
+                .IfPropertyNotExists(version.Value, propertyName.Value, _propertiesRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<PropertyDetails>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _propertiesRepository.DeleteParameterInVersionAsync(command.Version, command.PropertyName);
+            var result = await _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<DeleteResponse>(result.Errors);
+
+            var response = DeleteResponse.Success($"Property '{propertyName.Value.Value}' was successfully deleted from version '{version.Value.Value}'.");
+
+            return Result.Ok(response);
         }
     }
 }

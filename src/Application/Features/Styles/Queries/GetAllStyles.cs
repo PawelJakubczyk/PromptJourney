@@ -1,21 +1,30 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyles;
+using Application.Features.Styles.Responses;
 using FluentResults;
 
 namespace Application.Features.Styles.Queries;
 
 public static class GetAllStyles
 {
-    public sealed record Query : IQuery<List<MidjourneyStyle>>;
+    public sealed record Query : IQuery<List<StyleResponse>>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<MidjourneyStyle>>
+    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<StyleResponse>>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<List<MidjourneyStyle>>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            return await _styleRepository.GetAllStylesAsync();
+            var result = await _styleRepository.GetAllStylesAsync();
+
+            if (result.IsFailed)
+                return Result.Fail<List<StyleResponse>>(result.Errors);
+
+            var responses = result.Value
+                .Select(StyleResponse.FromDomain)
+                .ToList();
+
+            return Result.Ok(responses);
         }
     }
 }

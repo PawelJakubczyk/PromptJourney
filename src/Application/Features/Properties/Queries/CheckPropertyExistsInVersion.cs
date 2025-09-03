@@ -11,7 +11,7 @@ namespace Application.Features.Properties.Queries;
 
 public static class CheckPropertyExistsInVersion
 {
-    public sealed record Query(ModelVersion Version, PropertyName PropertyName) : IQuery<bool>;
+    public sealed record Query(string Version, string PropertyName) : IQuery<bool>;
 
     public sealed class Handler(IPropertiesRepository propertiesRepository) : IQueryHandler<Query, bool>
     {
@@ -19,16 +19,19 @@ public static class CheckPropertyExistsInVersion
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var version = ModelVersion.Create(query.Version);
+            var propertyName = PropertyName.Create(query.PropertyName);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<ModelVersion>(query.Version)
-                .CollectErrors<PropertyName>(query.PropertyName);
+                .CollectErrors<ModelVersion>(version)
+                .CollectErrors<PropertyName>(propertyName);
 
             var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _propertiesRepository.CheckParameterExistsInVersionAsync(query.Version, query.PropertyName);
+            return await _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value);
         }
     }
 }

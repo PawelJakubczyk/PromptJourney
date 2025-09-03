@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyStyles;
+using Application.Features.ExampleLinks.Responses;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
@@ -13,37 +13,49 @@ namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyleAndVersion
 {
-    public sealed record Query(StyleName Style, ModelVersion Version) : IQuery<List<MidjourneyStyleExampleLink>>;
+    public sealed record Query(string Style, string Version) : IQuery<List<ExampleLinkRespose>>;
 
     public sealed class Handler
     (
         IExampleLinksRepository exampleLinkRepository,
         IStyleRepository styleRepository,
         IVersionRepository versionRepository
-    ) : IQueryHandler<Query, List<MidjourneyStyleExampleLink>>
+    ) : IQueryHandler<Query, List<ExampleLinkRespose>>
     {
         private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
         private readonly IStyleRepository _styleRepository = styleRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<List<MidjourneyStyleExampleLink>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<ExampleLinkRespose>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var style = StyleName.Create(query.Style);
+            var version = ModelVersion.Create(query.Version);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<StyleName>(query.Style)
-                .CollectErrors<ModelVersion>(query.Version);
+                .CollectErrors<StyleName>(style)
+                .CollectErrors<ModelVersion>(version);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionNotExists(query.Version, _versionRepository)
-                .IfStyleNotExists(query.Style, _styleRepository);
+                .IfVersionNotExists(version.Value, _versionRepository)
+                .IfStyleNotExists(style.Value, _styleRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyStyleExampleLink>>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkRespose>>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(query.Style, query.Version);
+            var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(style, version);
+
+            if (result.IsFailed)
+                return Result.Fail<List<ExampleLinkRespose>>(result.Errors);
+
+            var responses = result.Value
+                .Select(ExampleLinkRespose.FromDomain)
+                .ToList();
+
+            return Result.Ok(responses);
         }
     }
 }

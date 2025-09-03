@@ -11,7 +11,7 @@ namespace Application.Features.VersionsMaster.Queries;
 
 public static class CheckVersionExists
 {
-    public sealed record Query(ModelVersion Version) : IQuery<bool>;
+    public sealed record Query(string Version) : IQuery<bool>;
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, bool>
     {
@@ -19,15 +19,17 @@ public static class CheckVersionExists
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var version = ModelVersion.Create(query.Version);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<ModelVersion>(query.Version);
+                .CollectErrors<ModelVersion>(version);
 
             var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _versionRepository.CheckVersionExistsInVersionsAsync(query.Version);
+            return await _versionRepository.CheckVersionExistsInVersionsAsync(version.Value);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyStyles;
+using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
@@ -13,30 +13,40 @@ namespace Application.Features.Styles.Commands.AddTagToStyle;
 
 public static class AddTagToStyle
 {
-    public sealed record Command(StyleName StyleName, Tag Tag) : ICommand<MidjourneyStyle>;
+    public sealed record Command(string StyleName, string Tag) : ICommand<StyleResponse>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, MidjourneyStyle>
+    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, StyleResponse>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<StyleResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var styleName = StyleName.Create(command.StyleName);
+            var tag = Tag.Create(command.Tag);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<StyleName>(command.StyleName)
-                .CollectErrors<Tag>(command.Tag);
+                .CollectErrors<StyleName>(styleName)
+                .CollectErrors<Tag>(tag);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfStyleNotExists(command.StyleName, _styleRepository)
-                .IfTagAlreadyExists(command.StyleName, command.Tag, _styleRepository);
+                .IfStyleNotExists(styleName.Value, _styleRepository)
+                .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<MidjourneyStyle>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<StyleResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _styleRepository.AddTagToStyleAsync(command.StyleName, command.Tag);
+            var result = await _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<StyleResponse>(result.Errors);
+
+            var response = StyleResponse.FromDomain(result.Value);
+
+            return Result.Ok(response);
         }
     }
 }

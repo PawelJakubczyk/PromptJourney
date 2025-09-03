@@ -1,41 +1,51 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyStyles;
+using Application.Features.Common.Responses;
+using Application.Features.ExampleLinks.Responses;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorMessages;
-using static Domain.Errors.DomainErrorMessages;
-using Domain.Errors;
 using static Application.Errors.ErrorsExtensions;
+using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.ExampleLinks.Commands;
 
 public static class DeleteExampleLink
 {
-    public sealed record Command(ExampleLink Link) : ICommand<MidjourneyStyleExampleLink>;
+    public sealed record Command(string Link) : ICommand<DeleteResponse>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinkRepository)
-        : ICommandHandler<Command, MidjourneyStyleExampleLink>
+        : ICommandHandler<Command, DeleteResponse>
     {
         private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
 
-        public async Task<Result<MidjourneyStyleExampleLink>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<DeleteResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var link = ExampleLink.Create(command.Link);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<ExampleLink>(command.Link);
+                .CollectErrors<ExampleLink>(link);
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfLinkNotExists(command.Link, _exampleLinkRepository);
+                .IfLinkNotExists(link.Value, _exampleLinkRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<MidjourneyStyleExampleLink>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _exampleLinkRepository.DeleteExampleLinkAsync(command.Link);
+            var deleteResult = await _exampleLinkRepository.DeleteExampleLinkAsync(link);
+
+            if (deleteResult.IsFailed) 
+                return Result.Fail<DeleteResponse>(deleteResult.Errors);
+
+            var response = DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted.");
+
+            return Result.Ok(response);
         }
     }
 }

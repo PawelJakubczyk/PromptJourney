@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
+using Application.Features.Styles.Responses;
 using Domain.Entities.MidjourneyStyles;
 using Domain.ValueObjects;
 using FluentResults;
@@ -13,37 +14,49 @@ public static class UpdateStyle
 {
     public sealed record Command
     (
-        StyleName StyleName,
-        StyleType Type,
-        Description? Description = null,
-        List<Tag>? Tags = null
-    ) : ICommand<MidjourneyStyle>;
+        string StyleName,
+        string Type,
+        string? Description = null,
+        List<string>? Tags = null
+    ) : ICommand<StyleResponse>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, MidjourneyStyle>
+    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, StyleResponse>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<MidjourneyStyle>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<StyleResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var styleName = StyleName.Create(command.StyleName);
+            var type = StyleType.Create(command.Type);
+            var description = command.Description != null ? Description.Create(command.Description) : null;
+            var tags = command.Tags?.Select(t => Tag.Create(t)).ToList();
+
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfStyleNotExists(command.StyleName, _styleRepository);
+                .IfStyleNotExists(styleName.Value, _styleRepository);
 
             var styleResult = MidjourneyStyle.Create
             (
-                command.StyleName,
-                command.Type,
-                command.Description,
-                command.Tags
+                styleName.Value,
+                type.Value,
+                description?.Value,
+                tags?.Select(t => t.Value).ToList()
             );
 
             var domainErrors = styleResult.Errors;
 
-            var validationErrors = CreateValidationErrorIfAny<MidjourneyStyle>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<StyleResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _styleRepository.UpdateStyleAsync(styleResult.Value);
+            var result = await _styleRepository.UpdateStyleAsync(styleResult.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<StyleResponse>(result.Errors);
+
+            var response = StyleResponse.FromDomain(result.Value);
+
+            return Result.Ok(response);
         }
     }
 }

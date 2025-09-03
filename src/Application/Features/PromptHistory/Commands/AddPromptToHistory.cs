@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
+using Application.Features.PromptHistory.Responses;
 using Domain.Entities.MidjourneyPromtHistory;
 using Domain.ValueObjects;
 using FluentResults;
@@ -11,36 +12,46 @@ namespace Application.Features.PromptHistory.Commands;
 
 public static class AddPromptToHistory
 {
-    public sealed record Command(Prompt Prompt, ModelVersion Version) : ICommand<MidjourneyPromptHistory>;
+    public sealed record Command(string Prompt, string Version) : ICommand<PromptHistoryResponse>;
 
     public sealed class Handler
     (
         IPromptHistoryRepository promptHistoryRepository,
         IVersionRepository versionRepository
-    ) : ICommandHandler<Command, MidjourneyPromptHistory>
+    ) : ICommandHandler<Command, PromptHistoryResponse>
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<MidjourneyPromptHistory>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<PromptHistoryResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var prompt = Prompt.Create(command.Prompt);
+            var version = ModelVersion.Create(command.Version);
+
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionNotExists(command.Version, _versionRepository);
+                .IfVersionNotExists(version.Value, _versionRepository);
 
             var promptHistoryResult = MidjourneyPromptHistory.Create
             (
-                command.Prompt,
-                command.Version
+                prompt.Value,
+                version.Value
             );
 
             var domainErrors = promptHistoryResult.Errors;
 
-            var validationErrors = CreateValidationErrorIfAny<MidjourneyPromptHistory>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<PromptHistoryResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistoryResult.Value);
+            var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistoryResult.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<PromptHistoryResponse>(result.Errors);
+
+            var response = PromptHistoryResponse.FromDomain(result.Value);
+
+            return Result.Ok(response);
         }
     }
 }

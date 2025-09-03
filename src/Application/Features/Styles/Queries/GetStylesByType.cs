@@ -1,7 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Errors;
-using Domain.Entities.MidjourneyStyles;
+using Application.Features.Styles.Responses;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
@@ -12,23 +12,34 @@ namespace Application.Features.Styles.Queries;
 
 public static class GetStylesByType
 {
-    public sealed record Query(StyleType StyleType) : IQuery<List<MidjourneyStyle>>;
+    public sealed record Query(string StyleType) : IQuery<List<StyleResponse>>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<MidjourneyStyle>>
+    public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<StyleResponse>>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<List<MidjourneyStyle>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var styleType = StyleType.Create(query.StyleType);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<StyleType>(query.StyleType);
+                .CollectErrors<StyleType>(styleType);
 
-            var validationErrors = CreateValidationErrorIfAny<List<MidjourneyStyle>>(domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<StyleResponse>>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _styleRepository.GetStylesByTypeAsync(query.StyleType);
+            var result = await _styleRepository.GetStylesByTypeAsync(styleType.Value);
+
+            if (result.IsFailed)
+                return Result.Fail<List<StyleResponse>>(result.Errors);
+
+            var responses = result.Value
+                .Select(StyleResponse.FromDomain)
+                .ToList();
+
+            return Result.Ok(responses);
         }
     }
 }

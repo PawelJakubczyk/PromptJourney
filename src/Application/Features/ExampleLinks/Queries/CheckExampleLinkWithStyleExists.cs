@@ -11,22 +11,24 @@ namespace Application.Features.ExampleLinks.Queries;
 
 public class CheckExampleLinkWithStyleExists
 {
-    public sealed record Query(StyleName StyleName) : IQuery<bool>;
+    public sealed record Query(string StyleName) : IQuery<bool>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository) : IQueryHandler<Query, bool>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var styleName = StyleName.Create(query.StyleName);
+
             List<DomainError> domainErrors = [];
 
             domainErrors
-                .CollectErrors<StyleName>(query.StyleName);
+                .CollectErrors<StyleName>(styleName);
 
             var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(query.StyleName);
+            return await _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName);
         }
     }
 }
