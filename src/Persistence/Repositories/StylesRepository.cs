@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
@@ -31,15 +32,18 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyle>> GetStyleByNameAsync(string name)
+    public async Task<Result<MidjourneyStyle>> GetStyleByNameAsync(StyleName name)
     {
         try
         {
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
-                .FirstOrDefaultAsync(s => s.StyleName == name);
+                .FirstOrDefaultAsync(s => s.StyleName.Value == name.Value);
 
-            return Result.Ok<MidjourneyStyle>(style!);
+            if (style == null)
+                return Result.Fail<MidjourneyStyle>($"Style with name '{name.Value}' not found");
+
+            return Result.Ok<MidjourneyStyle>(style);
         }
         catch (Exception ex)
         {
@@ -47,21 +51,20 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyle>>> GetStylesByTypeAsync(string type)
+    public async Task<Result<List<MidjourneyStyle>>> GetStylesByTypeAsync(StyleType type)
     {
         try
         {
-            await Validate.Type.ShouldBeNotNullOrEmpty(type);
+            await Validate.Type.ShouldBeNotNullOrEmpty(type.Value);
 
             var styles = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
-                .Where(s => s.Type == type)
+                .Where(s => s.Type.Value == type.Value)
                 .ToListAsync();
-
 
             if (styles is null || styles.Count == 0)
             {
-                return Result.Fail<List<MidjourneyStyle>>($"No styles found for type: '{type}'");
+                return Result.Fail<List<MidjourneyStyle>>($"No styles found for type: '{type.Value}'");
             }
 
             return Result.Ok<List<MidjourneyStyle>>(styles);
@@ -72,16 +75,17 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyle>>> GetStylesByTagsAsync(List<string> tags)
+    public async Task<Result<List<MidjourneyStyle>>> GetStylesByTagsAsync(List<Tag> tags)
     {
         try
         {
-            await Validate.Tags.ShouldHaveAtLastOneElement(tags);
-            await Validate.Tags.ShouldNotHaveNullOrEmptyTag(tags);
+            var tagValues = tags.Select(t => t.Value).ToList();
+            await Validate.Tags.ShouldHaveAtLastOneElement(tagValues);
+            await Validate.Tags.ShouldNotHaveNullOrEmptyTag(tagValues);
 
             var styles = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
-                .Where(s => s.Tags != null && tags.All(t => s.Tags.Contains(t)))
+                .Where(s => s.Tags != null && tags.All(t => s.Tags.Any(st => st.Value == t.Value)))
                 .ToListAsync();
 
             return Result.Ok<List<MidjourneyStyle>>(styles);
@@ -92,15 +96,15 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyle>>> GetStylesByDescriptionKeywordAsync(string keyword)
+    public async Task<Result<List<MidjourneyStyle>>> GetStylesByDescriptionKeywordAsync(Keyword keyword)
     {
         try
         {
-            await Validate.Keyword.ShouldBeNotNullOrEmpty(keyword);
+            await Validate.Keyword.ShouldBeNotNullOrEmpty(keyword.Value);
 
             var styles = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
-                .Where(s => s.Description != null && s.Description.Contains(keyword))
+                .Where(s => s.Description != null && s.Description.Value.Contains(keyword.Value))
                 .ToListAsync();
 
             return Result.Ok(styles);
@@ -111,13 +115,13 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<bool>> CheckStyleExistsAsync(string name)
+    public async Task<Result<bool>> CheckStyleExistsAsync(StyleName name)
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(name);
+            await Validate.Style.ShouldBeNotNullOrEmpty(name.Value);
 
-            var exists = await _midjourneyDbContext.MidjourneyStyle.AnyAsync(s => s.StyleName == name);
+            var exists = await _midjourneyDbContext.MidjourneyStyle.AnyAsync(s => s.StyleName.Value == name.Value);
             return Result.Ok(exists);
         }
         catch (Exception ex)
@@ -126,14 +130,18 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<bool>> CheckTagExistsInStyleAsync(string tag)
+    public async Task<Result<bool>> CheckTagExistsInStyleAsync(StyleName styleName, Tag tag)
     {
         try
         {
-            await Validate.Tag.ShouldBeNotNullOrEmpty(tag);
+            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
+            await Validate.Tag.ShouldBeNotNullOrEmpty(tag.Value);
 
-            var exists = await _midjourneyDbContext.MidjourneyStyle.AnyAsync(s => s.Tags != null && s.Tags.Contains(tag));
-            return Result.Ok(exists);
+            var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
+            if (style is null)
+                return Result.Fail($"Style with name '{styleName.Value}' not found");
+
+            return Result.Ok(style.Tags?.Any(t => t.Value == tag.Value) ?? false);
         }
         catch (Exception ex)
         {
@@ -175,18 +183,18 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyle>> DeleteStyleAsync(string styleName)
+    public async Task<Result<MidjourneyStyle>> DeleteStyleAsync(StyleName styleName)
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName);
+            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
 
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
-                .FirstOrDefaultAsync(s => s.StyleName == styleName);
+                .FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
 
             if (style is null)
-                return Result.Fail($"Style with name '{styleName}' not found");
+                return Result.Fail($"Style with name '{styleName.Value}' not found");
 
             _midjourneyDbContext.MidjourneyStyle.Remove(style);
             await _midjourneyDbContext.SaveChangesAsync();
@@ -199,17 +207,19 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyle>> AddTagToStyleAsync(string styleName, string tag)
+    public async Task<Result<MidjourneyStyle>> AddTagToStyleAsync(StyleName styleName, Tag tag)
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName);
-            await Validate.Tag.ShouldBeNotNullOrEmpty(tag);
+            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
+            await Validate.Tag.ShouldBeNotNullOrEmpty(tag.Value);
 
             var style = await _midjourneyDbContext
                 .MidjourneyStyle
-                .FirstOrDefaultAsync(s => s.StyleName == styleName);
+                .FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
 
+            if (style is null)
+                return Result.Fail($"Style with name '{styleName.Value}' not found");
 
             var result = style.AddTag(tag);
             if (result!.IsFailed)
@@ -224,16 +234,26 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyle>> DeleteTagFromStyleAsync(string styleName, string tag)
+    public async Task<Result<MidjourneyStyle>> DeleteTagFromStyleAsync(StyleName styleName, Tag tag)
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName);
-            await Validate.Tag.ShouldBeNotNullOrEmpty(tag);
+            if (!CheckStyleExistsAsync(styleName).Result.Value)
+            {
 
-            var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName == styleName);
+            };
+
+            if (!CheckTagExistsInStyleAsync(styleName, tag).Result.Value)
+            { 
+            
+            };
+
+
+
+
+            var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
             if (style is null)
-                return Result.Fail($"Style with name '{styleName}' not found");
+                return Result.Fail($"Style with name '{styleName.Value}' not found");
 
             var result = style.RemoveTag(tag);
             if (result!.IsFailed)
@@ -248,18 +268,14 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<bool>> CheckTagExistsInStyleAsync(string styleName, string tag)
+    public async Task<Result<bool>> CheckTagExistsInStyleAsync(string tag)
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName);
             await Validate.Tag.ShouldBeNotNullOrEmpty(tag);
 
-            var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName == styleName);
-            if (style is null)
-                return Result.Fail($"Style with name '{styleName}' not found");
-
-            return Result.Ok(style.Tags?.Contains(tag) ?? false);
+            var exists = await _midjourneyDbContext.MidjourneyStyle.AnyAsync(s => s.Tags != null && s.Tags.Any(t => t.Value == tag));
+            return Result.Ok(exists);
         }
         catch (Exception ex)
         {
@@ -267,15 +283,15 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyle>> UpadteStyleDescription(string styleName, string description)
+    public async Task<Result<MidjourneyStyle>> UpadteStyleDescription(StyleName styleName, Description description)
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName);
+            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
 
-            var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName == styleName);
+            var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
             if (style is null)
-                return Result.Fail($"Style with name '{styleName}' not found");
+                return Result.Fail($"Style with name '{styleName.Value}' not found");
 
             var result = style.EditDescription(description);
             if (result!.IsFailed)

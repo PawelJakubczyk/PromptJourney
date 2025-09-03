@@ -1,8 +1,12 @@
+using Domain.Entities.MidjourneyStyleExampleLinks;
 using Domain.Entities.MidjourneyStyles;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
 using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
+using static Persistence.Mapping.ValueObjects.ExampleLinkMapping;
+using static Persistence.Mapping.ValueObjects.StyleNameMapping;
 
 namespace Persistence.Configuration;
 
@@ -16,19 +20,21 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
         builder.HasKey(el => new { el.Link, el.StyleName, el.Version });
         
         builder.Property(el => el.Link)
+            .HasConversion<ExampleLinkConverter, ExampleLinkComparer>()
             .HasColumnName("link")
-            .HasColumnType(ColumnType.VarChar(200))
+            .HasColumnType(ColumnType.VarChar(ExampleLink.MaxLength))
             .IsRequired();
             
         builder.Property(el => el.StyleName)
+            .HasConversion<StyleNameConverter, StyleNameComparer>()
             .HasColumnName("style_name")
-            .HasColumnType(ColumnType.VarChar(100))
+            .HasColumnType(ColumnType.VarChar(StyleName.MaxLength))
             .IsRequired();
             
         builder.Property(el => el.Version)
             .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
-            .HasColumnType(ColumnType.VarChar(10))
+            .HasColumnType(ColumnType.VarChar(ModelVersion.MaxLength))
             .IsRequired();
             
         // Configure relationships

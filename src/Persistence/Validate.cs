@@ -8,15 +8,7 @@ namespace Persistence;
 
 public class Validate
 {
-    public static class Link
-    {
 
-    }
-
-    public static class Links
-    {
-
-    }
 
 
     public static class History
@@ -26,31 +18,7 @@ public class Validate
 
     public static class Property
     {
-        public static Task<Result<string>> ShouldBeNotNull(MidjourneyPropertiesBase property)
-        {
-            if (property is null)
-                return Task.FromResult(Result.Fail<string>("Property cannot be null."));
-            return Task.FromResult(Result.Ok<string>("Property was found."));
-        }
-        public static class Name
-        {
-            public static Task<Result<string>> ShouldBeNotNullOrEmpty(string name)
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                    return Task.FromResult(Result.Fail<string>("Property name cannot be null or empty."));
-                return Task.FromResult(Result.Ok<string>("Property name was found."));
-            }
-        }
 
-        public static class Version
-        {
-            public static Task<Result<string>> ShouldBeNotNullOrEmpty(string name)
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                    return Task.FromResult(Result.Fail<string>("Property name cannot be null or empty."));
-                return Task.FromResult(Result.Ok<string>("Property name was found."));
-            }
-        }
     }
 
     public static class Style
@@ -137,31 +105,6 @@ public class Validate
 
     public static class Version
     {
-        public static Task<Result<string>> ShouldBeNotNullOrEmpty(string version)
-        {
-            if (string.IsNullOrWhiteSpace(version))
-                return Task.FromResult(Result.Fail<string>("Version cannot be null or empty."));
 
-            return Task.FromResult(Result.Ok<string>("Version was found."));
-        }
-
-        public static Task<Result<string>> ShouldBeNotNullOrEmpty(MidjourneyVersion version)
-        {
-            if (version is null)
-                return Task.FromResult(Result.Fail<string>("Version cannot be null."));
-
-            return Task.FromResult(Result.Ok<string>("Version was found."));
-        }
-
-        public static Task<Result<string>> ShouldNotCountainNullOrEmptyProperties(MidjourneyVersion version)
-        {
-            if (string.IsNullOrWhiteSpace(version.Version))
-                return Task.FromResult(Result.Fail<string>("Version name cannot be null or empty."));
-
-            if (string.IsNullOrWhiteSpace(version.Parameter))
-                return Task.FromResult(Result.Fail<string>("Version parameter cannot be null or empty."));
-
-            return Task.FromResult(Result.Ok<string>("Version was found."));
-        }
     }
 }

@@ -35,6 +35,15 @@ public static class ErrorsExtensions
         return domainErrors;
     }
 
+    public static List<DomainError> IfNull<TValue>(this List<DomainError> domainErrors, object? value)
+    {
+        if (value is null)
+        {
+            domainErrors.Add(new DomainError($"{nameof(TValue)}: {value} cannot be null."));
+        }
+        return domainErrors;
+    }
+
     public static List<DomainError> IfLengthTooLong<TValue>(this List<DomainError> domainErrors, string value, int maxLength)
     {
         if (value?.Length > maxLength)
@@ -63,6 +72,24 @@ public static class ErrorsExtensions
         if (items != null && items.Count == 0)
         {
             domainErrors.Add(new DomainError($"{nameof(TValue)}: Cannot be an empty collection."));
+        }
+        return domainErrors;
+    }
+
+    public static List<DomainError> IfDoesNotContain<TValue>(this List<DomainError> domainErrors, List<TValue>? items, TValue element)
+    {
+        if (items != null && items.Contains(element) == false)
+        {
+            domainErrors.Add(new DomainError($"{nameof(TValue)}: Collection does not contain the required element."));
+        }
+        return domainErrors;
+    }
+
+    public static List<DomainError> IfCountain<TValue>(this List<DomainError> domainErrors, List<TValue>? items, TValue element)
+    {
+        if (items != null && items.Contains(element))
+        {
+            domainErrors.Add(new DomainError($"{nameof(TValue)}: Collection already contains the element."));
         }
         return domainErrors;
     }

@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
 using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
+using static Persistence.Mapping.ValueObjects.ParamMapping;
+using static Persistence.Mapping.ValueObjects.DescriptionMapping;
+using Domain.ValueObjects;
 
 namespace Persistence.Configuration;
 
@@ -16,12 +19,13 @@ public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<Mi
         builder.Property(master => master.Version)
             .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
-            .HasColumnType(ColumnType.VarChar(10))
+            .HasColumnType(ColumnType.VarChar(ModelVersion.MaxLength))
             .IsRequired();
 
         builder.Property(master => master.Parameter)
+            .HasConversion<ParamConverter, ParamComparer>()
             .HasColumnName("parameter")
-            .HasColumnType(ColumnType.VarChar(15))
+            .HasColumnType(ColumnType.VarChar(Param.MaxLength))
             .IsRequired();
 
         builder
@@ -31,8 +35,9 @@ public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<Mi
 
         builder
             .Property(master => master.Description)
+            .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
-            .HasColumnType(ColumnType.text);
+            .HasColumnType(ColumnType.Text);
 
         builder
             .HasMany(master => master.Versions1)
@@ -124,5 +129,12 @@ public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<Mi
             .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasMany(master => master.Histories)
+            .WithOne(history => history.VersionMaster)
+            .HasForeignKey(history => history.Version)
+            .HasPrincipalKey(master => master.Version)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

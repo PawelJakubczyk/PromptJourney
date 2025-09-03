@@ -7,9 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <None Remove="Extensions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Context\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Extensions\" />
   </ItemGroup>
 
   <ItemGroup>

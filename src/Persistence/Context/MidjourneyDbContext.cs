@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
 using Domain.Entities.MidjourneyProperties;
+using Domain.Entities.MidjourneyStyleExampleLinks;
 using Domain.Entities.MidjourneyStyles;
 using Domain.Entities.MidjourneyVersions;
 

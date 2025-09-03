@@ -27,16 +27,19 @@ public static class GetStylesByTags
 
             var tags = query.Tags?.Select(t => Tag.Create(t)).ToList();
 
-            foreach (var tag in tags ?? [])
+            if (tags != null)
             {
-                domainErrors
-                    .CollectErrors<Tag>(tag);
+                foreach (var tag in tags)
+                {
+                    domainErrors
+                        .CollectErrors<Tag>(tag);
+                }
             }
 
             var validationErrors = CreateValidationErrorIfAny<List<StyleResponse>>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var result = await _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList());
+            var result = await _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? []);
 
             if (result.IsFailed)
                 return Result.Fail<List<StyleResponse>>(result.Errors);

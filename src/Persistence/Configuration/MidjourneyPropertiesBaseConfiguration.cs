@@ -1,8 +1,15 @@
 ﻿using Domain.Entities.MidjourneyProperties;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
 using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
+using static Persistence.Mapping.ValueObjects.PropertyNameMapping;
+using static Persistence.Mapping.ValueObjects.ParamMapping;
+using static Persistence.Mapping.ValueObjects.DefaultValueMapping;
+using static Persistence.Mapping.ValueObjects.MinValueMapping;
+using static Persistence.Mapping.ValueObjects.MaxValueMapping;
+using static Persistence.Mapping.ValueObjects.DescriptionMapping;
 
 namespace Persistence.Configuration;
 
@@ -15,43 +22,57 @@ public abstract class MidjourneyPropertiesBaseConfiguration<T> : IEntityTypeConf
     {
         builder.ToTable(TableName!, schema: "public");
 
-        builder.HasKey(versin => versin.PropertyName);
+        builder.HasKey(version => version.PropertyName);
 
         builder
             .Property(version => version.PropertyName)
+            .HasConversion<PropertyNameConverter, PropertyNameComparer>()
             .HasColumnName("property_name")
-            .HasColumnType(ColumnType.VarChar(25))
+            .HasColumnType(ColumnType.VarChar(PropertyName.MaxLength))
             .IsRequired();
 
         builder.Property(version => version.Version)
             .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
-            .HasColumnType(ColumnType.VarChar(10))
+            .HasColumnType(ColumnType.VarChar(ModelVersion.MaxLength))
             .IsRequired();
 
         builder.Property(version => version.Parameters)
+            .HasConversion<ParamListConverter, ParamListComparer>()
             .HasColumnName("parameters")
-            .HasColumnType(ColumnType.textArray)
+            .HasColumnType(ColumnType.TextArray)
             .IsRequired();
 
         builder.Property(version => version.DefaultValue)
+            .HasConversion<DefaultValueConverter, DefaultValueComparer>()
             .HasColumnName("default_value")
-            .HasColumnType(ColumnType.VarChar(50));
+            .HasColumnType(ColumnType.VarChar(DefaultValue.MaxLength));
 
         builder.Property(version => version.MinValue)
+            .HasConversion<MinValueConverter, MinValueComparer>()
             .HasColumnName("min_value")
-            .HasColumnType(ColumnType.VarChar(50));
+            .HasColumnType(ColumnType.VarChar(MinValue.MaxLength));
 
         builder.Property(version => version.MaxValue)
+            .HasConversion<MaxValueConverter, MaxValueComparer>()
             .HasColumnName("max_value")
-            .HasColumnType(ColumnType.VarChar(50));
+            .HasColumnType(ColumnType.VarChar(MaxValue.MaxLength));
 
         builder.Property(version => version.Description)
+            .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
-            .HasColumnType(ColumnType.text);
+            .HasColumnType(ColumnType.Text);
+
+        // Foreign key relationship
+        builder
+            .HasOne(version => version.VersionMaster)
+            .WithMany() // Set appropriate navigation property based on version
+            .HasForeignKey(version => version.Version)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
+// All version-specific configurations remain the same
 public class PropertiesVersion1Configuration 
     : MidjourneyPropertiesBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1> 
 {
@@ -60,6 +81,7 @@ public class PropertiesVersion1Configuration
         TableName = "properties_version_1";
     }
 }
+
 public class PropertiesVersion2Configuration 
     : MidjourneyPropertiesBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2>
 {

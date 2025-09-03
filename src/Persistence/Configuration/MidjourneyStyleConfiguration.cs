@@ -1,7 +1,12 @@
 ﻿using Domain.Entities.MidjourneyStyles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Domain.ValueObjects;
 using static Persistence.Constants.PersistenceConstants;
+using static Persistence.Mapping.ValueObjects.StyleNameMapping;
+using static Persistence.Mapping.ValueObjects.StyleTypeMapping;
+using static Persistence.Mapping.ValueObjects.DescriptionMapping;
+using static Persistence.Mapping.ValueObjects.TagMapping;
 
 namespace Persistence.Configuration;
 
@@ -13,21 +18,37 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
         builder.HasKey(style => style.StyleName);
         
         builder.Property(style => style.StyleName)
+            .HasConversion<StyleNameConverter, StyleNameComparer>()
             .HasColumnName("name")
-            .HasColumnType(ColumnType.VarChar(100))
+            .HasColumnType(ColumnType.VarChar(StyleName.MaxLength))
             .IsRequired();
             
         builder.Property(style => style.Type)
+            .HasConversion<StyleTypeConverter, StyleTypeComparer>()
             .HasColumnName("type")
-            .HasColumnType(ColumnType.VarChar(50))
+            .HasColumnType(ColumnType.VarChar(StyleType.MaxLength))
             .IsRequired();
             
         builder.Property(style => style.Description)
+            .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
-            .HasColumnType(ColumnType.VarChar(500));
+            .HasColumnType(ColumnType.VarChar(Description.MaxLength));
             
         builder.Property(style => style.Tags)
+            .HasConversion<TagListConverter, TagListComparer>()
             .HasColumnName("tags")
-            .HasColumnType(ColumnType.textArray);
+            .HasColumnType(ColumnType.TextArray);
+
+        // Navigation properties
+        builder
+            .HasMany(style => style.ExampleLinks)
+            .WithOne(link => link.Style)
+            .HasForeignKey(link => link.StyleName)
+            .HasPrincipalKey(style => style.StyleName)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasMany(style => style.MidjourneyPromptHistories)
+            .WithMany(history => history.MidjourneyStyles);
     }
 }

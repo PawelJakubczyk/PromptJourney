@@ -11,8 +11,8 @@ public interface IPropertiesRepository
     Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(ModelVersion version);
     Task<Result<bool>> CheckParameterExistsInVersionAsync(ModelVersion version, PropertyName propertyName);
     // For Commands
-    Task<Result<PropertyDetails>> AddParameterToVersionAsync(MidjourneyPropertiesBase property);
-    Task<Result<PropertyDetails>> UpdateParameterForVersionAsync(MidjourneyPropertiesBase property);
-    Task<Result<PropertyDetails>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue);
-    Task<Result<PropertyDetails>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName);
+    Task<Result<MidjourneyPropertiesBase>> AddParameterToVersionAsync(MidjourneyPropertiesBase property);
+    Task<Result<MidjourneyPropertiesBase>> UpdateParameterForVersionAsync(MidjourneyPropertiesBase property);
+    Task<Result<MidjourneyPropertiesBase>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue);
+    Task<Result<MidjourneyPropertiesBase>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName);
 }

@@ -1,5 +1,6 @@
 using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyPromtHistory;
+using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
@@ -38,10 +39,6 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     {
         try
         {
-            await Validate.Date.CannotBeInFuture(dateFrom);
-            await Validate.Date.CannotBeInFuture(dateTo);
-            await Validate.Date.Range.MustBeChronological(dateFrom, dateTo);
-
             var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
@@ -57,16 +54,14 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryRecordsByPromptKeywordAsync(string keyword)
+    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryRecordsByPromptKeywordAsync(Keyword keyword)
     {
         try
         {
-            await Validate.History.Input.Keyword.MustNotBeNullOrEmpty(keyword);
-
             var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
-                .Where(h => h.Prompt.Contains(keyword))
+                .Where(h => h.Prompt.Value.Contains(keyword.Value))
                 .OrderByDescending(h => h.CreatedOn)
                 .ToListAsync();
 
@@ -78,12 +73,10 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetLastHistoryRecordsAsync(int count)
+    public async Task<Result<List<MidjourneyPromptHistory>>> GetLastHistoryRecordsAsync(int records)
     {
         try
         {
-            await Validate.History.LimitMustBeGreaterThanZero(count);
-
             // Get total record count first to validate the count parameter
             var totalRecords = await CalculateHistoricalRecordCountAsync();
             if (totalRecords.IsFailed)
@@ -91,13 +84,11 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
                 return Result.Fail<List<MidjourneyPromptHistory>>("Failed to validate record count");
             }
 
-            await Validate.History.CountMustNotExceedHistoricalRecords(count, this);
-
             var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
                 .OrderByDescending(h => h.CreatedOn)
-                .Take(count)
+                .Take(records)
                 .ToListAsync();
 
             return Result.Ok(historyRecords);
@@ -128,13 +119,6 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     {
         try
         {
-            await Validate.Entity.MustNotBeNull(history, nameof(history));
-
-            // Validate prompt and version using domain validation
-            await Validate.History.Input.MustNotBeNullOrEmpty(history.Prompt);
-            await Validate.History.Input.MustHaveMaximumLength(history.Prompt);
-            await Validate.Version.Input.CannotBeNullOrEmpty(history.Version);
-
             await _midjourneyDbContext.MidjourneyPromptHistory.AddAsync(history);
             await _midjourneyDbContext.SaveChangesAsync();
 

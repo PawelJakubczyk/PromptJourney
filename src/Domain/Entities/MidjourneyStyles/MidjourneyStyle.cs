@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities.MidjourneyStyleExampleLinks;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
@@ -9,7 +10,7 @@ namespace Domain.Entities.MidjourneyStyles;
 public class MidjourneyStyle
 {
     // Columns
-    public StyleName Name { get; set; }
+    public StyleName StyleName { get; set; }
     public StyleType Type { get; set; }
     public Description? Description { get; set; }
     public List<Tag>? Tags { get; set; }
@@ -32,7 +33,7 @@ public class MidjourneyStyle
         List<Tag>? tags = null
     )
     {
-        Name = name;
+        StyleName = name;
         Type = type;
         Description = description;
         Tags = tags;
@@ -51,8 +52,12 @@ public class MidjourneyStyle
         errors
             .CollectErrors<StyleName>(name)
             .CollectErrors<StyleType>(type)
-            .CollectErrors<Description?>(description)
-            .CollectErrors<List<Tag>?>(tags);
+            .CollectErrors<Description?>(description);
+            
+        foreach (var tag in tags ?? [])
+        {
+            errors.CollectErrors<Tag>(tag);
+        }
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyStyle>(errors);
@@ -71,5 +76,54 @@ public class MidjourneyStyle
         );
 
         return Result.Ok(style);
+    }
+
+    public Result AddTag(Tag tag)
+    {
+        List<DomainError> errors = [];
+
+        errors
+            .CollectErrors<Tag>(tag)
+            .IfCountain<Tag>(Tags, tag);
+
+        if (errors.Count != 0)
+            return Result.Fail(errors);
+
+        Tags ??= [];
+        Tags.Add(tag);
+
+        return Result.Ok();
+    }
+
+    public Result RemoveTag(Tag tag)
+    {
+        List<DomainError> errors = [];
+
+        errors
+            .CollectErrors<Tag>(tag)
+            .IfListIsEmpty<Tag>(Tags)
+            .IfNull<Tag>(Tags)
+            .IfDoesNotContain(Tags, tag);
+
+        if (errors.Count != 0)
+            return Result.Fail(errors);
+
+        Tags!.RemoveAll(t => t.Equals(tag));
+
+        return Result.Ok();
+    }
+
+    public Result EditDescription(Description? description)
+    {
+        List<DomainError> errors = [];
+
+        errors.CollectErrors<Description?>(description);
+
+        if (errors.Count != 0)
+            return Result.Fail(errors);
+
+        Description = description;
+
+        return Result.Ok();
     }
 }

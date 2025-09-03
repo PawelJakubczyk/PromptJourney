@@ -1,8 +1,11 @@
-﻿using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyles;
-using Domain.ValueObjects;
+﻿using Application.Features.Styles.Commands.AddStyle;
+using Application.Features.Styles.Commands.AddTagToStyle;
+using Application.Features.Styles.Commands.RemoveStyle;
+using Application.Features.Styles.Commands.RemoveTagInStyle;
+using Application.Features.Styles.Commands;
+using Application.Features.Styles.Queries;
+using Application.Features.Styles.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
@@ -11,131 +14,256 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class StylesController(ISender sender, IStyleRepository styleRepository) : ApiController(sender)
+public sealed class StylesController(ISender sender) : ApiController(sender)
 {
-    private readonly IStyleRepository _styleRepository = styleRepository;
-
-
     // GET api/styles
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.GetAllStylesAsync();
+        var query = new GetAllStyles.Query();
+
+        var result = await Sender.Send(query, cancellationToken);
+
         if (result.IsFailed)
-            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+            return BadRequest(result.Errors);
+
         return Ok(result.Value);
     }
 
     // GET api/styles/{name}
     [HttpGet("{name}")]
-    public async Task<IActionResult> GetByName(string name)
+    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetByName(string name, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.GetStyleByNameAsync(StyleName.Create(name).Value);
+        var query = new GetStyleByName.Query(name);
+
+        var result = await Sender.Send(query, cancellationToken);
+
         if (result.IsFailed)
             return NotFound(result.Errors);
+
         return Ok(result.Value);
     }
 
     // GET api/styles/by-type/{type}
     [HttpGet("by-type/{type}")]
-    public async Task<IActionResult> GetByType(string type)
+    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetByType(string type, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.GetStylesByTypeAsync(StyleType.Create(type).Value);
+        var query = new GetStylesByType.Query(type);
+
+        var result = await Sender.Send(query, cancellationToken);
+
         if (result.IsFailed)
             return NotFound(result.Errors);
+
         return Ok(result.Value);
     }
 
     // GET api/styles/by-tags?tags=tag1&tags=tag2
     [HttpGet("by-tags")]
-    public async Task<IActionResult> GetByTags([FromQuery] List<string> tags)
+    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetByTags([FromQuery] List<string> tags, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.GetStylesByTagsAsync();
+        var query = new GetStylesByTags.Query(tags);
+
+        var result = await Sender.Send(query, cancellationToken);
+
         if (result.IsFailed)
             return NotFound(result.Errors);
+
         return Ok(result.Value);
     }
 
     // GET api/styles/by-description?keyword=forest
     [HttpGet("by-description")]
-    public async Task<IActionResult> GetByDescription([FromQuery] string keyword)
+    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetByDescription([FromQuery] string keyword, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.GetStylesByDescriptionKeywordAsync(keyword);
+        var query = new GetStylesByDescriptionKeyword.Query(keyword);
+
+        var result = await Sender.Send(query, cancellationToken);
+
         if (result.IsFailed)
             return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+
         return Ok(result.Value);
     }
 
     // GET api/styles/{name}/exists
     [HttpGet("{name}/exists")]
-    public async Task<IActionResult> CheckExists(string name)
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CheckExists(string name, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.CheckStyleExistsAsync(name);
+        var query = new CheckStyleExist.Query(name);
+
+        var result = await Sender.Send(query, cancellationToken);
+
         if (result.IsFailed)
             return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+
+        return Ok(new { exists = result.Value });
+    }
+
+    // GET api/styles/{styleName}/tags/{tag}/exists
+    [HttpGet("{styleName}/tags/{tag}/exists")]
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CheckTagExists(string styleName, string tag, CancellationToken cancellationToken)
+    {
+        var query = new CheckTagExistInStyle.Query(styleName, tag);
+
+        var result = await Sender.Send(query, cancellationToken);
+
+        if (result.IsFailed)
+            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+
         return Ok(new { exists = result.Value });
     }
 
     // POST api/styles
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] MidjourneyStyle style)
+    [ProducesResponseType<StyleResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create([FromBody] CreateStyleRequest request, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.AddStyleAsync(style);
+        var command = new AddStyle.Command(
+            request.Name,
+            request.Type,
+            request.Description,
+            request.Tags
+        );
+
+        var result = await Sender.Send(command, cancellationToken);
+
         if (result.IsFailed)
             return BadRequest(result.Errors);
-        return CreatedAtAction(nameof(GetByName), new { name = result.Value.StyleName }, result.Value);
+
+        return CreatedAtAction(nameof(GetByName), new { name = result.Value.Name }, result.Value);
     }
 
     // PUT api/styles/{name}
     [HttpPut("{name}")]
-    public async Task<IActionResult> Update(string name, [FromBody] MidjourneyStyle style)
+    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(string name, [FromBody] UpdateStyleRequest request, CancellationToken cancellationToken)
     {
-        if (name != style.StyleName)
+        if (name != request.Name)
             return BadRequest("Route name and payload name must match");
 
-        var result = await _styleRepository.UpdateStyleAsync(style);
+        var command = new UpdateStyle.Command(
+            request.Name,
+            request.Type,
+            request.Description,
+            request.Tags
+        );
+
+        var result = await Sender.Send(command, cancellationToken);
+
         if (result.IsFailed)
             return BadRequest(result.Errors);
+
         return Ok(result.Value);
     }
 
     // DELETE api/styles/{name}
     [HttpDelete("{name}")]
-    public async Task<IActionResult> Delete(string name)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete(string name, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.DeleteStyleAsync(name);
+        var command = new DeleteStyle.Command(name);
+
+        var result = await Sender.Send(command, cancellationToken);
+
         if (result.IsFailed)
             return NotFound(result.Errors);
+
         return NoContent();
     }
 
     // POST api/styles/{name}/tags
     [HttpPost("{name}/tags")]
-    public async Task<IActionResult> AddTag(string name, [FromBody] string tag)
+    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddTag(string name, [FromBody] AddTagRequest request, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.AddTagToStyleAsync(name, tag);
+        var command = new AddTagToStyle.Command(name, request.Tag);
+
+        var result = await Sender.Send(command, cancellationToken);
+
         if (result.IsFailed)
             return BadRequest(result.Errors);
+
         return Ok(result.Value);
     }
 
     // DELETE api/styles/{name}/tags/{tag}
     [HttpDelete("{name}/tags/{tag}")]
-    public async Task<IActionResult> RemoveTag(string name, string tag)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveTag(string name, string tag, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.DeleteTagFromStyleAsync(name, tag);
+        var command = new DeleteTagInStyle.Command(name, tag);
+
+        var result = await Sender.Send(command, cancellationToken);
+
         if (result.IsFailed)
             return BadRequest(result.Errors);
-        return Ok(result.Value);
+
+        return NoContent();
     }
 
     // PUT api/styles/{name}/description
     [HttpPut("{name}/description")]
-    public async Task<IActionResult> UpdateDescription(string name, [FromBody] string description)
+    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateDescription(string name, [FromBody] UpdateDescriptionRequest request, CancellationToken cancellationToken)
     {
-        var result = await _styleRepository.UpadteStyleDescription(name, description);
+        var command = new UpdateDescriptionInStyle.Command(name, request.Description);
+
+        var result = await Sender.Send(command, cancellationToken);
+
         if (result.IsFailed)
             return BadRequest(result.Errors);
+
         return Ok(result.Value);
     }
 }
+
+// Request DTOs
+public sealed record CreateStyleRequest(
+    string Name,
+    string Type,
+    string? Description = null,
+    List<string>? Tags = null
+);
+
+public sealed record UpdateStyleRequest(
+    string Name,
+    string Type,
+    string? Description = null,
+    List<string>? Tags = null
+);
+
+public sealed record AddTagRequest(string Tag);
+
+public sealed record UpdateDescriptionRequest(string Description);

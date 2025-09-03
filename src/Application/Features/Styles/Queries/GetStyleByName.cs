@@ -11,7 +11,7 @@ using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Styles.Queries;
 
-public static class GetStylesByName
+public static class GetStyleByName
 {
     public sealed record Query(string StyleName) : IQuery<StyleResponse>;
 

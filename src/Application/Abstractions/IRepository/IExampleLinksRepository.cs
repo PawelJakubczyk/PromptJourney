@@ -1,4 +1,4 @@
-﻿using Domain.Entities.MidjourneyStyles;
+﻿using Domain.Entities.MidjourneyStyleExampleLinks;
 using Domain.ValueObjects;
 using FluentResults;
 

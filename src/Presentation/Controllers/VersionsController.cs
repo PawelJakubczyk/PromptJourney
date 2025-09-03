@@ -1,78 +1,113 @@
-﻿using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyVersions;
+﻿using Application.Features.VersionsMaster.Commands;
+using Application.Features.VersionsMaster.Queries;
+using Application.Features.VersionsMaster.Responses;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Abstraction;
 
-namespace Presentation.Controllers
+namespace Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public sealed class VersionsController(ISender sender) : ApiController(sender)
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class VersionsController : ControllerBase
+    // GET api/versions
+    [HttpGet]
+    [ProducesResponseType<List<VersionResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        private readonly IVersionRepository _repo;
+        var query = new GetAllVersions.Query();
 
-        public VersionsController(IVersionRepository repo)
-        {
-            _repo = repo;
-        }
+        var result = await Sender.Send(query, cancellationToken);
 
-        // GET api/versions
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var result = await _repo.GetAllVersionsAsync();
-            if (result.IsFailed)
-                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+        if (result.IsFailed)
+            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
 
-            return Ok(result.Value);
-        }
+        return Ok(result.Value);
+    }
 
-        // GET api/versions/supported
-        [HttpGet("supported")]
-        public async Task<IActionResult> GetSupported()
-        {
-            var result = await _repo.GetAllSuportedVersionsAsync();
-            if (result.IsFailed)
-                return NotFound(result.Errors);
+    // GET api/versions/supported
+    [HttpGet("supported")]
+    [ProducesResponseType<List<string>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetSupported(CancellationToken cancellationToken)
+    {
+        var query = new GetAllSuportedVersions.Query();
 
-            return Ok(result.Value);
-        }
+        var result = await Sender.Send(query, cancellationToken);
 
-        // GET api/versions/{version}
-        [HttpGet("{version}")]
-        public async Task<IActionResult> GetByVersion(string version)
-        {
-            var result = await _repo.GetMasterVersionByVersionAsync(version);
-            if (result.IsFailed)
-                return NotFound(result.Errors);
+        if (result.IsFailed)
+            return NotFound(result.Errors);
 
-            return Ok(result.Value);
-        }
+        return Ok(result.Value);
+    }
 
-        // GET api/versions/{version}/exists
-        [HttpGet("{version}/exists")]
-        public async Task<IActionResult> CheckExists(string version)
-        {
-            var result = await _repo.CheckVersionExistsInVersionsAsync(version);
-            if (result.IsFailed)
-                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+    // GET api/versions/{version}
+    [HttpGet("{version}")]
+    [ProducesResponseType<VersionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetByVersion(string version, CancellationToken cancellationToken)
+    {
+        var query = new GetVersionByVersion.Query(version);
 
-            return Ok(new { exists = result.Value });
-        }
+        var result = await Sender.Send(query, cancellationToken);
 
-        //// POST api/versions
-        //[HttpPost]
-        //public async Task<IActionResult> Create([FromBody] MidjourneyVersions version)
-        //{
-        //    var result = await _repo.AddVersionAsync(version);
-        //    if (result.IsFailed)
-        //        return BadRequest(result.Errors);
+        if (result.IsFailed)
+            return NotFound(result.Errors);
 
-        //    return CreatedAtAction(
-        //        nameof(GetByVersion),
-        //        new { version = result.Value.Version },
-        //        result.Value
-        //    );
-        //}
+        return Ok(result.Value);
+    }
+
+    // GET api/versions/{version}/exists
+    [HttpGet("{version}/exists")]
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CheckExists(string version, CancellationToken cancellationToken)
+    {
+        var query = new CheckVersionExists.Query(version);
+
+        var result = await Sender.Send(query, cancellationToken);
+
+        if (result.IsFailed)
+            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+
+        return Ok(new { exists = result.Value });
+    }
+
+    // POST api/versions
+    [HttpPost]
+    [ProducesResponseType<VersionResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
+    {
+        var command = new AddVersion.Command(
+            request.Version,
+            request.Parameter,
+            request.ReleaseDate,
+            request.Description
+        );
+
+        var result = await Sender.Send(command, cancellationToken);
+
+        if (result.IsFailed)
+            return BadRequest(result.Errors);
+
+        return CreatedAtAction(
+            nameof(GetByVersion),
+            new { version = result.Value.Version },
+            result.Value
+        );
     }
 }
+
+// Request DTOs
+public sealed record CreateVersionRequest(
+    string Version,
+    string Parameter,
+    DateTime? ReleaseDate = null,
+    string? Description = null
+);
