@@ -6,7 +6,7 @@ using Domain.Errors;
 
 namespace Application.Errors;
 
-public static class ErrorsExtensions
+public static class ApplicationErrorsExtensions
 {
     public static Result<T>? CreateValidationErrorIfAny<T>
     (
@@ -207,7 +207,7 @@ public static class ErrorsExtensions
         var propertyNames = typeof(PropertyDetails)
             .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
             .Select(p => p.Name);
-        if (propertyNames == null || !propertyNames.Any())
+        if (propertyNames == null || !propertyNames.Contains(input))
             applicationErrors.Add(new ApplicationError(
                 "No public instance properties found in PropertyDetails."));
         return applicationErrors;

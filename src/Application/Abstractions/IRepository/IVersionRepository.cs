@@ -11,7 +11,7 @@ public interface IVersionRepository
     Task<Result<bool>> CheckIfAnySupportedVersionExistsAsync();
     Task<Result<MidjourneyVersion>> GetMasterVersionByVersionAsync(ModelVersion version);
     Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync();
-    Task<Result<List<string>>> GetAllSuportedVersionsAsync();
+    Task<Result<List<ModelVersion>>> GetAllSuportedVersionsAsync();
 
     // For Commands
     Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion version);

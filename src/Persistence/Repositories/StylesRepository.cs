@@ -9,7 +9,6 @@ namespace Persistence.Repositories;
 
 public class StylesRepository : IStyleRepository
 {
-
     private readonly MidjourneyDbContext _midjourneyDbContext;
     public StylesRepository(MidjourneyDbContext midjourneyDbContext)
     {
@@ -55,8 +54,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Type.ShouldBeNotNullOrEmpty(type.Value);
-
             var styles = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
                 .Where(s => s.Type.Value == type.Value)
@@ -80,9 +77,6 @@ public class StylesRepository : IStyleRepository
         try
         {
             var tagValues = tags.Select(t => t.Value).ToList();
-            await Validate.Tags.ShouldHaveAtLastOneElement(tagValues);
-            await Validate.Tags.ShouldNotHaveNullOrEmptyTag(tagValues);
-
             var styles = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
                 .Where(s => s.Tags != null && tags.All(t => s.Tags.Any(st => st.Value == t.Value)))
@@ -100,8 +94,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Keyword.ShouldBeNotNullOrEmpty(keyword.Value);
-
             var styles = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
                 .Where(s => s.Description != null && s.Description.Value.Contains(keyword.Value))
@@ -119,8 +111,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(name.Value);
-
             var exists = await _midjourneyDbContext.MidjourneyStyle.AnyAsync(s => s.StyleName.Value == name.Value);
             return Result.Ok(exists);
         }
@@ -134,9 +124,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
-            await Validate.Tag.ShouldBeNotNullOrEmpty(tag.Value);
-
             var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
             if (style is null)
                 return Result.Fail($"Style with name '{styleName.Value}' not found");
@@ -153,9 +140,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNull(style);
-            await Validate.Style.NameAndTypeShouldNotBeNullOrEmpty(style);
-
             await _midjourneyDbContext.MidjourneyStyle.AddAsync(style);
             await _midjourneyDbContext.SaveChangesAsync();
             return Result.Ok(style);
@@ -170,9 +154,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNull(style);
-            await Validate.Style.NameAndTypeShouldNotBeNullOrEmpty(style);
-
             _midjourneyDbContext.MidjourneyStyle.Update(style);
             await _midjourneyDbContext.SaveChangesAsync();
             return Result.Ok(style);
@@ -187,8 +168,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
-
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.ExampleLinks)
                 .FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
@@ -211,9 +190,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
-            await Validate.Tag.ShouldBeNotNullOrEmpty(tag.Value);
-
             var style = await _midjourneyDbContext
                 .MidjourneyStyle
                 .FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
@@ -272,8 +248,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Tag.ShouldBeNotNullOrEmpty(tag);
-
             var exists = await _midjourneyDbContext.MidjourneyStyle.AnyAsync(s => s.Tags != null && s.Tags.Any(t => t.Value == tag));
             return Result.Ok(exists);
         }
@@ -287,8 +261,6 @@ public class StylesRepository : IStyleRepository
     {
         try
         {
-            await Validate.Style.ShouldBeNotNullOrEmpty(styleName.Value);
-
             var style = await _midjourneyDbContext.MidjourneyStyle.FirstOrDefaultAsync(s => s.StyleName.Value == styleName.Value);
             if (style is null)
                 return Result.Fail($"Style with name '{styleName.Value}' not found");

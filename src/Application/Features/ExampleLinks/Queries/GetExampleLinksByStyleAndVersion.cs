@@ -5,7 +5,7 @@ using Application.Features.ExampleLinks.Responses;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
-using static Application.Errors.ErrorsExtensions;
+using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Queries;
 

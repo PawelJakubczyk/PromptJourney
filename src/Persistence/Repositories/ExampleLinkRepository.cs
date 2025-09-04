@@ -4,6 +4,7 @@ using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
+using Persistence.Errors;
 
 namespace Persistence.Repositories;
 
@@ -34,18 +35,14 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(Result<StyleName> styleNameResult)
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(StyleName styleName)
     {
+        List<PersistenceError> persistenceErrors = [];
 
+        persistenceErrors.IfStyleNotExists(styleName);
 
-        var x = CheckStyleExistsAsync(styleNameResult);
-
-
-
-        if (styleNameResult.IsFailed)
-            return Result.Fail<List<MidjourneyStyleExampleLink>>(styleNameResult.Errors);
-
-        var styleName = styleNameResult.Value;
+        var validationErrors = PersistenceErrorsExtensions.CreateValidationErrorIfAny<List<MidjourneyStyleExampleLink>>(persistenceErrors);
+        if (validationErrors is not null) return validationErrors;
 
         try
         {
@@ -63,17 +60,8 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync(Result<StyleName> styleNameResult, Result<ModelVersion> versionResult)
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync(StyleName styleName, ModelVersion version)
     {
-        if (styleNameResult.IsFailed)
-            return Result.Fail<List<MidjourneyStyleExampleLink>>(styleNameResult.Errors);
-
-        if (versionResult.IsFailed)
-            return Result.Fail<List<MidjourneyStyleExampleLink>>(versionResult.Errors);
-
-        var styleName = styleNameResult.Value;
-        var version = versionResult.Value;
-
         try
         {
             var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
@@ -90,13 +78,8 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<bool>> CheckExampleLinkExistsAsync(Result<ExampleLink> linkResult)
+    public async Task<Result<bool>> CheckExampleLinkExistsAsync(ExampleLink link)
     {
-        if (linkResult.IsFailed)
-            return Result.Fail<bool>(linkResult.Errors);
-
-        var link = linkResult.Value;
-
         try
         {
             var exists = await _midjourneyDbContext.MidjourneyStyleExampleLinks
@@ -110,13 +93,8 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(Result<StyleName> styleResult)
+    public async Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(StyleName styleName)
     {
-        if (styleResult.IsFailed)
-            return Result.Fail<bool>(styleResult.Errors);
-
-        var styleName = styleResult.Value;
-
         try
         {
             var exists = await _midjourneyDbContext.MidjourneyStyleExampleLinks
@@ -146,19 +124,14 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
     }
 
     // For Commands
-    public async Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(Result<MidjourneyStyleExampleLink> linkResult)
+    public async Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(MidjourneyStyleExampleLink exampleLink)
     {
-        if (linkResult.IsFailed)
-            return Result.Fail<MidjourneyStyleExampleLink>(linkResult.Errors);
-
-        var link = linkResult.Value;
-
         try
         {
-            await _midjourneyDbContext.MidjourneyStyleExampleLinks.AddAsync(link);
+            await _midjourneyDbContext.MidjourneyStyleExampleLinks.AddAsync(exampleLink);
             await _midjourneyDbContext.SaveChangesAsync();
 
-            return Result.Ok(link);
+            return Result.Ok(exampleLink);
         }
         catch (Exception ex)
         {
@@ -166,25 +139,17 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(Result<ExampleLink> linkResult)
+    public async Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(ExampleLink link)
     {
-        if (linkResult.IsFailed)
-            return Result.Fail<MidjourneyStyleExampleLink>(linkResult.Errors);
-
-        var link = linkResult.Value;
-
         try
         {
             var exampleLink = await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .FirstOrDefaultAsync(l => l.Link == link);
 
-            if (exampleLink is null)
-                return Result.Fail<MidjourneyStyleExampleLink>($"Example link '{link}' not found");
-
-            _midjourneyDbContext.MidjourneyStyleExampleLinks.Remove(exampleLink);
+            _midjourneyDbContext.MidjourneyStyleExampleLinks.Remove(exampleLink!);
             await _midjourneyDbContext.SaveChangesAsync();
 
-            return Result.Ok(exampleLink);
+            return Result.Ok(exampleLink!);
         }
         catch (Exception ex)
         {
@@ -192,13 +157,8 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> DeleteAllExampleLinksByStyleAsync(Result<StyleName> styleResult)
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> DeleteAllExampleLinksByStyleAsync(StyleName styleName)
     {
-        if (styleResult.IsFailed)
-            return Result.Fail<List<MidjourneyStyleExampleLink>>(styleResult.Errors);
-
-        var styleName = styleResult.Value;
-
         try
         {
             var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks

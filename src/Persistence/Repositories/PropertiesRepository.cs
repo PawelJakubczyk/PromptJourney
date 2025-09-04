@@ -47,7 +47,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
         catch
         {
-            _supportedVersions = _versionMappings.Keys.ToList();
+            _supportedVersions = [.. _versionMappings.Keys];
         }
     }
 

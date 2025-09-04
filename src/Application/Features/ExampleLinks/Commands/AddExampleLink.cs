@@ -5,7 +5,7 @@ using Application.Features.ExampleLinks.Responses;
 using Domain.Entities.MidjourneyStyleExampleLinks;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ErrorsExtensions;
+using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Commands;
 

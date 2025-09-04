@@ -1,15 +1,17 @@
 ﻿using Application.Abstractions.IRepository;
 using Domain.Entities.MidjourneyVersions;
+using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
+using Persistence.Errors;
 
 namespace Persistence.Repositories;
 
 public sealed class VersionsRepository : IVersionRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext;
-    private static List<string> _supportedVersions = [];
+    private static List<ModelVersion> _supportedVersions = [];
 
     public VersionsRepository(MidjourneyDbContext midjourneyDbContext)
     {
@@ -18,7 +20,7 @@ public sealed class VersionsRepository : IVersionRepository
 
     }
 
-    public async Task<Result<bool>> CheckVersionExistsInVersionsAsync(string version)
+    public async Task<Result<bool>> CheckVersionExistsInVersionsAsync(ModelVersion version)
     {
         try
         {
@@ -47,13 +49,13 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<MidjourneyVersion>> GetMasterVersionByVersionAsync(string version)
+    public async Task<Result<MidjourneyVersion>> GetMasterVersionByVersionAsync(ModelVersion version)
     {
         try
         {
             var versionMaster = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
-                .FirstOrDefaultAsync(v => v.Version.Value == version);
+                .FirstOrDefaultAsync(v => v.Version == version);
 
             return Result.Ok(versionMaster!);
         }
@@ -78,7 +80,7 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<List<string>>> GetAllSuportedVersionsAsync()
+    public async Task<Result<List<ModelVersion>>> GetAllSuportedVersionsAsync()
     {
         try
         {
@@ -91,26 +93,18 @@ public sealed class VersionsRepository : IVersionRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<string>>($"Database error while retrieving suported versions: {ex.Message}");
+            return Result.Fail<List<ModelVersion>>($"Database error while retrieving suported versions: {ex.Message}");
         }
     }
 
-    public async Task<Result<MidjourneyVersion>> AddVersionAsync
-    (
-        string version, 
-        string parameter, 
-        DateTime? releaseDate = null, 
-        string? description = null
-    )
+    public async Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion newVersion)
     {
         try
         {
-            var newVersion = MidjourneyVersion.Create(version, parameter, releaseDate, description).Value;
-
             await _midjourneyDbContext.MidjourneyVersionsMaster.AddAsync(newVersion);
             await _midjourneyDbContext.SaveChangesAsync();
 
-            _supportedVersions.Add(version);
+            _supportedVersions.Add(newVersion.Version);
             return Result.Ok(newVersion);
         }
         catch (Exception ex)
@@ -118,6 +112,4 @@ public sealed class VersionsRepository : IVersionRepository
             return Result.Fail<MidjourneyVersion>($"Database error while adding version: {ex.Message}");
         }
     }
-
-    private record VersionMapping(Type EntityType, string DbSetPropertyName);
 }

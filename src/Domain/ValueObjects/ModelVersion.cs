@@ -32,12 +32,12 @@ public sealed class ModelVersion
     public override string ToString() => Value;
 };
 
-public static class ErrorsExtensions
+public static class ModelVersionErrorsExtensions
 {
     internal static List<DomainError> IfVersionFormatInvalid(this List<DomainError> domainErrors, string value)
     {
-        bool isValidNumeric = Regex.IsMatch(value, @"^[1-9](\.[0-9])?$");
-        bool isValidNiji = Regex.IsMatch(value, @"^niji [4-6]$");
+        bool isValidNumeric = _validNumericRegex.IsMatch(value);
+        bool isValidNiji = _validNijiRegex.IsMatch(value);
 
         if (!isValidNumeric && !isValidNiji)
         {
@@ -49,4 +49,7 @@ public static class ErrorsExtensions
 
         return domainErrors;
     }
+
+    private static readonly Regex _validNumericRegex = new(@"^niji [4-6]$", RegexOptions.Compiled);
+    private static readonly Regex _validNijiRegex = new(@"^[1-9](\.[0-9])?$", RegexOptions.Compiled);
 }

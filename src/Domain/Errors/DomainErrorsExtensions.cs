@@ -2,7 +2,7 @@
 
 namespace Domain.Errors;
 
-public static class ErrorsExtensions
+public static class DomainErrorsExtensions
 {
     public static List<DomainError> If(this List<DomainError> domainErrors, bool condition, DomainError errorIfTrue)
     {

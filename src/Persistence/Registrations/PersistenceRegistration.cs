@@ -15,7 +15,13 @@ public static class PersistenceRegistration
             options.UseNpgsql("Host=localhost;Port=5432;Database=midjourney_test;Username=admin_0;Password=GR52MqngWxfT");
         });
 
+        // Register repositories
         services.AddScoped<IVersionRepository, VersionsRepository>();
+        services.AddScoped<IStyleRepository, StylesRepository>();
+        services.AddScoped<IExampleLinksRepository, ExampleLinkRepository>();
+        services.AddScoped<IPropertiesRepository, PropertiesRepository>();
+        services.AddScoped<IPromptHistoryRepository, PromptHistoryRepository>();
+
         return services;
     }
 }

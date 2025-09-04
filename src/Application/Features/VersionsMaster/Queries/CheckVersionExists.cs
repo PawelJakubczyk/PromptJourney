@@ -3,9 +3,8 @@ using Application.Abstractions.IRepository;
 using Application.Errors;
 using FluentResults;
 using Domain.Errors;
-using static Domain.Errors.DomainErrorMessages;
 using Domain.ValueObjects;
-using static Application.Errors.ErrorsExtensions;
+using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.VersionsMaster.Queries;
 

@@ -4,7 +4,7 @@ using Application.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
-using static Application.Errors.ErrorsExtensions;
+using static Application.Errors.ApplicationErrorsExtensions;
 using Application.Features.Common.Responses;
 
 namespace Application.Features.Styles.Commands.RemoveStyle;
