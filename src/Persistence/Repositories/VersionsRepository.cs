@@ -53,7 +53,7 @@ public sealed class VersionsRepository : IVersionRepository
         {
             var versionMaster = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
-                .FirstOrDefaultAsync(v => v.Version == version);
+                .FirstOrDefaultAsync(v => v.Version.Value == version);
 
             return Result.Ok(versionMaster!);
         }

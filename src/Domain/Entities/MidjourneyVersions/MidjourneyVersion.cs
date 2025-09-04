@@ -2,7 +2,6 @@
 using Domain.Entities.MidjourneyProperties;
 using Domain.ValueObjects;
 using FluentResults;
-using static Domain.Errors.DomainErrorMessages;
 using Domain.Errors;
 
 namespace Domain.Entities.MidjourneyVersions;

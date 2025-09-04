@@ -1,6 +1,4 @@
-﻿using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
-using static Domain.Errors.DomainErrorMessages;
+﻿using Domain.Errors;
 
 namespace Application.Errors;
 

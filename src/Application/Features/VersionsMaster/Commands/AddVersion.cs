@@ -5,7 +5,6 @@ using Application.Features.VersionsMaster.Responses;
 using Domain.Entities.MidjourneyVersions;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.VersionsMaster.Commands;

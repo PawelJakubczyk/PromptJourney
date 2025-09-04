@@ -3,7 +3,6 @@ using Application.Abstractions.IRepository;
 using Application.Errors;
 using Application.Features.PromptHistory.Responses;
 using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.PromptHistory.Queries;

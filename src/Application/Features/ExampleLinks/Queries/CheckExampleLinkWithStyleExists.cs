@@ -4,7 +4,6 @@ using Application.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
-using static Domain.Errors.DomainErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Queries;
@@ -28,7 +27,7 @@ public class CheckExampleLinkWithStyleExists
             var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            return await _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName);
+            return await _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value);
         }
     }
 }

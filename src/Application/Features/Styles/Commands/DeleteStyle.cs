@@ -4,8 +4,6 @@ using Application.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
-using static Application.Errors.ApplicationErrorMessages;
-using static Domain.Errors.DomainErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 using Application.Features.Common.Responses;
 
@@ -40,7 +38,7 @@ public static class DeleteStyle
             var validationErrors = CreateValidationErrorIfAny<DeleteResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            await _exampleLinksRepository.DeleteAllExampleLinksByStyleAsync(styleName);
+            await _exampleLinksRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value);
 
             var result = await _styleRepository.DeleteStyleAsync(styleName.Value);
 

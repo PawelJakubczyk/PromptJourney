@@ -1,4 +1,4 @@
-namespace Persistence.Repositories.Errors;
+namespace Persistence.Errors;
 
 public static class ErrorMessages
 {

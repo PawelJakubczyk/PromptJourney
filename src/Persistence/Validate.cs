@@ -42,9 +42,9 @@ public class Validate
 
         public static Task<Result<string>> NameAndTypeShouldNotBeNullOrEmpty(MidjourneyStyle style)
         {
-            if (string.IsNullOrEmpty(style.StyleName))
+            if (string.IsNullOrEmpty(style.StyleName.Value))
                 return Task.FromResult(Result.Fail<string>("Style name cannot be null or empty."));
-            if (string.IsNullOrEmpty(style.Type))
+            if (string.IsNullOrEmpty(style.Type.Value))
                 return Task.FromResult(Result.Fail<string>("Style type cannot be null or empty."));
                 
             return Task.FromResult(Result.Ok<string>("Style was found."));

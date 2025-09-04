@@ -5,7 +5,6 @@ using Application.Features.ExampleLinks.Responses;
 using Domain.Entities.MidjourneyStyleExampleLinks;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Commands;
@@ -44,7 +43,7 @@ public static class AddExampleLink
             var validationErrors = CreateValidationErrorIfAny<ExampleLinkRespose>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var addExampleLinkResult = await _exampleLinkRepository.AddExampleLinkAsync(linkResult);
+            var addExampleLinkResult = await _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value);
 
             if (addExampleLinkResult.IsFailed) return Result.Fail<ExampleLinkRespose>(addExampleLinkResult.Errors);
 

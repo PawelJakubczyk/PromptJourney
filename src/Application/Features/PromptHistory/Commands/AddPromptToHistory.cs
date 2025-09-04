@@ -5,7 +5,6 @@ using Application.Features.PromptHistory.Responses;
 using Domain.Entities.MidjourneyPromtHistory;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.PromptHistory.Commands;

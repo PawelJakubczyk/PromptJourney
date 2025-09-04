@@ -2,13 +2,10 @@
 using Application.Abstractions.IRepository;
 using Application.Errors;
 using Application.Features.Common.Responses;
-using Application.Features.ExampleLinks.Responses;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 using static Application.Errors.ErrorsExtensions;
-using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -38,7 +35,7 @@ public static class DeleteExampleLink
             var validationErrors = CreateValidationErrorIfAny<DeleteResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var deleteResult = await _exampleLinkRepository.DeleteExampleLinkAsync(link);
+            var deleteResult = await _exampleLinkRepository.DeleteExampleLinkAsync(link.Value);
 
             if (deleteResult.IsFailed) 
                 return Result.Fail<DeleteResponse>(deleteResult.Errors);

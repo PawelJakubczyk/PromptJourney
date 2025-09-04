@@ -1,5 +1,4 @@
 ﻿using FluentResults;
-using static Domain.Errors.DomainErrorMessages;
 
 namespace Domain.Errors;
 

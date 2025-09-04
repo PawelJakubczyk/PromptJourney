@@ -5,9 +5,7 @@ using Application.Features.Common.Responses;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorMessages;
 using static Application.Errors.ErrorsExtensions;
-using static Domain.Errors.DomainErrorMessages;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -41,7 +39,7 @@ public static class DeleteAllExampleLinksByStyle
             var validationErrors = CreateValidationErrorIfAny<BulkDeleteResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var deleteResult = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName);
+            var deleteResult = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value);
 
             if (deleteResult.IsFailed) 
                 return Result.Fail<BulkDeleteResponse>(deleteResult.Errors);

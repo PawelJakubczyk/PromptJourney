@@ -4,7 +4,6 @@ using Application.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
-using static Domain.Errors.DomainErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.Styles.Queries;

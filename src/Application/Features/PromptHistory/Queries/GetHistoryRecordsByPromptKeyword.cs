@@ -5,7 +5,6 @@ using Application.Features.PromptHistory.Responses;
 using FluentResults;
 using Domain.ValueObjects;
 using Domain.Errors;
-using static Domain.Errors.DomainErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.PromptHistory.Queries;

@@ -36,6 +36,12 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
 
     public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(Result<StyleName> styleNameResult)
     {
+
+
+        var x = CheckStyleExistsAsync(styleNameResult);
+
+
+
         if (styleNameResult.IsFailed)
             return Result.Fail<List<MidjourneyStyleExampleLink>>(styleNameResult.Errors);
 

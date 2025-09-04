@@ -5,8 +5,6 @@ using Application.Features.ExampleLinks.Responses;
 using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
-using static Application.Errors.ApplicationErrorMessages;
-using static Domain.Errors.DomainErrorMessages;
 using static Application.Errors.ErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Queries;
@@ -46,7 +44,7 @@ public static class GetExampleLinksByStyleAndVersion
             var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkRespose>>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(style, version);
+            var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(style.Value, version.Value);
 
             if (result.IsFailed)
                 return Result.Fail<List<ExampleLinkRespose>>(result.Errors);
