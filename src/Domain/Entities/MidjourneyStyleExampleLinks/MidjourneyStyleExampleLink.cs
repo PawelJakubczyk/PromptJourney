@@ -1,4 +1,3 @@
-using Domain.Entities.MidjourneyStyles;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
@@ -16,7 +15,7 @@ public class MidjourneyStyleExampleLink
     public ModelVersion Version { get; private set; }
     
     // Navigation
-    public MidjourneyStyle Style { get; private set; } = null!;
+    public MidjourneyStyle.MidjourneyStyle Style { get; private set; } = null!;
     public MidjourneyVersions.MidjourneyVersion VersionMaster { get; private set; } = null!;
 
     // Constructors
