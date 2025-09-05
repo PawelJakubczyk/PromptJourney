@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.MidjourneyPromtHistory;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
@@ -23,14 +24,14 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
             .Property(history => history.Prompt)
             .HasConversion<PromptConverter, PromptComparer>()
             .HasColumnName("prompt")
-            .HasColumnType(ColumnType.VarChar(1000))
+            .HasColumnType(ColumnType.VarChar(Prompt.MaxLength))
             .IsRequired();
 
         builder
             .Property(history => history.Version)
             .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("properties")
-            .HasColumnType(ColumnType.VarChar(7))
+            .HasColumnType(ColumnType.VarChar(ModelVersion.MaxLength))
             .IsRequired();
 
         builder

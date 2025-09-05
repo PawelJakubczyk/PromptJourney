@@ -66,13 +66,12 @@ public abstract class MidjourneyPropertiesBaseConfiguration<T> : IEntityTypeConf
         // Foreign key relationship
         builder
             .HasOne(version => version.VersionMaster)
-            .WithMany() // Set appropriate navigation property based on version
+            .WithMany()
             .HasForeignKey(version => version.Version)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
-// All version-specific configurations remain the same
 public class PropertiesVersion1Configuration 
     : MidjourneyPropertiesBaseConfiguration<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1> 
 {
