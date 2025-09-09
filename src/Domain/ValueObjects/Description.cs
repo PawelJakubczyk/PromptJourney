@@ -1,14 +1,15 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class Description
+public sealed class Description : IValueObject<Description, string>
 {
     public const int MaxLength = 500;
-    public string? Value { get; }
+    public string Value { get; }
 
-    private Description(string? value)
+    private Description(string value)
     {
         Value = value;
     }

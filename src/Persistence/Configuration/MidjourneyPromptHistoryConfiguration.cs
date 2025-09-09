@@ -2,9 +2,11 @@
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PromptConverter = Persistence.Mapping.ValueObjects.PromptMapping.Converter;
+using PromptComparer =  Persistence.Mapping.ValueObjects.PromptMapping.Comparer;
+using ModelVersionConverter = Persistence.Mapping.ValueObjects.ModelVersionMapping.Converter;
+using ModelVersionComparer =  Persistence.Mapping.ValueObjects.ModelVersionMapping.Comparer;
 using static Persistence.Constants.PersistenceConstants;
-using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
-using static Persistence.Mapping.ValueObjects.PromptMapping;
 
 namespace Persistence.Configuration;
 

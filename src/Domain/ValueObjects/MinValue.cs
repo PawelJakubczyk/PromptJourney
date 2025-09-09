@@ -1,14 +1,15 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class MinValue
+public sealed class MinValue : IValueObject<MinValue, string>
 {
     public const int MaxLength = 50;
-    public string? Value { get; }
+    public string Value { get; }
 
-    private MinValue(string? value)
+    private MinValue(string value)
     {
         Value = value;
     }

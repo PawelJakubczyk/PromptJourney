@@ -12,7 +12,7 @@ using Persistence.Context;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(MidjourneyDbContext))]
-    [Migration("20250905075054_migration_init")]
+    [Migration("20250909090554_migration_init")]
     partial class migration_init
     {
         /// <inheritdoc />

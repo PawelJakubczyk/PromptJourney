@@ -1,10 +1,11 @@
-﻿using Domain.Errors;
+﻿using Domain.Abstractions;
+using Domain.Errors;
 using FluentResults;
 using System.Text.RegularExpressions;
 
 namespace Domain.ValueObjects;
 
-public sealed class ModelVersion
+public sealed class ModelVersion : IValueObject<ModelVersion, string>
 {
     public const int MaxLength = 10;
     public string Value { get; }

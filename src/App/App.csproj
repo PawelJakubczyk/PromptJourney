@@ -15,6 +15,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="Api.Integration.Tests" />
+  </ItemGroup>
 	
   <ItemGroup>
     <ProjectReference Include="..\Persistence\Persistence.csproj" />

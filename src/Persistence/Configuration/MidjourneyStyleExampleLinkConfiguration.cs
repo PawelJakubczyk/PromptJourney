@@ -1,12 +1,14 @@
 using Domain.Entities.MidjourneyStyleExampleLinks;
-using Domain.Entities.MidjourneyStyle;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ExampleLinkConverter = Persistence.Mapping.ValueObjects.ExampleLinkMapping.Converter;
+using ExampleLinkComparer = Persistence.Mapping.ValueObjects.ExampleLinkMapping.Comparer;
+using StyleNameConverter = Persistence.Mapping.ValueObjects.StyleNameMapping.Converter;
+using StyleNameComparer = Persistence.Mapping.ValueObjects.StyleNameMapping.Comparer;
+using ModelVersionConverter = Persistence.Mapping.ValueObjects.ModelVersionMapping.Converter;
+using ModelVersionComparer = Persistence.Mapping.ValueObjects.ModelVersionMapping.Comparer;
 using static Persistence.Constants.PersistenceConstants;
-using static Persistence.ConventersComparers.ValueObjects.ModelVersionMapping;
-using static Persistence.Mapping.ValueObjects.ExampleLinkMapping;
-using static Persistence.Mapping.ValueObjects.StyleNameMapping;
 
 namespace Persistence.Configuration;
 

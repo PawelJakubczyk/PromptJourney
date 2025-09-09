@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "TestConnection": "Host=localhost;Database=midjourney_test;Username=postgres;Password=yourpassword"
+  }
+}

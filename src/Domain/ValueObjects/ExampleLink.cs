@@ -1,9 +1,10 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class ExampleLink
+public sealed partial class ExampleLink : IValueObject<ExampleLink, string>
 {
     public const int MaxLength = 200;
     public string Value { get; }

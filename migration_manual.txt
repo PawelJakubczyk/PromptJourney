@@ -9,12 +9,12 @@ rm -r Migrations
 
 # Wygeneruje migracje
 Add-Migration migration_init -Project Persistence -StartupProject App
-Add-Migration migration_init2 -Project Persistence -StartupProject App
+Add-Migration migration_seeding -Project Persistence -StartupProject App
 
 # Cofniêcie migracji
 remove-migration -Project Persistence -StartupProject App
 remove-migration -Project Persistence -StartupProject App -Force
-remove-migration -Project Persistence -StartupProject App -Name migration_init2
+remove-migration -Project Persistence -StartupProject App -Name migration_init
 
 # Wygeneruje skrympt migracyjny sql
 Script-Migration -Project Persistence -StartupProject App
@@ -22,7 +22,7 @@ Script-Migration -Project Persistence -StartupProject App -From 20231020123456_m
 Script-Migration -Project Persistence -StartupProject App -Idempotent
 
  # Aplikowanie wszystkich migracji do bazy danych
-Update-Database -Project Persistence -StartupProject App
+Update-Database -Project Persistence -StartupProject App migration_init
 
 # Cofniêcie migracji do konkretnej wersji / Aplikowanie migracji do konkretnej wersji w bazie danych 
 update-database -Project Persistence -StartupProject App -Migration 20231020123456_migration_init

@@ -16,11 +16,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <Folder Include="Abstractions\" />
+    <Folder Include="Collections\" />
+    <Folder Include="Configurations\" />
+    <Folder Include="Constants\" />
+    <Folder Include="ControllersTests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Persistence\Persistence.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,15 +1,11 @@
-﻿using Domain.Errors;
+﻿using Domain.Abstractions;
+using Domain.Errors;
 using FluentResults;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace Domain.ValueObjects;
 
-public sealed partial class StyleReferenceName
+public sealed partial class StyleReferenceName : IValueObject<StyleReferenceName, string>
 {
     public const int MaxLength = 150;
     public string Value { get; }

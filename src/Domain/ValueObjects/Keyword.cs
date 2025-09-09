@@ -1,9 +1,10 @@
-﻿using Domain.Errors;
+﻿using Domain.Abstractions;
+using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public class Keyword
+public class Keyword : IValueObject<Keyword, string>
 {
     public const int MaxLength = 50;
     public string Value { get; }
