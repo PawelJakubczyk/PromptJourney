@@ -1,4 +1,4 @@
-﻿using Domain.Entities.MidjourneyStyles;
+﻿using Domain.Entities.MidjourneyStyle;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.ValueObjects;

@@ -51,12 +51,12 @@
 //        };
 
 //        context.Response.ContentType = ProblemDetailsContentType;
-        
+
 //        var jsonOptions = new JsonSerializerOptions
 //        {
 //            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
 //        };
-        
+
 //        await context.Response.WriteAsJsonAsync(problemDetails, jsonOptions);
 //    }
 

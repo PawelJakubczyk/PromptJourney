@@ -4,7 +4,7 @@ using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 
-namespace Domain.Entities.MidjourneyStyles;
+namespace Domain.Entities.MidjourneyStyle;
 
 public class MidjourneyStyle
 {

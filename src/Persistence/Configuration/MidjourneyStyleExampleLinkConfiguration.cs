@@ -1,5 +1,5 @@
 using Domain.Entities.MidjourneyStyleExampleLinks;
-using Domain.Entities.MidjourneyStyles;
+using Domain.Entities.MidjourneyStyle;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

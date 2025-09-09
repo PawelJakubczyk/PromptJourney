@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyles;
+using Domain.Entities.MidjourneyStyle;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;

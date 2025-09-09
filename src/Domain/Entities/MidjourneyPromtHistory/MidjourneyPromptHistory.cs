@@ -1,5 +1,4 @@
-﻿using Domain.Entities.MidjourneyStyles;
-using Domain.Errors;
+﻿using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 
@@ -16,7 +15,7 @@ public class MidjourneyPromptHistory
 
     // Navigation
     public MidjourneyVersions.MidjourneyVersion VersionMaster { get; set; }
-    public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
+    public List<MidjourneyStyle.MidjourneyStyle> MidjourneyStyles { get; set; } = [];
 
     // Constructors
     private MidjourneyPromptHistory()
