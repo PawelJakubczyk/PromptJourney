@@ -1,18 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Persistence.Context;
 
-namespace Persistence.Context;
+namespace Integration.Tests;
 
-internal class MidjourneyDbContextFactory : IDesignTimeDbContextFactory<MidjourneyDbContext>
+public class TestMidjourneyDbContextFactory
 {
-    public MidjourneyDbContext CreateDbContext(string[] args)
+    public MidjourneyDbContext CreateDbContext()
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("connectionString.json")
             .Build();
 
-        var connectionString = configuration.GetConnectionString("StageConnection");
+        var connectionString = configuration.GetConnectionString("TestConnection");
 
         var optionsBuilder = new DbContextOptionsBuilder<MidjourneyDbContext>();
         optionsBuilder.UseNpgsql(connectionString);

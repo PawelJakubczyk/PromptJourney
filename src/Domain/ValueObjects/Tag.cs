@@ -1,9 +1,10 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class Tag
+public sealed partial class Tag : IValueObject<Tag, string>
 {
     public const int MaxLength = 50;
     public string Value { get; }

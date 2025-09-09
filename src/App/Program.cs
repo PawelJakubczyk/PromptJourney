@@ -54,4 +54,4 @@ finally
 
 return 0;
 
-sealed partial class Program;
+public sealed partial class Program;

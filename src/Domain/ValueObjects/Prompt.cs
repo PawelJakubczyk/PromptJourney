@@ -1,9 +1,10 @@
-﻿using Domain.Errors;
+﻿using Domain.Abstractions;
+using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class Prompt
+public sealed partial class Prompt : IValueObject<Prompt, string>
 {
     public const int MaxLength = 1000;
     public string Value { get; }

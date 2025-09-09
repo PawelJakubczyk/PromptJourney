@@ -2,11 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.ValueObjects;
+using StyleNameConverter = Persistence.Mapping.ValueObjects.StyleNameMapping.Converter;
+using StyleNameComparer = Persistence.Mapping.ValueObjects.StyleNameMapping.Comparer;
+using StyleTypeConverter = Persistence.Mapping.ValueObjects.StyleTypeMapping.Converter;
+using StyleTypeComparer = Persistence.Mapping.ValueObjects.StyleTypeMapping.Comparer;
+using DescriptionConverter = Persistence.Mapping.ValueObjects.DescriptionMapping.Converter;
+using DescriptionComparer = Persistence.Mapping.ValueObjects.DescriptionMapping.Comparer;
+using TagListConverter = Persistence.Mapping.ValueObjects.TagListMapping.Converter;
+using TagListComparer = Persistence.Mapping.ValueObjects.TagListMapping.Comparer;
 using static Persistence.Constants.PersistenceConstants;
-using static Persistence.Mapping.ValueObjects.StyleNameMapping;
-using static Persistence.Mapping.ValueObjects.StyleTypeMapping;
-using static Persistence.Mapping.ValueObjects.DescriptionMapping;
-using static Persistence.Mapping.ValueObjects.TagMapping;
 
 namespace Persistence.Configuration;
 

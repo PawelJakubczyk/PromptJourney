@@ -1,9 +1,10 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class StyleName
+public sealed partial class StyleName : IValueObject<StyleName, string>
 {
     public const int MaxLength = 150;
     public string Value { get; }

@@ -1,14 +1,15 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class MaxValue
+public sealed class MaxValue : IValueObject<MaxValue, string>
 {
     public const int MaxLength = 50;
-    public string? Value { get; }
+    public string Value { get; }
 
-    private MaxValue(string? value)
+    private MaxValue(string value)
     {
         Value = value;
     }

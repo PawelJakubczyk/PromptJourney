@@ -1,9 +1,10 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class Param
+public sealed class Param : IValueObject<Param, string>
 {
     public const int MaxLength = 100;
     public string Value { get; }

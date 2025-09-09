@@ -1,9 +1,10 @@
-﻿using Domain.Errors;
+﻿using Domain.Abstractions;
+using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class PropertyName
+public sealed class PropertyName : IValueObject<PropertyName, string>
 {
     public const int MaxLength = 25;
     public string Value { get; }

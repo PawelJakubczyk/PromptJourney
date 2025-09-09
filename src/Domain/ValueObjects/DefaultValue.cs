@@ -1,14 +1,15 @@
+using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class DefaultValue
+public sealed class DefaultValue: IValueObject<DefaultValue, string>
 {
     public const int MaxLength = 50;
-    public string? Value { get; }
+    public string Value { get; }
 
-    private DefaultValue(string? value)
+    private DefaultValue(string value)
     {
         Value = value;
     }
