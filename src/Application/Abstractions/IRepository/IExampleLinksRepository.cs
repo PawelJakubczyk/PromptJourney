@@ -11,7 +11,7 @@ public interface IExampleLinksRepository
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync(StyleName styleName, ModelVersion version);
     Task<Result<bool>> CheckExampleLinkExistsAsync(ExampleLink link);
     Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(StyleName style);
-    Task<Result<bool>> CheckExampleLinksAreNotEmpty();
+    Task<Result<bool>> CheckAnyExampleLinksExist();
     // For Commands
     Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(MidjourneyStyleExampleLink link);
     Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(ExampleLink link);

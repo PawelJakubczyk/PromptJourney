@@ -5,35 +5,60 @@ namespace Integration.Tests;
 
 public class MidjourneyDbFixture : IDisposable
 {
-    public MidjourneyDbContext DbContext { get; }
+    private readonly TestMidjourneyDbContextFactory _factory;
+    private bool _disposed = false;
 
     public MidjourneyDbFixture()
     {
-        var factory = new TestMidjourneyDbContextFactory();
-        DbContext = factory.CreateDbContext();
+        _factory = new TestMidjourneyDbContextFactory();
         
-        // Initialize the database schema
-        DbContext.Database.EnsureCreated();
+        // Create the database schema once for all tests
+        using var context = CreateDbContext();
+        
+        // Ensure database exists but don't recreate if it already exists
+        if (!context.Database.CanConnect())
+        {
+            context.Database.EnsureCreated();
+        }
+    }
+
+    public MidjourneyDbContext CreateDbContext()
+    {
+        return _factory.CreateDbContext();
     }
 
     public void CleanupDatabase()
     {
+        using var context = CreateDbContext();
+        
         // PostgreSQL-specific cleanup that truncates all tables but keeps schema
-        DbContext.Database.ExecuteSqlRaw
+        context.Database.ExecuteSqlRaw
         (@"
             DO $$ DECLARE
                 r RECORD;
             BEGIN
+                -- Disable triggers to avoid constraint issues during truncation
+                SET session_replication_role = replica;
+                
                 FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
                     EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE;';
                 END LOOP;
+                
+                -- Re-enable triggers
+                SET session_replication_role = DEFAULT;
             END $$;
         ");
     }
 
     public void Dispose()
     {
-        DbContext.Dispose();
+        if (!_disposed)
+        {
+            // NIE usuwaj bazy danych - tylko oczyœæ zasoby
+            // Baza danych powinna pozostaæ dla kolejnych uruchomieñ testów
+            
+            _disposed = true;
+        }
     }
 }
 

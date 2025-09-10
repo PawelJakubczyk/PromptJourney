@@ -6,16 +6,29 @@ namespace Integration.Tests;
 
 public class TestMidjourneyDbContextFactory
 {
-    public MidjourneyDbContext CreateDbContext()
+    private readonly string _connectionString;
+
+    public TestMidjourneyDbContextFactory()
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("connectionString.json")
             .Build();
 
-        var connectionString = configuration.GetConnectionString("TestConnection");
+        _connectionString = configuration.GetConnectionString("TestConnection")
+            ?? throw new InvalidOperationException("TestConnection string not found");
+    }
 
+    public string GetConnectionString() => _connectionString;
+
+    public MidjourneyDbContext CreateDbContext()
+    {
         var optionsBuilder = new DbContextOptionsBuilder<MidjourneyDbContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+
+        // Configure for testing - important options
+        optionsBuilder
+            .UseNpgsql(_connectionString)
+            .EnableSensitiveDataLogging() // Helpful for debugging
+            .EnableDetailedErrors(); // Better error messages
 
         return new MidjourneyDbContext(optionsBuilder.Options);
     }

@@ -13,7 +13,7 @@ public class CheckExampleLinksAreNotEmpty
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            return await _exampleLinksRepository.CheckExampleLinksAreNotEmpty();
+            return await _exampleLinksRepository.CheckAnyExampleLinksExist();
         }
     }
 }

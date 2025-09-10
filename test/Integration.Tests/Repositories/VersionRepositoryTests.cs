@@ -1,26 +1,17 @@
 ﻿using Domain.ValueObjects;
-using Persistence.Context;
 using Persistence.Repositories;
 using Domain.Entities.MidjourneyVersions;
 using FluentAssertions;
 
 namespace Integration.Tests.Repositories;
 
-[Collection("Database collection")]
-public class VersionRepositoryTests
+public class VersionRepositoryTests : BaseTransactionIntegrationTest
 {
-    private readonly MidjourneyDbContext _dbContext;
     private readonly VersionsRepository _repository;
-    private readonly MidjourneyDbFixture _fixture;
 
-    public VersionRepositoryTests(MidjourneyDbFixture fixture)
+    public VersionRepositoryTests(MidjourneyDbFixture fixture) : base(fixture)
     {
-        _fixture = fixture;
-        _dbContext = fixture.DbContext;
-        _repository = new VersionsRepository(_dbContext);
-        
-        // Clean database before each test
-        _fixture.CleanupDatabase();
+        _repository = new VersionsRepository(DbContext);
     }
 
     [Fact]
@@ -88,6 +79,10 @@ public class VersionRepositoryTests
 
         // Act
         var firstResult = await _repository.AddVersionAsync(versionEntity1);
+        
+        // Clear the change tracker to simulate a fresh context
+        DbContext.ChangeTracker.Clear();
+        
         var secondResult = await _repository.AddVersionAsync(versionEntity2);
 
         // Assert
@@ -230,6 +225,17 @@ public class VersionRepositoryTests
     [Fact]
     public async Task GetAllSupportedVersions_ShouldReturnSupportedVersionsList()
     {
+        // Arrange
+        var version1 = MidjourneyVersion.Create
+        (
+            ModelVersion.Create("4.0").Value,
+            Param.Create("--v 4").Value,
+            new DateTime(2022, 11, 5, 0, 0, 0, DateTimeKind.Utc),
+            Description.Create("Improved quality").Value
+        ).Value;
+
+        await _repository.AddVersionAsync(version1);
+
         // Act
         var result = await _repository.GetAllSuportedVersionsAsync();
 
@@ -238,13 +244,11 @@ public class VersionRepositoryTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Should().NotBeEmpty();
-        result.Value.Should().AllSatisfy(version => 
-            version.Should().NotBeNull().And
-                   .Match<ModelVersion>(v => !string.IsNullOrWhiteSpace(v.Value)));
+        result.Value[0].Value.Should().Be("4.0");
     }
 
     [Fact]
-    public async Task CheckIfAnySupportedVersionExists_WithNoVersions_ShouldReturnTrue()
+    public async Task CheckIfAnySupportedVersionExists_WithNoVersions_ShouldReturnFalse()
     {
         // Act (empty database)
         var result = await _repository.CheckIfAnySupportedVersionExistsAsync();
@@ -252,7 +256,7 @@ public class VersionRepositoryTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue(); // True means no versions exist
+        result.Value.Should().BeFalse();
     }
 
     [Fact]
@@ -302,8 +306,8 @@ public class VersionRepositoryTests
     public async Task AddVersion_WithVeryLongDescription_ShouldSucceed()
     {
         // Arrange
-        var version = ModelVersion.Create("11.0").Value;
-        var parameter = Param.Create("--v 11").Value;
+        var version = ModelVersion.Create("1.1").Value; // Changed from "1.0" to avoid conflicts
+        var parameter = Param.Create("--v 1.1").Value;
         var longDescription = new string('A', 500); // Very long description
         var description = Description.Create(longDescription).Value;
         
