@@ -4,18 +4,21 @@ using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class MaxValue : IValueObject<MaxValue, string>
+public sealed class MaxValue : IValueObject<MaxValue, string?>
 {
     public const int MaxLength = 50;
-    public string Value { get; }
+    public string? Value { get; }
 
-    private MaxValue(string value)
+    private MaxValue(string? value)
     {
         Value = value;
     }
 
-    public static Result<MaxValue> Create(string value)
+    public static Result<MaxValue> Create(string? value)
     {
+        if (value == null)
+            return Result.Ok(new MaxValue(null));
+
         List<DomainError> errors = [];
 
         errors
@@ -28,5 +31,5 @@ public sealed class MaxValue : IValueObject<MaxValue, string>
         return Result.Ok(new MaxValue(value));
     }
 
-    public override string ToString() => Value ?? string.Empty;
+    public override string? ToString() => Value;
 }

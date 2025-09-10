@@ -53,28 +53,28 @@ public class MidjourneyVersion
 
     public static Result<MidjourneyVersion> Create
     (
-        ModelVersion version,
-        Param parameter,
+        Result<ModelVersion> versionResult,
+        Result<Param> parameterResult,
         DateTime? releaseDate = null,
-        Description? description = null
+        Result<Description?>? descriptionResult = null
     )
     {
         List<DomainError> errors = [];
 
         errors
-        .CollectErrors<ModelVersion>(version)
-        .CollectErrors<Param>(parameter)
-        .CollectErrors<Description?>(description);
+            .CollectErrors<ModelVersion>(versionResult)
+            .CollectErrors<Param>(parameterResult)
+            .CollectErrors<Description?>(descriptionResult);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyVersion>(errors);
 
         var versionMaster = new MidjourneyVersion
         (
-            version,
-            parameter,
+            versionResult.Value,
+            parameterResult.Value,
             releaseDate,
-            description
+            descriptionResult?.Value
         );
 
         return Result.Ok(versionMaster);

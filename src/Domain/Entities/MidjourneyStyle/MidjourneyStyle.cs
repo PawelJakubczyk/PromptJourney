@@ -40,38 +40,42 @@ public class MidjourneyStyle
 
     public static Result<MidjourneyStyle> Create
     (
-        StyleName name,
-        StyleType type,
-        Description? description = null,
-        List<Tag>? tags = null
+        Result<StyleName> nameResult,
+        Result<StyleType> typeResult,
+        Result<Description?>? descriptionResult = null,
+        List<Result<Tag>?>? tagResultsList = null
     )
     {
         List<DomainError> errors = [];
 
         errors
-            .CollectErrors<StyleName>(name)
-            .CollectErrors<StyleType>(type)
-            .CollectErrors<Description?>(description);
+            .CollectErrors<StyleName>(nameResult)
+            .CollectErrors<StyleType>(typeResult)
+            .CollectErrors<Description?>(descriptionResult);
             
-        foreach (var tag in tags ?? [])
+        List<Tag>? tagsList = [];
+
+        foreach (var tagResult in tagResultsList ?? [])
         {
-            errors.CollectErrors<Tag>(tag);
+            errors.CollectErrors<Tag>(tagResult);
+            if (tagResult != null)
+                tagsList.Add(tagResult.Value);
         }
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyStyle>(errors);
 
-        if (tags?.Count == 0)
+        if (tagsList.Count == 0)
         {
-            tags = null;
+            tagsList = null;
         }
 
         var style = new MidjourneyStyle
         (
-            name,
-            type,
-            description,
-            tags
+            nameResult.Value,
+            typeResult.Value,
+            descriptionResult?.Value,
+            tagsList
         );
 
         return Result.Ok(style);
@@ -83,7 +87,7 @@ public class MidjourneyStyle
 
         errors
             .CollectErrors<Tag>(tag)
-            .IfCountain<Tag>(Tags, tag);
+            .IfContain<Tag>(Tags, tag);
 
         if (errors.Count != 0)
             return Result.Fail(errors);

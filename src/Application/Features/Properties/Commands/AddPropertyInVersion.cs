@@ -30,29 +30,29 @@ public static class AddPropertyInVersion
 
         public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var version = ModelVersion.Create(command.Version);
-            var propertyName = PropertyName.Create(command.PropertyName);
-            var parameters = command.Parameters.Select(p => Param.Create(p)).ToList();
-            var defaultValue = command.DefaultValue != null ? DefaultValue.Create(command.DefaultValue) : null;
-            var minValue = command.MinValue != null ? MinValue.Create(command.MinValue) : null;
-            var maxValue = command.MaxValue != null ? MaxValue.Create(command.MaxValue) : null;
-            var description = command.Description != null ? Description.Create(command.Description) : null;
+            var versionResult = ModelVersion.Create(command.Version);
+            var propertyNameResult = PropertyName.Create(command.PropertyName);
+            var parametersResult = command.Parameters.Select(p => Param.Create(p)).ToList();
+            var defaultValueResult = command.DefaultValue != null ? DefaultValue.Create(command.DefaultValue) : null;
+            var minValueResult = command.MinValue != null ? MinValue.Create(command.MinValue) : null;
+            var maxValueResult = command.MaxValue != null ? MaxValue.Create(command.MaxValue) : null;
+            var descriptionResult = command.Description != null ? Description.Create(command.Description) : null;
 
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfVersionNotExists(version.Value, _versionRepository)
-                .IfPropertyAlreadyExists(version.Value, propertyName.Value, _propertiesRepository);
+                .IfVersionNotExists(versionResult.Value, _versionRepository)
+                .IfPropertyAlreadyExists(versionResult.Value, propertyNameResult.Value, _propertiesRepository);
 
             var propertyResult = MidjourneyPropertiesBase.Create
             (
-                propertyName.Value,
-                version.Value,
-                parameters.Select(p => p.Value).ToList(),
-                defaultValue?.Value,
-                minValue?.Value,
-                maxValue?.Value,
-                description?.Value
+                propertyNameResult,
+                versionResult,
+                parametersResult,
+                defaultValueResult,
+                minValueResult,
+                maxValueResult,
+                descriptionResult
             );
 
             var domainErrors = propertyResult.Errors;

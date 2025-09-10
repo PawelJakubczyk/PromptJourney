@@ -9,6 +9,7 @@ public sealed class ModelVersion : IValueObject<ModelVersion, string>
 {
     public const int MaxLength = 10;
     public string Value { get; }
+    public Result<ModelVersion> ModelVersionResult => Create(Value);
 
     private ModelVersion(string value)
     {
@@ -31,7 +32,7 @@ public sealed class ModelVersion : IValueObject<ModelVersion, string>
     }
 
     public override string ToString() => Value;
-};
+}
 
 public static class ModelVersionErrorsExtensions
 {
@@ -51,6 +52,9 @@ public static class ModelVersionErrorsExtensions
         return domainErrors;
     }
 
-    private static readonly Regex _validNumericRegex = new(@"^niji [4-6]$", RegexOptions.Compiled);
-    private static readonly Regex _validNijiRegex = new(@"^[1-9](\.[0-9])?$", RegexOptions.Compiled);
+    private static readonly Regex _validNumericRegex =
+        new(@"^[1-9][0-9]*(\.[0-9])?$", RegexOptions.Compiled);
+
+    private static readonly Regex _validNijiRegex =
+        new(@"^niji [1-9][0-9]*$", RegexOptions.Compiled);
 }

@@ -37,10 +37,10 @@ public static class UpdateStyle
 
             var styleResult = MidjourneyStyle.Create
             (
-                styleName.Value,
-                type.Value,
-                description?.Value,
-                tags?.Select(t => t.Value).ToList()
+                styleName,
+                type,
+                description,
+                tags
             );
 
             var domainErrors = styleResult.Errors;

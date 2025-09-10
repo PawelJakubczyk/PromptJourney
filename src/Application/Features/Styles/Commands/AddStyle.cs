@@ -39,7 +39,7 @@ public static class AddStyle
                 name.Value,
                 type.Value,
                 description?.Value,
-                tags?.Select(t => t.Value).ToList()
+                tags
             );
 
             var domainErrors = styleResult.Errors;

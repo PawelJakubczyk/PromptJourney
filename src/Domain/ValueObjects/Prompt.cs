@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class Prompt : IValueObject<Prompt, string>
+public sealed class Prompt : IValueObject<Prompt, string>
 {
     public const int MaxLength = 1000;
     public string Value { get; }
@@ -16,6 +16,7 @@ public sealed partial class Prompt : IValueObject<Prompt, string>
 
     public static Result<Prompt> Create(string value)
     {
+
         List<DomainError> errors = [];
 
         errors

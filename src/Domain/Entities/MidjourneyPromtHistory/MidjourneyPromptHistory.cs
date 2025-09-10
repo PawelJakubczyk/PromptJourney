@@ -40,8 +40,8 @@ public class MidjourneyPromptHistory
 
     public static Result<MidjourneyPromptHistory> Create
     (
-        Prompt prompt,
-        ModelVersion version
+        Result<Prompt> prompt,
+        Result<ModelVersion> version
     )
     {
         List<DomainError> errors = [];
@@ -55,8 +55,8 @@ public class MidjourneyPromptHistory
 
         var history = new MidjourneyPromptHistory
         (
-            prompt,
-            version
+            prompt.Value,
+            version.Value
         );
 
         return Result.Ok(history);

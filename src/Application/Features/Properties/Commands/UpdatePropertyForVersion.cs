@@ -48,7 +48,7 @@ public static class UpdatePropertyForVersion
             (
                 propertyName.Value,
                 version.Value,
-                parameters.Select(p => p.Value).ToList(),
+                parameters,
                 defaultValue?.Value,
                 minValue?.Value,
                 maxValue?.Value,
