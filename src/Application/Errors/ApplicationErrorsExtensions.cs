@@ -108,7 +108,7 @@ public static class ApplicationErrorsExtensions
         IExampleLinksRepository repository
     )
     {
-        var result = repository.CheckExampleLinksAreNotEmpty();
+        var result = repository.CheckAnyExampleLinksExist();
         if (result.Result.IsFailed)
             applicationErrors.Add(new ApplicationError(
                 "Failed to check if example links have any element"));

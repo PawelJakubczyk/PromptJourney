@@ -108,7 +108,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<bool>> CheckExampleLinksAreNotEmpty()
+    public async Task<Result<bool>> CheckAnyExampleLinksExist()
     {
         try
         {

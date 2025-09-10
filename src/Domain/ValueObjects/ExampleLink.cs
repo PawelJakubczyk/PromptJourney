@@ -30,5 +30,4 @@ public sealed partial class ExampleLink : IValueObject<ExampleLink, string>
     }
 
     public override string ToString() => Value;
-    public Uri ToUri() => new(Value);
 }

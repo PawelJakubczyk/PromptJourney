@@ -26,9 +26,9 @@ public static class DomainErrorsExtensions
 
     public static List<DomainError> IfWhitespace<TValue>(this List<DomainError> domainErrors, string value)
     {
-        if (value == "")
+        if (string.IsNullOrWhiteSpace(value) && value != null)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: {value} cannot be whitespace."));
+            domainErrors.Add(new DomainError($"{nameof(TValue)}: cannot be whitespace."));
         }
 
         return domainErrors;
@@ -38,7 +38,7 @@ public static class DomainErrorsExtensions
     {
         if (value is null)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: {value} cannot be null."));
+            domainErrors.Add(new DomainError($"{nameof(TValue)}: cannot be null."));
         }
         return domainErrors;
     }
@@ -47,7 +47,7 @@ public static class DomainErrorsExtensions
     {
         if (value?.Length > maxLength)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: {value} cannot be longer than {maxLength} characters."));
+            domainErrors.Add(new DomainError($"{nameof(TValue)}: cannot be longer than {maxLength} characters."));
         }
 
         return domainErrors;
@@ -58,10 +58,10 @@ public static class DomainErrorsExtensions
         var isValid = Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
             (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
 
-        if (isValid)
+        if (!isValid)
         {
             domainErrors.Add(new DomainError($"Invalid URL format: {value}"));
-        };
+        }
 
         return domainErrors;
     }
@@ -84,7 +84,7 @@ public static class DomainErrorsExtensions
         return domainErrors;
     }
 
-    public static List<DomainError> IfCountain<TValue>(this List<DomainError> domainErrors, List<TValue>? items, TValue element)
+    public static List<DomainError> IfContain<TValue>(this List<DomainError> domainErrors, List<TValue>? items, TValue element)
     {
         if (items != null && items.Contains(element))
         {
@@ -95,16 +95,14 @@ public static class DomainErrorsExtensions
 
     public static List<DomainError> CollectErrors<T>(
         this List<DomainError> errors,
-        Result<T>? result
-    )
+        Result<T>? result)
     {
         if (result is not null && result.IsFailed)
         {
-            errors.AddRange(
-                result.Errors.OfType<DomainError>()
-            );
+            errors.AddRange(result.Errors.OfType<DomainError>());
         }
 
         return errors;
     }
+
 }

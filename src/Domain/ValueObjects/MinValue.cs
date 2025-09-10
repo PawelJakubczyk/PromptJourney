@@ -4,18 +4,21 @@ using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class MinValue : IValueObject<MinValue, string>
+public sealed class MinValue : IValueObject<MinValue, string?>
 {
     public const int MaxLength = 50;
-    public string Value { get; }
+    public string? Value { get; }
 
-    private MinValue(string value)
+    private MinValue(string? value)
     {
         Value = value;
     }
 
-    public static Result<MinValue> Create(string value)
+    public static Result<MinValue> Create(string? value)
     {
+        if (value == null)
+            return Result.Ok(new MinValue(null));
+
         List<DomainError> errors = [];
 
         errors
@@ -28,5 +31,5 @@ public sealed class MinValue : IValueObject<MinValue, string>
         return Result.Ok(new MinValue(value));
     }
 
-    public override string ToString() => Value ?? string.Empty;
+    public override string? ToString() => Value;
 }

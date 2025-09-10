@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class Tag : IValueObject<Tag, string>
+public sealed class Tag : IValueObject<Tag, string>
 {
     public const int MaxLength = 50;
     public string Value { get; }

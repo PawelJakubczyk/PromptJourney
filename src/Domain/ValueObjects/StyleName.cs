@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class StyleName : IValueObject<StyleName, string>
+public sealed class StyleName : IValueObject<StyleName, string>
 {
     public const int MaxLength = 150;
     public string Value { get; }

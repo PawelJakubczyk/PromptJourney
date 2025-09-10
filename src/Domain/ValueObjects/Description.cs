@@ -4,18 +4,21 @@ using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public sealed class Description : IValueObject<Description, string>
+public sealed class Description : IValueObject<Description, string?>
 {
     public const int MaxLength = 500;
-    public string Value { get; }
+    public string? Value { get; }
 
-    private Description(string value)
+    private Description(string? value)
     {
         Value = value;
     }
 
-    public static Result<Description> Create(string value)
+    public static Result<Description> Create(string? value)
     {
+        if (value == null)
+            return Result.Ok(new Description(null));
+
         List<DomainError> errors = [];
 
         errors
@@ -28,5 +31,5 @@ public sealed class Description : IValueObject<Description, string>
         return Result.Ok(new Description(value));
     }
 
-    public override string ToString() => Value ?? string.Empty;
+    public override string? ToString() => Value;
 }

@@ -47,38 +47,46 @@ public class MidjourneyPropertiesBase
 
     public static Result<MidjourneyPropertiesBase> Create
     (
-        PropertyName propertyName,
-        ModelVersion version,
-        List<Param>? parameters = null,
-        DefaultValue? defaultValue = null,
-        MinValue? minValue = null,
-        MaxValue? maxValue = null,
-        Description? description = null
+        Result<PropertyName> propertyNameResult,
+        Result<ModelVersion> versionResult,
+        List<Result<Param>>? parametersResultsList = null,
+        Result<DefaultValue?>? defaultValueResult = null,
+        Result<MinValue?>? minValueResult = null,
+        Result<MaxValue?>? maxValueResult = null,
+        Result<Description?>? descriptionResult = null
     )
     {
         List<DomainError> errors = [];
 
         errors
-            .CollectErrors<PropertyName>(propertyName)
-            .CollectErrors<ModelVersion>(version)
-            .CollectErrors<List<Param>?>(parameters)
-            .CollectErrors<DefaultValue?>(defaultValue)
-            .CollectErrors<MinValue?>(minValue)
-            .CollectErrors<MaxValue?>(maxValue)
-            .CollectErrors<Description?>(description);
+            .CollectErrors<PropertyName>(propertyNameResult)
+            .CollectErrors<ModelVersion>(versionResult)
+            .CollectErrors<DefaultValue?>(defaultValueResult)
+            .CollectErrors<MinValue?>(minValueResult)
+            .CollectErrors<MaxValue?>(maxValueResult)
+            .CollectErrors<Description?>(descriptionResult);
+
+        List<Param> parameterslList = [];
+
+        foreach (var parametersResult in parametersResultsList ?? [])
+        {
+            errors.CollectErrors<Param>(parametersResult);
+            if (parametersResult != null)
+                parameterslList.Add(parametersResult.Value);
+        };
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyPropertiesBase>(errors);
 
         var versionBase = new MidjourneyPropertiesBase
         (
-            propertyName, 
-            version, 
-            parameters, 
-            defaultValue, 
-            minValue, 
-            maxValue, 
-            description
+            propertyNameResult.Value, 
+            versionResult.Value,
+            parameterslList, 
+            defaultValueResult?.Value, 
+            minValueResult?.Value, 
+            maxValueResult?.Value, 
+            descriptionResult?.Value
         );
 
         return Result.Ok(versionBase);

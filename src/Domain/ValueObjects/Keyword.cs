@@ -4,22 +4,25 @@ using FluentResults;
 
 namespace Domain.ValueObjects;
 
-public class Keyword : IValueObject<Keyword, string>
+public sealed class Keyword : IValueObject<Keyword, string?>
 {
     public const int MaxLength = 50;
-    public string Value { get; }
+    public string? Value { get; }
 
-    private Keyword(string value)
+    private Keyword(string? value)
     {
         Value = value;
     }
 
-    public static Result<Keyword> Create(string value)
+    public static Result<Keyword> Create(string? value)
     {
+        if (value == null)
+            return Result.Ok(new Keyword(null));
+
         List<DomainError> errors = [];
 
         errors
-            .IfNullOrWhitespace<Keyword>(value)
+            .IfWhitespace<Keyword>(value)
             .IfLengthTooLong<Keyword>(value, MaxLength);
 
         if (errors.Count != 0)
@@ -28,5 +31,5 @@ public class Keyword : IValueObject<Keyword, string>
         return Result.Ok(new Keyword(value));
     }
 
-    public override string ToString() => Value;
+    public override string? ToString() => Value;
 }

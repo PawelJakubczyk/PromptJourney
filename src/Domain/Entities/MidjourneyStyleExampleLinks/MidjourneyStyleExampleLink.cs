@@ -33,9 +33,9 @@ public class MidjourneyStyleExampleLink
     
     public static Result<MidjourneyStyleExampleLink> Create
     (
-        ExampleLink link,
-        StyleName styleName,
-        ModelVersion version
+        Result<ExampleLink> link,
+        Result<StyleName> styleName,
+        Result<ModelVersion> version
     )
     {
         List<DomainError> errors = [];
@@ -43,16 +43,16 @@ public class MidjourneyStyleExampleLink
         errors
             .CollectErrors<ExampleLink>(link)
             .CollectErrors<StyleName>(styleName)
-            .CollectErrors<ModelVersion?>(version);
+            .CollectErrors<ModelVersion>(version);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyStyleExampleLink>(errors);
 
         var exampleLink = new MidjourneyStyleExampleLink
         (
-            link,
-            styleName,
-            version
+            link.Value,
+            styleName.Value,
+            version.Value
         );
 
         return Result.Ok(exampleLink);
