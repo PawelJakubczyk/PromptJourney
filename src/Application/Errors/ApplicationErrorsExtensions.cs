@@ -237,8 +237,12 @@ public static class ApplicationErrorsExtensions
     {
         var result = repository.CheckStyleExistsAsync(styleName);
         if (result.Result.IsFailed)
+        {
             applicationErrors.Add(new ApplicationError(
                 $"Failed to check if style '{styleName}' exists"));
+            return applicationErrors;
+        }
+
         if (result.Result.Value)
             applicationErrors.Add(new ApplicationError(
                 $"Style '{styleName}' already exists"));

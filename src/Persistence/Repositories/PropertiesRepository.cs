@@ -11,7 +11,6 @@ namespace Persistence.Repositories;
 public sealed class PropertiesRepository : IPropertiesRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext;
-    private static List<string> _supportedVersions = [];
 
     private static readonly Dictionary<string, PropertiesVersionMapping> _versionMappings = new()
     {
@@ -33,22 +32,6 @@ public sealed class PropertiesRepository : IPropertiesRepository
     public PropertiesRepository(MidjourneyDbContext midjourneyDbContext)
     {
         _midjourneyDbContext = midjourneyDbContext;
-        InitializeSupportedVersionsAsync().ConfigureAwait(false);
-    }
-
-    private async Task InitializeSupportedVersionsAsync()
-    {
-        try
-        {
-            _supportedVersions = await _midjourneyDbContext
-                .MidjourneyVersionsMaster
-                .Select(x => x.Version.Value)
-                .ToListAsync();
-        }
-        catch
-        {
-            _supportedVersions = [.. _versionMappings.Keys];
-        }
     }
 
     // For Queries
@@ -59,9 +42,12 @@ public sealed class PropertiesRepository : IPropertiesRepository
             var parameters = await ExecuteVersionOperation(version.Value, async (dbSet) =>
             {
                 var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
-                return await queryable
+                var allParams = await queryable
                     .Include(p => p.VersionMaster)
                     .ToListAsync();
+
+                // Filtruj w pamięci po pobraniu z bazy
+                return allParams.Where(p => p.Version.Value == version.Value).ToList();
             });
 
             return Result.Ok(parameters ?? []);
@@ -79,7 +65,10 @@ public sealed class PropertiesRepository : IPropertiesRepository
             var exists = await ExecuteVersionOperation(version.Value, async (dbSet) =>
             {
                 var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
-                return await queryable.AnyAsync(p => p.PropertyName.Value == propertyName.Value);
+                
+                // Pobierz wszystkie parametry do pamięci i sprawdź w pamięci
+                var allParams = await queryable.ToListAsync();
+                return allParams.Any(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value);
             });
 
             return Result.Ok(exists);
@@ -103,9 +92,9 @@ public sealed class PropertiesRepository : IPropertiesRepository
             if (existsResult.Value)
                 return Result.Fail<MidjourneyPropertiesBase>($"Parameter '{property.PropertyName.Value}' already exists for version '{property.Version.Value}'");
 
-            // Get VersionMaster
-            var versionMaster = await _midjourneyDbContext.MidjourneyVersionsMaster
-                .FirstOrDefaultAsync(v => v.Version.Value == property.Version.Value);
+            // Get VersionMaster - pobierz wszystkie i znajdź w pamięci
+            var allVersions = await _midjourneyDbContext.MidjourneyVersionsMaster.ToListAsync();
+            var versionMaster = allVersions.FirstOrDefault(v => v.Version.Value == property.Version.Value);
 
             if (versionMaster == null)
                 return Result.Fail<MidjourneyPropertiesBase>($"Version master '{property.Version.Value}' not found");
@@ -200,22 +189,6 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
-    private async Task<bool> CheckVersionExistsInVersionsAsync(string version)
-    {
-        try
-        {
-            if (_supportedVersions.Count == 0)
-                await InitializeSupportedVersionsAsync();
-
-            return await _midjourneyDbContext.MidjourneyVersionsMaster
-                .AnyAsync(v => v.Version.Value == version);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     private async Task<T?> ExecuteVersionOperation<T>(string version, Func<IQueryable, Task<T>> operation)
     {
         if (!_versionMappings.TryGetValue(version, out var mapping))
@@ -242,7 +215,10 @@ public sealed class PropertiesRepository : IPropertiesRepository
         return await ExecuteVersionOperation(version, async (dbSet) =>
         {
             var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
-            return await queryable.FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName);
+            
+            // Pobierz wszystkie parametry do pamięci i znajdź w pamięci
+            var allParams = await queryable.ToListAsync();
+            return allParams.FirstOrDefault(p => p.PropertyName.Value == propertyName && p.Version.Value == version);
         });
     }
 

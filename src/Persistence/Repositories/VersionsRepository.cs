@@ -11,20 +11,22 @@ namespace Persistence.Repositories;
 public sealed class VersionsRepository : IVersionRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext;
-    private static List<ModelVersion> _supportedVersions = [];
 
     public VersionsRepository(MidjourneyDbContext midjourneyDbContext)
     {
         _midjourneyDbContext = midjourneyDbContext;
-        _supportedVersions = GetAllSuportedVersionsAsync().Result.Value;
-
     }
 
     public async Task<Result<bool>> CheckVersionExistsInVersionsAsync(ModelVersion version)
     {
         try
         {
-            var exists = await Task.Run(() => _supportedVersions.Contains(version));
+            // Pobierz wszystkie wersje i sprawdź w pamięci
+            var allVersions = await _midjourneyDbContext
+                .MidjourneyVersionsMaster
+                .ToListAsync();
+
+            var exists = allVersions.Any(v => v.Version.Value == version.Value);
             return Result.Ok(exists);
         }
         catch (Exception ex)
@@ -45,7 +47,7 @@ public sealed class VersionsRepository : IVersionRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<bool>( $"Database error while checking for supported versions: {ex.Message}");
+            return Result.Fail<bool>($"Database error while checking for supported versions: {ex.Message}");
         }
     }
 
@@ -53,9 +55,12 @@ public sealed class VersionsRepository : IVersionRepository
     {
         try
         {
-            var versionMaster = await _midjourneyDbContext
+            // Pobierz wszystkie wersje i znajdź w pamięci
+            var allVersions = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
-                .FirstOrDefaultAsync(v => v.Version == version);
+                .ToListAsync();
+
+            var versionMaster = allVersions.FirstOrDefault(v => v.Version.Value == version.Value);
 
             return Result.Ok(versionMaster!);
         }
@@ -84,16 +89,18 @@ public sealed class VersionsRepository : IVersionRepository
     {
         try
         {
-            var supportedVersions = await _midjourneyDbContext
+            // Pobierz wszystkie wersje do pamięci, potem wyciągnij ModelVersion
+            var allVersions = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
-                .Select(x => x.Version)
                 .ToListAsync();
+
+            var supportedVersions = allVersions.Select(x => x.Version).ToList();
 
             return Result.Ok(supportedVersions);
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<ModelVersion>>($"Database error while retrieving suported versions: {ex.Message}");
+            return Result.Fail<List<ModelVersion>>($"Database error while retrieving supported versions: {ex.Message}");
         }
     }
 
@@ -104,7 +111,6 @@ public sealed class VersionsRepository : IVersionRepository
             await _midjourneyDbContext.MidjourneyVersionsMaster.AddAsync(newVersion);
             await _midjourneyDbContext.SaveChangesAsync();
 
-            _supportedVersions.Add(newVersion.Version);
             return Result.Ok(newVersion);
         }
         catch (Exception ex)

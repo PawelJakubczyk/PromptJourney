@@ -42,11 +42,14 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
             var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
-                .Where(h => h.CreatedOn >= dateFrom && h.CreatedOn <= dateTo)
                 .OrderByDescending(h => h.CreatedOn)
                 .ToListAsync();
 
-            return Result.Ok(historyRecords);
+            var filteredRecords = historyRecords
+                .Where(h => h.CreatedOn >= dateFrom && h.CreatedOn <= dateTo)
+                .ToList();
+
+            return Result.Ok(filteredRecords);
         }
         catch (Exception ex)
         {
@@ -58,14 +61,17 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     {
         try
         {
-            var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
+            var allHistoryRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
-                .Where(h => h.Prompt.Value.Contains(keyword.Value))
                 .OrderByDescending(h => h.CreatedOn)
                 .ToListAsync();
 
-            return Result.Ok(historyRecords);
+            var filteredRecords = allHistoryRecords
+                .Where(h => h.Prompt.Value.Contains(keyword.Value, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return Result.Ok(filteredRecords);
         }
         catch (Exception ex)
         {
@@ -77,7 +83,6 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     {
         try
         {
-            // Get total record count first to validate the count parameter
             var totalRecords = await CalculateHistoricalRecordCountAsync();
             if (totalRecords.IsFailed)
             {

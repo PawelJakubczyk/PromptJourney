@@ -2,7 +2,6 @@
 using Domain.ValueObjects;
 using FluentResults;
 
-
 namespace Domain.Entities.MidjourneyPromtHistory;
 
 public class MidjourneyPromptHistory
@@ -26,22 +25,24 @@ public class MidjourneyPromptHistory
     private MidjourneyPromptHistory
     (
         Prompt prompt,
-        ModelVersion version
+        ModelVersion version,
+        DateTime? createdOn = null
     )
     {
         var historyId = Guid.NewGuid();
-        var createdOn = DateTime.UtcNow;
+        var creationTime = createdOn ?? DateTime.UtcNow;
 
         HistoryId = historyId;
         Prompt = prompt;
         Version = version;
-        CreatedOn = createdOn;
+        CreatedOn = creationTime;
     }
 
     public static Result<MidjourneyPromptHistory> Create
     (
         Result<Prompt> prompt,
-        Result<ModelVersion> version
+        Result<ModelVersion> version,
+        DateTime? createdOn = null
     )
     {
         List<DomainError> errors = [];
@@ -56,7 +57,8 @@ public class MidjourneyPromptHistory
         var history = new MidjourneyPromptHistory
         (
             prompt.Value,
-            version.Value
+            version.Value,
+            createdOn
         );
 
         return Result.Ok(history);

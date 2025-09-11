@@ -2,14 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.ValueObjects;
-using StyleNameConverter = Persistence.Mapping.ValueObjects.StyleNameMapping.Converter;
-using StyleNameComparer = Persistence.Mapping.ValueObjects.StyleNameMapping.Comparer;
-using StyleTypeConverter = Persistence.Mapping.ValueObjects.StyleTypeMapping.Converter;
-using StyleTypeComparer = Persistence.Mapping.ValueObjects.StyleTypeMapping.Comparer;
-using DescriptionConverter = Persistence.Mapping.ValueObjects.DescriptionMapping.Converter;
-using DescriptionComparer = Persistence.Mapping.ValueObjects.DescriptionMapping.Comparer;
-using TagListConverter = Persistence.Mapping.ValueObjects.TagListMapping.Converter;
-using TagListComparer = Persistence.Mapping.ValueObjects.TagListMapping.Comparer;
+using static Persistence.Mapping.ValueObjects;
 using static Persistence.Constants.PersistenceConstants;
 
 namespace Persistence.Configuration;
@@ -22,24 +15,24 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
         builder.HasKey(style => style.StyleName);
         
         builder.Property(style => style.StyleName)
-            .HasConversion<StyleNameConverter, StyleNameComparer>()
+            .HasConversion<StyleNameMapping.Converter, StyleNameMapping.Comparer>()
             .HasColumnName("name")
             .HasColumnType(ColumnType.VarChar(StyleName.MaxLength))
             .IsRequired();
             
         builder.Property(style => style.Type)
-            .HasConversion<StyleTypeConverter, StyleTypeComparer>()
+            .HasConversion<StyleTypeMapping.Converter, StyleTypeMapping.Comparer>()
             .HasColumnName("type")
             .HasColumnType(ColumnType.VarChar(StyleType.MaxLength))
             .IsRequired();
             
         builder.Property(style => style.Description)
-            .HasConversion<DescriptionConverter, DescriptionComparer>()
+            .HasConversion<DescriptionMapping.Converter, DescriptionMapping.Comparer>()
             .HasColumnName("description")
             .HasColumnType(ColumnType.VarChar(Description.MaxLength));
             
         builder.Property(style => style.Tags)
-            .HasConversion<TagListConverter, TagListComparer>()
+            .HasConversion<TagListMapping.Converter, TagListMapping.Comparer>()
             .HasColumnName("tags")
             .HasColumnType(ColumnType.TextArray);
 

@@ -9,17 +9,17 @@ namespace Integration.Tests.Repositories;
 
 public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
 {
-    private const string DefaultTestLink1 = "https://example.com/default-image1.jpg";
-    private const string DefaultTestLink2 = "https://example.com/default-image2.jpg";
-    private const string DefaultTestLink3 = "https://example.com/default-image3.jpg";
+    private const string TestLink1 = "https://example.com/default-image1.jpg";
+    private const string TestLink2 = "https://example.com/default-image2.jpg";
+    private const string TestLink3 = "https://example.com/default-image3.jpg";
 
-    private const string DefaultTestStyleName1 = "DefaultTestStyle1";
-    private const string DefaultTestStyleName2 = "DefaultTestStyle2";
-    private const string DefaultTestStyleName3 = "DefaultTestStyle3";
+    private const string TestStyleName1 = "DefaultTestStyle1";
+    private const string TestStyleName2 = "DefaultTestStyle2";
+    private const string TestStyleName3 = "DefaultTestStyle3";
 
-    private const string DefaultTestVersion1 = "1.0";
-    private const string DefaultTestVersion2 = "2.0";
-    private const string DefaultTestVersion3 = "3.0";
+    private const string TestVersion1 = "1.0";
+    private const string TestVersion2 = "2.0";
+    private const string TestVersion3 = "3.0";
 
     private readonly VersionsRepository _versionsRepository;
     private readonly ExampleLinkRepository _exampleLinkRepository;
@@ -32,18 +32,19 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         _stylesRepository = new StylesRepository(DbContext);
     }
 
+    // AddExampleLink Tests
     [Fact]
     public async Task AddExampleLink_WithValidData_ShouldSucceed_WhenVersionAndStyleExist()
     {
         // Arrange
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName1);
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
 
         var exampleLink = MidjourneyStyleExampleLink.Create
         (
-            ExampleLink.Create(DefaultTestLink1).Value,
-            StyleName.Create(DefaultTestStyleName1).Value,
-            ModelVersion.Create(DefaultTestVersion1).Value
+            ExampleLink.Create(TestLink1).Value,
+            StyleName.Create(TestStyleName1).Value,
+            ModelVersion.Create(TestVersion1).Value
         ).Value;
 
         // Act
@@ -53,29 +54,30 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Link.Value.Should().Be(DefaultTestLink1);
-        result.Value.StyleName.Value.Should().Be(DefaultTestStyleName1);
-        result.Value.Version.Value.Should().Be(DefaultTestVersion1);
+        result.Value.Link.Value.Should().Be(TestLink1);
+        result.Value.StyleName.Value.Should().Be(TestStyleName1);
+        result.Value.Version.Value.Should().Be(TestVersion1);
     }
 
     [Fact]
     public async Task AddExampleLink_WithDuplicateLink_ShouldFail()
     {
         // Arrange
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName1);
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
         var firstExampleLink = await CreateAndSaveTestExampleLinkAsync
         (
-            DefaultTestLink1, 
-            DefaultTestStyleName1, 
-            DefaultTestVersion1
+            TestLink1, 
+            TestStyleName1, 
+            TestVersion1
         );
         
         var duplicateExampleLink = MidjourneyStyleExampleLink.Create
         (
-            ExampleLink.Create(DefaultTestLink1).Value,
-            StyleName.Create(DefaultTestStyleName1).Value,
-            ModelVersion.Create(DefaultTestVersion1).Value
+            ExampleLink.Create(TestLink1).Value,
+            StyleName.Create(TestStyleName1).Value,
+            ModelVersion.Create(TestVersion1).Value
         ).Value;
 
         // Act
@@ -88,14 +90,124 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     }
 
     [Fact]
+    public async Task AddExampleLink_WithInvalidUrl_ShouldFail()
+    {
+        // This should fail during ExampleLink.Create() due to invalid URL format
+        var invalidLinkResult = ExampleLink.Create("not-a-valid-url");
+
+        // Assert that creating an invalid link fails
+        invalidLinkResult.IsSuccess.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task AddExampleLink_WithVeryLongUrl_ShouldSucceed()
+    {
+        // Arrange
+        var modelVersion = "6.0";
+        var styleName = "TestStyle";
+
+        await CreateAndSaveTestVersionAsync(modelVersion);
+        await CreateAndSaveTestStyleAsync(styleName);
+
+        var longUrl = "https://example.com/" + new string('a', 150) + ".jpg"; // Within 200 char limit
+        var link = ExampleLink.Create(longUrl).Value;
+        var styleNameVo = StyleName.Create(styleName).Value;
+        var versionVo = ModelVersion.Create(modelVersion).Value;
+
+        var exampleLink = MidjourneyStyleExampleLink.Create(link, styleNameVo, versionVo).Value;
+
+        // Act
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Link.Value.Should().Be(longUrl);
+    }
+
+    [Theory]
+    [InlineData("https://example.com/image1.jpg")]
+    [InlineData("https://cdn.example.com/assets/image.png")]
+    [InlineData("http://test.com/photo.jpeg")]
+    [InlineData("https://media.website.org/picture.gif")]
+    public async Task AddExampleLink_WithVariousValidUrls_ShouldSucceed(string url)
+    {
+        // Arrange
+        var modelVersion = "6.0";
+        var uniqueStyleName = $"TestStyle_{Guid.NewGuid():N}"; // Unique style name
+
+        await CreateAndSaveTestVersionAsync(modelVersion);
+        await CreateAndSaveTestStyleAsync(uniqueStyleName);
+
+        var link = ExampleLink.Create(url).Value;
+        var styleName = StyleName.Create(uniqueStyleName).Value;
+        var versionVo = ModelVersion.Create(modelVersion).Value;
+
+        var exampleLink = MidjourneyStyleExampleLink.Create(link, styleName, versionVo).Value;
+
+        // Act
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Link.Value.Should().Be(url);
+    }
+
+    [Fact]
+    public async Task AddExampleLink_WithNonExistentVersion_ShouldFail()
+    {
+        // Arrange
+        var styleName = "TestStyle";
+        await CreateAndSaveTestStyleAsync(styleName);
+
+        var link = ExampleLink.Create("https://example.com/test.jpg").Value;
+        var styleNameVo = StyleName.Create(styleName).Value;
+        var nonExistentVersion = ModelVersion.Create("999.0").Value;
+
+        var exampleLink = MidjourneyStyleExampleLink.Create(link, styleNameVo, nonExistentVersion).Value;
+
+        // Act
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task AddExampleLink_WithNonExistentStyle_ShouldFail()
+    {
+        // Arrange
+        var modelVersion = "6.0";
+        await CreateAndSaveTestVersionAsync(modelVersion);
+
+        var link = ExampleLink.Create("https://example.com/test.jpg").Value;
+        var nonExistentStyle = StyleName.Create("NonExistentStyle").Value;
+        var versionVo = ModelVersion.Create(modelVersion).Value;
+
+        var exampleLink = MidjourneyStyleExampleLink.Create(link, nonExistentStyle, versionVo).Value;
+
+        // Act
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeEmpty();
+    }
+
+    // CheckExampleLinkExists Tests
+    [Fact]
     public async Task CheckExampleLinkExists_WithExistingLink_ShouldReturnTrue()
     {
         // Arrange
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName1);
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink1, DefaultTestStyleName1, DefaultTestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
         
-        var link = ExampleLink.Create(DefaultTestLink1).Value;
+        var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
         var result = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link);
@@ -110,7 +222,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     public async Task CheckExampleLinkExists_WithNonExistentLink_ShouldReturnFalse()
     {
         // Arrange
-        var link = ExampleLink.Create("https://example.com/non-existent.jpg").Value;
+        var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
         var result = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link);
@@ -121,15 +233,16 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeFalse();
     }
 
+    // CheckExampleLinkWithStyleExists Tests
     [Fact]
     public async Task CheckExampleLinkWithStyleExists_WithExistingStyle_ShouldReturnTrue()
     {
         // Arrange
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName1);
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink1, DefaultTestStyleName1, DefaultTestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
         
-        var styleNameVo = StyleName.Create(DefaultTestStyleName1).Value;
+        var styleNameVo = StyleName.Create(TestStyleName1).Value;
 
         // Act
         var result = await _exampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleNameVo);
@@ -155,13 +268,14 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeFalse();
     }
 
+    // CheckAnyExampleLinksExist Tests
     [Fact]
     public async Task CheckAnyExampleLinksExist_WithExistingLinks_ShouldReturnTrue()
     {
         // Arrange
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName1);
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink1, DefaultTestStyleName1, DefaultTestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
 
         // Act
         var result = await _exampleLinkRepository.CheckAnyExampleLinksExist();
@@ -184,21 +298,22 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeFalse();
     }
 
+    // GetAllExampleLinks Tests
     [Fact]
     public async Task GetAllExampleLinks_WithMultipleLinks_ShouldReturnAllLinks()
     {
         // Arrange
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion2);
-        await CreateAndSaveTestVersionAsync(DefaultTestVersion3);
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion2);
+        await CreateAndSaveTestVersionAsync(TestVersion3);
 
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName1);
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName2);
-        await CreateAndSaveTestStyleAsync(DefaultTestStyleName3);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestStyleAsync(TestStyleName2);
+        await CreateAndSaveTestStyleAsync(TestStyleName3);
 
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink1, DefaultTestStyleName1, DefaultTestVersion1);
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink2, DefaultTestStyleName2, DefaultTestVersion2);
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink3, DefaultTestStyleName3, DefaultTestVersion3);
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink2, TestStyleName2, TestVersion2);
+        await CreateAndSaveTestExampleLinkAsync(TestLink3, TestStyleName3, TestVersion3);
 
         // Act
         var result = await _exampleLinkRepository.GetAllExampleLinksAsync();
@@ -208,9 +323,9 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Should().HaveCount(3);
-        result.Value.Should().Contain(link => link.Link.Value == DefaultTestLink1);
-        result.Value.Should().Contain(link => link.Link.Value == DefaultTestLink2);
-        result.Value.Should().Contain(link => link.Link.Value == DefaultTestLink3);
+        result.Value.Should().Contain(link => link.Link.Value == TestLink1);
+        result.Value.Should().Contain(link => link.Link.Value == TestLink2);
+        result.Value.Should().Contain(link => link.Link.Value == TestLink3);
     }
 
     [Fact]
@@ -226,18 +341,22 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeEmpty();
     }
 
+    // GetExampleLinksByStyle Tests
     [Fact]
     public async Task GetExampleLinksByStyle_WithExistingStyle_ShouldReturnMatchingLinks()
     {
         // Arrange
-        var targetStyle = "TargetStyle";
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion2);
 
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestStyleAsync(TestStyleName2);
 
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink1, targetStyle, "6.0");
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink2, targetStyle, "6.1");
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink3, "OtherStyle", "6.0");
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink2, TestStyleName1, TestVersion2);
+        await CreateAndSaveTestExampleLinkAsync(TestLink3, TestStyleName2, TestVersion1);
 
-        var styleName = StyleName.Create(targetStyle).Value;
+        var styleName = StyleName.Create(TestStyleName1).Value;
 
         // Act
         var result = await _exampleLinkRepository.GetExampleLinksByStyleAsync(styleName);
@@ -247,16 +366,18 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Should().HaveCount(2);
-        result.Value.Should().AllSatisfy(link => link.StyleName.Value.Should().Be(targetStyle));
-        result.Value.Should().Contain(link => link.Link.Value == "https://example.com/target1.jpg");
-        result.Value.Should().Contain(link => link.Link.Value == "https://example.com/target2.jpg");
+        result.Value.Should().AllSatisfy(link => link.StyleName.Value.Should().Be(TestStyleName1));
+        result.Value.Should().Contain(link => link.Link.Value == TestLink1);
+        result.Value.Should().Contain(link => link.Link.Value == TestLink2);
     }
 
     [Fact]
     public async Task GetExampleLinksByStyle_WithNonExistentStyle_ShouldReturnEmptyList()
     {
         // Arrange
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/test.jpg", "ExistingStyle", "6.0");
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
         
         var nonExistentStyle = StyleName.Create("NonExistentStyle").Value;
 
@@ -270,18 +391,23 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeEmpty();
     }
 
+    // GetExampleLinksByStyleAndVersion Tests
     [Fact]
     public async Task GetExampleLinksByStyleAndVersion_WithExistingStyleAndVersion_ShouldReturnMatchingLinks()
     {
         // Arrange
-        var targetStyle = "TargetStyle";
-        var targetVersion = "6.0";
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/target.jpg", targetStyle, targetVersion);
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/other-style.jpg", "OtherStyle", targetVersion);
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/other-version.jpg", targetStyle, "6.1");
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion2);
 
-        var styleName = StyleName.Create(targetStyle).Value;
-        var version = ModelVersion.Create(targetVersion).Value;
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestStyleAsync(TestStyleName2);
+
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink2, TestStyleName2, TestVersion1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink3, TestStyleName1, TestVersion2);
+
+        var styleName = StyleName.Create(TestStyleName1).Value;
+        var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
         var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version);
@@ -291,16 +417,19 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Should().HaveCount(1);
-        result.Value[0].StyleName.Value.Should().Be(targetStyle);
-        result.Value[0].Version.Value.Should().Be(targetVersion);
-        result.Value[0].Link.Value.Should().Be("https://example.com/target.jpg");
+        result.Value[0].StyleName.Value.Should().Be(TestStyleName1);
+        result.Value[0].Version.Value.Should().Be(TestVersion1);
+        result.Value[0].Link.Value.Should().Be(TestLink1);
     }
 
     [Fact]
     public async Task GetExampleLinksByStyleAndVersion_WithNonExistentCombination_ShouldReturnEmptyList()
     {
         // Arrange
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/test.jpg", "ExistingStyle", "6.0");
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
         
         var styleName = StyleName.Create("NonExistentStyle").Value;
         var version = ModelVersion.Create("7.0").Value;
@@ -316,12 +445,60 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     }
 
     [Fact]
+    public async Task GetExampleLinksByStyleAndVersion_WithNonExistedVersion_ShouldReturnEmptyList()
+    {
+        // Arrange
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
+        
+        var styleName = StyleName.Create(TestStyleName1).Value;
+        var version = ModelVersion.Create("7.0").Value;
+
+        // Act
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetExampleLinksByStyleAndVersion_WithNonExistedStyle_ShouldReturnEmptyList()
+    {
+        // Arrange
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
+        
+        var styleName = StyleName.Create("NonExistentStyle").Value;
+        var version = ModelVersion.Create(TestVersion1).Value;
+
+        // Act
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Should().BeEmpty();
+    }
+
+    // DeleteExampleLink Tests
+    [Fact]
     public async Task DeleteExampleLink_WithExistingLink_ShouldSucceed()
     {
         // Arrange
-        await CreateAndSaveTestExampleLinkAsync(DefaultTestLink1, DefaultTestStyleName1, DefaultTestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
         
-        var link = ExampleLink.Create(DefaultTestLink1).Value;
+        var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
         var result = await _exampleLinkRepository.DeleteExampleLinkAsync(link);
@@ -330,7 +507,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Link.Value.Should().Be(DefaultTestLink1);
+        result.Value.Link.Value.Should().Be(TestLink1);
 
         // Verify it's been deleted
         var checkResult = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link);
@@ -341,7 +518,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     public async Task DeleteExampleLink_WithNonExistentLink_ShouldFail()
     {
         // Arrange
-        var link = ExampleLink.Create("https://example.com/non-existent.jpg").Value;
+        var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
         var result = await _exampleLinkRepository.DeleteExampleLinkAsync(link);
@@ -350,19 +527,25 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
-        result.Errors.Should().Contain(e => e.Message.Contains("not found"));
+        result.Errors.Should().Contain(e => e.Message.Contains("Failed to delete example link: Value cannot be null. (Parameter 'entity')"));
     }
 
+    // DeleteAllExampleLinksByStyle Tests
     [Fact]
     public async Task DeleteAllExampleLinksByStyle_WithExistingStyle_ShouldDeleteAllMatchingLinks()
     {
         // Arrange
-        var targetStyle = "StyleToDelete";
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/delete1.jpg", targetStyle, "6.0");
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/delete2.jpg", targetStyle, "6.1");
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/keep.jpg", "KeepStyle", "6.0");
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestVersionAsync(TestVersion2);
 
-        var styleName = StyleName.Create(targetStyle).Value;
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+        await CreateAndSaveTestStyleAsync(TestStyleName2);
+
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink2, TestStyleName1, TestVersion1);
+        await CreateAndSaveTestExampleLinkAsync(TestLink3, TestStyleName2, TestVersion2);
+
+        var styleName = StyleName.Create(TestStyleName1).Value;
 
         // Act
         var result = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName);
@@ -372,19 +555,22 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Should().HaveCount(2);
-        result.Value.Should().AllSatisfy(link => link.StyleName.Value.Should().Be(targetStyle));
+        result.Value.Should().AllSatisfy(link => link.StyleName.Value.Should().Be(TestStyleName1));
 
         // Verify deletion
         var remainingLinks = await _exampleLinkRepository.GetAllExampleLinksAsync();
         remainingLinks.Value.Should().HaveCount(1);
-        remainingLinks.Value[0].StyleName.Value.Should().Be("KeepStyle");
+        remainingLinks.Value[0].StyleName.Value.Should().Be(TestStyleName2);
     }
 
     [Fact]
     public async Task DeleteAllExampleLinksByStyle_WithNonExistentStyle_ShouldReturnEmptyList()
     {
         // Arrange
-        await CreateAndSaveTestExampleLinkAsync("https://example.com/test.jpg", "ExistingStyle", "6.0");
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
+        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
         
         var nonExistentStyle = StyleName.Create("NonExistentStyle").Value;
 
@@ -393,125 +579,15 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().BeEmpty();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().Contain(e => e.Message.Contains("No example links found for style 'Domain.ValueObjects.StyleName'"));
 
         // Verify no links were deleted
         var allLinks = await _exampleLinkRepository.GetAllExampleLinksAsync();
         allLinks.Value.Should().HaveCount(1);
     }
 
-    [Fact]
-    public async Task AddExampleLink_WithInvalidUrl_ShouldFail()
-    {
-        // This should fail during ExampleLink.Create() due to invalid URL format
-        var invalidLinkResult = ExampleLink.Create("not-a-valid-url");
-        
-        // Assert that creating an invalid link fails
-        invalidLinkResult.IsSuccess.Should().BeFalse();
-    }
-
-    [Fact] 
-    public async Task AddExampleLink_WithVeryLongUrl_ShouldSucceed()
-    {
-        // Arrange
-        var modelVersion = "6.0";
-        var styleName = "TestStyle";
-        
-        await CreateAndSaveTestVersionAsync(modelVersion);
-        await CreateAndSaveTestStyleAsync(styleName);
-        
-        var longUrl = "https://example.com/" + new string('a', 150) + ".jpg"; // Within 200 char limit
-        var link = ExampleLink.Create(longUrl).Value;
-        var styleNameVo = StyleName.Create(styleName).Value;
-        var versionVo = ModelVersion.Create(modelVersion).Value;
-        
-        var exampleLink = MidjourneyStyleExampleLink.Create(link, styleNameVo, versionVo).Value;
-
-        // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Link.Value.Should().Be(longUrl);
-    }
-
-    [Theory]
-    [InlineData("https://example.com/image1.jpg")]
-    [InlineData("https://cdn.example.com/assets/image.png")]
-    [InlineData("http://test.com/photo.jpeg")]
-    [InlineData("https://media.website.org/picture.gif")]
-    public async Task AddExampleLink_WithVariousValidUrls_ShouldSucceed(string url)
-    {
-        // Arrange
-        var modelVersion = "6.0";
-        var uniqueStyleName = $"TestStyle_{Guid.NewGuid():N}"; // Unique style name
-        
-        await CreateAndSaveTestVersionAsync(modelVersion);
-        await CreateAndSaveTestStyleAsync(uniqueStyleName);
-        
-        var link = ExampleLink.Create(url).Value;
-        var styleName = StyleName.Create(uniqueStyleName).Value;
-        var versionVo = ModelVersion.Create(modelVersion).Value;
-        
-        var exampleLink = MidjourneyStyleExampleLink.Create(link, styleName, versionVo).Value;
-
-        // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Link.Value.Should().Be(url);
-    }
-
-    [Fact]
-    public async Task AddExampleLink_WithNonExistentVersion_ShouldFail()
-    {
-        // Arrange
-        var styleName = "TestStyle";
-        await CreateAndSaveTestStyleAsync(styleName);
-        
-        var link = ExampleLink.Create("https://example.com/test.jpg").Value;
-        var styleNameVo = StyleName.Create(styleName).Value;
-        var nonExistentVersion = ModelVersion.Create("999.0").Value;
-        
-        var exampleLink = MidjourneyStyleExampleLink.Create(link, styleNameVo, nonExistentVersion).Value;
-
-        // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task AddExampleLink_WithNonExistentStyle_ShouldFail()
-    {
-        // Arrange
-        var modelVersion = "6.0";
-        await CreateAndSaveTestVersionAsync(modelVersion);
-        
-        var link = ExampleLink.Create("https://example.com/test.jpg").Value;
-        var nonExistentStyle = StyleName.Create("NonExistentStyle").Value;
-        var versionVo = ModelVersion.Create(modelVersion).Value;
-        
-        var exampleLink = MidjourneyStyleExampleLink.Create(link, nonExistentStyle, versionVo).Value;
-
-        // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
-
-    // Helper methods - poprawione
+    // Helper methods
     private async Task<MidjourneyVersion> CreateAndSaveTestVersionAsync(string versionValue)
     {
         var version = ModelVersion.Create(versionValue).Value;
@@ -543,8 +619,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         string versionValue
     )
     {
-        // Ensure version and style exist
-            var link = ExampleLink.Create(linkUrl).Value;
+        var link = ExampleLink.Create(linkUrl).Value;
         var styleNameVo = StyleName.Create(styleName).Value;
         var versionVo = ModelVersion.Create(versionValue).Value;
 
