@@ -47,7 +47,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().NotBeNull();
         result.Value.Version.Value.Should().Be(TestVersion1);
         result.Value.Parameter.Value.Should().Be(TestParam1);
-        result.Value.Description.Value.Should().Be(TestDescription1);
+        result.Value.Description?.Value.Should().Be(TestDescription1);
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().NotBeNull();
         result.Value.Version.Value.Should().Be(TestVersion1);
         result.Value.Parameter.Value.Should().Be(TestParam1);
-        result.Value.Description.Value.Should().Be(TestDescription1);
+        result.Value.Description?.Value.Should().Be(TestDescription1);
     }
 
     [Fact]
@@ -381,7 +381,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().NotBeNull();
         result.Value.Version.Value.Should().Be(originalVersion.Version.Value);
         result.Value.Parameter.Value.Should().Be(originalVersion.Parameter.Value);
-        result.Value.Description.Value.Should().Be(originalVersion.Description.Value);
+        result.Value.Description?.Value.Should().Be(originalVersion.Description?.Value);
         result.Value.ReleaseDate.Should().Be(originalVersion.ReleaseDate);
     }
 
@@ -469,7 +469,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Value.Should().HaveLength(400);
+        result.Value.Description?.Value.Should().HaveLength(400);
     }
 
     // Helper methods

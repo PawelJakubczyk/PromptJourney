@@ -65,8 +65,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         // Arrange
         await CreateAndSaveTestVersionAsync(TestVersion1);
         await CreateAndSaveTestStyleAsync(TestStyleName1);
-
-        var firstExampleLink = await CreateAndSaveTestExampleLinkAsync
+        await CreateAndSaveTestExampleLinkAsync
         (
             TestLink1, 
             TestStyleName1, 
@@ -100,21 +99,20 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     }
 
     [Fact]
-    public async Task AddExampleLink_WithVeryLongUrl_ShouldSucceed()
+    public async Task AddExampleLink_WithUrlLenghtInUrlCharacterLimit_ShouldSucceed()
     {
         // Arrange
-        var modelVersion = "6.0";
-        var styleName = "TestStyle";
-
-        await CreateAndSaveTestVersionAsync(modelVersion);
-        await CreateAndSaveTestStyleAsync(styleName);
-
         var longUrl = "https://example.com/" + new string('a', 150) + ".jpg"; // Within 200 char limit
-        var link = ExampleLink.Create(longUrl).Value;
-        var styleNameVo = StyleName.Create(styleName).Value;
-        var versionVo = ModelVersion.Create(modelVersion).Value;
 
-        var exampleLink = MidjourneyStyleExampleLink.Create(link, styleNameVo, versionVo).Value;
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
+        var exampleLink = MidjourneyStyleExampleLink.Create
+        (
+            ExampleLink.Create(longUrl).Value,
+            StyleName.Create(TestVersion1).Value,
+            ModelVersion.Create(TestStyleName1).Value
+        ).Value;
 
         // Act
         var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);

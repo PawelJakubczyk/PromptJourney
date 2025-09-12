@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Persistence.Context;
 
@@ -18,7 +17,6 @@ public abstract class BaseTransactionIntegrationTest : IDisposable
         DbContext = fixture.CreateDbContext();
         
         // Start a transaction that will be rolled back after each test
-        // To w³aœnie gwarantuje pe³n¹ izolacjê bez usuwania bazy danych
         _transaction = DbContext.Database.BeginTransaction();
     }
 
@@ -29,7 +27,6 @@ public abstract class BaseTransactionIntegrationTest : IDisposable
             try
             {
                 // Rollback transaction instead of cleaning database
-                // To jest bezpieczniejsze - wszystkie zmiany s¹ cofane
                 _transaction.Rollback();
                 _transaction.Dispose();
                 
