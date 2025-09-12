@@ -31,12 +31,13 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task AddVersionAsync_WithValidData_ShouldSucceed()
     {
         // Arrange
-        var version = ModelVersion.Create(TestVersion1).Value;
-        var parameter = Param.Create(TestParam1).Value;
-        var description = Description.Create(TestDescription1).Value;
-        var releaseDate = DateTime.UtcNow.AddDays(-30);
-
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, releaseDate, description).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam1).Value,
+            DateTime.UtcNow.AddDays(-30),
+            Description.Create(TestDescription1).Value
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -54,11 +55,13 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task AddVersionAsync_WithNullDescription_ShouldSucceed()
     {
         // Arrange
-        var version = ModelVersion.Create(TestVersion1).Value;
-        var parameter = Param.Create(TestParam1).Value;
-        var releaseDate = DateTime.UtcNow.AddDays(-30);
-
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, releaseDate, null).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam1).Value,
+            DateTime.UtcNow.AddDays(-30), 
+            null
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -76,11 +79,13 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task AddVersionAsync_WithNullReleaseDate_ShouldSucceed()
     {
         // Arrange
-        var version = ModelVersion.Create(TestVersion1).Value;
-        var parameter = Param.Create(TestParam1).Value;
-        var description = Description.Create(TestDescription1).Value;
-
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, null, description).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam1).Value,
+            null,
+            Description.Create(TestDescription1).Value
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -100,11 +105,13 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         // Arrange
         await CreateAndSaveTestVersionAsync(TestVersion1, TestParam1, TestDescription1);
 
-        var duplicateVersion = ModelVersion.Create(TestVersion1).Value;
-        var parameter = Param.Create("--v 1.0 duplicate").Value;
-        var description = Description.Create("Duplicate description").Value;
-
-        var duplicateMidjourneyVersion = MidjourneyVersion.Create(duplicateVersion, parameter, DateTime.UtcNow, description).Value;
+        var duplicateMidjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam2).Value,
+            DateTime.UtcNow,
+            Description.Create(TestDescription2).Value
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(duplicateMidjourneyVersion);
@@ -113,7 +120,10 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
-        result.Errors.Should().Contain(e => e.Message.Contains("Database error while adding version"));
+        result.Errors.Should().Contain(e => e.Message.Contains
+        (
+            "Database error while adding version: The instance of entity type 'MidjourneyVersion' cannot be tracked because another instance with the key value '{Version: 1.0}' is already being tracked. When attaching existing entities, ensure that only one entity instance with a given key value is attached."
+        ));
     }
 
     // GetAllVersionsAsync Tests
@@ -192,10 +202,12 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     {
         // Arrange
         await CreateAndSaveTestVersionAsync(TestVersion1, TestParam1, TestDescription1);
-        var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
-        var result = await _versionsRepository.GetMasterVersionByVersionAsync(version);
+        var result = await _versionsRepository.GetMasterVersionByVersionAsync
+        (
+            ModelVersion.Create(TestVersion1).Value
+        );
 
         // Assert
         result.Should().NotBeNull();
@@ -209,11 +221,8 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     [Fact]
     public async Task GetMasterVersionByVersionAsync_WithNonExistentVersion_ShouldReturnNull()
     {
-        // Arrange
-        var version = ModelVersion.Create("99.0").Value;
-
-        // Act
-        var result = await _versionsRepository.GetMasterVersionByVersionAsync(version);
+        // Arrange and Act
+        var result = await _versionsRepository.GetMasterVersionByVersionAsync(ModelVersion.Create("99.0").Value);
 
         // Assert
         result.Should().NotBeNull();
@@ -227,10 +236,11 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     {
         // Arrange
         await CreateAndSaveTestVersionAsync(TestVersion1, TestParam1, TestDescription1);
-        var version = ModelVersion.Create(TestVersion1).Value;
-
         // Act
-        var result = await _versionsRepository.CheckVersionExistsInVersionsAsync(version);
+        var result = await _versionsRepository.CheckVersionExistsInVersionsAsync
+        (
+            ModelVersion.Create(TestVersion1).Value
+        );
 
         // Assert
         result.Should().NotBeNull();
@@ -309,12 +319,13 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task AddVersionAsync_WithVariousValidVersions_ShouldSucceed(string versionValue)
     {
         // Arrange
-        var version = ModelVersion.Create(versionValue).Value;
-        var parameter = Param.Create($"--v {versionValue}").Value;
-        var description = Description.Create($"Test version {versionValue}").Value;
-        var releaseDate = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 365));
-
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, releaseDate, description).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(versionValue).Value,
+            Param.Create($"--v {versionValue}").Value,
+            DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 365)),
+            Description.Create($"Test version {versionValue}").Value
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -329,12 +340,15 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task AddVersionAsync_WithFutureReleaseDate_ShouldSucceed()
     {
         // Arrange
-        var version = ModelVersion.Create(TestVersion1).Value;
-        var parameter = Param.Create(TestParam1).Value;
-        var description = Description.Create(TestDescription1).Value;
         var futureDate = DateTime.UtcNow.AddDays(30);
 
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, futureDate, description).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam1).Value,
+            futureDate,
+            Description.Create(TestDescription1).Value
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -349,12 +363,15 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task AddVersionAsync_WithPastReleaseDate_ShouldSucceed()
     {
         // Arrange
-        var version = ModelVersion.Create(TestVersion1).Value;
-        var parameter = Param.Create(TestParam1).Value;
-        var description = Description.Create(TestDescription1).Value;
         var pastDate = DateTime.UtcNow.AddYears(-2);
 
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, pastDate, description).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam1).Value,
+            pastDate,
+            Description.Create(TestDescription1).Value
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -438,7 +455,13 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create(TestVersion1).Value;
         var parameter = Param.Create(TestParam1).Value;
 
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, null, null).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam1).Value,
+            null,
+            null
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -461,7 +484,13 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var parameter = Param.Create(TestParam1).Value;
         var longDescription = Description.Create(new string('A', 400)).Value; // Close to 500 char limit
 
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, DateTime.UtcNow, longDescription).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(TestVersion1).Value,
+            Param.Create(TestParam1).Value,
+            DateTime.UtcNow,
+            Description.Create(new string('A', 400)).Value
+        ).Value;
 
         // Act
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
@@ -480,9 +509,15 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var description = Description.Create(descriptionValue).Value;
         var releaseDate = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 365));
 
-        var midjourneyVersion = MidjourneyVersion.Create(version, parameter, releaseDate, description).Value;
+        var midjourneyVersion = MidjourneyVersion.Create
+        (
+            ModelVersion.Create(versionValue).Value,
+            Param.Create(parameterValue).Value,
+            DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 365)),
+            Description.Create(descriptionValue).Value
+        ).Value;
+        
         var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
-
         return result.Value;
     }
 }

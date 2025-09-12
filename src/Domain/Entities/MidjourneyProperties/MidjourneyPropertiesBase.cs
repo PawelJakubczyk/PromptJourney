@@ -71,7 +71,7 @@ public class MidjourneyPropertiesBase
         foreach (var parametersResult in parametersResultsList ?? [])
         {
             errors.CollectErrors<Param>(parametersResult);
-            if (parametersResult != null)
+            if (parametersResult.IsSuccess)
                 parameterslList.Add(parametersResult.Value);
         };
 

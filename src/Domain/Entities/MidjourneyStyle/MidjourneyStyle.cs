@@ -89,6 +89,16 @@ public class MidjourneyStyle
             .CollectErrors<Tag>(tag)
             .IfContain<Tag>(Tags, tag);
 
+        //var updatedStyle = Create
+        //(
+        //    StyleName,
+        //    Type,
+        //    Description == null ? null : Description,
+        //    Tags?.Select(t => Result.Ok(t)).ToList()
+        //);
+
+
+
         if (errors.Count != 0)
             return Result.Fail(errors);
 

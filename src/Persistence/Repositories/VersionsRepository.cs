@@ -21,7 +21,6 @@ public sealed class VersionsRepository : IVersionRepository
     {
         try
         {
-            // Pobierz wszystkie wersje i sprawdź w pamięci
             var allVersions = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
                 .ToListAsync();
@@ -55,7 +54,6 @@ public sealed class VersionsRepository : IVersionRepository
     {
         try
         {
-            // Pobierz wszystkie wersje i znajdź w pamięci
             var allVersions = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
                 .ToListAsync();
@@ -89,7 +87,6 @@ public sealed class VersionsRepository : IVersionRepository
     {
         try
         {
-            // Pobierz wszystkie wersje do pamięci, potem wyciągnij ModelVersion
             var allVersions = await _midjourneyDbContext
                 .MidjourneyVersionsMaster
                 .ToListAsync();

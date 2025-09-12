@@ -102,7 +102,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     public async Task AddExampleLink_WithUrlLenghtInUrlCharacterLimit_ShouldSucceed()
     {
         // Arrange
-        var longUrl = "https://example.com/" + new string('a', 150) + ".jpg"; // Within 200 char limit
+        var longUrl = $"https://example.com/{new string('a', 150)}.jpg"; // Within 200 char limit
 
         await CreateAndSaveTestVersionAsync(TestVersion1);
         await CreateAndSaveTestStyleAsync(TestStyleName1);
@@ -110,8 +110,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var exampleLink = MidjourneyStyleExampleLink.Create
         (
             ExampleLink.Create(longUrl).Value,
-            StyleName.Create(TestVersion1).Value,
-            ModelVersion.Create(TestStyleName1).Value
+            StyleName.Create(TestStyleName1).Value,
+            ModelVersion.Create(TestVersion1).Value
         ).Value;
 
         // Act
