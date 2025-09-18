@@ -11,8 +11,10 @@ public static class GetLastHistoryRecords
 {
     public sealed record Query(int Count) : IQuery<List<PromptHistoryResponse>>;
 
-    public sealed class Handler(IPromptHistoryRepository promptHistoryRepository)
-        : IQueryHandler<Query, List<PromptHistoryResponse>>
+    public sealed class Handler
+    (
+        IPromptHistoryRepository promptHistoryRepository
+    ) : IQueryHandler<Query, List<PromptHistoryResponse>>
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
 
@@ -24,15 +26,24 @@ public static class GetLastHistoryRecords
                 .IfHistoryLimitNotGreaterThanZero(query.Count)
                 .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository);
 
-            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>(applicationErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
+            (
+                (nameof(applicationErrors), applicationErrors)
+            );
+            
             if (validationErrors is not null) return validationErrors;
 
-            var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count);
+            var lastRecordResult = await _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count);
+            var persistenceErrors = lastRecordResult.Errors;
 
-            if (result.IsFailed)
-                return Result.Fail<List<PromptHistoryResponse>>(result.Errors);
+            validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            
+            if (validationErrors is not null) return validationErrors;
 
-            var responses = result.Value
+            var responses = lastRecordResult.Value
                 .Select(PromptHistoryResponse.FromDomain)
                 .ToList();
 

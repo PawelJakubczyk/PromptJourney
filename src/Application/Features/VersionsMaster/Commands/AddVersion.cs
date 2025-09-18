@@ -1,8 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
 using Application.Features.VersionsMaster.Responses;
-using Domain.Entities.MidjourneyVersions;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorsExtensions;
@@ -29,33 +28,33 @@ public static class AddVersion
             var parameter = Param.Create(command.Parameter);
             var description = command.Description != null ? Description.Create(command.Description) : null;
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfVersionAlreadyExists(version.Value, _versionRepository);
-
             var versionResult = MidjourneyVersion.Create
             (
-                version.Value,
-                parameter.Value,
+                version,
+                parameter,
                 command.ReleaseDate,
-                description?.Value
+                description!
             );
 
             var domainErrors = versionResult.Errors;
 
-            var validationErrors = CreateValidationErrorIfAny<VersionResponse>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<VersionResponse>
+            (
+                (nameof(domainErrors), domainErrors)
+            );
             if (validationErrors is not null) return validationErrors;
 
+            var addResult = await _versionRepository.AddVersionAsync(versionResult.Value);
 
+            var persistenceErrors = addResult.Errors;
 
+            validationErrors = CreateValidationErrorIfAny<VersionResponse>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            if (validationErrors is not null) return validationErrors;
 
-            var result = await _versionRepository.AddVersionAsync(versionResult.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<VersionResponse>(result.Errors);
-
-            var response = VersionResponse.FromDomain(result.Value);
+            var response = VersionResponse.FromDomain(addResult.Value);
 
             return Result.Ok(response);
         }

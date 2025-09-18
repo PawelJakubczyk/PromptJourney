@@ -30,19 +30,21 @@ public static class DeletePropertyInVersion
                 .CollectErrors<ModelVersion>(version)
                 .CollectErrors<PropertyName>(propertyName);
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfVersionNotExists(version.Value, _versionRepository)
-                .IfPropertyNotExists(version.Value, propertyName.Value, _propertiesRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>
+            (
+                (nameof(domainErrors), domainErrors)
+            );
             if (validationErrors is not null) return validationErrors;
 
-            var result = await _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value);
+            var deleteParameterResult = await _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value);
+            var persistenceErrors = deleteParameterResult.Errors;
 
-            if (result.IsFailed)
-                return Result.Fail<DeleteResponse>(result.Errors);
+            validationErrors = CreateValidationErrorIfAny<DeleteResponse>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            if (validationErrors is not null) return validationErrors;
+
 
             var response = DeleteResponse.Success($"Property '{propertyName.Value.Value}' was successfully deleted from version '{version.Value.Value}'.");
 

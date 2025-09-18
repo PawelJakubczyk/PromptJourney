@@ -1,33 +1,28 @@
 ﻿using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
+using Utilities.Constants;
 
 namespace Domain.ValueObjects;
 
-public sealed class Prompt : IValueObject<Prompt, string>
+public record Prompt : ValueObject<string>, ICreatable<Prompt, string>
 {
     public const int MaxLength = 1000;
-    public string Value { get; }
 
-    private Prompt(string value)
-    {
-        Value = value;
-    }
+    private Prompt(string value) : base(value) { }
 
     public static Result<Prompt> Create(string value)
     {
 
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .IfNullOrWhitespace<Prompt>(value)
-            .IfLengthTooLong<Prompt>(value, MaxLength);
+            .IfNullOrWhitespace<DomainLayer, Prompt>(value)
+            .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<Prompt>(errors);
 
         return Result.Ok(new Prompt(value));
     }
-
-    public override string ToString() => Value;
 }

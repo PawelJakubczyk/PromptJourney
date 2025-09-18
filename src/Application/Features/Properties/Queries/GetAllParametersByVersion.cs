@@ -9,44 +9,39 @@ using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.Properties.Queries;
 
-public class GetAllParametersByVersion
+public static class GetAllParametersByVersion
 {
     public sealed record Query(string Version) : IQuery<List<PropertyResponse>>;
 
     public sealed class Handler(
-        IPropertiesRepository propertiesRepository,
-        IVersionRepository versionRepository
-        ) : IQueryHandler<Query, List<PropertyResponse>>
+        IPropertiesRepository propertiesRepository
+    ) : IQueryHandler<Query, List<PropertyResponse>>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
-        private readonly IVersionRepository _versionRepository = versionRepository;
 
         public async Task<Result<List<PropertyResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
             var version = ModelVersion.Create(query.Version);
 
             List<DomainError> domainErrors = [];
+            domainErrors.CollectErrors(version);
 
-            domainErrors
-                .CollectErrors<ModelVersion>(version);
-
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfVersionNotExists(version.Value, _versionRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<List<PropertyResponse>>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<PropertyResponse>>
+            (
+                (nameof(domainErrors), domainErrors)
+            );
             if (validationErrors is not null) return validationErrors;
 
             var result = await _propertiesRepository.GetAllParametersByVersionAsync(version.Value);
+            var persistenceErrors = result.Errors;
 
-            if (result.IsFailed)
-                return Result.Fail<List<PropertyResponse>>(result.Errors);
+            validationErrors = CreateValidationErrorIfAny<List<PropertyResponse>>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            if (validationErrors is not null) return validationErrors;
 
-            var responses = result.Value
-                .Select(PropertyResponse.FromDomain)
-                .ToList();
-
+            var responses = result.Value.Select(PropertyResponse.FromDomain).ToList();
             return Result.Ok(responses);
         }
     }

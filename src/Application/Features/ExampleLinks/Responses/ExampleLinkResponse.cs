@@ -1,14 +1,14 @@
-﻿using Domain.Entities.MidjourneyStyleExampleLinks;
+﻿using Domain.Entities;
 
 namespace Application.Features.ExampleLinks.Responses;
 
-public sealed record ExampleLinkRespose
+public sealed record ExampleLinkResponse
 (
     string Link,
     string Style, 
     string Version
 )
 {
-    public static ExampleLinkRespose FromDomain(MidjourneyStyleExampleLink exampleLink) =>
+    public static ExampleLinkResponse FromDomain(MidjourneyStyleExampleLink exampleLink) =>
         new(exampleLink.Link.Value, exampleLink.Style.StyleName.Value, exampleLink.Version.Value);
 }

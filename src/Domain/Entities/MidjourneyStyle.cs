@@ -1,10 +1,9 @@
-﻿using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyStyleExampleLinks;
-using Domain.Errors;
+﻿using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Constants;
 
-namespace Domain.Entities.MidjourneyStyle;
+namespace Domain.Entities;
 
 public class MidjourneyStyle
 {
@@ -43,32 +42,34 @@ public class MidjourneyStyle
         Result<StyleName> nameResult,
         Result<StyleType> typeResult,
         Result<Description?>? descriptionResult = null,
-        List<Result<Tag>?>? tagResultsList = null
+        List<Result<Tag>>? tagResultsList = null
     )
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .CollectErrors<StyleName>(nameResult)
-            .CollectErrors<StyleType>(typeResult)
-            .CollectErrors<Description?>(descriptionResult);
+            .CollectErrors<DomainLayer, StyleName>(nameResult)
+            .CollectErrors<DomainLayer, StyleType>(typeResult)
+            .CollectErrors<DomainLayer, Description>(descriptionResult);
             
-        List<Tag>? tagsList = [];
+        List<Tag>? tagsList = null;
 
-        foreach (var tagResult in tagResultsList ?? [])
+        if (tagResultsList != null && tagResultsList.Count > 0)
         {
-            errors.CollectErrors<Tag>(tagResult);
-            if (tagResult != null)
-                tagsList.Add(tagResult.Value);
+            tagsList = [];
+            foreach (var tagResult in tagResultsList)
+            {
+                errors.CollectErrors<DomainLayer, Tag>(tagResult);
+                if (tagResult.IsSuccess)
+                {
+                    errors.IfTagAllredyExist<DomainLayer>(tagsList, tagResult.Value);
+                    tagsList.Add(tagResult.Value);
+                }
+            }
         }
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyStyle>(errors);
-
-        if (tagsList.Count == 0)
-        {
-            tagsList = null;
-        }
 
         var style = new MidjourneyStyle
         (
@@ -81,62 +82,57 @@ public class MidjourneyStyle
         return Result.Ok(style);
     }
 
-    public Result AddTag(Tag tag)
+    public Result AddTag(Result<Tag> tag)
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .CollectErrors<Tag>(tag)
-            .IfContain<Tag>(Tags, tag);
-
-        //var updatedStyle = Create
-        //(
-        //    StyleName,
-        //    Type,
-        //    Description == null ? null : Description,
-        //    Tags?.Select(t => Result.Ok(t)).ToList()
-        //);
-
-
+            .CollectErrors<DomainLayer, ModelVersion>(tag)
+            .IfTagAllredyExist<DomainLayer, ModelVersion>(Tags, tag.Value);
 
         if (errors.Count != 0)
             return Result.Fail(errors);
 
         Tags ??= [];
-        Tags.Add(tag);
+        Tags.Add(tag.Value);
 
         return Result.Ok();
     }
 
-    public Result RemoveTag(Tag tag)
+    public Result RemoveTag(Result<Tag> tag)
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .CollectErrors<Tag>(tag)
-            .IfListIsEmpty<Tag>(Tags)
-            .IfNull<Tag>(Tags)
-            .IfDoesNotContain(Tags, tag);
+            .CollectErrors<DomainLayer, Tag>(tag)
+            .IfListIsEmpty<DomainLayer, Tag>(Tags)
+            .IfNull<DomainLayer, Tag>(Tags)
+            .IfListNotContain<DomainLayer, Tag>(Tags, tag.Value);
 
         if (errors.Count != 0)
             return Result.Fail(errors);
 
-        Tags!.RemoveAll(t => t.Equals(tag));
+        Tags!.RemoveAll(t => t.Equals(tag.Value));
 
         return Result.Ok();
     }
 
-    public Result EditDescription(Description? description)
+    public Result EditDescription(Result<Description?> description)
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
-        errors.CollectErrors<Description?>(description);
+        errors.CollectErrors<DomainLayer, ModelVersion>(description);
 
         if (errors.Count != 0)
             return Result.Fail(errors);
 
-        Description = description;
+        Description = description.Value;
 
         return Result.Ok();
+    }
+
+    public override int GetHashCode()
+    {
+        return StyleName.GetHashCode();
     }
 }

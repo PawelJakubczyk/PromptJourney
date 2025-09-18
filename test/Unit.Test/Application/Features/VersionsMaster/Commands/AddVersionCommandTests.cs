@@ -1,9 +1,9 @@
 using Application.Features.VersionsMaster.Commands;
 using Application.Features.VersionsMaster.Responses;
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyVersions;
 using Domain.ValueObjects;
 using Moq;
+using Domain.Entities;
 
 namespace Unit.Test.Application.Features.VersionsMaster.Commands;
 

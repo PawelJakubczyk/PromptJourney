@@ -1,12 +1,9 @@
-﻿using Domain.Entities.MidjourneyPromtHistory;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PromptConverter = Persistence.Mapping.ValueObjects.PromptMapping.Converter;
-using PromptComparer =  Persistence.Mapping.ValueObjects.PromptMapping.Comparer;
-using ModelVersionConverter = Persistence.Mapping.ValueObjects.ModelVersionMapping.Converter;
-using ModelVersionComparer =  Persistence.Mapping.ValueObjects.ModelVersionMapping.Comparer;
+using static Persistence.Mapping.ValueObjectsMapping;
 using static Persistence.Constants.PersistenceConstants;
+using Domain.Entities;
 
 namespace Persistence.Configuration;
 

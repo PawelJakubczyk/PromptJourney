@@ -3,7 +3,7 @@ using FluentResults;
 using Domain.Errors;
 
 
-namespace Domain.Entities.MidjourneyProperties;
+namespace Domain.Entities;
 
 public class MidjourneyPropertiesBase
 {
@@ -17,7 +17,7 @@ public class MidjourneyPropertiesBase
     public Description? Description { get; set; }
 
     // Navigation
-    public MidjourneyVersions.MidjourneyVersion VersionMaster { get; set; }
+    public MidjourneyVersion VersionMaster { get; set; }
 
     // Constructors
     protected MidjourneyPropertiesBase()
@@ -59,18 +59,18 @@ public class MidjourneyPropertiesBase
         List<DomainError> errors = [];
 
         errors
-            .CollectErrors<PropertyName>(propertyNameResult)
-            .CollectErrors<ModelVersion>(versionResult)
-            .CollectErrors<DefaultValue?>(defaultValueResult)
-            .CollectErrors<MinValue?>(minValueResult)
-            .CollectErrors<MaxValue?>(maxValueResult)
-            .CollectErrors<Description?>(descriptionResult);
+            .CollectErrors(propertyNameResult)
+            .CollectErrors(versionResult)
+            .CollectErrors(defaultValueResult)
+            .CollectErrors(minValueResult)
+            .CollectErrors(maxValueResult)
+            .CollectErrors(descriptionResult);
 
         List<Param> parameterslList = [];
 
         foreach (var parametersResult in parametersResultsList ?? [])
         {
-            errors.CollectErrors<Param>(parametersResult);
+            errors.CollectErrors(parametersResult);
             if (parametersResult.IsSuccess)
                 parameterslList.Add(parametersResult.Value);
         };

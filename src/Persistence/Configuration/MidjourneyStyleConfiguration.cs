@@ -1,9 +1,9 @@
-﻿using Domain.Entities.MidjourneyStyle;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.ValueObjects;
-using static Persistence.Mapping.ValueObjects;
+using static Persistence.Mapping.ValueObjectsMapping;
 using static Persistence.Constants.PersistenceConstants;
+using Domain.Entities;
 
 namespace Persistence.Configuration;
 
@@ -15,24 +15,24 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
         builder.HasKey(style => style.StyleName);
         
         builder.Property(style => style.StyleName)
-            .HasConversion<StyleNameMapping.Converter, StyleNameMapping.Comparer>()
+            .HasConversion<StyleNameConverter, StyleNameComparer>()
             .HasColumnName("name")
             .HasColumnType(ColumnType.VarChar(StyleName.MaxLength))
             .IsRequired();
             
         builder.Property(style => style.Type)
-            .HasConversion<StyleTypeMapping.Converter, StyleTypeMapping.Comparer>()
+            .HasConversion<StyleTypeConverter, StyleTypeComparer>()
             .HasColumnName("type")
             .HasColumnType(ColumnType.VarChar(StyleType.MaxLength))
             .IsRequired();
             
         builder.Property(style => style.Description)
-            .HasConversion<DescriptionMapping.Converter, DescriptionMapping.Comparer>()
+            .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
             .HasColumnType(ColumnType.VarChar(Description.MaxLength));
             
         builder.Property(style => style.Tags)
-            .HasConversion<TagListMapping.Converter, TagListMapping.Comparer>()
+            .HasConversion<TagListConverter, TagListComparer>()
             .HasColumnName("tags")
             .HasColumnType(ColumnType.TextArray);
 

@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyStyleExampleLinks;
+using Domain.Entities;
 using Domain.ValueObjects;
 
 namespace Unit.Test.Domain.Entities;

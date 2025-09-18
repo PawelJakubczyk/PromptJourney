@@ -14,7 +14,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 {
     // GET api/examplelinks
     [HttpGet]
-    [ProducesResponseType<List<ExampleLinkRespose>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<ExampleLinkResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
@@ -30,7 +30,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
     // GET api/examplelinks/style/{styleName}
     [HttpGet("style/{styleName}")]
-    [ProducesResponseType<List<ExampleLinkRespose>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<ExampleLinkResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByStyle(string styleName, CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
     // GET api/examplelinks/style/{styleName}/version/{version}
     [HttpGet("style/{styleName}/version/{version}")]
-    [ProducesResponseType<List<ExampleLinkRespose>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<ExampleLinkResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByStyleAndVersion(string styleName, string version, CancellationToken cancellationToken)
@@ -99,7 +99,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     public async Task<IActionResult> CheckLinksEmpty(CancellationToken cancellationToken)
     {
-        var query = new CheckExampleLinksAreNotEmpty.Query();
+        var query = new CheckAnyExampleLinksExist.Query();
 
         var result = await Sender.Send(query, cancellationToken);
 
@@ -111,7 +111,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
     // POST api/examplelinks
     [HttpPost]
-    [ProducesResponseType<ExampleLinkRespose>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ExampleLinkResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)

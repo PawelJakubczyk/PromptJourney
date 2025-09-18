@@ -12,7 +12,9 @@ public static class CheckPropertyExistsInVersion
 {
     public sealed record Query(string Version, string PropertyName) : IQuery<bool>;
 
-    public sealed class Handler(IPropertiesRepository propertiesRepository) : IQueryHandler<Query, bool>
+    public sealed class Handler(
+        IPropertiesRepository propertiesRepository
+    ) : IQueryHandler<Query, bool>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
@@ -22,15 +24,26 @@ public static class CheckPropertyExistsInVersion
             var propertyName = PropertyName.Create(query.PropertyName);
 
             List<DomainError> domainErrors = [];
-
             domainErrors
-                .CollectErrors<ModelVersion>(version)
-                .CollectErrors<PropertyName>(propertyName);
+                .CollectErrors(version)
+                .CollectErrors(propertyName);
 
-            var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<bool>
+            (
+                (nameof(domainErrors), domainErrors)
+            );
             if (validationErrors is not null) return validationErrors;
 
-            return await _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value);
+            var result = await _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value);
+            var persistenceErrors = result.Errors;
+
+            validationErrors = CreateValidationErrorIfAny<bool>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            if (validationErrors is not null) return validationErrors;
+
+            return Result.Ok(result.Value);
         }
     }
 }

@@ -15,12 +15,10 @@ public static class DeleteAllExampleLinksByStyle
 
     public sealed class Handler
     (
-        IExampleLinksRepository exampleLinkRepository,
-        IStyleRepository styleRepository
+        IExampleLinksRepository exampleLinkRepository
     ) : ICommandHandler<Command, BulkDeleteResponse>
     {
         private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
-        private readonly IStyleRepository _styleRepository = styleRepository;
 
         public async Task<Result<BulkDeleteResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
@@ -31,22 +29,23 @@ public static class DeleteAllExampleLinksByStyle
             domainErrors
                 .CollectErrors<StyleName>(styleName);
 
-            List<ApplicationError> applicationErrors = [];
+            var deleteLinksResult = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value);
+            var persitanceErrors = deleteLinksResult.Errors;
 
-            applicationErrors
-                .IfStyleNotExists(styleName.Value, _styleRepository);
+            var validationErrors = CreateValidationErrorIfAny<BulkDeleteResponse>
+            (
+                (nameof(domainErrors), domainErrors),
+                (nameof(persitanceErrors), persitanceErrors)
+            );
 
-            var validationErrors = CreateValidationErrorIfAny<BulkDeleteResponse>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var deleteResult = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value);
-
-            if (deleteResult.IsFailed) 
-                return Result.Fail<BulkDeleteResponse>(deleteResult.Errors);
-
-            var deletedCount = deleteResult.Value.Count;
-            var response = BulkDeleteResponse.Success(deletedCount, 
-                $"Successfully deleted {deletedCount} example links for style '{styleName.Value.Value}'.");
+            var deletedCount = deleteLinksResult.Value.Count;
+            var response = BulkDeleteResponse.Success
+            (
+                deletedCount, 
+                $"Successfully deleted {deletedCount} example links for style '{styleName.Value.Value}'."
+            );
 
             return Result.Ok(response);
         }

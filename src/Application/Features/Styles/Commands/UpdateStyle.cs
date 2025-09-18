@@ -2,7 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Errors;
 using Application.Features.Styles.Responses;
-using Domain.Entities.MidjourneyStyle;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorsExtensions;

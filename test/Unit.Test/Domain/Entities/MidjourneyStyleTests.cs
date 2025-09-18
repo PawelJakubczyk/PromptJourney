@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyStyle;
+using Domain.Entities;
 using Domain.ValueObjects;
 
 namespace Unit.Test.Domain.Entities;
@@ -10,7 +10,7 @@ public class MidjourneyStyleTests
     {
         // Arrange
         var nameResult = StyleName.Create("Abstract Art");
-        var typeResult = StyleType.Create("Abstract");
+        var typeResult = StyleType.Create("Custom");
         var descriptionResult = Description.Create("A beautiful abstract art style");
 
         // Act
@@ -26,7 +26,7 @@ public class MidjourneyStyleTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.StyleName.Value.Should().Be("Abstract Art");
-        result.Value.Type.Value.Should().Be("Abstract");
+        result.Value.Type.Value.Should().Be("Custom");
         result.Value.Description?.Value.Should().Be("A beautiful abstract art style");
     }
 
@@ -35,7 +35,7 @@ public class MidjourneyStyleTests
     {
         // Arrange
         var nameResult = StyleName.Create("Cyberpunk");
-        var typeResult = StyleType.Create("Futuristic");
+        var typeResult = StyleType.Create("Custom");
         var descriptionResult = Description.Create("Cyberpunk art style");
         var tagResults = new List<Result<Tag>?>
         {
@@ -58,7 +58,7 @@ public class MidjourneyStyleTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.StyleName.Value.Should().Be("Cyberpunk");
-        result.Value.Type.Value.Should().Be("Futuristic");
+        result.Value.Type.Value.Should().Be("Custom");
         result.Value.Tags.Should().NotBeNull();
         result.Value.Tags.Should().HaveCount(3);
         result.Value.Tags.Should().Contain(t => t.Value == "neon");
@@ -71,7 +71,7 @@ public class MidjourneyStyleTests
     {
         // Arrange
         var nameResult = StyleName.Create("Minimalist");
-        var typeResult = StyleType.Create("Clean");
+        var typeResult = StyleType.Create("Custom");
 
         // Act
         var result = MidjourneyStyle.Create
@@ -85,7 +85,7 @@ public class MidjourneyStyleTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.StyleName.Value.Should().Be("Minimalist");
-        result.Value.Type.Value.Should().Be("Clean");
+        result.Value.Type.Value.Should().Be("Custom");
         result.Value.Description.Should().BeNull();
         result.Value.Tags.Should().BeNull();
     }
@@ -95,7 +95,7 @@ public class MidjourneyStyleTests
     {
         // Arrange
         var nameResult = StyleName.Create("Test Style");
-        var typeResult = StyleType.Create("Test Type");
+        var typeResult = StyleType.Create("Custom");
 
         // Act
         var result = MidjourneyStyle.Create
@@ -117,7 +117,7 @@ public class MidjourneyStyleTests
     {
         // Arrange
         var nameResult = StyleName.Create("Test Style");
-        var typeResult = StyleType.Create("Test Type");
+        var typeResult = StyleType.Create("Custom");
         var emptyTagResults = new List<Result<Tag>?>();
 
         // Act
@@ -181,11 +181,11 @@ public class MidjourneyStyleTests
     {
         // Arrange
         var nameResult = StyleName.Create("Test Style");
-        var typeResult = StyleType.Create("Test Type");
+        var typeResult = StyleType.Create("Custom");
         var tagResults = new List<Result<Tag>?>
         {
             Tag.Create("valid"),
-            Tag.Create("") // Invalid tag
+            Tag.Create("")
         };
 
         // Act
@@ -194,7 +194,7 @@ public class MidjourneyStyleTests
             nameResult,
             typeResult,
             null,
-            tagResults
+            tagResults!
         );
 
         // Assert
@@ -210,10 +210,10 @@ public class MidjourneyStyleTests
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type")
+            StyleType.Create("Custom")
         ).Value;
 
-        var newTag = Tag.Create("newtag").Value;
+        var newTag = Tag.Create("newtag");
 
         // Act
         var result = style.AddTag(newTag);
@@ -237,12 +237,12 @@ public class MidjourneyStyleTests
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type"),
+            StyleType.Create("Custom"),
             null,
             tagResults
         ).Value;
 
-        var duplicateTag = Tag.Create("existing").Value;
+        var duplicateTag = Tag.Create("existing");
 
         // Act
         var result = style.AddTag(duplicateTag);
@@ -266,21 +266,24 @@ public class MidjourneyStyleTests
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type"),
+            StyleType.Create("Custom"),
             null,
             tagResults
         ).Value;
 
-        var tagToRemove = Tag.Create("tag1").Value;
+        var tagToRemove = Tag.Create("tag1");
 
         // Act
         var result = style.RemoveTag(tagToRemove);
 
         // Assert
-        result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        style.Tags.Should().NotContain(t => t.Value == "tag1");
-        style.Tags.Should().Contain(t => t.Value == "tag2");
+        style.Tags?
+            .Select(t => t.Value)
+            .Should().NotContain("tag1");
+        style.Tags?
+            .Select(t => t.Value)
+            .Should().Contain("tag2");
     }
 
     [Fact]
@@ -295,7 +298,7 @@ public class MidjourneyStyleTests
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type"),
+            StyleType.Create("Custom"),
             null,
             tagResults
         ).Value;
@@ -318,7 +321,7 @@ public class MidjourneyStyleTests
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type")
+            StyleType.Create("Custom")
         ).Value;
 
         var tag = Tag.Create("anytag").Value;
@@ -339,7 +342,7 @@ public class MidjourneyStyleTests
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type")
+            StyleType.Create("Custom")
         ).Value;
 
         var newDescription = Description.Create("New description").Value;
@@ -360,17 +363,18 @@ public class MidjourneyStyleTests
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type"),
-            Description.Create("Original description")
+            StyleType.Create("Custom"),
+            Description.Create("Original description")!
         ).Value;
 
+        var nullDescription = Description.Create(default);
         // Act
-        var result = style.EditDescription(null);
+        var result = style.EditDescription(nullDescription.Value);
 
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        style.Description.Should().BeNull();
+        style.Description?.Value.Should().BeNull();
     }
 
     [Fact]
@@ -380,7 +384,7 @@ public class MidjourneyStyleTests
         var result = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
-            StyleType.Create("Test Type")
+            StyleType.Create("Custom")
         );
 
         // Assert

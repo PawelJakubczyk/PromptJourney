@@ -1,32 +1,27 @@
 using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
+using Utilities.Constants;
 
 namespace Domain.ValueObjects;
 
-public sealed class Tag : IValueObject<Tag, string>
+public record Tag : ValueObject<string>, ICreatable<Tag, string>
 {
     public const int MaxLength = 50;
-    public string Value { get; }
 
-    private Tag(string value)
-    {
-        Value = value;
-    }
+    private Tag(string value) : base(value) { }
 
     public static Result<Tag> Create(string value)
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .IfNullOrWhitespace<Tag>(value)
-            .IfLengthTooLong<Tag>(value, MaxLength);
+            .IfNullOrWhitespace<DomainLayer, Tag>(value)
+            .IfLengthTooLong<DomainLayer, Tag>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<Tag>(errors);
 
         return Result.Ok(new Tag(value));
     }
-
-    public override string ToString() => Value;
 }

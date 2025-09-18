@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities;
 using Domain.ValueObjects;
 
 namespace Unit.Test.Domain.Entities;

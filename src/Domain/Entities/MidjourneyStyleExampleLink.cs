@@ -1,9 +1,10 @@
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Constants;
 
 
-namespace Domain.Entities.MidjourneyStyleExampleLinks;
+namespace Domain.Entities;
 
 public class MidjourneyStyleExampleLink
 {
@@ -15,8 +16,8 @@ public class MidjourneyStyleExampleLink
     public ModelVersion Version { get; private set; }
     
     // Navigation
-    public MidjourneyStyle.MidjourneyStyle Style { get; private set; } = null!;
-    public MidjourneyVersions.MidjourneyVersion VersionMaster { get; private set; } = null!;
+    public MidjourneyStyle Style { get; private set; } = null!;
+    public MidjourneyVersion VersionMaster { get; private set; } = null!;
 
     // Constructors
     private MidjourneyStyleExampleLink() 
@@ -38,12 +39,12 @@ public class MidjourneyStyleExampleLink
         Result<ModelVersion> version
     )
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .CollectErrors<ExampleLink>(link)
-            .CollectErrors<StyleName>(styleName)
-            .CollectErrors<ModelVersion>(version);
+            .CollectErrors<DomainLayer, ExampleLink>(link)
+            .CollectErrors<DomainLayer, StyleName>(styleName)
+            .CollectErrors<DomainLayer, ModelVersion>(version);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyStyleExampleLink>(errors);

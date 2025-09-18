@@ -1,35 +1,27 @@
 ﻿using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
+using Utilities.Constants;
 
 namespace Domain.ValueObjects;
 
-public sealed class Keyword : IValueObject<Keyword, string?>
+public record Keyword : ValueObject<string>, ICreatable<Keyword, string>
 {
     public const int MaxLength = 50;
-    public string? Value { get; }
 
-    private Keyword(string? value)
-    {
-        Value = value;
-    }
+    private Keyword(string value) : base(value) { }
 
     public static Result<Keyword> Create(string? value)
     {
-        if (value == null)
-            return Result.Ok(new Keyword(null));
-
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .IfWhitespace<Keyword>(value)
-            .IfLengthTooLong<Keyword>(value, MaxLength);
+            .IfNullOrWhitespace<DomainLayer, Keyword>(value)
+            .IfLengthTooLong<DomainLayer, Keyword>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<Keyword>(errors);
 
         return Result.Ok(new Keyword(value));
     }
-
-    public override string? ToString() => Value;
 }

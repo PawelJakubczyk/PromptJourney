@@ -1,35 +1,30 @@
 using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
+using Utilities.Constants;
 
 namespace Domain.ValueObjects;
 
-public sealed class Description : IValueObject<Description, string?>
+public record Description : ValueObject<string?>, ICreatable<Description, string?>
 {
     public const int MaxLength = 500;
-    public string? Value { get; }
 
-    private Description(string? value)
-    {
-        Value = value;
-    }
+    private Description(string? value) : base(value) { }
 
     public static Result<Description> Create(string? value)
     {
         if (value == null)
-            return Result.Ok(new Description(null));
+            return Result.Ok(new Description(default(string)));
 
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .IfWhitespace<Description>(value)
-            .IfLengthTooLong<Description>(value, MaxLength);
+            .IfWhitespace<DomainLayer, Description>(value)
+            .IfLengthTooLong<DomainLayer, Description>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<Description>(errors);
 
         return Result.Ok(new Description(value));
     }
-
-    public override string? ToString() => Value;
 }

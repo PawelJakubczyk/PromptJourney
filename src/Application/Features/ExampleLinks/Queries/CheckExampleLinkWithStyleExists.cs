@@ -24,10 +24,18 @@ public class CheckExampleLinkWithStyleExists
             domainErrors
                 .CollectErrors<StyleName>(styleName);
 
-            var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
+            var checkResult = await _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value);
+            var persitanceErrors = checkResult.Errors;
+
+            var validationErrors = CreateValidationErrorIfAny<bool>
+            (
+                (nameof(domainErrors), domainErrors),
+                (nameof(persitanceErrors), persitanceErrors)
+            );
+
             if (validationErrors is not null) return validationErrors;
 
-            return await _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value);
+            return checkResult;
         }
     }
 }

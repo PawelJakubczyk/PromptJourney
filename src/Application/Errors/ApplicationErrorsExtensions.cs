@@ -8,66 +8,20 @@ namespace Application.Errors;
 
 public static class ApplicationErrorsExtensions
 {
-    public static Result<T>? CreateValidationErrorIfAny<T>
-    (
-        List<ApplicationError> applicationErrors,
-        List<DomainError> domainErrors)
+    public static Result<T>? CreateValidationErrorIfAny<T>(
+        params (string Name, IReadOnlyList<IError> Errors)[] errorGroups
+    )
     {
-        if (applicationErrors.Count == 0 && domainErrors.Count == 0)
+        if (errorGroups.All(g => g.Errors.Count == 0))
             return null;
 
-        var error = new Error("Validation failed");
-        
-        if (applicationErrors.Count > 0)
-            error = error.WithMetadata("Application Errors", applicationErrors);
-            
-        if (domainErrors.Count > 0)
-            error = error.WithMetadata("Domain Errors", domainErrors);
+        var error = new FluentResults.Error("Validation failed");
 
-        return Result.Fail<T>(error);
-    }
-
-    public static Result<T>? CreateValidationErrorIfAny<T>
-    (
-        List<ApplicationError> applicationErrors,
-        IReadOnlyList<IError> domainErrors)
-    {
-        if (applicationErrors.Count == 0 && domainErrors.Count == 0)
-            return null;
-
-        var error = new Error("Validation failed");
-        
-        if (applicationErrors.Count > 0)
-            error = error.WithMetadata("Application Errors", applicationErrors);
-            
-        if (domainErrors.Count > 0)
-            error = error.WithMetadata("Domain Errors", domainErrors);
-
-        return Result.Fail<T>(error);
-    }
-
-    public static Result<T>? CreateValidationErrorIfAny<T>
-    (
-        List<DomainError> domainErrors)
-    {
-        if (domainErrors.Count == 0)
-            return null;
-
-        var error = new Error("Validation failed")
-            .WithMetadata("Domain Errors", domainErrors);
-
-        return Result.Fail<T>(error);
-    }
-
-    public static Result<T>? CreateValidationErrorIfAny<T>
-    (
-        List<ApplicationError> applicationErrors)
-    {
-        if (applicationErrors.Count == 0)
-            return null;
-
-        var error = new Error("Validation failed")
-            .WithMetadata("Domain Errors", applicationErrors);
+        foreach (var group in errorGroups)
+        {
+            if (group.Errors.Count > 0)
+                error = error.WithMetadata(group.Name, group.Errors);
+        }
 
         return Result.Fail<T>(error);
     }
@@ -108,7 +62,7 @@ public static class ApplicationErrorsExtensions
         IExampleLinksRepository repository
     )
     {
-        var result = repository.CheckAnyExampleLinksExist();
+        var result = repository.CheckAnyExampleLinksExistAsync();
         if (result.Result.IsFailed)
             applicationErrors.Add(new ApplicationError(
                 "Failed to check if example links have any element"));
@@ -283,35 +237,35 @@ public static class ApplicationErrorsExtensions
         return applicationErrors;
     }
 
-    public static List<ApplicationError> IfVersionNotExists(
-        this List<ApplicationError> applicationErrors,
-        ModelVersion version,
-        IVersionRepository repository
-    )
-    {
-        var result = repository.CheckVersionExistsInVersionsAsync(version);
-        if (result.Result.IsFailed)
-            applicationErrors.Add(new ApplicationError("Failed to check if version exists"));
-        if (!result.Result.Value)
-            applicationErrors.Add(new ApplicationError(
-                $"Version '{version}' not found"));
-        return applicationErrors;
-    }
+    //public static List<ApplicationError> IfVersionNotExists(
+    //    this List<ApplicationError> applicationErrors,
+    //    ModelVersion version,
+    //    IVersionRepository repository
+    //)
+    //{
+    //    var result = Repositories.CheckVersionExistsInVersionsAsync(version);
+    //    if (result.Result.IsFailed)
+    //        applicationErrors.Add(new ApplicationError("Failed to check if version exists"));
+    //    if (!result.Result.Value)
+    //        applicationErrors.Add(new ApplicationError(
+    //            $"Version '{version}' not found"));
+    //    return applicationErrors;
+    //}
 
-    public static List<ApplicationError> IfVersionAlreadyExists(
-        this List<ApplicationError> applicationErrors,
-        ModelVersion version,
-        IVersionRepository repository
-    )
-    {
-        var result = repository.CheckVersionExistsInVersionsAsync(version);
-        if (result.Result.IsFailed)
-            applicationErrors.Add(new ApplicationError("Failed to check if version exists"));
-        if (result.Result.Value)
-            applicationErrors.Add(new ApplicationError(
-                $"Version '{version}' already exist"));
-        return applicationErrors;
-    }
+    //public static List<ApplicationError> IfVersionAlreadyExists(
+    //    this List<ApplicationError> applicationErrors,
+    //    ModelVersion version,
+    //    IVersionRepository repository
+    //)
+    //{
+    //    var result = repository.CheckVersionExistsInVersionsAsync(version);
+    //    if (result.Result.IsFailed)
+    //        applicationErrors.Add(new ApplicationError("Failed to check if version exists"));
+    //    if (result.Result.Value)
+    //        applicationErrors.Add(new ApplicationError(
+    //            $"Version '{version}' already exist"));
+    //    return applicationErrors;
+    //}
 
     public static List<ApplicationError> IfNoSupportedVersions(
         this List<ApplicationError> applicationErrors,

@@ -1,33 +1,46 @@
 using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
+using Utilities.Constants;
+using Utilities.Errors;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class ExampleLink : IValueObject<ExampleLink, string>
+public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string>
 {
     public const int MaxLength = 200;
-    public string Value { get; }
 
-    private ExampleLink(string value)
-    {
-        Value = value;
-    }
+    private ExampleLink(string value) : base(value) { }
 
     public static Result<ExampleLink> Create(string value)
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .IfNullOrWhitespace<ExampleLink>(value)
-            .IfLengthTooLong<ExampleLink>(value, MaxLength)
-            .IfLinkFormatInvalid(value);
+            .IfNullOrWhitespace<DomainLayer, ExampleLink>(value)
+            .IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength)
+            .IfLinkFormatInvalid<DomainLayer>(value);
 
         if (errors.Count != 0)
             return Result.Fail<ExampleLink>(errors);
 
         return Result.Ok(new ExampleLink(value));
     }
+}
 
-    public override string ToString() => Value;
+internal static class ExampleLinkErrorsExtensions
+{
+    internal static List<Error> IfLinkFormatInvalid<TLayer>(this List<Error> domainErrors, string value)
+        where TLayer : ILayer
+    {
+        var isValid = Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+
+        if (!isValid)
+        {
+            domainErrors.Add(new Error<TLayer>($"Invalid URL format: {value}"));
+        }
+
+        return domainErrors;
+    }
 }

@@ -1,9 +1,9 @@
 using Application.Features.Styles.Queries;
 using Application.Features.Styles.Responses;
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyle;
 using Domain.ValueObjects;
 using Moq;
+using Domain.Entities;
 
 namespace Unit.Test.Application.Features.Styles.Queries;
 

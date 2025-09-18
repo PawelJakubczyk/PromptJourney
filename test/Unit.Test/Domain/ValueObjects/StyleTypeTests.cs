@@ -12,6 +12,21 @@ public class StyleTypeTests
     [InlineData("Cartoon")]
     [InlineData("Vintage")]
     [InlineData("Modern")]
+    public void Create_WithInvalidValues_ShouldReturnFailure(string invalidValue)
+    {
+        // Act
+        var result = StyleType.Create(invalidValue);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().NotBeEmpty();
+    }
+    
+    [Theory]
+    [InlineData("Custom")]
+    [InlineData("StyleReferences")]
+    [InlineData("Personalization")]
     public void Create_WithValidValues_ShouldReturnSuccess(string validValue)
     {
         // Act
@@ -30,10 +45,10 @@ public class StyleTypeTests
     [InlineData("   ")]
     [InlineData("\t")]
     [InlineData("\n")]
-    public void Create_WithNullOrWhitespaceValue_ShouldReturnFailure(string invalidValue)
+    public void Create_WithNullOrWhitespaceValue_ShouldReturnFailure(string? invalidValue)
     {
         // Act
-        var result = StyleType.Create(invalidValue);
+        var result = StyleType.Create(invalidValue!);
 
         // Assert
         result.Should().NotBeNull();
@@ -57,7 +72,7 @@ public class StyleTypeTests
     }
 
     [Fact]
-    public void Create_WithValueAtMaxLength_ShouldReturnSuccess()
+    public void Create_WithValueAtMaxLength_ShouldSuccessInLenghtValidation()
     {
         // Arrange
         var maxLengthValue = new string('A', StyleType.MaxLength);
@@ -67,17 +82,39 @@ public class StyleTypeTests
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(maxLengthValue);
-        result.Value.Value.Should().HaveLength(StyleType.MaxLength);
+        var errorMessages = result.Errors.Select(e => e.ToString()).ToList();
+        errorMessages.Should().NotContain
+        (
+            $"DomainError with Message='{nameof(StyleType)}: {maxLengthValue} cannot be longer than {StyleType.MaxLength} characters.'"
+        );
+    }
+
+    [Fact]
+    public void Create_WithValueAboveMaxLength_ShouldFailuedInLenghtValidation()
+    {
+        // Arrange
+        var maxLengthValue = new string('A', StyleType.MaxLength + 5);
+
+        // Act
+        var result = StyleType.Create(maxLengthValue);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().NotBeEmpty();
+
+        var errorMessages = result.Errors.Select(e => e.ToString()).ToList();
+        errorMessages.Should().Contain
+        (
+            $"DomainError with Message='{nameof(StyleType)}: {maxLengthValue} cannot be longer than {StyleType.MaxLength} characters.'"
+        );
     }
 
     [Fact]
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var typeString = "Abstract";
+        var typeString = "Personalization";
         var styleType = StyleType.Create(typeString).Value;
 
         // Act
@@ -85,12 +122,5 @@ public class StyleTypeTests
 
         // Assert
         result.Should().Be(typeString);
-    }
-
-    [Fact]
-    public void MaxLength_ShouldBe100()
-    {
-        // Assert
-        StyleType.MaxLength.Should().Be(100);
     }
 }

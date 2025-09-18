@@ -2,7 +2,8 @@
 using Application.Abstractions.IRepository;
 using Application.Errors;
 using Application.Features.PromptHistory.Responses;
-using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorsExtensions;
@@ -27,28 +28,30 @@ public static class AddPromptToHistory
             var prompt = Prompt.Create(command.Prompt);
             var version = ModelVersion.Create(command.Version);
 
-            List<ApplicationError> applicationErrors = [];
+            List<DomainError> domainErrors = [];
+            
+            domainErrors
+                .CollectErrors(prompt)
+                .CollectErrors(version);
 
-            applicationErrors
-                .IfVersionNotExists(version.Value, _versionRepository);
-
-            var promptHistoryResult = MidjourneyPromptHistory.Create
+            var validationErrors = CreateValidationErrorIfAny<PromptHistoryResponse>
             (
-                prompt.Value,
-                version.Value
+                (nameof(domainErrors), domainErrors)
             );
-
-            var domainErrors = promptHistoryResult.Errors;
-
-            var validationErrors = CreateValidationErrorIfAny<PromptHistoryResponse>(applicationErrors, domainErrors);
+            
             if (validationErrors is not null) return validationErrors;
 
-            var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistoryResult.Value);
+            var history = MidjourneyPromptHistory.Create(prompt, version);
+            var addResult = await _promptHistoryRepository.AddPromptToHistoryAsync(history.Value);
+            var persistenceErrors = addResult.Errors;
 
-            if (result.IsFailed)
-                return Result.Fail<PromptHistoryResponse>(result.Errors);
+            validationErrors = CreateValidationErrorIfAny<PromptHistoryResponse>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            if (validationErrors is not null) return validationErrors;
 
-            var response = PromptHistoryResponse.FromDomain(result.Value);
+            var response = PromptHistoryResponse.FromDomain(addResult.Value);
 
             return Result.Ok(response);
         }

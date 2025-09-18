@@ -1,26 +1,23 @@
 using Domain.Abstractions;
 using Domain.Errors;
 using FluentResults;
+using Utilities.Constants;
 
 namespace Domain.ValueObjects;
 
-public sealed class StyleName : IValueObject<StyleName, string>
+public record StyleName : ValueObject<string>, ICreatable<StyleName, string>
 {
     public const int MaxLength = 150;
-    public string Value { get; }
 
-    private StyleName(string value)
-    {
-        Value = value;
-    }
+    private StyleName(string value) : base(value) { }
 
     public static Result<StyleName> Create(string value)
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .IfNullOrWhitespace<StyleName>(value)
-            .IfLengthTooLong<StyleName>(value, MaxLength);
+            .IfNullOrWhitespace<DomainLayer, StyleName>(value)
+            .IfLengthTooLong<DomainLayer, StyleName>(value, MaxLength);
 
         if (errors.Count != 0)
             return Result.Fail<StyleName>(errors);

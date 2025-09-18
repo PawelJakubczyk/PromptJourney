@@ -11,8 +11,10 @@ public static class GetHistoryByDateRange
 {
     public sealed record Query(DateTime From, DateTime To) : IQuery<List<PromptHistoryResponse>>;
 
-    public sealed class Handler(IPromptHistoryRepository promptHistoryRepository)
-        : IQueryHandler<Query, List<PromptHistoryResponse>>
+    public sealed class Handler
+    (
+        IPromptHistoryRepository promptHistoryRepository
+    ) : IQueryHandler<Query, List<PromptHistoryResponse>>
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
 
@@ -21,16 +23,24 @@ public static class GetHistoryByDateRange
             List<ApplicationError> applicationErrors = [];
 
             applicationErrors
-                .IfDateRangeNotChronological(query.From, query.To)
-                .IfDateInFuture(query.To);
+                .IfDateInFuture(query.From)
+                .IfDateInFuture(query.To)
+                .IfDateRangeNotChronological(query.From, query.To);
 
-            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>(applicationErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
+            (
+                (nameof(applicationErrors), applicationErrors)
+            );
             if (validationErrors is not null) return validationErrors;
 
             var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To);
+            var persistenceErrors = result.Errors;
 
-            if (result.IsFailed)
-                return Result.Fail<List<PromptHistoryResponse>>(result.Errors);
+            validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            if (validationErrors is not null) return validationErrors;
 
             var responses = result.Value
                 .Select(PromptHistoryResponse.FromDomain)

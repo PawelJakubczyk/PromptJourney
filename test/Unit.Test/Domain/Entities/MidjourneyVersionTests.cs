@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyVersions;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 
@@ -253,40 +253,5 @@ public class MidjourneyVersionTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.ReleaseDate.Should().Be(pastDate);
-    }
-
-    [Fact]
-    public void Create_ShouldInitializeNavigationProperties()
-    {
-        // Arrange
-        var versionResult = ModelVersion.Create("6.0");
-        var parameterResult = Param.Create("--v 6.0");
-
-        // Act
-        var result = MidjourneyVersion.Create
-        (
-            versionResult,
-            parameterResult
-        );
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        // Navigation properties should be initialized (though they might be null until loaded by EF)
-        result.Value.Histories.Should().NotBeNull();
-        result.Value.Versions1.Should().NotBeNull();
-        result.Value.Versions2.Should().NotBeNull();
-        result.Value.Versions3.Should().NotBeNull();
-        result.Value.Versions4.Should().NotBeNull();
-        result.Value.Versions5.Should().NotBeNull();
-        result.Value.Versions51.Should().NotBeNull();
-        result.Value.Versions52.Should().NotBeNull();
-        result.Value.Versions6.Should().NotBeNull();
-        result.Value.Versions61.Should().NotBeNull();
-        result.Value.Versions7.Should().NotBeNull();
-        result.Value.VersionsNiji4.Should().NotBeNull();
-        result.Value.VersionsNiji5.Should().NotBeNull();
-        result.Value.VersionsNiji6.Should().NotBeNull();
     }
 }

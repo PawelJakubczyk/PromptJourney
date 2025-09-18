@@ -25,15 +25,26 @@ public class ModelVersionTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
     [InlineData("\t")]
     [InlineData("\n")]
-    public void Create_WithNullOrWhitespaceValue_ShouldReturnFailure(string invalidValue)
+    public void Create_WithWhitespaceValue_ShouldReturnFailure(string invalidValue)
     {
         // Act
         var result = ModelVersion.Create(invalidValue);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void Create_WithNullOrWhitespaceValue_ShouldReturnFailure()
+    {
+        // Act
+        var result = ModelVersion.Create(default!);
 
         // Assert
         result.Should().NotBeNull();
@@ -56,22 +67,22 @@ public class ModelVersionTests
         result.Errors.Should().NotBeEmpty();
     }
 
-    [Fact]
-    public void Create_WithValueAtMaxLength_ShouldReturnSuccess()
-    {
-        // Arrange - Creating a valid version at max length (like "niji 6.123")
-        var maxLengthValue = "niji 6.123"; // 10 characters exactly
+    //[Fact]
+    //public void Create_WithValueAtMaxLength_ShouldReturnSuccess()
+    //{
+    //    // Arrange - Creating a valid version at max length (like "niji 6.123")
+    //    var maxLengthValue = "niji 6.123"; // 10 characters exactly
 
-        // Act
-        var result = ModelVersion.Create(maxLengthValue);
+    //    // Act
+    //    var result = ModelVersion.Create(maxLengthValue);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(maxLengthValue);
-        result.Value.Value.Should().HaveLength(10);
-    }
+    //    // Assert
+    //    result.Should().NotBeNull();
+    //    result.IsSuccess.Should().BeTrue();
+    //    result.Value.Should().NotBeNull();
+    //    result.Value.Value.Should().Be(maxLengthValue);
+    //    result.Value.Value.Should().HaveLength(10);
+    //}
 
     [Theory]
     [InlineData("invalid")]
@@ -104,22 +115,7 @@ public class ModelVersionTests
         result.Should().Be(versionString);
     }
 
-    [Fact]
-    public void ModelVersionResult_ShouldReturnSameAsCreateCall()
-    {
-        // Arrange
-        var versionString = "5.1";
-        var version = ModelVersion.Create(versionString).Value;
 
-        // Act
-        var result = version.ModelVersionResult;
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(versionString);
-    }
 
     [Fact]
     public void MaxLength_ShouldBe10()

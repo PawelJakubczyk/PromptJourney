@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyVersions;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
 using Persistence.Repositories;

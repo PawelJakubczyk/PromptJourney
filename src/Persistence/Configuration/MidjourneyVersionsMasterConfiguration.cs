@@ -1,14 +1,9 @@
-﻿using Domain.Entities.MidjourneyVersions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.ValueObjects;
-using ModelVersionConverter = Persistence.Mapping.ValueObjects.ModelVersionMapping.Converter;
-using ModelVersionComparer = Persistence.Mapping.ValueObjects.ModelVersionMapping.Comparer;
-using ParamConverter = Persistence.Mapping.ValueObjects.ParamMapping.Converter;
-using ParamComparer = Persistence.Mapping.ValueObjects.ParamMapping.Comparer;
-using DescriptionConverter = Persistence.Mapping.ValueObjects.DescriptionMapping.Converter;
-using DescriptionComparer = Persistence.Mapping.ValueObjects.DescriptionMapping.Comparer;
+using static Persistence.Mapping.ValueObjectsMapping;
 using static Persistence.Constants.PersistenceConstants;
+using Domain.Entities;
 
 
 namespace Persistence.Configuration;

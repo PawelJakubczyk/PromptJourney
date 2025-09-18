@@ -11,18 +11,16 @@ namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyle
 {
-    public sealed record Query(string StyleName) : IQuery<List<ExampleLinkRespose>>;
+    public sealed record Query(string StyleName) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler
     (
-        IExampleLinksRepository exampleLinkRepository,
-        IStyleRepository styleRepository
-    ) : IQueryHandler<Query, List<ExampleLinkRespose>>
+        IExampleLinksRepository exampleLinkRepository
+    ) : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
-        private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
-        private readonly IStyleRepository _styleRepository = styleRepository;
+        private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
 
-        public async Task<Result<List<ExampleLinkRespose>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
             var styleName = StyleName.Create(query.StyleName);
 
@@ -31,24 +29,22 @@ public static class GetExampleLinksByStyle
             domainErrors
                 .CollectErrors<StyleName>(styleName);
 
-            List<ApplicationError> applicationErrors = [];
+            var getExamleLinksResult = await _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value);
+            var persitanceErrors = getExamleLinksResult.Errors;
 
-            applicationErrors
-                .IfStyleNotExists(styleName.Value, _styleRepository);
+            var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkResponse>>
+            (
+                (nameof(domainErrors), domainErrors),
+                (nameof(persitanceErrors), persitanceErrors)
+            );
 
-            var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkRespose>>(applicationErrors, domainErrors);
             if (validationErrors is not null) return validationErrors;
 
-            var result = await _exampleLinkRepository.GetExampleLinksByStyleAsync(styleName.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<List<ExampleLinkRespose>>(result.Errors);
-
-            var responses = result.Value
-                .Select(ExampleLinkRespose.FromDomain)
+            var responses = getExamleLinksResult.Value
+                .Select(ExampleLinkResponse.FromDomain)
                 .ToList();
 
-            return Result.Ok(responses);
+            return responses;
         }
     }
 }

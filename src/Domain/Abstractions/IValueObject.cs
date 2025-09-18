@@ -1,10 +1,6 @@
-﻿using FluentResults;
+﻿namespace Domain.Abstractions;
 
-namespace Domain.Abstractions;
-
-public interface IValueObject<TSelf, TType>
-    where TSelf : IValueObject<TSelf, TType>
+public interface IValueObject<TType>
 {
-    static abstract Result<TSelf> Create(TType value);
     TType Value { get; }
 }

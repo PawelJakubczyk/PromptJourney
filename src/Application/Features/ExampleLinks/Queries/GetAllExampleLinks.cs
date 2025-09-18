@@ -2,27 +2,33 @@
 using Application.Abstractions.IRepository;
 using Application.Features.ExampleLinks.Responses;
 using FluentResults;
+using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetAllExampleLinks
 {
-    public sealed record Query : IQuery<List<ExampleLinkRespose>>;
+    public sealed record Query : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinkRepository)
-        : IQueryHandler<Query, List<ExampleLinkRespose>>
+        : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
-        private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
+        private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
 
-        public async Task<Result<List<ExampleLinkRespose>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await _exampleLinkRepository.GetAllExampleLinksAsync();
+            var getAllLinksResult = await _exampleLinksRepository.GetAllExampleLinksAsync();
+            var persitanceErrors = getAllLinksResult.Errors;
 
-            if (result.IsFailed)
-                return Result.Fail<List<ExampleLinkRespose>>(result.Errors);
+            var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkResponse>>
+            (
+                (nameof(persitanceErrors), persitanceErrors)
+            );
 
-            var responses = result.Value
-                .Select(ExampleLinkRespose.FromDomain)
+            if (validationErrors is not null) return validationErrors;
+
+            var responses = getAllLinksResult.Value
+                .Select(ExampleLinkResponse.FromDomain)
                 .ToList();
 
             return Result.Ok(responses);

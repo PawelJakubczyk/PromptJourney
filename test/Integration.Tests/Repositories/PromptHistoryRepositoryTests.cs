@@ -1,9 +1,7 @@
-using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyVersions;
-using Domain.Entities.MidjourneyStyle;
 using Domain.ValueObjects;
 using FluentAssertions;
 using Persistence.Repositories;
+using Domain.Entities;
 
 namespace Integration.Tests.Repositories;
 
@@ -547,7 +545,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         return result.Value;
     }
 
-    private async Task<MidjourneyStyle> CreateAndSaveTestStyleAsync(string styleName, string styleType = "Abstract")
+    private async Task<MidjourneyStyle> CreateAndSaveTestStyleAsync(string styleName, string styleType = "Custom")
     {
         var name = StyleName.Create(styleName).Value;
         var type = StyleType.Create(styleType).Value;

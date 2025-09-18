@@ -1,10 +1,10 @@
-﻿using FluentResults;
+﻿//using FluentResults;
 
-namespace Domain.Errors;
+//namespace Domain.Errors;
 
-public class DomainError : Error
-{
-    public DomainError(string message) : base(message)
-    {
-    }
-}
+//public class DomainError : FluentResults.Error
+//{
+//    public DomainError(string message) : base(message)
+//    {
+//    }
+//}

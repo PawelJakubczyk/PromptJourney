@@ -1,5 +1,5 @@
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;

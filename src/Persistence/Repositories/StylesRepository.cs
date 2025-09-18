@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyle;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -201,7 +201,7 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyle>> AddTagToStyleAsync(StyleName styleName, Tag tag)
+    public async Task<Result<MidjourneyStyle>> AddTagToStyleAsync(StyleName styleName, Result<Tag> tag)
     {
         try
         {
@@ -223,7 +223,7 @@ public class StylesRepository : IStyleRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyle>> DeleteTagFromStyleAsync(StyleName styleName, Tag tag)
+    public async Task<Result<MidjourneyStyle>> DeleteTagFromStyleAsync(StyleName styleName, Result<Tag> tag)
     {
         try
         {

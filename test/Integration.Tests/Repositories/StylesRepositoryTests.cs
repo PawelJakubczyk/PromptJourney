@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyStyle;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
 using Persistence.Repositories;
@@ -11,9 +11,9 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
     private const string TestStyleName2 = "TestStyle2";
     private const string TestStyleName3 = "TestStyle3";
 
-    private const string TestStyleType1 = "Abstract";
-    private const string TestStyleType2 = "Realistic";
-    private const string TestStyleType3 = "Minimalist";
+    private const string TestStyleType1 = "Custom";
+    private const string TestStyleType2 = "StyleReferences";
+    private const string TestStyleType3 = "Personalization";
 
     private const string TestDescription1 = "Test description for style 1";
     private const string TestDescription2 = "Test description for style 2";
@@ -598,10 +598,9 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
 
     // Edge Cases and Validation Tests
     [Theory]
-    [InlineData("Abstract")]
-    [InlineData("Realistic")]
-    [InlineData("Minimalist")]
-    [InlineData("Surreal")]
+    [InlineData("Custom")]
+    [InlineData("StyleReferences")]
+    [InlineData("Personalization")]
     public async Task AddStyleAsync_WithVariousValidTypes_ShouldSucceed(string styleType)
     {
         // Arrange

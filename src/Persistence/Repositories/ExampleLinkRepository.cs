@@ -1,5 +1,5 @@
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyStyleExampleLinks;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -108,7 +108,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<bool>> CheckAnyExampleLinksExist()
+    public async Task<Result<bool>> CheckAnyExampleLinksExistAsync()
     {
         try
         {

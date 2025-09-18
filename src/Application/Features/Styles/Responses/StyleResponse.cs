@@ -1,4 +1,4 @@
-﻿using Domain.Entities.MidjourneyStyle;
+﻿using Domain.Entities;
 
 namespace Application.Features.Styles.Responses;
 

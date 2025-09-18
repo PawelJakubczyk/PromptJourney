@@ -1,10 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using FluentResults;
+using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Queries;
 
-public class CheckExampleLinksAreNotEmpty
+public class CheckAnyExampleLinksExist
 {
     public sealed record Query() : IQuery<bool>;
 
@@ -13,7 +14,18 @@ public class CheckExampleLinksAreNotEmpty
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            return await _exampleLinksRepository.CheckAnyExampleLinksExist();
+
+            var checkResult = await _exampleLinksRepository.CheckAnyExampleLinksExistAsync();
+            var persitanceErrors = checkResult.Errors;
+
+            var validationErrors = CreateValidationErrorIfAny<bool>
+            (
+                (nameof(persitanceErrors), persitanceErrors)
+            );
+
+            if (validationErrors is not null) return validationErrors;
+
+            return checkResult;
         }
     }
 }

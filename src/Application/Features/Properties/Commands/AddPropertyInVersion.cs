@@ -1,8 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
 using Application.Features.Properties.Responses;
-using Domain.Entities.MidjourneyProperties;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using static Application.Errors.ApplicationErrorsExtensions;
@@ -38,34 +37,35 @@ public static class AddPropertyInVersion
             var maxValueResult = command.MaxValue != null ? MaxValue.Create(command.MaxValue) : null;
             var descriptionResult = command.Description != null ? Description.Create(command.Description) : null;
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfVersionNotExists(versionResult.Value, _versionRepository)
-                .IfPropertyAlreadyExists(versionResult.Value, propertyNameResult.Value, _propertiesRepository);
-
             var propertyResult = MidjourneyPropertiesBase.Create
             (
                 propertyNameResult,
                 versionResult,
                 parametersResult,
-                defaultValueResult,
-                minValueResult,
-                maxValueResult,
-                descriptionResult
+                defaultValueResult!,
+                minValueResult!,
+                maxValueResult!,
+                descriptionResult!
             );
 
             var domainErrors = propertyResult.Errors;
 
-            var validationErrors = CreateValidationErrorIfAny<PropertyResponse>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<PropertyResponse>
+            (
+                (nameof(domainErrors), domainErrors)
+            );
             if (validationErrors is not null) return validationErrors;
 
-            var result = await _propertiesRepository.AddParameterToVersionAsync(propertyResult.Value);
+            var addParameterResult = await _propertiesRepository.AddParameterToVersionAsync(propertyResult.Value);
 
-            if (result.IsFailed)
-                return Result.Fail<PropertyResponse>(result.Errors);
+            var persistenceErrors = addParameterResult.Errors;
 
-            var response = PropertyResponse.FromDomain(result.Value);
+            validationErrors = CreateValidationErrorIfAny<PropertyResponse>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+
+            var response = PropertyResponse.FromDomain(addParameterResult.Value);
 
             return Result.Ok(response);
         }

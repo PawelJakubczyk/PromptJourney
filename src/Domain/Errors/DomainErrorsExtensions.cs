@@ -1,108 +1,110 @@
-﻿using FluentResults;
+﻿using Domain.Abstractions;
+using FluentResults;
+using Utilities.Constants;
+using Utilities.Errors;
 
 namespace Domain.Errors;
 
 public static class DomainErrorsExtensions
 {
-    public static List<DomainError> If(this List<DomainError> domainErrors, bool condition, DomainError errorIfTrue)
-    {
-        if (condition)
-        {
-            domainErrors.Add(errorIfTrue);
-        }
-
-        return domainErrors;
-    }
-
-    public static List<DomainError> IfNullOrWhitespace<TValue>(this List<DomainError> domainErrors, string value)
+    public static List<Error> IfNullOrWhitespace<TLayer, TValue>(this List<Error> Errors, string value)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: {value} cannot be null or whitespace."));
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: {value} cannot be null or whitespace."));
         }
 
-        return domainErrors;
+        return Errors;
     }
 
-    public static List<DomainError> IfWhitespace<TValue>(this List<DomainError> domainErrors, string value)
+    public static List<Error> IfWhitespace<TLayer, TValue>(this List<Error> Errors, string value)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
     {
         if (string.IsNullOrWhiteSpace(value) && value != null)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: cannot be whitespace."));
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: cannot be whitespace."));
         }
 
-        return domainErrors;
+        return Errors;
     }
 
-    public static List<DomainError> IfNull<TValue>(this List<DomainError> domainErrors, object? value)
+    public static List<Error> IfNull<TLayer, TValue>(this List<Error> Errors, object? value)
+        where TLayer : ILayer
+        where TValue : ValueObject<object>
     {
         if (value is null)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: cannot be null."));
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: cannot be null."));
         }
-        return domainErrors;
+        return Errors;
     }
 
-    public static List<DomainError> IfLengthTooLong<TValue>(this List<DomainError> domainErrors, string value, int maxLength)
+    public static List<Error> IfNull<TLayer, TValue>(this List<Error> Errors, List<object?> value)
+        where TLayer : ILayer
+        where TValue : ValueObject<object>
+    {
+        if (value is null)
+        {
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: cannot be null."));
+        }
+        return Errors;
+    }
+
+    public static List<Error> IfLengthTooLong<TLayer, TValue>(this List<Error> Errors, string value, int maxLength)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
     {
         if (value?.Length > maxLength)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: cannot be longer than {maxLength} characters."));
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: {value} cannot be longer than {maxLength} characters."));
         }
 
-        return domainErrors;
+        return Errors;
     }
 
-    public static List<DomainError> IfLinkFormatInvalid(this List<DomainError> domainErrors, string value)
-    {
-        var isValid = Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
-            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
-
-        if (!isValid)
-        {
-            domainErrors.Add(new DomainError($"Invalid URL format: {value}"));
-        }
-
-        return domainErrors;
-    }
-
-    public static List<DomainError> IfListIsEmpty<TValue>(this List<DomainError> domainErrors, List<TValue>? items)
+    public static List<Error> IfListIsEmpty<TLayer, TValue>(this List<Error> Errors, List<TValue>? items)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
     {
         if (items != null && items.Count == 0)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: Cannot be an empty collection."));
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Cannot be an empty collection."));
         }
-        return domainErrors;
+        return Errors;
     }
 
-    public static List<DomainError> IfDoesNotContain<TValue>(this List<DomainError> domainErrors, List<TValue>? items, TValue element)
+    public static List<Error> IfListNotContain<TLayer, TValue>(this List<Error> Errors, List<TValue>? items, TValue element)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
     {
         if (items != null && items.Contains(element) == false)
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: Collection does not contain the required element."));
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Collection does not contain the required element."));
         }
-        return domainErrors;
+        return Errors;
     }
 
-    public static List<DomainError> IfContain<TValue>(this List<DomainError> domainErrors, List<TValue>? items, TValue element)
+    public static List<Error> IfListContain<TLayer, TValue>(this List<Error> Errors, List<TValue>? items, TValue element)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
     {
         if (items != null && items.Contains(element))
         {
-            domainErrors.Add(new DomainError($"{nameof(TValue)}: Collection already contains the element."));
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Collection already contains the element."));
         }
-        return domainErrors;
+        return Errors;
     }
 
-    public static List<DomainError> CollectErrors<T>(
-        this List<DomainError> errors,
-        Result<T>? result)
+    public static List<Error> CollectErrors<TLayer, TValue>(this List<Error> errors, Result<TValue>? result)
     {
         if (result is not null && result.IsFailed)
         {
-            errors.AddRange(result.Errors.OfType<DomainError>());
+            errors.AddRange(result.Errors.OfType<Error>());
         }
 
         return errors;
     }
-
 }

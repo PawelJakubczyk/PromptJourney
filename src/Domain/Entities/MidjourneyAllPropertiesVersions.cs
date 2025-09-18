@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities.MidjourneyProperties;
+﻿namespace Domain.Entities;
 
 public class MidjourneyAllPropertiesVersions
 {

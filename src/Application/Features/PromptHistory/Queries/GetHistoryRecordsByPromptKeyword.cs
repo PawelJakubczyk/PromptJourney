@@ -13,8 +13,10 @@ public static class GetHistoryRecordsByPromptKeyword
 {
     public sealed record Query(string Keyword) : IQuery<List<PromptHistoryResponse>>;
 
-    public sealed class Handler(IPromptHistoryRepository promptHistoryRepository)
-        : IQueryHandler<Query, List<PromptHistoryResponse>>
+    public sealed class Handler
+    (
+        IPromptHistoryRepository promptHistoryRepository
+    ) : IQueryHandler<Query, List<PromptHistoryResponse>>
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
 
@@ -23,17 +25,22 @@ public static class GetHistoryRecordsByPromptKeyword
             var keyword = Keyword.Create(query.Keyword);
 
             List<DomainError> domainErrors = [];
+            domainErrors.CollectErrors(keyword);
 
-            domainErrors
-                .CollectErrors<Keyword>(keyword);
-
-            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>(domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
+            (
+                (nameof(domainErrors), domainErrors)
+            );
             if (validationErrors is not null) return validationErrors;
 
             var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword.Value);
+            var persistenceErrors = result.Errors;
 
-            if (result.IsFailed)
-                return Result.Fail<List<PromptHistoryResponse>>(result.Errors);
+            validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
+            (
+                (nameof(persistenceErrors), persistenceErrors)
+            );
+            if (validationErrors is not null) return validationErrors;
 
             var responses = result.Value
                 .Select(PromptHistoryResponse.FromDomain)

@@ -1,10 +1,9 @@
-﻿using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyProperties;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentResults;
 using Domain.Errors;
+using Utilities.Constants;
 
-namespace Domain.Entities.MidjourneyVersions;
+namespace Domain.Entities;
 
 public class MidjourneyVersion
 {
@@ -59,12 +58,12 @@ public class MidjourneyVersion
         Result<Description?>? descriptionResult = null
     )
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .CollectErrors<ModelVersion>(versionResult)
-            .CollectErrors<Param>(parameterResult)
-            .CollectErrors<Description?>(descriptionResult);
+            .CollectErrors<DomainLayer, ModelVersion>(versionResult)
+            .CollectErrors<DomainLayer, Param>(parameterResult)
+            .CollectErrors<DomainLayer, Description>(descriptionResult);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyVersion>(errors);

@@ -1,9 +1,7 @@
-﻿using Domain.Entities.MidjourneyStyleExampleLinks;
-using Domain.Entities.MidjourneyVersions;
-using Domain.Entities.MidjourneyStyle;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using FluentAssertions;
 using Persistence.Repositories;
+using Domain.Entities;
 
 namespace Integration.Tests.Repositories;
 
@@ -276,7 +274,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
 
         // Act
-        var result = await _exampleLinkRepository.CheckAnyExampleLinksExist();
+        var result = await _exampleLinkRepository.CheckAnyExampleLinksExistAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -288,7 +286,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     public async Task CheckAnyExampleLinksExisty_WithNoLinks_ShouldReturnFalse()
     {
         // Act
-        var result = await _exampleLinkRepository.CheckAnyExampleLinksExist();
+        var result = await _exampleLinkRepository.CheckAnyExampleLinksExistAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -562,7 +560,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     }
 
     [Fact]
-    public async Task DeleteAllExampleLinksByStyle_WithNonExistentStyle_ShouldReturnEmptyList()
+    public async Task DeleteAllExampleLinksByStyle_WithNonExistentStyle_ShouldReturnDomainError()
     {
         // Arrange
         await CreateAndSaveTestVersionAsync(TestVersion1);
@@ -578,7 +576,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         // Assert
         result.Should().NotBeNull();
         result.IsFailed.Should().BeTrue();
-        result.Errors.Should().Contain(e => e.Message.Contains("No example links found for style 'Domain.ValueObjects.StyleName'"));
+        result.Errors.Should().Contain(e => e.Message.Contains("No example links found for style 'StyleName { Value = NonExistentStyle }"));
 
         // Verify no links were deleted
         var allLinks = await _exampleLinkRepository.GetAllExampleLinksAsync();
@@ -598,7 +596,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         return result.Value;
     }
 
-    private async Task<MidjourneyStyle> CreateAndSaveTestStyleAsync(string styleName, string styleType = "Abstract")
+    private async Task<MidjourneyStyle> CreateAndSaveTestStyleAsync(string styleName, string styleType = "Custom")
     {
         var name = StyleName.Create(styleName).Value;
         var type = StyleType.Create(styleType).Value;

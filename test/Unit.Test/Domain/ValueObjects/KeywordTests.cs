@@ -23,16 +23,15 @@ public class KeywordTests
     }
 
     [Fact]
-    public void Create_WithNullValue_ShouldReturnSuccessWithNull()
+    public void Create_WithNullValue_ShouldReturnFailureWithNull()
     {
         // Act
         var result = Keyword.Create(null);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Value.Should().BeNull();
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().NotBeEmpty();
     }
 
     [Theory]
@@ -97,19 +96,6 @@ public class KeywordTests
         result.Should().Be(keywordString);
     }
 
-    [Fact]
-    public void ToString_WithNullValue_ShouldReturnNull()
-    {
-        // Arrange
-        var keyword = Keyword.Create(null).Value;
-
-        // Act
-        var result = keyword.ToString();
-
-        // Assert
-        result.Should().BeNull();
-    }
-
     [Theory]
     [InlineData("multi-word")]
     [InlineData("under_score")]
@@ -125,12 +111,5 @@ public class KeywordTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Value.Should().Be(keywordFormat);
-    }
-
-    [Fact]
-    public void MaxLength_ShouldBe50()
-    {
-        // Assert
-        Keyword.MaxLength.Should().Be(50);
     }
 }

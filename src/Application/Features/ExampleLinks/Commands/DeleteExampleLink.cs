@@ -27,18 +27,17 @@ public static class DeleteExampleLink
             domainErrors
                 .CollectErrors<ExampleLink>(link);
 
-            List<ApplicationError> applicationErrors = [];
+            var deleteLinkResult = await _exampleLinkRepository.DeleteExampleLinkAsync(link.Value);
 
-            applicationErrors
-                .IfLinkNotExists(link.Value, _exampleLinkRepository);
+            var persitanceErrors = deleteLinkResult.Errors;
 
-            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>(applicationErrors, domainErrors);
+            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>
+            (
+                (nameof(domainErrors), domainErrors),
+                (nameof(persitanceErrors), persitanceErrors)
+            );
+
             if (validationErrors is not null) return validationErrors;
-
-            var deleteResult = await _exampleLinkRepository.DeleteExampleLinkAsync(link.Value);
-
-            if (deleteResult.IsFailed) 
-                return Result.Fail<DeleteResponse>(deleteResult.Errors);
 
             var response = DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted.");
 

@@ -2,7 +2,7 @@
 using Domain.ValueObjects;
 using FluentResults;
 
-namespace Domain.Entities.MidjourneyPromtHistory;
+namespace Domain.Entities;
 
 public class MidjourneyPromptHistory
 {
@@ -13,8 +13,8 @@ public class MidjourneyPromptHistory
     public DateTime CreatedOn { get; }
 
     // Navigation
-    public MidjourneyVersions.MidjourneyVersion VersionMaster { get; set; }
-    public List<MidjourneyStyle.MidjourneyStyle> MidjourneyStyles { get; set; } = [];
+    public MidjourneyVersion VersionMaster { get; set; }
+    public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
 
     // Constructors
     private MidjourneyPromptHistory()
@@ -48,8 +48,8 @@ public class MidjourneyPromptHistory
         List<DomainError> errors = [];
 
         errors
-            .CollectErrors<Prompt>(prompt)
-            .CollectErrors<ModelVersion>(version);
+            .CollectErrors(prompt)
+            .CollectErrors(version);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyPromptHistory>(errors);
