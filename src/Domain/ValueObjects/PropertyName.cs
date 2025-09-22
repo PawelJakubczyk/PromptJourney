@@ -1,5 +1,5 @@
 ﻿using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
 

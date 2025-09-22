@@ -1,11 +1,9 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Application.Extension;
 
 namespace Application.Features.Styles.Queries;
 
@@ -21,26 +19,17 @@ public static class GetStyleByName
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            List<DomainError> domainErrors = [];
-            domainErrors
-                .CollectErrors<StyleName>(styleName);
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(styleName)
+                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken),
+                    StyleResponse.FromDomain
+                );
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfStyleNotExists(styleName.Value, _styleRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<StyleResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _styleRepository.GetStyleByNameAsync(styleName.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<StyleResponse>(result.Errors);
-
-            var response = StyleResponse.FromDomain(result.Value);
-
-            return Result.Ok(response);
+            return result;
         }
     }
+
 }

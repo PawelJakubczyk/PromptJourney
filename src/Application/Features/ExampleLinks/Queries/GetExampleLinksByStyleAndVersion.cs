@@ -1,17 +1,17 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
 using Application.Features.ExampleLinks.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Application.Extension;
+
+
 
 namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyleAndVersion
 {
-    public sealed record Query(string Style, string Version) : IQuery<List<ExampleLinkResponse>>;
+    public sealed record Query(string StyleName, string Version) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler
     (
@@ -22,31 +22,19 @@ public static class GetExampleLinksByStyleAndVersion
 
         public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var style = StyleName.Create(query.Style);
+            var styleName = StyleName.Create(query.StyleName);
             var version = ModelVersion.Create(query.Version);
 
-            List<DomainError> domainErrors = [];
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors<StyleName>(styleName)
+                .CollectErrors<ModelVersion>(version)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken),
+                    domainList => domainList.Select(ExampleLinkResponse.FromDomain).ToList()
+                );
 
-            domainErrors
-                .CollectErrors<StyleName>(style)
-                .CollectErrors<ModelVersion>(version);
-
-            var getExamleLinksResult = await _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(style.Value, version.Value);
-            var persitanceErrors = getExamleLinksResult.Errors;
-
-            var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkResponse>>
-            (
-                (nameof(domainErrors), domainErrors),
-                (nameof(persitanceErrors), persitanceErrors)
-            );
-
-            if (validationErrors is not null) return validationErrors;
-
-            var responses = getExamleLinksResult.Value
-                .Select(ExampleLinkResponse.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

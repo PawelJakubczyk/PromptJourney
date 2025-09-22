@@ -5,9 +5,9 @@ using Domain.ValueObjects;
 using FluentResults;
 using Application.Extension;
 
-namespace Application.Features.Styles.Commands.AddTagToStyle;
+namespace Application.Features.Styles.Commands.RemoveTagInStyle;
 
-public static class AddTagToStyle
+public static class DeleteTagFromStyle
 {
     public sealed record Command(string StyleName, string Tag) : ICommand<StyleResponse>;
 
@@ -25,14 +25,13 @@ public static class AddTagToStyle
                 .CollectErrors(styleName)
                 .CollectErrors(tag)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken)
+                .IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken)
                 .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken),
+                    () => _styleRepository.DeleteTagFromStyleAsync(styleName.Value, tag.Value, cancellationToken),
                     StyleResponse.FromDomain
                 );
 
             return result;
         }
-
     }
 }

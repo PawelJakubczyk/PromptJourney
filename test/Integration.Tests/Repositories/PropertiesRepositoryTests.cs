@@ -2,6 +2,7 @@ using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
 using Persistence.Repositories;
+using System.Threading;
 
 namespace Integration.Tests.Repositories;
 
@@ -39,6 +40,8 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
     private readonly PropertiesRepository _propertiesRepository;
     private readonly VersionsRepository _versionsRepository;
 
+    private readonly CancellationToken _cancellationToken;
+
     public PropertiesRepositoryTests(MidjourneyDbFixture fixture) : base(fixture)
     {
         _propertiesRepository = new PropertiesRepository(DbContext);
@@ -62,7 +65,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             TestDescription1);
 
         // Act
-        var result = await _propertiesRepository.AddParameterToVersionAsync(property);
+        var result = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -92,7 +95,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             null);
 
         // Act
-        var result = await _propertiesRepository.AddParameterToVersionAsync(property);
+        var result = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -123,7 +126,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             TestDescription1);
 
         // Act
-        var result = await _propertiesRepository.AddParameterToVersionAsync(duplicateProperty);
+        var result = await _propertiesRepository.AddParameterToVersionAsync(duplicateProperty, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -146,7 +149,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             TestDescription1);
 
         // Act
-        var result = await _propertiesRepository.AddParameterToVersionAsync(property);
+        var result = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -171,7 +174,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             TestDescription1);
 
         // Act
-        var result = await _propertiesRepository.AddParameterToVersionAsync(property);
+        var result = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -195,7 +198,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
-        var result = await _propertiesRepository.GetAllParametersByVersionAsync(version);
+        var result = await _propertiesRepository.GetAllParametersByVersionAsync(version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -214,7 +217,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create("99.0").Value;
 
         // Act
-        var result = await _propertiesRepository.GetAllParametersByVersionAsync(version);
+        var result = await _propertiesRepository.GetAllParametersByVersionAsync(version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -231,7 +234,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
-        var result = await _propertiesRepository.GetAllParametersByVersionAsync(version);
+        var result = await _propertiesRepository.GetAllParametersByVersionAsync(version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -252,7 +255,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
 
         // Act
-        var result = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName);
+        var result = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -270,7 +273,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create("NonExistentProperty").Value;
 
         // Act
-        var result = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName);
+        var result = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -286,7 +289,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
 
         // Act
-        var result = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName);
+        var result = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -312,7 +315,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             "Updated description");
 
         // Act
-        var result = await _propertiesRepository.UpdateParameterForVersionAsync(updatedProperty);
+        var result = await _propertiesRepository.UpdateParameterForVersionAsync(updatedProperty, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -341,7 +344,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             TestDescription1);
 
         // Act
-        var result = await _propertiesRepository.UpdateParameterForVersionAsync(property);
+        var result = await _propertiesRepository.UpdateParameterForVersionAsync(property, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -362,7 +365,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
 
         // Act
-        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "defaultvalue", "NewDefault");
+        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "defaultvalue", "NewDefault", _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -382,7 +385,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
 
         // Act
-        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "description", "New description");
+        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "description", "New description", _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -407,7 +410,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
 
         // Act
-        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, propertyToUpdate, newValue);
+        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, propertyToUpdate, newValue, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -425,7 +428,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create("NonExistentProperty").Value;
 
         // Act
-        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "defaultvalue", "NewValue");
+        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "defaultvalue", "NewValue", _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -446,7 +449,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
 
         // Act
-        var result = await _propertiesRepository.DeleteParameterInVersionAsync(version, propertyName);
+        var result = await _propertiesRepository.DeleteParameterInVersionAsync(version, propertyName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -455,7 +458,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         result.Value.PropertyName.Value.Should().Be(TestPropertyName1);
 
         // Verify deletion
-        var checkResult = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName);
+        var checkResult = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, _cancellationToken);
         checkResult.Value.Should().BeFalse();
     }
 
@@ -469,7 +472,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create("NonExistentProperty").Value;
 
         // Act
-        var result = await _propertiesRepository.DeleteParameterInVersionAsync(version, propertyName);
+        var result = await _propertiesRepository.DeleteParameterInVersionAsync(version, propertyName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -501,7 +504,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
             TestDescription1);
 
         // Act
-        var result = await _propertiesRepository.AddParameterToVersionAsync(property);
+        var result = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -524,8 +527,8 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var version2 = ModelVersion.Create(TestVersion2).Value;
 
         // Act
-        var result1 = await _propertiesRepository.GetAllParametersByVersionAsync(version1);
-        var result2 = await _propertiesRepository.GetAllParametersByVersionAsync(version2);
+        var result1 = await _propertiesRepository.GetAllParametersByVersionAsync(version1, _cancellationToken);
+        var result2 = await _propertiesRepository.GetAllParametersByVersionAsync(version2, _cancellationToken);
 
         // Assert
         result1.Value.Should().HaveCount(2);
@@ -547,7 +550,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
 
         // Act
-        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "description", null);
+        var result = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "description", null, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -564,26 +567,26 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
 
         // Create
         var property = await CreateTestPropertyAsync(TestVersion1, TestPropertyName1, [TestParam1], TestDefaultValue1, TestMinValue1, TestMaxValue1, TestDescription1);
-        var addResult = await _propertiesRepository.AddParameterToVersionAsync(property);
+        var addResult = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);
         addResult.IsSuccess.Should().BeTrue();
 
         // Read
         var version = ModelVersion.Create(TestVersion1).Value;
         var propertyName = PropertyName.Create(TestPropertyName1).Value;
-        var existsResult = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName);
+        var existsResult = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, _cancellationToken);
         existsResult.Value.Should().BeTrue();
 
         // Update via Patch
-        var patchResult = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "description", "Updated description");
+        var patchResult = await _propertiesRepository.PatchParameterForVersionAsync(version, propertyName, "description", "Updated description", _cancellationToken);
         patchResult.IsSuccess.Should().BeTrue();
         patchResult.Value.Description?.Value.Should().Be("Updated description");
 
         // Delete
-        var deleteResult = await _propertiesRepository.DeleteParameterInVersionAsync(version, propertyName);
+        var deleteResult = await _propertiesRepository.DeleteParameterInVersionAsync(version, propertyName, _cancellationToken);
         deleteResult.IsSuccess.Should().BeTrue();
 
         // Verify deletion
-        var checkAfterDelete = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName);
+        var checkAfterDelete = await _propertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, _cancellationToken);
         checkAfterDelete.Value.Should().BeFalse();
     }
 
@@ -595,7 +598,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         var description = Description.Create($"Test version {versionValue}").Value;
 
         var versionEntity = MidjourneyVersion.Create(version, parameter, DateTime.UtcNow, description).Value;
-        var result = await _versionsRepository.AddVersionAsync(versionEntity);
+        var result = await _versionsRepository.AddVersionAsync(versionEntity, _cancellationToken);
 
         return result.Value;
     }
@@ -639,7 +642,7 @@ public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
         string? description = null)
     {
         var property = await CreateTestPropertyAsync(version, propertyName, parameters, defaultValue, minValue, maxValue, description);
-        var result = await _propertiesRepository.AddParameterToVersionAsync(property);
+        var result = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);
         return result.Value;
     }
 }

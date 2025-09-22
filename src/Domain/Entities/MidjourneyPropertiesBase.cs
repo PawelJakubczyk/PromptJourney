@@ -1,11 +1,12 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Abstractions;
+using Domain.Extensions;
+using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-
+using Utilities.Constants;
 
 namespace Domain.Entities;
 
-public class MidjourneyPropertiesBase
+public class MidjourneyPropertiesBase : IEntitie
 {
     // Columns
     public PropertyName PropertyName { get; set; }
@@ -49,31 +50,29 @@ public class MidjourneyPropertiesBase
     (
         Result<PropertyName> propertyNameResult,
         Result<ModelVersion> versionResult,
-        List<Result<Param>>? parametersResultsList = null,
+        List<Result<Param>>? paramResultsList = null,
         Result<DefaultValue?>? defaultValueResult = null,
         Result<MinValue?>? minValueResult = null,
         Result<MaxValue?>? maxValueResult = null,
         Result<Description?>? descriptionResult = null
     )
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .CollectErrors(propertyNameResult)
-            .CollectErrors(versionResult)
-            .CollectErrors(defaultValueResult)
-            .CollectErrors(minValueResult)
-            .CollectErrors(maxValueResult)
-            .CollectErrors(descriptionResult);
+            .CollectErrors<PropertyName>(propertyNameResult)
+            .CollectErrors<ModelVersion>(versionResult)
+            .CollectErrors<Param>(paramResultsList)
+            .CollectErrors<DefaultValue>(defaultValueResult)
+            .CollectErrors<MinValue>(minValueResult)
+            .CollectErrors<MaxValue>(maxValueResult)
+            .CollectErrors<Description>(descriptionResult);
 
-        List<Param> parameterslList = [];
+        var paramList = paramResultsList.ToValueList();
 
-        foreach (var parametersResult in parametersResultsList ?? [])
-        {
-            errors.CollectErrors(parametersResult);
-            if (parametersResult.IsSuccess)
-                parameterslList.Add(parametersResult.Value);
-        };
+        errors
+            .IfListHasDuplicates<DomainLayer, Param>(paramList);
+
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyPropertiesBase>(errors);
@@ -82,7 +81,7 @@ public class MidjourneyPropertiesBase
         (
             propertyNameResult.Value, 
             versionResult.Value,
-            parameterslList, 
+            paramList, 
             defaultValueResult?.Value, 
             minValueResult?.Value, 
             maxValueResult?.Value, 

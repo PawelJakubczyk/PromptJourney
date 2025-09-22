@@ -221,7 +221,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveTag(string name, string tag, CancellationToken cancellationToken)
     {
-        var command = new DeleteTagInStyle.Command(name, tag);
+        var command = new DeleteTagFromStyle.Command(name, tag);
 
         var result = await Sender.Send(command, cancellationToken);
 

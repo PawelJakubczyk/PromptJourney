@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Domain.ValueObjects;
 using FluentResults;
 
@@ -15,7 +16,15 @@ public static class GetAllSuportedVersions
 
         public async Task<Result<List<ModelVersion>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            return await _versionRepository.GetAllSuportedVersionsAsync();
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _versionRepository.GetAllSuportedVersionsAsync(cancellationToken),
+                    versions => versions
+                );
+
+            return result;
         }
     }
+
 }

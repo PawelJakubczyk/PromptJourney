@@ -1,9 +1,8 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extension;
 using Application.Features.PromptHistory.Responses;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -20,33 +19,18 @@ public static class GetHistoryByDateRange
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
                 .IfDateInFuture(query.From)
                 .IfDateInFuture(query.To)
-                .IfDateRangeNotChronological(query.From, query.To);
+                .IfDateRangeNotChronological(query.From, query.To)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken),
+                    domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList()
+                );
 
-            var validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
-            (
-                (nameof(applicationErrors), applicationErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To);
-            var persistenceErrors = result.Errors;
-
-            validationErrors = CreateValidationErrorIfAny<List<PromptHistoryResponse>>
-            (
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var responses = result.Value
-                .Select(PromptHistoryResponse.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
+
     }
 }

@@ -1,7 +1,6 @@
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
-using Persistence.Repositories;
 
 namespace Integration.Tests.Repositories;
 
@@ -20,6 +19,8 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     private const string TestDescription3 = "Test version 3.0 description";
 
     private readonly VersionsRepository _versionsRepository;
+
+    private readonly CancellationToken _cancellationToken = CancellationToken.None;
 
     public VersionsRepositoryTests(MidjourneyDbFixture fixture) : base(fixture)
     {
@@ -40,7 +41,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -64,7 +65,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -88,7 +89,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -114,7 +115,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(duplicateMidjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(duplicateMidjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -136,7 +137,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestVersionAsync(TestVersion3, TestParam3, TestDescription3);
 
         // Act
-        var result = await _versionsRepository.GetAllVersionsAsync();
+        var result = await _versionsRepository.GetAllVersionsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -152,7 +153,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task GetAllVersionsAsync_WithNoVersions_ShouldReturnEmptyList()
     {
         // Act
-        var result = await _versionsRepository.GetAllVersionsAsync();
+        var result = await _versionsRepository.GetAllVersionsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -171,7 +172,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestVersionAsync(TestVersion3, TestParam3, TestDescription3);
 
         // Act
-        var result = await _versionsRepository.GetAllSuportedVersionsAsync();
+        var result = await _versionsRepository.GetAllSuportedVersionsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -187,7 +188,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task GetAllSupportedVersionsAsync_WithNoVersions_ShouldReturnEmptyList()
     {
         // Act
-        var result = await _versionsRepository.GetAllSuportedVersionsAsync();
+        var result = await _versionsRepository.GetAllSuportedVersionsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -206,7 +207,8 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         // Act
         var result = await _versionsRepository.GetMasterVersionByVersionAsync
         (
-            ModelVersion.Create(TestVersion1).Value
+            ModelVersion.Create(TestVersion1).Value,
+            _cancellationToken
         );
 
         // Assert
@@ -222,7 +224,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task GetMasterVersionByVersionAsync_WithNonExistentVersion_ShouldReturnNull()
     {
         // Arrange and Act
-        var result = await _versionsRepository.GetMasterVersionByVersionAsync(ModelVersion.Create("99.0").Value);
+        var result = await _versionsRepository.GetMasterVersionByVersionAsync(ModelVersion.Create("99.0").Value, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -240,7 +242,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var result = await _versionsRepository.CheckVersionExistsInVersionsAsync
         (
             ModelVersion.Create(TestVersion1).Value
-        );
+        , _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -256,7 +258,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create("99.0").Value;
 
         // Act
-        var result = await _versionsRepository.CheckVersionExistsInVersionsAsync(version);
+        var result = await _versionsRepository.CheckVersionExistsInVersionsAsync(version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -271,7 +273,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
-        var result = await _versionsRepository.CheckVersionExistsInVersionsAsync(version);
+        var result = await _versionsRepository.CheckVersionExistsInVersionsAsync(version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -287,7 +289,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestVersionAsync(TestVersion1, TestParam1, TestDescription1);
 
         // Act
-        var result = await _versionsRepository.CheckIfAnySupportedVersionExistsAsync();
+        var result = await _versionsRepository.CheckIfAnySupportedVersionExistsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -299,7 +301,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
     public async Task CheckIfAnySupportedVersionExistsAsync_WithNoVersions_ShouldReturnFalse()
     {
         // Act
-        var result = await _versionsRepository.CheckIfAnySupportedVersionExistsAsync();
+        var result = await _versionsRepository.CheckIfAnySupportedVersionExistsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -328,7 +330,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -351,7 +353,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -374,7 +376,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -390,7 +392,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
-        var result = await _versionsRepository.GetMasterVersionByVersionAsync(version);
+        var result = await _versionsRepository.GetMasterVersionByVersionAsync(version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -414,9 +416,9 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var nonExistentVersion = ModelVersion.Create("99.0").Value;
 
         // Act
-        var result1 = await _versionsRepository.CheckVersionExistsInVersionsAsync(existingVersion);
-        var result2 = await _versionsRepository.CheckVersionExistsInVersionsAsync(anotherExistingVersion);
-        var result3 = await _versionsRepository.CheckVersionExistsInVersionsAsync(nonExistentVersion);
+        var result1 = await _versionsRepository.CheckVersionExistsInVersionsAsync(existingVersion, _cancellationToken);
+        var result2 = await _versionsRepository.CheckVersionExistsInVersionsAsync(anotherExistingVersion, _cancellationToken);
+        var result3 = await _versionsRepository.CheckVersionExistsInVersionsAsync(nonExistentVersion, _cancellationToken);
 
         // Assert
         result1.Value.Should().BeTrue();
@@ -433,7 +435,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         var version3 = await CreateAndSaveTestVersionAsync(TestVersion3, TestParam3, TestDescription3);
 
         // Act
-        var result = await _versionsRepository.GetAllVersionsAsync();
+        var result = await _versionsRepository.GetAllVersionsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -464,7 +466,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -493,7 +495,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -517,7 +519,7 @@ public class VersionsRepositoryTests : BaseTransactionIntegrationTest
             Description.Create(descriptionValue).Value
         ).Value;
         
-        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion);
+        var result = await _versionsRepository.AddVersionAsync(midjourneyVersion, _cancellationToken);
         return result.Value;
     }
 }

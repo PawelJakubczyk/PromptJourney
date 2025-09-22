@@ -1,11 +1,13 @@
-﻿using Domain.Errors;
+﻿using Domain.Abstractions;
+using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Errors;
 
 namespace Domain.Entities;
 
-public class MidjourneyStyle
+public class MidjourneyStyle : IEntitie
 {
     // Columns
     public StyleName StyleName { get; set; }
@@ -42,31 +44,21 @@ public class MidjourneyStyle
         Result<StyleName> nameResult,
         Result<StyleType> typeResult,
         Result<Description?>? descriptionResult = null,
-        List<Result<Tag>>? tagResultsList = null
+        List<Result<Tag>>? tagsResultsList = null
     )
     {
         List<Error> errors = [];
 
         errors
-            .CollectErrors<DomainLayer, StyleName>(nameResult)
-            .CollectErrors<DomainLayer, StyleType>(typeResult)
-            .CollectErrors<DomainLayer, Description>(descriptionResult);
-            
-        List<Tag>? tagsList = null;
+            .CollectErrors<StyleName>(nameResult)
+            .CollectErrors<StyleType>(typeResult)
+            .CollectErrors<Description>(descriptionResult)
+            .CollectErrors<Tag>(tagsResultsList);
 
-        if (tagResultsList != null && tagResultsList.Count > 0)
-        {
-            tagsList = [];
-            foreach (var tagResult in tagResultsList)
-            {
-                errors.CollectErrors<DomainLayer, Tag>(tagResult);
-                if (tagResult.IsSuccess)
-                {
-                    errors.IfTagAllredyExist<DomainLayer>(tagsList, tagResult.Value);
-                    tagsList.Add(tagResult.Value);
-                }
-            }
-        }
+        var tagsList = tagsResultsList.ToValueList();
+
+        errors
+            .IfListHasDuplicates<DomainLayer, Tag>(tagsList);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyStyle>(errors);
@@ -87,8 +79,8 @@ public class MidjourneyStyle
         List<Error> errors = [];
 
         errors
-            .CollectErrors<DomainLayer, ModelVersion>(tag)
-            .IfTagAllredyExist<DomainLayer, ModelVersion>(Tags, tag.Value);
+            .CollectErrors<Tag>(tag)
+            .IfListContain<DomainLayer, Tag>(Tags, tag.Value);
 
         if (errors.Count != 0)
             return Result.Fail(errors);
@@ -104,9 +96,9 @@ public class MidjourneyStyle
         List<Error> errors = [];
 
         errors
-            .CollectErrors<DomainLayer, Tag>(tag)
+            .CollectErrors<Tag>(tag)
             .IfListIsEmpty<DomainLayer, Tag>(Tags)
-            .IfNull<DomainLayer, Tag>(Tags)
+            .IfListIsNull<DomainLayer, Tag>(Tags)
             .IfListNotContain<DomainLayer, Tag>(Tags, tag.Value);
 
         if (errors.Count != 0)
@@ -121,7 +113,7 @@ public class MidjourneyStyle
     {
         List<Error> errors = [];
 
-        errors.CollectErrors<DomainLayer, ModelVersion>(description);
+        errors.CollectErrors<Description>(description);
 
         if (errors.Count != 0)
             return Result.Fail(errors);
@@ -134,5 +126,52 @@ public class MidjourneyStyle
     public override int GetHashCode()
     {
         return StyleName.GetHashCode();
+    }
+}
+
+internal static class MidjourneyStyleErrorsExtensions
+{
+    public static List<Error> IfListIsNull<TLayer, TValue>(this List<Error> Errors, List<TValue?> value)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
+    {
+        if (value is null)
+        {
+            Errors.Add(new Error<TLayer>($"List of {typeof(TValue).Name}: cannot be null."));
+        }
+        return Errors;
+    }
+
+    public static List<Error> IfListIsEmpty<TLayer, TValue>(this List<Error> Errors, List<TValue>? items)
+    where TLayer : ILayer
+    where TValue : ValueObject<string>
+    {
+        if (items != null && items.Count == 0)
+        {
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Cannot be an empty collection."));
+        }
+        return Errors;
+    }
+
+    public static List<Error> IfListNotContain<TLayer, TValue>(this List<Error> Errors, List<TValue>? items, TValue element)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
+    {
+        if (items != null && items.Contains(element) == false)
+        {
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Collection does not contain the required element."));
+        }
+        return Errors;
+    }
+
+    public static List<Error> IfListContain<TLayer, TValue>(this List<Error> Errors, List<TValue>? items, TValue element)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
+    {
+        if (items != null && items.Contains(element))
+        {
+            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Collection already contains the element."));
+        }
+        return Errors;
     }
 }

@@ -1,10 +1,8 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
 using FluentResults;
-using Domain.Errors;
 using Domain.ValueObjects;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Application.Extension;
 
 namespace Application.Features.VersionsMaster.Queries;
 
@@ -20,15 +18,16 @@ public static class CheckVersionExists
         {
             var version = ModelVersion.Create(query.Version);
 
-            List<DomainError> domainErrors = [];
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(version)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken),
+                    value => value
+                );
 
-            domainErrors
-                .CollectErrors<ModelVersion>(version);
-
-            var validationErrors = CreateValidationErrorIfAny<bool>(domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            return await _versionRepository.CheckVersionExistsInVersionsAsync(version.Value);
+            return result;
         }
     }
+
 }

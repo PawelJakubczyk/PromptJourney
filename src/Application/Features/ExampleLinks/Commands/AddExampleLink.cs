@@ -1,11 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extension;
 using Application.Features.ExampleLinks.Responses;
 using Domain.Entities;
+using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -30,58 +30,42 @@ public static class AddExampleLink
             var style = StyleName.Create(command.Style);
             var version = ModelVersion.Create(command.Version);
 
-            var creatLinkResult = MidjourneyStyleExampleLink.Create
+            var linkResult = MidjourneyStyleExampleLink.Create
             (
-                link.Value, 
-                style.Value, 
+                link.Value,
+                style.Value,
                 version.Value
             );
 
-            var domainErrors = creatLinkResult.Errors;
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(linkResult)
+                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken, true)
+                .IfStyleNotExists(style.Value, _styleRepository, cancellationToken)
+                .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken)
+                .ExecuteAndMapResultIfNoErrors
+                (
+                    () => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken),
+                    _ => new ExampleLinkResponse(command.Link, command.Style, command.Version)
+                );
 
-            var validationErrors = CreateValidationErrorIfAny<ExampleLinkResponse>
-            (
-                (nameof(domainErrors), domainErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
+            return result;
 
-            var applicationErrors = new List<ApplicationError>();
+            var result2 = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(linkResult)
+                .BeginValidationBlock()
+                    .IfVersionNotExists(version.Value, _versionRepository, cancellationToken, true)
+                    .IfStyleNotExists(style.Value, _styleRepository, cancellationToken)
+                    .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken)
+                .EndValidationBlock()
+                .ExecuteAndMapResultIfNoErrors
+                (
+                    () => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken),
+                    _ => new ExampleLinkResponse(command.Link, command.Style, command.Version)
+                );
 
-            var styleExists = await _styleRepository.CheckStyleExistsAsync(style.Value, cancellationToken);
-            var versionExists = await _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken);
-            var linkExists = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link.Value, cancellationToken);
-
-            applicationErrors
-                .IfStyleNotExists(styleExists)
-                .IfVersionNotExist(versionExists)
-                .IfLinkExists(linkExists);
-
-            var persistenceErrors = new List<IError>();
-
-            persistenceErrors
-                .ColectErrors(styleExists)
-                .ColectErrors(versionExists)
-                .ColectErrors(linkExists);
-
-            validationErrors = CreateValidationErrorIfAny<ExampleLinkResponse>
-            (
-                (nameof(applicationErrors), applicationErrors),
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var addExampleLinkResult = await _exampleLinkRepository.AddExampleLinkAsync(creatLinkResult.Value, cancellationToken);
-            persistenceErrors = [.. addExampleLinkResult.Errors];
-
-            validationErrors = CreateValidationErrorIfAny<ExampleLinkResponse>
-            (
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var responses = ExampleLinkResponse.FromDomain(addExampleLinkResult.Value);
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

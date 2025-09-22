@@ -1,10 +1,11 @@
-﻿using Domain.Errors;
+﻿using Domain.Abstractions;
+using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 
 namespace Domain.Entities;
 
-public class MidjourneyPromptHistory
+public class MidjourneyPromptHistory: IEntitie
 {
     // Columns
     public Guid HistoryId { get; }
@@ -45,11 +46,11 @@ public class MidjourneyPromptHistory
         DateTime? createdOn = null
     )
     {
-        List<DomainError> errors = [];
+        List<Error> errors = [];
 
         errors
-            .CollectErrors(prompt)
-            .CollectErrors(version);
+            .CollectErrors<Prompt>(prompt)
+            .CollectErrors<ModelVersion>(version);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyPromptHistory>(errors);

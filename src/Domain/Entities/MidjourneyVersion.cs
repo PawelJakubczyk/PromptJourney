@@ -1,11 +1,11 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Abstractions;
+using Domain.Extensions;
+using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-using Utilities.Constants;
 
 namespace Domain.Entities;
 
-public class MidjourneyVersion
+public class MidjourneyVersion : IEntitie
 {
     // Columns
     public ModelVersion Version { get; set; }
@@ -61,9 +61,9 @@ public class MidjourneyVersion
         List<Error> errors = [];
 
         errors
-            .CollectErrors<DomainLayer, ModelVersion>(versionResult)
-            .CollectErrors<DomainLayer, Param>(parameterResult)
-            .CollectErrors<DomainLayer, Description>(descriptionResult);
+            .CollectErrors<ModelVersion>(versionResult)
+            .CollectErrors<Param>(parameterResult)
+            .CollectErrors<Description>(descriptionResult);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyVersion>(errors);

@@ -1,11 +1,9 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extension;
 using Application.Features.Properties.Responses;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.Properties.Commands;
 
@@ -31,33 +29,22 @@ public static class PatchPropertyForVersion
             var version = ModelVersion.Create(command.Version);
             var propertyName = PropertyName.Create(command.PropertyName);
 
-            List<DomainError> domainErrors = [];
-            domainErrors
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
                 .CollectErrors(version)
-                .CollectErrors(propertyName);
+                .CollectErrors(propertyName)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _propertiesRepository.PatchParameterForVersionAsync(
+                        version.Value,
+                        propertyName.Value,
+                        command.CharacteristicToUpdate,
+                        command.NewValue,
+                        cancellationToken),
+                    PropertyResponse.FromDomain
+                );
 
-            var validationErrors = CreateValidationErrorIfAny<PropertyResponse>
-            (
-                (nameof(domainErrors), domainErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var patchResult = await _propertiesRepository.PatchParameterForVersionAsync
-            (
-                version.Value,
-                propertyName.Value,
-                command.CharacteristicToUpdate,
-                command.NewValue
-            );
-            var persistenceErrors = patchResult.Errors;
-
-            validationErrors = CreateValidationErrorIfAny<PropertyResponse>(
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var response = PropertyResponse.FromDomain(patchResult.Value);
-            return Result.Ok(response);
+            return result;
         }
+
     }
 }

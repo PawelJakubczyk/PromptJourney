@@ -1,12 +1,12 @@
-using Domain.Errors;
+using Domain.Abstractions;
+using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
-using Utilities.Constants;
 
 
 namespace Domain.Entities;
 
-public class MidjourneyStyleExampleLink
+public class MidjourneyStyleExampleLink : IEntitie
 {
     // Primary key
     public ExampleLink Link { get; private set; }
@@ -42,9 +42,9 @@ public class MidjourneyStyleExampleLink
         List<Error> errors = [];
 
         errors
-            .CollectErrors<DomainLayer, ExampleLink>(link)
-            .CollectErrors<DomainLayer, StyleName>(styleName)
-            .CollectErrors<DomainLayer, ModelVersion>(version);
+            .CollectErrors<ExampleLink>(link)
+            .CollectErrors<StyleName>(styleName)
+            .CollectErrors<ModelVersion>(version);
 
         if (errors.Count != 0)
             return Result.Fail<MidjourneyStyleExampleLink>(errors);

@@ -15,5 +15,5 @@ public interface IExampleLinksRepository
     // For Commands
     Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(MidjourneyStyleExampleLink link, CancellationToken cancellationToken);
     Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(ExampleLink link, CancellationToken cancellationToken);
-    Task<Result<List<MidjourneyStyleExampleLink>>> DeleteAllExampleLinksByStyleAsync(StyleName style, CancellationToken cancellationToken);
+    Task<Result<int>> DeleteAllExampleLinksByStyleAsync(StyleName style, CancellationToken cancellationToken);
 }

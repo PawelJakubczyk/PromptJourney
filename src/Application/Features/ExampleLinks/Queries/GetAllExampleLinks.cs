@@ -1,8 +1,8 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.ExampleLinks.Responses;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Queries;
 
@@ -10,28 +10,22 @@ public static class GetAllExampleLinks
 {
     public sealed record Query : IQuery<List<ExampleLinkResponse>>;
 
-    public sealed class Handler(IExampleLinksRepository exampleLinkRepository)
+    public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
         : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
-        private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
+        private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
 
         public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var getAllLinksResult = await _exampleLinksRepository.GetAllExampleLinksAsync();
-            var persitanceErrors = getAllLinksResult.Errors;
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken),
+                    domainList => domainList.Select(ExampleLinkResponse.FromDomain).ToList()
+                );
 
-            var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkResponse>>
-            (
-                (nameof(persitanceErrors), persitanceErrors)
-            );
-
-            if (validationErrors is not null) return validationErrors;
-
-            var responses = getAllLinksResult.Value
-                .Select(ExampleLinkResponse.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
+
     }
 }

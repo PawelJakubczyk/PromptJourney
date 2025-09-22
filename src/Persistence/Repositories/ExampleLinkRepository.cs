@@ -18,7 +18,10 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
     }
 
     // For Queries
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetAllExampleLinksAsync()
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetAllExampleLinksAsync
+    (
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -35,7 +38,11 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(StyleName styleName)
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync
+    (
+        StyleName styleName, 
+        CancellationToken cancellationToken
+    )
     {
         List<PersistenceError> persistenceErrors = [];
 
@@ -60,7 +67,12 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync(StyleName styleName, ModelVersion version)
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync
+    (
+        StyleName styleName,
+        ModelVersion version, 
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -78,7 +90,11 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<bool>> CheckExampleLinkExistsAsync(ExampleLink link)
+    public async Task<Result<bool>> CheckExampleLinkExistsAsync
+    (
+        ExampleLink link, 
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -93,7 +109,11 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(StyleName styleName)
+    public async Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync
+    (
+        StyleName styleName
+        , CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -108,7 +128,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<bool>> CheckAnyExampleLinksExistAsync()
+    public async Task<Result<bool>> CheckAnyExampleLinksExistAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -124,7 +144,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
     }
 
     // For Commands
-    public async Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(MidjourneyStyleExampleLink exampleLink)
+    public async Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(MidjourneyStyleExampleLink exampleLink, CancellationToken cancellationToken)
     {
         try
         {
@@ -139,7 +159,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(ExampleLink link)
+    public async Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(ExampleLink link, CancellationToken cancellationToken)
     {
         try
         {
@@ -157,25 +177,30 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> DeleteAllExampleLinksByStyleAsync(StyleName styleName)
+    public async Task<Result<int>> DeleteAllExampleLinksByStyleAsync
+    (
+        StyleName styleName,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
             var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .Where(l => l.StyleName == styleName)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             if (exampleLinks.Count == 0)
-                return Result.Fail<List<MidjourneyStyleExampleLink>>($"No example links found for style '{styleName}'");
+                return Result.Fail<int>($"No example links found for style '{styleName}'");
 
             _midjourneyDbContext.MidjourneyStyleExampleLinks.RemoveRange(exampleLinks);
-            await _midjourneyDbContext.SaveChangesAsync();
+            var deletedCount = await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
-            return Result.Ok(exampleLinks);
+            return Result.Ok(deletedCount);
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyleExampleLink>>($"Failed to delete all example links by style: {ex.Message}");
+            return Result.Fail<int>($"Failed to delete all example links by style: {ex.Message}");
         }
     }
+
 }

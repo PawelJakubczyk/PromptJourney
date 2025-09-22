@@ -25,6 +25,8 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
 
     private readonly StylesRepository _stylesRepository;
 
+    private readonly CancellationToken _cancellationToken;
+
     public StylesRepositoryTests(MidjourneyDbFixture fixture) : base(fixture)
     {
         _stylesRepository = new StylesRepository(DbContext);
@@ -42,7 +44,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var style = MidjourneyStyle.Create(styleName, styleType, description).Value;
 
         // Act
-        var result = await _stylesRepository.AddStyleAsync(style);
+        var result = await _stylesRepository.AddStyleAsync(style, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -66,7 +68,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var duplicateStyle = MidjourneyStyle.Create(duplicateStyleName, styleType, description).Value;
 
         // Act
-        var result = await _stylesRepository.AddStyleAsync(duplicateStyle);
+        var result = await _stylesRepository.AddStyleAsync(duplicateStyle, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -84,7 +86,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var style = MidjourneyStyle.Create(styleName, styleType, null).Value;
 
         // Act
-        var result = await _stylesRepository.AddStyleAsync(style);
+        var result = await _stylesRepository.AddStyleAsync(style, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -105,7 +107,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestStyleAsync(TestStyleName3, TestStyleType3, TestDescription3);
 
         // Act
-        var result = await _stylesRepository.GetAllStylesAsync();
+        var result = await _stylesRepository.GetAllStylesAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -121,7 +123,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
     public async Task GetAllStylesAsync_WithNoStyles_ShouldReturnEmptyList()
     {
         // Act
-        var result = await _stylesRepository.GetAllStylesAsync();
+        var result = await _stylesRepository.GetAllStylesAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -139,7 +141,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create(TestStyleName1).Value;
 
         // Act
-        var result = await _stylesRepository.GetStyleByNameAsync(styleName);
+        var result = await _stylesRepository.GetStyleByNameAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -157,7 +159,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create("NonExistentStyle").Value;
 
         // Act
-        var result = await _stylesRepository.GetStyleByNameAsync(styleName);
+        var result = await _stylesRepository.GetStyleByNameAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -178,7 +180,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var styleType = StyleType.Create(TestStyleType1).Value;
 
         // Act
-        var result = await _stylesRepository.GetStylesByTypeAsync(styleType);
+        var result = await _stylesRepository.GetStylesByTypeAsync(styleType, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -198,7 +200,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var styleType = StyleType.Create("NonExistentType").Value;
 
         // Act
-        var result = await _stylesRepository.GetStylesByTypeAsync(styleType);
+        var result = await _stylesRepository.GetStylesByTypeAsync(styleType, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -220,14 +222,14 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag2 = Tag.Create(TestTag2).Value;
 
         // Add tags to styles
-        await _stylesRepository.AddTagToStyleAsync(style1.StyleName, tag1);
-        await _stylesRepository.AddTagToStyleAsync(style1.StyleName, tag2);
-        await _stylesRepository.AddTagToStyleAsync(style2.StyleName, tag1);
+        await _stylesRepository.AddTagToStyleAsync(style1.StyleName, tag1, _cancellationToken);
+        await _stylesRepository.AddTagToStyleAsync(style1.StyleName, tag2, _cancellationToken);
+        await _stylesRepository.AddTagToStyleAsync(style2.StyleName, tag1, _cancellationToken);
 
         var tagsToSearch = new List<Tag> { tag1 };
 
         // Act
-        var result = await _stylesRepository.GetStylesByTagsAsync(tagsToSearch);
+        var result = await _stylesRepository.GetStylesByTagsAsync(tagsToSearch, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -247,7 +249,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tagsToSearch = new List<Tag> { nonExistentTag };
 
         // Act
-        var result = await _stylesRepository.GetStylesByTagsAsync(tagsToSearch);
+        var result = await _stylesRepository.GetStylesByTagsAsync(tagsToSearch, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -268,7 +270,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var keyword = Keyword.Create("test").Value;
 
         // Act
-        var result = await _stylesRepository.GetStylesByDescriptionKeywordAsync(keyword);
+        var result = await _stylesRepository.GetStylesByDescriptionKeywordAsync(keyword, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -287,7 +289,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var keyword = Keyword.Create("nonexistent").Value;
 
         // Act
-        var result = await _stylesRepository.GetStylesByDescriptionKeywordAsync(keyword);
+        var result = await _stylesRepository.GetStylesByDescriptionKeywordAsync(keyword, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -305,7 +307,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create(TestStyleName1).Value;
 
         // Act
-        var result = await _stylesRepository.CheckStyleExistsAsync(styleName);
+        var result = await _stylesRepository.CheckStyleExistsAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -320,7 +322,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create("NonExistentStyle").Value;
 
         // Act
-        var result = await _stylesRepository.CheckStyleExistsAsync(styleName);
+        var result = await _stylesRepository.CheckStyleExistsAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -335,10 +337,10 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         // Arrange
         var style = await CreateAndSaveTestStyleAsync(TestStyleName1, TestStyleType1, TestDescription1);
         var tag = Tag.Create(TestTag1).Value;
-        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag);
+        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Act
-        var result = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag);
+        var result = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -354,7 +356,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag = Tag.Create(TestTag1).Value;
 
         // Act
-        var result = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag);
+        var result = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -370,7 +372,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag = Tag.Create(TestTag1).Value;
 
         // Act
-        var result = await _stylesRepository.CheckTagExistsInStyleAsync(styleName, tag);
+        var result = await _stylesRepository.CheckTagExistsInStyleAsync(styleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -389,7 +391,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         style.EditDescription(newDescription);
 
         // Act
-        var result = await _stylesRepository.UpdateStyleAsync(style);
+        var result = await _stylesRepository.UpdateStyleAsync(style, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -406,7 +408,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var style = await CreateAndSaveTestStyleAsync(TestStyleName1, TestStyleType1, TestDescription1);
 
         // Act
-        var result = await _stylesRepository.DeleteStyleAsync(style.StyleName);
+        var result = await _stylesRepository.DeleteStyleAsync(style.StyleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -415,7 +417,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         result.Value.StyleName.Value.Should().Be(TestStyleName1);
 
         // Verify deletion
-        var checkResult = await _stylesRepository.CheckStyleExistsAsync(style.StyleName);
+        var checkResult = await _stylesRepository.CheckStyleExistsAsync(style.StyleName, _cancellationToken);
         checkResult.Value.Should().BeFalse();
     }
 
@@ -426,7 +428,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create("NonExistentStyle").Value;
 
         // Act
-        var result = await _stylesRepository.DeleteStyleAsync(styleName);
+        var result = await _stylesRepository.DeleteStyleAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -444,7 +446,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag = Tag.Create(TestTag1).Value;
 
         // Act
-        var result = await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag);
+        var result = await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -452,7 +454,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().NotBeNull();
 
         // Verify tag was added
-        var checkResult = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag);
+        var checkResult = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag, _cancellationToken);
         checkResult.Value.Should().BeTrue();
     }
 
@@ -464,7 +466,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag = Tag.Create(TestTag1).Value;
 
         // Act
-        var result = await _stylesRepository.AddTagToStyleAsync(styleName, tag);
+        var result = await _stylesRepository.AddTagToStyleAsync(styleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -479,10 +481,10 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         // Arrange
         var style = await CreateAndSaveTestStyleAsync(TestStyleName1, TestStyleType1, TestDescription1);
         var tag = Tag.Create(TestTag1).Value;
-        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag);
+        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Act
-        var result = await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag);
+        var result = await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -497,10 +499,10 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         // Arrange
         var style = await CreateAndSaveTestStyleAsync(TestStyleName1, TestStyleType1, TestDescription1);
         var tag = Tag.Create(TestTag1).Value;
-        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag);
+        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Act
-        var result = await _stylesRepository.DeleteTagFromStyleAsync(style.StyleName, tag);
+        var result = await _stylesRepository.DeleteTagFromStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -508,7 +510,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().NotBeNull();
 
         // Verify tag was removed
-        var checkResult = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag);
+        var checkResult = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag, _cancellationToken);
         checkResult.Value.Should().BeFalse();
     }
 
@@ -520,7 +522,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag = Tag.Create(TestTag1).Value;
 
         // Act
-        var result = await _stylesRepository.DeleteTagFromStyleAsync(styleName, tag);
+        var result = await _stylesRepository.DeleteTagFromStyleAsync(styleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -537,7 +539,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag = Tag.Create(TestTag1).Value;
 
         // Act
-        var result = await _stylesRepository.DeleteTagFromStyleAsync(style.StyleName, tag);
+        var result = await _stylesRepository.DeleteTagFromStyleAsync(style.StyleName, tag, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -554,7 +556,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var newDescription = Description.Create("Updated description").Value;
 
         // Act
-        var result = await _stylesRepository.UpadteStyleDescription(style.StyleName, newDescription);
+        var result = await _stylesRepository.UpdateStyleDescriptionAsync(style.StyleName, newDescription, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -571,7 +573,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var description = Description.Create("Some description").Value;
 
         // Act
-        var result = await _stylesRepository.UpadteStyleDescription(styleName, description);
+        var result = await _stylesRepository.UpdateStyleDescriptionAsync(styleName, description, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -587,7 +589,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var style = await CreateAndSaveTestStyleAsync(TestStyleName1, TestStyleType1, TestDescription1);
 
         // Act
-        var result = await _stylesRepository.UpadteStyleDescription(style.StyleName, null);
+        var result = await _stylesRepository.UpdateStyleDescriptionAsync(style.StyleName, null, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -612,7 +614,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var style = MidjourneyStyle.Create(styleName, type, description).Value;
 
         // Act
-        var result = await _stylesRepository.AddStyleAsync(style);
+        var result = await _stylesRepository.AddStyleAsync(style, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -630,18 +632,18 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var tag3 = Tag.Create(TestTag3).Value;
 
         // Act
-        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag1);
-        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag2);
-        var result = await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag3);
+        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag1, _cancellationToken);
+        await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag2, _cancellationToken);
+        var result = await _stylesRepository.AddTagToStyleAsync(style.StyleName, tag3, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
 
         // Verify all tags exist
-        var checkTag1 = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag1);
-        var checkTag2 = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag2);
-        var checkTag3 = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag3);
+        var checkTag1 = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag1, _cancellationToken);
+        var checkTag2 = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag2, _cancellationToken);
+        var checkTag3 = await _stylesRepository.CheckTagExistsInStyleAsync(style.StyleName, tag3, _cancellationToken);
 
         checkTag1.Value.Should().BeTrue();
         checkTag2.Value.Should().BeTrue();
@@ -656,7 +658,7 @@ public class StylesRepositoryTests : BaseTransactionIntegrationTest
         var desc = description != null ? Description.Create(description) : null;
 
         var style = MidjourneyStyle.Create(name, type, desc).Value;
-        var result = await _stylesRepository.AddStyleAsync(style);
+        var result = await _stylesRepository.AddStyleAsync(style, _cancellationToken);
 
         return result.Value;
     }

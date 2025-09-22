@@ -1,11 +1,9 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 using Application.Features.Common.Responses;
+using Application.Extension;
 
 namespace Application.Features.Properties.Commands;
 
@@ -24,31 +22,17 @@ public static class DeletePropertyInVersion
             var version = ModelVersion.Create(command.Version);
             var propertyName = PropertyName.Create(command.PropertyName);
 
-            List<DomainError> domainErrors = [];
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(version)
+                .CollectErrors(propertyName)
+                .ExecuteAndMapResultIfNoErrors
+                (
+                    () => _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value, cancellationToken),
+                    _ => DeleteResponse.Success($"Property '{propertyName.Value.Value}' was successfully deleted from version '{version.Value.Value}'.")
+                );
 
-            domainErrors
-                .CollectErrors<ModelVersion>(version)
-                .CollectErrors<PropertyName>(propertyName);
-
-            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>
-            (
-                (nameof(domainErrors), domainErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var deleteParameterResult = await _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value);
-            var persistenceErrors = deleteParameterResult.Errors;
-
-            validationErrors = CreateValidationErrorIfAny<DeleteResponse>
-            (
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-
-            var response = DeleteResponse.Success($"Property '{propertyName.Value.Value}' was successfully deleted from version '{version.Value.Value}'.");
-
-            return Result.Ok(response);
+            return result;
         }
     }
 }

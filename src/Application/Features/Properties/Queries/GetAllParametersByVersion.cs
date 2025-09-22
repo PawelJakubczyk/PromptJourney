@@ -1,11 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extension;
 using Application.Features.Properties.Responses;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.Properties.Queries;
 
@@ -23,26 +21,15 @@ public static class GetAllParametersByVersion
         {
             var version = ModelVersion.Create(query.Version);
 
-            List<DomainError> domainErrors = [];
-            domainErrors.CollectErrors(version);
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(version)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken),
+                    domainList => domainList.Select(PropertyResponse.FromDomain).ToList()
+                );
 
-            var validationErrors = CreateValidationErrorIfAny<List<PropertyResponse>>
-            (
-                (nameof(domainErrors), domainErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _propertiesRepository.GetAllParametersByVersionAsync(version.Value);
-            var persistenceErrors = result.Errors;
-
-            validationErrors = CreateValidationErrorIfAny<List<PropertyResponse>>
-            (
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var responses = result.Value.Select(PropertyResponse.FromDomain).ToList();
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

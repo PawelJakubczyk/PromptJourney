@@ -23,6 +23,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     private readonly ExampleLinkRepository _exampleLinkRepository;
     private readonly StylesRepository _stylesRepository;
 
+    private readonly CancellationToken _cancellationToken;
+
     public ExampleLinksRepositoryTests(MidjourneyDbFixture fixture) : base(fixture)
     {
         _exampleLinkRepository = new ExampleLinkRepository(DbContext);
@@ -46,7 +48,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -78,7 +80,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(duplicateExampleLink);
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(duplicateExampleLink, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -113,7 +115,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         ).Value;
 
         // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -142,7 +144,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var exampleLink = MidjourneyStyleExampleLink.Create(link, styleName, versionVo).Value;
 
         // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -164,7 +166,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var exampleLink = MidjourneyStyleExampleLink.Create(link, styleNameVo, nonExistentVersion).Value;
 
         // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -186,7 +188,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var exampleLink = MidjourneyStyleExampleLink.Create(link, nonExistentStyle, versionVo).Value;
 
         // Act
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -206,7 +208,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link);
+        var result = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -221,7 +223,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link);
+        var result = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -241,7 +243,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var styleNameVo = StyleName.Create(TestStyleName1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleNameVo);
+        var result = await _exampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleNameVo, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -256,7 +258,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create("NonExistentStyle").Value;
 
         // Act
-        var result = await _exampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleName);
+        var result = await _exampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -274,7 +276,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
 
         // Act
-        var result = await _exampleLinkRepository.CheckAnyExampleLinksExistAsync();
+        var result = await _exampleLinkRepository.CheckAnyExampleLinksExistAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -286,7 +288,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     public async Task CheckAnyExampleLinksExisty_WithNoLinks_ShouldReturnFalse()
     {
         // Act
-        var result = await _exampleLinkRepository.CheckAnyExampleLinksExistAsync();
+        var result = await _exampleLinkRepository.CheckAnyExampleLinksExistAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -312,7 +314,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestExampleLinkAsync(TestLink3, TestStyleName3, TestVersion3);
 
         // Act
-        var result = await _exampleLinkRepository.GetAllExampleLinksAsync();
+        var result = await _exampleLinkRepository.GetAllExampleLinksAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -328,7 +330,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     public async Task GetAllExampleLinks_WithNoLinks_ShouldReturnEmptyList()
     {
         // Act
-        var result = await _exampleLinkRepository.GetAllExampleLinksAsync();
+        var result = await _exampleLinkRepository.GetAllExampleLinksAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -355,7 +357,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create(TestStyleName1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.GetExampleLinksByStyleAsync(styleName);
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -378,7 +380,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var nonExistentStyle = StyleName.Create("NonExistentStyle").Value;
 
         // Act
-        var result = await _exampleLinkRepository.GetExampleLinksByStyleAsync(nonExistentStyle);
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAsync(nonExistentStyle, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -406,7 +408,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version);
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -431,7 +433,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create("7.0").Value;
 
         // Act
-        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version);
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -453,7 +455,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create("7.0").Value;
 
         // Act
-        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version);
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -475,7 +477,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var version = ModelVersion.Create(TestVersion1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version);
+        var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(styleName, version, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -497,7 +499,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.DeleteExampleLinkAsync(link);
+        var result = await _exampleLinkRepository.DeleteExampleLinkAsync(link, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -506,7 +508,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Link.Value.Should().Be(TestLink1);
 
         // Verify it's been deleted
-        var checkResult = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link);
+        var checkResult = await _exampleLinkRepository.CheckExampleLinkExistsAsync(link, _cancellationToken);
         checkResult.Value.Should().BeFalse();
     }
 
@@ -517,7 +519,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var link = ExampleLink.Create(TestLink1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.DeleteExampleLinkAsync(link);
+        var result = await _exampleLinkRepository.DeleteExampleLinkAsync(link, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -544,17 +546,15 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var styleName = StyleName.Create(TestStyleName1).Value;
 
         // Act
-        var result = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName);
+        var result = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().HaveCount(2);
-        result.Value.Should().AllSatisfy(link => link.StyleName.Value.Should().Be(TestStyleName1));
+        result.Value.Should().Be(2);
 
         // Verify deletion
-        var remainingLinks = await _exampleLinkRepository.GetAllExampleLinksAsync();
+        var remainingLinks = await _exampleLinkRepository.GetAllExampleLinksAsync(_cancellationToken);
         remainingLinks.Value.Should().HaveCount(1);
         remainingLinks.Value[0].StyleName.Value.Should().Be(TestStyleName2);
     }
@@ -571,7 +571,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var nonExistentStyle = StyleName.Create("NonExistentStyle").Value;
 
         // Act
-        var result = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(nonExistentStyle);
+        var result = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(nonExistentStyle, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -579,7 +579,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Errors.Should().Contain(e => e.Message.Contains("No example links found for style 'StyleName { Value = NonExistentStyle }"));
 
         // Verify no links were deleted
-        var allLinks = await _exampleLinkRepository.GetAllExampleLinksAsync();
+        var allLinks = await _exampleLinkRepository.GetAllExampleLinksAsync(_cancellationToken);
         allLinks.Value.Should().HaveCount(1);
     }
 
@@ -591,7 +591,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var description = Description.Create($"Test version {versionValue}").Value;
 
         var versionEntity = MidjourneyVersion.Create(version, parameter, DateTime.UtcNow, description).Value;
-        var result = await _versionsRepository.AddVersionAsync(versionEntity);
+        var result = await _versionsRepository.AddVersionAsync(versionEntity, _cancellationToken);
 
         return result.Value;
     }
@@ -604,7 +604,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
 
         var style = MidjourneyStyle.Create(name, type, description).Value;
 
-        var result = await _stylesRepository.AddStyleAsync(style);
+        var result = await _stylesRepository.AddStyleAsync(style, _cancellationToken);
         return result.Value;
     }
 
@@ -621,7 +621,7 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
 
         var exampleLink = MidjourneyStyleExampleLink.Create(link, styleNameVo, versionVo).Value;
 
-        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink);
+        var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink, _cancellationToken);
         return result.Value;
     }
 }

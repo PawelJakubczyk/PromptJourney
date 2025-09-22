@@ -34,7 +34,11 @@ public sealed class PropertiesRepository : IPropertiesRepository
     }
 
     // For Queries
-    public async Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(ModelVersion version)
+    public async Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync
+    (
+        ModelVersion version,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -57,7 +61,12 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
-    public async Task<Result<bool>> CheckParameterExistsInVersionAsync(ModelVersion version, PropertyName propertyName)
+    public async Task<Result<bool>> CheckParameterExistsInVersionAsync
+    (
+        ModelVersion version, 
+        PropertyName propertyName,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -79,12 +88,16 @@ public sealed class PropertiesRepository : IPropertiesRepository
     }
 
     // For Commands
-    public async Task<Result<MidjourneyPropertiesBase>> AddParameterToVersionAsync(MidjourneyPropertiesBase property)
+    public async Task<Result<MidjourneyPropertiesBase>> AddParameterToVersionAsync
+    (
+        MidjourneyPropertiesBase property,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
             // Check if parameter already exists
-            var existsResult = await CheckParameterExistsInVersionAsync(property.Version, property.PropertyName);
+            var existsResult = await CheckParameterExistsInVersionAsync(property.Version, property.PropertyName, cancellationToken);
             if (existsResult.IsFailed)
                 return Result.Fail<MidjourneyPropertiesBase>(existsResult.Errors);
 
@@ -99,7 +112,8 @@ public sealed class PropertiesRepository : IPropertiesRepository
                 return Result.Fail<MidjourneyPropertiesBase>($"Version master '{property.Version.Value}' not found");
 
             // Create and add parameter using generic method
-            var success = await CreateAndAddParameterAsync(
+            var success = await CreateAndAddParameterAsync
+            (
                 property.Version.Value, 
                 versionMaster, 
                 property.PropertyName.Value, 
@@ -107,7 +121,9 @@ public sealed class PropertiesRepository : IPropertiesRepository
                 property.DefaultValue?.Value, 
                 property.MinValue?.Value, 
                 property.MaxValue?.Value, 
-                property.Description?.Value);
+                property.Description?.Value,
+                cancellationToken
+            );
 
             if (!success)
                 return Result.Fail<MidjourneyPropertiesBase>($"Failed to add parameter to version '{property.Version.Value}'");
@@ -120,12 +136,15 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
-    public async Task<Result<MidjourneyPropertiesBase>> UpdateParameterForVersionAsync(MidjourneyPropertiesBase property)
+    public async Task<Result<MidjourneyPropertiesBase>> UpdateParameterForVersionAsync
+    (
+        MidjourneyPropertiesBase property,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
-            // Find the parameter using generic method
-            var parameter = await FindParameterAsync(property.Version.Value, property.PropertyName.Value);
+            var parameter = await FindParameterAsync(property.Version.Value, property.PropertyName.Value, cancellationToken);
             if (parameter == null)
                 return Result.Fail<MidjourneyPropertiesBase>($"Parameter '{property.PropertyName.Value}' not found for version '{property.Version.Value}'");
 
@@ -146,17 +165,24 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
-    public async Task<Result<MidjourneyPropertiesBase>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue)
+    public async Task<Result<MidjourneyPropertiesBase>> PatchParameterForVersionAsync
+    (
+        ModelVersion version, 
+        PropertyName propertyName, 
+        string characteristicToUpdate, 
+        string? newValue,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
             // Find the parameter
-            var parameter = await FindParameterAsync(version.Value, propertyName.Value);
+            var parameter = await FindParameterAsync(version.Value, propertyName.Value, cancellationToken);
             if (parameter == null)
                 return Result.Fail<MidjourneyPropertiesBase>($"Parameter '{propertyName.Value}' not found for version '{version.Value}'");
 
             // Update specific property
-            UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
+            UpdateParameterProperty(parameter, characteristicToUpdate, newValue, cancellationToken);
 
             await _midjourneyDbContext.SaveChangesAsync();
 
@@ -168,17 +194,22 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
-    public async Task<Result<MidjourneyPropertiesBase>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName)
+    public async Task<Result<MidjourneyPropertiesBase>> DeleteParameterInVersionAsync
+    (
+        ModelVersion version,
+        PropertyName propertyName,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
             // Find the parameter
-            var parameter = await FindParameterAsync(version.Value, propertyName.Value);
+            var parameter = await FindParameterAsync(version.Value, propertyName.Value, cancellationToken);
             if (parameter == null)
                 return Result.Fail<MidjourneyPropertiesBase>($"Parameter '{propertyName.Value}' not found for version '{version.Value}'");
 
             // Remove the parameter using generic method
-            await RemoveParameterAsync(version.Value, parameter);
+            await RemoveParameterAsync(version.Value, parameter, cancellationToken);
 
             return Result.Ok(parameter);
         }
@@ -188,7 +219,12 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }
     }
 
-    private async Task<T?> ExecuteVersionOperation<T>(string version, Func<IQueryable, Task<T>> operation)
+    private async Task<T?> ExecuteVersionOperation<T>
+    (
+        string version, 
+        Func<IQueryable, 
+        Task<T>> operation
+    )
     {
         if (!_versionMappings.TryGetValue(version, out var mapping))
             return default;
@@ -209,19 +245,34 @@ public sealed class PropertiesRepository : IPropertiesRepository
         return await operation(castedQueryable);
     }
 
-    private async Task<MidjourneyPropertiesBase?> FindParameterAsync(string version, string propertyName)
+    private async Task<MidjourneyPropertiesBase?> FindParameterAsync
+    (
+        string version,
+        string propertyName,
+        CancellationToken cancellationToken
+    )
     {
         return await ExecuteVersionOperation(version, async (dbSet) =>
         {
             var queryable = (IQueryable<MidjourneyPropertiesBase>)dbSet;
             
-            // Pobierz wszystkie parametry do pamięci i znajdź w pamięci
             var allParams = await queryable.ToListAsync();
             return allParams.FirstOrDefault(p => p.PropertyName.Value == propertyName && p.Version.Value == version);
         });
     }
 
-    private async Task<bool> CreateAndAddParameterAsync(string version, MidjourneyVersion versionMaster, string propertyName, string[] parameters, string? defaultValue, string? minValue, string? maxValue, string? description)
+    private async Task<bool> CreateAndAddParameterAsync
+    (
+        string version,
+        MidjourneyVersion versionMaster,
+        string propertyName,
+        string[] parameters,
+        string? defaultValue,
+        string? minValue,
+        string? maxValue,
+        string? description,
+        CancellationToken cancellationToken
+    )
     {
         if (!_versionMappings.TryGetValue(version, out var mapping))
             return false;
@@ -252,7 +303,12 @@ public sealed class PropertiesRepository : IPropertiesRepository
         return true;
     }
 
-    private async Task RemoveParameterAsync(string version, MidjourneyPropertiesBase parameter)
+    private async Task RemoveParameterAsync
+    (
+        string version,
+        MidjourneyPropertiesBase parameter,
+        CancellationToken cancellationToken
+    )
     {
         if (!_versionMappings.TryGetValue(version, out var mapping))
             throw new InvalidOperationException($"Version '{version}' not supported");
@@ -268,7 +324,13 @@ public sealed class PropertiesRepository : IPropertiesRepository
         await _midjourneyDbContext.SaveChangesAsync();
     }
 
-    private static void UpdateParameterProperty(MidjourneyPropertiesBase parameter, string propertyToUpdate, string? newValue)
+    private static void UpdateParameterProperty
+    (
+        MidjourneyPropertiesBase parameter,
+        string propertyToUpdate,
+        string? newValue,
+        CancellationToken cancellationToken
+    )
     {
         switch (propertyToUpdate.ToLowerInvariant())
         {

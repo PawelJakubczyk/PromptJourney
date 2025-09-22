@@ -1,10 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.Properties.Commands;
 
@@ -31,13 +31,13 @@ public static class AddPropertyInVersion
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
-            var parametersResult = command.Parameters.Select(p => Param.Create(p)).ToList();
-            var defaultValueResult = command.DefaultValue != null ? DefaultValue.Create(command.DefaultValue) : null;
-            var minValueResult = command.MinValue != null ? MinValue.Create(command.MinValue) : null;
-            var maxValueResult = command.MaxValue != null ? MaxValue.Create(command.MaxValue) : null;
-            var descriptionResult = command.Description != null ? Description.Create(command.Description) : null;
+            var parametersResult = command.Parameters.Select(Param.Create).ToList();
+            var defaultValueResult = command.DefaultValue is not null ? DefaultValue.Create(command.DefaultValue) : null;
+            var minValueResult = command.MinValue is not null ? MinValue.Create(command.MinValue) : null;
+            var maxValueResult = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : null;
+            var descriptionResult = command.Description is not null ? Description.Create(command.Description) : null;
 
-            var propertyResult = MidjourneyPropertiesBase.Create
+            var property = MidjourneyPropertiesBase.Create
             (
                 propertyNameResult,
                 versionResult,
@@ -48,26 +48,17 @@ public static class AddPropertyInVersion
                 descriptionResult!
             );
 
-            var domainErrors = propertyResult.Errors;
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(property)
+                .ExecuteAndMapResultIfNoErrors
+                (
+                    () =>  _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken),
+                    PropertyResponse.FromDomain
+                );
 
-            var validationErrors = CreateValidationErrorIfAny<PropertyResponse>
-            (
-                (nameof(domainErrors), domainErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var addParameterResult = await _propertiesRepository.AddParameterToVersionAsync(propertyResult.Value);
-
-            var persistenceErrors = addParameterResult.Errors;
-
-            validationErrors = CreateValidationErrorIfAny<PropertyResponse>
-            (
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-
-            var response = PropertyResponse.FromDomain(addParameterResult.Value);
-
-            return Result.Ok(response);
+            return result;
         }
+
     }
 }

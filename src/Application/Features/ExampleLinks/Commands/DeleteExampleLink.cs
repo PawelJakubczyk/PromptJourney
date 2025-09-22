@@ -1,11 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extension;
 using Application.Features.Common.Responses;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -22,26 +20,17 @@ public static class DeleteExampleLink
         {
             var link = ExampleLink.Create(command.Link);
 
-            List<DomainError> domainErrors = [];
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors<ExampleLink>(link)
+                .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken),
+                    _ => DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted.")
+                );
 
-            domainErrors
-                .CollectErrors<ExampleLink>(link);
-
-            var deleteLinkResult = await _exampleLinkRepository.DeleteExampleLinkAsync(link.Value);
-
-            var persitanceErrors = deleteLinkResult.Errors;
-
-            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>
-            (
-                (nameof(domainErrors), domainErrors),
-                (nameof(persitanceErrors), persitanceErrors)
-            );
-
-            if (validationErrors is not null) return validationErrors;
-
-            var response = DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted.");
-
-            return Result.Ok(response);
+            return result;
         }
+
     }
 }

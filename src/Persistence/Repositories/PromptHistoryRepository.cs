@@ -2,10 +2,8 @@ using Application.Abstractions.IRepository;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
-
-namespace Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 public sealed class PromptHistoryRepository : IPromptHistoryRepository
 {
@@ -17,7 +15,7 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     }
 
     // For Queries
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetAllHistoryRecordsAsync()
+    public async Task<Result<List<MidjourneyPromptHistory>>> GetAllHistoryRecordsAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -25,7 +23,7 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
                 .OrderByDescending(h => h.CreatedOn)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return Result.Ok(historyRecords);
         }
@@ -35,21 +33,18 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryByDateRangeAsync(DateTime dateFrom, DateTime dateTo)
+    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryByDateRangeAsync(DateTime dateFrom, DateTime dateTo, CancellationToken cancellationToken)
     {
         try
         {
             var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
-                .OrderByDescending(h => h.CreatedOn)
-                .ToListAsync();
-
-            var filteredRecords = historyRecords
                 .Where(h => h.CreatedOn >= dateFrom && h.CreatedOn <= dateTo)
-                .ToList();
+                .OrderByDescending(h => h.CreatedOn)
+                .ToListAsync(cancellationToken);
 
-            return Result.Ok(filteredRecords);
+            return Result.Ok(historyRecords);
         }
         catch (Exception ex)
         {
@@ -57,21 +52,18 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryRecordsByPromptKeywordAsync(Keyword keyword)
+    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryRecordsByPromptKeywordAsync(Keyword keyword, CancellationToken cancellationToken)
     {
         try
         {
-            var allHistoryRecords = await _midjourneyDbContext.MidjourneyPromptHistory
+            var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
-                .OrderByDescending(h => h.CreatedOn)
-                .ToListAsync();
-
-            var filteredRecords = allHistoryRecords
                 .Where(h => h.Prompt.Value.Contains(keyword.Value, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+                .OrderByDescending(h => h.CreatedOn)
+                .ToListAsync(cancellationToken);
 
-            return Result.Ok(filteredRecords);
+            return Result.Ok(historyRecords);
         }
         catch (Exception ex)
         {
@@ -79,22 +71,20 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetLastHistoryRecordsAsync(int records)
+    public async Task<Result<List<MidjourneyPromptHistory>>> GetLastHistoryRecordsAsync(int records, CancellationToken cancellationToken)
     {
         try
         {
-            var totalRecords = await CalculateHistoricalRecordCountAsync();
+            var totalRecords = await CalculateHistoricalRecordCountAsync(cancellationToken);
             if (totalRecords.IsFailed)
-            {
-                return Result.Fail<List<MidjourneyPromptHistory>>("Failed to validate record count");
-            }
+                return Result.Fail<List<MidjourneyPromptHistory>>(totalRecords.Errors);
 
             var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
                 .OrderByDescending(h => h.CreatedOn)
                 .Take(records)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return Result.Ok(historyRecords);
         }
@@ -104,13 +94,11 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
     }
 
-    public async Task<Result<int>> CalculateHistoricalRecordCountAsync()
+    public async Task<Result<int>> CalculateHistoricalRecordCountAsync(CancellationToken cancellationToken)
     {
         try
         {
-            var count = await _midjourneyDbContext.MidjourneyPromptHistory
-                .CountAsync();
-
+            var count = await _midjourneyDbContext.MidjourneyPromptHistory.CountAsync(cancellationToken);
             return Result.Ok(count);
         }
         catch (Exception ex)
@@ -120,12 +108,12 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     }
 
     // For Commands
-    public async Task<Result<MidjourneyPromptHistory>> AddPromptToHistoryAsync(MidjourneyPromptHistory history)
+    public async Task<Result<MidjourneyPromptHistory>> AddPromptToHistoryAsync(MidjourneyPromptHistory history, CancellationToken cancellationToken)
     {
         try
         {
-            await _midjourneyDbContext.MidjourneyPromptHistory.AddAsync(history);
-            await _midjourneyDbContext.SaveChangesAsync();
+            await _midjourneyDbContext.MidjourneyPromptHistory.AddAsync(history, cancellationToken);
+            await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Ok(history);
         }

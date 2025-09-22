@@ -1,10 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.VersionsMaster.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
 
 namespace Application.Features.VersionsMaster.Commands;
 
@@ -26,37 +26,26 @@ public static class AddVersion
         {
             var version = ModelVersion.Create(command.Version);
             var parameter = Param.Create(command.Parameter);
-            var description = command.Description != null ? Description.Create(command.Description) : null;
+            var description = command.Description is not null ? Description.Create(command.Description) : null;
 
-            var versionResult = MidjourneyVersion.Create
+            var midjourneyVersion = MidjourneyVersion.Create
             (
-                version,
-                parameter,
-                command.ReleaseDate,
+                version, 
+                parameter, 
+                command.ReleaseDate, 
                 description!
             );
 
-            var domainErrors = versionResult.Errors;
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .CollectErrors(midjourneyVersion)
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken),
+                    VersionResponse.FromDomain
+                );
 
-            var validationErrors = CreateValidationErrorIfAny<VersionResponse>
-            (
-                (nameof(domainErrors), domainErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var addResult = await _versionRepository.AddVersionAsync(versionResult.Value);
-
-            var persistenceErrors = addResult.Errors;
-
-            validationErrors = CreateValidationErrorIfAny<VersionResponse>
-            (
-                (nameof(persistenceErrors), persistenceErrors)
-            );
-            if (validationErrors is not null) return validationErrors;
-
-            var response = VersionResponse.FromDomain(addResult.Value);
-
-            return Result.Ok(response);
+            return result;
         }
     }
+
 }

@@ -1,7 +1,8 @@
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
 using Persistence.Repositories;
-using Domain.Entities;
+using System.Threading;
 
 namespace Integration.Tests.Repositories;
 
@@ -22,6 +23,8 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
     private readonly PromptHistoryRepository _promptHistoryRepository;
     private readonly VersionsRepository _versionsRepository;
     private readonly StylesRepository _stylesRepository;
+
+    private readonly CancellationToken _cancellationToken;
 
     public PromptHistoryRepositoryTests(MidjourneyDbFixture fixture) : base(fixture)
     {
@@ -44,7 +47,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
             [style]);
 
         // Act
-        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory);
+        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -71,7 +74,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
             [style1, style2, style3]);
 
         // Act
-        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory);
+        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -95,7 +98,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
             []);
 
         // Act
-        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory);
+        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -118,7 +121,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
             [style]);
 
         // Act
-        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory);
+        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -139,7 +142,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync(TestPrompt3, version, [style]);
 
         // Act
-        var result = await _promptHistoryRepository.GetAllHistoryRecordsAsync();
+        var result = await _promptHistoryRepository.GetAllHistoryRecordsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -155,7 +158,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
     public async Task GetAllHistoryRecordsAsync_WithNoRecords_ShouldReturnEmptyList()
     {
         // Act
-        var result = await _promptHistoryRepository.GetAllHistoryRecordsAsync();
+        var result = await _promptHistoryRepository.GetAllHistoryRecordsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -178,7 +181,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var thirdRecord = await CreateAndSaveTestPromptHistoryAsync(TestPrompt3, version, [style]);
 
         // Act
-        var result = await _promptHistoryRepository.GetAllHistoryRecordsAsync();
+        var result = await _promptHistoryRepository.GetAllHistoryRecordsAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -208,7 +211,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync("Future prompt", version, [style], DateTime.UtcNow);
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(startDate, endDate);
+        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(startDate, endDate, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -232,7 +235,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var endDate = DateTime.UtcNow.AddDays(-1);
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(startDate, endDate);
+        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(startDate, endDate, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -252,7 +255,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync(TestPrompt1, version, [style], targetDate.AddHours(12));
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(targetDate, targetDate.AddDays(1));
+        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(targetDate, targetDate.AddDays(1), _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -275,7 +278,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var keyword = Keyword.Create("mountain").Value;
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword);
+        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -299,7 +302,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var keyword = Keyword.Create("nonexistent").Value;
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword);
+        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -320,7 +323,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var keyword = Keyword.Create("landscape").Value;
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword);
+        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -347,7 +350,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync("Fifth prompt", version, [style]);
 
         // Act
-        var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(3);
+        var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(3, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -371,7 +374,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync(TestPrompt2, version, [style]);
 
         // Act
-        var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(5);
+        var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(5, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -389,7 +392,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync(TestPrompt1, version, [style]);
 
         // Act
-        var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(0);
+        var result = await _promptHistoryRepository.GetLastHistoryRecordsAsync(0, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -410,7 +413,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync(TestPrompt3, version, [style]);
 
         // Act
-        var result = await _promptHistoryRepository.CalculateHistoricalRecordCountAsync();
+        var result = await _promptHistoryRepository.CalculateHistoricalRecordCountAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -422,7 +425,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
     public async Task CalculateHistoricalRecordCountAsync_WithNoRecords_ShouldReturnZero()
     {
         // Act
-        var result = await _promptHistoryRepository.CalculateHistoricalRecordCountAsync();
+        var result = await _promptHistoryRepository.CalculateHistoricalRecordCountAsync(_cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -443,7 +446,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         await CreateAndSaveTestPromptHistoryAsync(TestPrompt2, version2, [style]);
 
         // Act
-        var allRecords = await _promptHistoryRepository.GetAllHistoryRecordsAsync();
+        var allRecords = await _promptHistoryRepository.GetAllHistoryRecordsAsync(_cancellationToken);
 
         // Assert
         allRecords.Value.Should().HaveCount(2);
@@ -464,7 +467,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var endDate = DateTime.UtcNow.AddDays(1);
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(startDate, endDate);
+        var result = await _promptHistoryRepository.GetHistoryByDateRangeAsync(startDate, endDate, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -490,7 +493,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var keyword = Keyword.Create(keywordValue).Value;
 
         // Act
-        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword);
+        var result = await _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword, _cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -515,19 +518,19 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
 
         // Create
         var promptHistory = await CreateTestPromptHistoryAsync(TestPrompt1, version, [style]);
-        var addResult = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory);
+        var addResult = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory, _cancellationToken);
         addResult.IsSuccess.Should().BeTrue();
 
         // Read - Get all
-        var allRecords = await _promptHistoryRepository.GetAllHistoryRecordsAsync();
+        var allRecords = await _promptHistoryRepository.GetAllHistoryRecordsAsync(_cancellationToken);
         allRecords.Value.Should().HaveCount(1);
 
         // Read - Count
-        var count = await _promptHistoryRepository.CalculateHistoricalRecordCountAsync();
+        var count = await _promptHistoryRepository.CalculateHistoricalRecordCountAsync(_cancellationToken);
         count.Value.Should().Be(1);
 
         // Read - Get last
-        var lastRecords = await _promptHistoryRepository.GetLastHistoryRecordsAsync(1);
+        var lastRecords = await _promptHistoryRepository.GetLastHistoryRecordsAsync(1, _cancellationToken);
         lastRecords.Value.Should().HaveCount(1);
         lastRecords.Value[0].Prompt.Value.Should().Be(TestPrompt1);
     }
@@ -540,7 +543,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var description = Description.Create($"Test version {versionValue}").Value;
 
         var versionEntity = MidjourneyVersion.Create(version, parameter, DateTime.UtcNow, description).Value;
-        var result = await _versionsRepository.AddVersionAsync(versionEntity);
+        var result = await _versionsRepository.AddVersionAsync(versionEntity, _cancellationToken);
 
         return result.Value;
     }
@@ -552,7 +555,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         var description = Description.Create($"Test style {styleName}").Value;
 
         var style = MidjourneyStyle.Create(name, type, description).Value;
-        var result = await _stylesRepository.AddStyleAsync(style);
+        var result = await _stylesRepository.AddStyleAsync(style, _cancellationToken);
 
         return result.Value;
     }
@@ -587,7 +590,7 @@ public class PromptHistoryRepositoryTests : BaseTransactionIntegrationTest
         DateTime? createdOn = null)
     {
         var promptHistory = await CreateTestPromptHistoryAsync(promptText, version, styles, createdOn);
-        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory);
+        var result = await _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory, _cancellationToken);
         return result.Value;
     }
 }

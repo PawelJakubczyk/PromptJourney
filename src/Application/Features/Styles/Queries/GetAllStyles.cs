@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.Styles.Responses;
 using FluentResults;
 
@@ -15,16 +16,14 @@ public static class GetAllStyles
 
         public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await _styleRepository.GetAllStylesAsync();
+            var result = await ErrorFactory
+                .EmptyErrorsAsync()
+                .ExecuteAndMapResultIfNoErrors(
+                    () => _styleRepository.GetAllStylesAsync(cancellationToken),
+                    domainList => domainList.Select(StyleResponse.FromDomain).ToList()
+                );
 
-            if (result.IsFailed)
-                return Result.Fail<List<StyleResponse>>(result.Errors);
-
-            var responses = result.Value
-                .Select(StyleResponse.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

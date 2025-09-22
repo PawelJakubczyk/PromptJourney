@@ -2,30 +2,26 @@
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
-using Persistence.Errors;
-
-namespace Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 public sealed class VersionsRepository : IVersionRepository
 {
-    private readonly MidjourneyDbContext _midjourneyDbContext;
+    private readonly MidjourneyDbContext _dbContext;
 
-    public VersionsRepository(MidjourneyDbContext midjourneyDbContext)
+    public VersionsRepository(MidjourneyDbContext dbContext)
     {
-        _midjourneyDbContext = midjourneyDbContext;
+        _dbContext = dbContext;
     }
 
-    public async Task<Result<bool>> CheckVersionExistsInVersionsAsync(ModelVersion version)
+    // For Queries
+    public async Task<Result<bool>> CheckVersionExistsInVersionsAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         try
         {
-            var allVersions = await _midjourneyDbContext
-                .MidjourneyVersionsMaster
-                .ToListAsync();
+            var exists = await _dbContext.MidjourneyVersionsMaster
+                .AnyAsync(v => v.Version == version, cancellationToken);
 
-            var exists = allVersions.Any(v => v.Version.Value == version.Value);
             return Result.Ok(exists);
         }
         catch (Exception ex)
@@ -34,13 +30,12 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<bool>> CheckIfAnySupportedVersionExistsAsync()
+    public async Task<Result<bool>> CheckIfAnySupportedVersionExistsAsync(CancellationToken cancellationToken)
     {
         try
         {
-            var hasAny = await _midjourneyDbContext
-                .MidjourneyVersionsMaster
-                .AnyAsync();
+            var hasAny = await _dbContext.MidjourneyVersionsMaster
+                .AnyAsync(cancellationToken);
 
             return Result.Ok(hasAny);
         }
@@ -50,31 +45,30 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<MidjourneyVersion>> GetMasterVersionByVersionAsync(ModelVersion version)
+    public async Task<Result<MidjourneyVersion>> GetMasterVersionByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         try
         {
-            var allVersions = await _midjourneyDbContext
-                .MidjourneyVersionsMaster
-                .ToListAsync();
+            var versionMaster = await _dbContext.MidjourneyVersionsMaster
+                .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
 
-            var versionMaster = allVersions.FirstOrDefault(v => v.Version.Value == version.Value);
-
-            return Result.Ok(versionMaster!);
+            return versionMaster is null
+                ? Result.Fail<MidjourneyVersion>($"Version '{version.Value}' not found")
+                : Result.Ok(versionMaster);
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyVersion>($"Database error while retrieving version '{version}': {ex.Message}");
+            return Result.Fail<MidjourneyVersion>($"Database error while retrieving version '{version.Value}': {ex.Message}");
         }
     }
 
-    public async Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync()
+    public async Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync(CancellationToken cancellationToken)
     {
         try
         {
-            var versions = await _midjourneyDbContext
-                .MidjourneyVersionsMaster
-                .ToListAsync();
+            var versions = await _dbContext.MidjourneyVersionsMaster
+                .ToListAsync(cancellationToken);
+
             return Result.Ok(versions);
         }
         catch (Exception ex)
@@ -83,15 +77,13 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<List<ModelVersion>>> GetAllSuportedVersionsAsync()
+    public async Task<Result<List<ModelVersion>>> GetAllSuportedVersionsAsync(CancellationToken cancellationToken)
     {
         try
         {
-            var allVersions = await _midjourneyDbContext
-                .MidjourneyVersionsMaster
-                .ToListAsync();
-
-            var supportedVersions = allVersions.Select(x => x.Version).ToList();
+            var supportedVersions = await _dbContext.MidjourneyVersionsMaster
+                .Select(x => x.Version)
+                .ToListAsync(cancellationToken);
 
             return Result.Ok(supportedVersions);
         }
@@ -101,12 +93,13 @@ public sealed class VersionsRepository : IVersionRepository
         }
     }
 
-    public async Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion newVersion)
+    // For Commands
+    public async Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion newVersion, CancellationToken cancellationToken)
     {
         try
         {
-            await _midjourneyDbContext.MidjourneyVersionsMaster.AddAsync(newVersion);
-            await _midjourneyDbContext.SaveChangesAsync();
+            await _dbContext.MidjourneyVersionsMaster.AddAsync(newVersion, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Ok(newVersion);
         }
