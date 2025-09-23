@@ -3,6 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extension;
 using Application.Features.ExampleLinks.Responses;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Queries;
 
@@ -17,12 +18,16 @@ public static class GetAllExampleLinks
 
         public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken),
-                    domainList => domainList.Select(ExampleLinkResponse.FromDomain).ToList()
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .IfNoErrors()
+                    .Executes(() => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken))
+                        .MapResult
+                        (
+                            domainList => domainList
+                            .Select(ExampleLinkResponse.FromDomain)
+                            .ToList()
+                        );
 
             return result;
         }

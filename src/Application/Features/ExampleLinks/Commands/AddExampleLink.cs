@@ -3,9 +3,9 @@ using Application.Abstractions.IRepository;
 using Application.Extension;
 using Application.Features.ExampleLinks.Responses;
 using Domain.Entities;
-using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -37,33 +37,17 @@ public static class AddExampleLink
                 version.Value
             );
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(linkResult)
-                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken, true)
-                .IfStyleNotExists(style.Value, _styleRepository, cancellationToken)
-                .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors
-                (
-                    () => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken),
-                    _ => new ExampleLinkResponse(command.Link, command.Style, command.Version)
-                );
-
-            return result;
-
-            var result2 = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(linkResult)
-                .BeginValidationBlock()
-                    .IfVersionNotExists(version.Value, _versionRepository, cancellationToken, true)
-                    .IfStyleNotExists(style.Value, _styleRepository, cancellationToken)
-                    .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken)
-                .EndValidationBlock()
-                .ExecuteAndMapResultIfNoErrors
-                (
-                    () => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken),
-                    _ => new ExampleLinkResponse(command.Link, command.Style, command.Version)
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                    .CollectErrors(linkResult)
+                    .BeginValidationBlock()
+                        .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                        .IfStyleNotExists(style.Value, _styleRepository, cancellationToken)
+                        .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken)
+                    .EndValidationBlock()
+                    .IfNoErrors()
+                        .Executes(() => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken))
+                            .MapResult(_ => new ExampleLinkResponse(command.Link, command.Style, command.Version));
 
             return result;
         }

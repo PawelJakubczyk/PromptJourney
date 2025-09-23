@@ -1,8 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -19,15 +20,17 @@ public class CheckTagExistInStyle
             var styleName = StyleName.Create(query.StyleName);
             var tag = Tag.Create(query.Tag);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(styleName)
-                .CollectErrors(tag)
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .BeginValidationBlock()
+                    .CollectErrors(styleName)
+                    .CollectErrors(tag)
+                .EndValidationBlock()
                 .IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken),
-                    value => value
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                        .MapResult(value => value);
+
 
             return result;
         }

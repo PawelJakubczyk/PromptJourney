@@ -3,6 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extension;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.VersionsMaster.Queries;
 
@@ -16,12 +17,12 @@ public static class GetAllSuportedVersions
 
         public async Task<Result<List<ModelVersion>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _versionRepository.GetAllSuportedVersionsAsync(cancellationToken),
-                    versions => versions
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .IfNoErrors()
+                    .Executes(() => _versionRepository.GetAllSuportedVersionsAsync(cancellationToken))
+                        .MapResult(versions => versions);
+
 
             return result;
         }

@@ -3,6 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extension;
 using Application.Features.PromptHistory.Responses;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -19,14 +20,15 @@ public static class GetLastHistoryRecords
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .IfHistoryLimitNotGreaterThanZero(query.Count)
-                .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count, cancellationToken),
-                    domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList()
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                    .BeginValidationBlock()
+                        .IfHistoryLimitNotGreaterThanZero(query.Count)
+                        .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken)
+                    .EndValidationBlock()
+                    .IfNoErrors()
+                        .Executes(() => _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count, cancellationToken))
+                            .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
 
             return result;
         }

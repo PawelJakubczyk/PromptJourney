@@ -1,9 +1,10 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -19,14 +20,13 @@ public static class GetStylesByTags
         {
             var tags = query.Tags?.Select(Tag.Create).ToList();
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .IfListIsNullOrEmpty(query.Tags)
                 .CollectErrors<List<Result<Tag>>>(tags!)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken),
-                    domainList => domainList.Select(StyleResponse.FromDomain).ToList()
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
+                        .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;
         }

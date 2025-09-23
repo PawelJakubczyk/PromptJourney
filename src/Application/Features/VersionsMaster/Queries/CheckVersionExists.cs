@@ -1,8 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using FluentResults;
-using Domain.ValueObjects;
 using Application.Extension;
+using Domain.ValueObjects;
+using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.VersionsMaster.Queries;
 
@@ -18,13 +19,13 @@ public static class CheckVersionExists
         {
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(version)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken),
-                    value => value
-                );
+                .IfNoErrors()
+                    .Executes(() => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken))
+                        .MapResult(value => value);
+
 
             return result;
         }

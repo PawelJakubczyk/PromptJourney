@@ -4,6 +4,7 @@ using Application.Extension;
 using Application.Features.Common.Responses;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -24,17 +25,17 @@ public static class DeleteAllExampleLinksByStyle
         {
             var styleName = StyleName.Create(command.StyleNameRaw);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(styleName)
-                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken, true)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken),
-                    count => BulkDeleteResponse.Success(
-                        count,
-                        $"Successfully deleted example links for style '{styleName.Value}'."
-                    )
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                    .CollectErrors(styleName)
+                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                    .IfNoErrors()
+                        .Executes(() => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                            .MapResult(count => BulkDeleteResponse.Success
+                            (
+                                count,
+                                $"Successfully deleted example links for style '{styleName.Value}'."
+                            ));
 
             return result;
         }

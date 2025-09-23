@@ -1,9 +1,10 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -19,13 +20,12 @@ public static class GetStylesByDescriptionKeyword
         {
             var keyword = Keyword.Create(query.DescriptionKeyword);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(keyword)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.GetStylesByDescriptionKeywordAsync(keyword.Value, cancellationToken),
-                    domainList => domainList.Select(StyleResponse.FromDomain).ToList()
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.GetStylesByDescriptionKeywordAsync(keyword.Value, cancellationToken))
+                        .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;
         }

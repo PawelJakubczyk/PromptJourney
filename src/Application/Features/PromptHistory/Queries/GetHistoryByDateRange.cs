@@ -3,6 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extension;
 using Application.Features.PromptHistory.Responses;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -19,15 +20,21 @@ public static class GetHistoryByDateRange
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .IfDateInFuture(query.From)
-                .IfDateInFuture(query.To)
-                .IfDateRangeNotChronological(query.From, query.To)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken),
-                    domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList()
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                    .BeginValidationBlock()
+                        .IfDateInFuture(query.From)
+                        .IfDateInFuture(query.To)
+                        .IfDateRangeNotChronological(query.From, query.To)
+                    .EndValidationBlock()
+                    .IfNoErrors()
+                        .Executes(() => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
+                            .MapResult
+                            (
+                                domainList => domainList
+                                .Select(PromptHistoryResponse.FromDomain)
+                                .ToList()
+                            );
 
             return result;
         }

@@ -1,8 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -18,13 +19,13 @@ public static class CheckStyleExist
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(styleName)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.CheckStyleExistsAsync(styleName.Value, cancellationToken),
-                    value => value
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.CheckStyleExistsAsync(styleName.Value, cancellationToken))
+                        .MapResult(value => value);
+
 
             return result;
         }

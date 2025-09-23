@@ -4,6 +4,7 @@ using Application.Extension;
 using Application.Features.VersionsMaster.Responses;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.VersionsMaster.Queries;
 
@@ -19,14 +20,13 @@ public static class GetVersionByVersion
         {
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(version)
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken),
-                    VersionResponse.FromDomain
-                );
+                .IfNoErrors()
+                    .Executes(() => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken))
+                        .MapResult(VersionResponse.FromDomain);
 
             return result;
         }

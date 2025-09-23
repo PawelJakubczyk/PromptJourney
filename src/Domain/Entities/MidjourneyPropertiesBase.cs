@@ -3,6 +3,7 @@ using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.Entities;
 
@@ -57,37 +58,38 @@ public class MidjourneyPropertiesBase : IEntitie
         Result<Description?>? descriptionResult = null
     )
     {
-        List<Error> errors = [];
-
-        errors
-            .CollectErrors<PropertyName>(propertyNameResult)
-            .CollectErrors<ModelVersion>(versionResult)
-            .CollectErrors<Param>(paramResultsList)
-            .CollectErrors<DefaultValue>(defaultValueResult)
-            .CollectErrors<MinValue>(minValueResult)
-            .CollectErrors<MaxValue>(maxValueResult)
-            .CollectErrors<Description>(descriptionResult);
+        var result = ValidationPipeline
+        .Empty()
+        .CollectErrors<PropertyName>(propertyNameResult)
+        .CollectErrors<ModelVersion>(versionResult)
+        //.CollectErrors<Param>(paramResultsList)
+        .CollectErrors<DefaultValue>(defaultValueResult)
+        .CollectErrors<MinValue>(minValueResult)
+        .CollectErrors<MaxValue>(maxValueResult)
+        .CollectErrors<Description>(descriptionResult)
+        .IfNoErrors()
+        .Executes(() =>
+        {
 
         var paramList = paramResultsList.ToValueList();
 
-        errors
-            .IfListHasDuplicates<DomainLayer, Param>(paramList);
-
-
+        var errors = new List<Error>();
+        errors.IfListHasDuplicates<DomainLayer, Param>(paramList);
         if (errors.Count != 0)
             return Result.Fail<MidjourneyPropertiesBase>(errors);
 
-        var versionBase = new MidjourneyPropertiesBase
-        (
-            propertyNameResult.Value, 
+        var versionBase = new MidjourneyPropertiesBase(
+            propertyNameResult.Value,
             versionResult.Value,
-            paramList, 
-            defaultValueResult?.Value, 
-            minValueResult?.Value, 
-            maxValueResult?.Value, 
+            paramList,
+            defaultValueResult?.Value,
+            minValueResult?.Value,
+            maxValueResult?.Value,
             descriptionResult?.Value
         );
 
         return Result.Ok(versionBase);
+    })
+    .MapResult(v => v);
     }
 }

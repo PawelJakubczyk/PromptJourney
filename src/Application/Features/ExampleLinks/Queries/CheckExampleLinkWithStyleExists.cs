@@ -3,6 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extension;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Queries;
 
@@ -19,13 +20,12 @@ public static class CheckExampleLinkWithStyleExists
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(styleName)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken),
-                    _ => true
-                );
+                .IfNoErrors()
+                    .Executes(() => _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
+                        .MapResult(_ => true);
 
             return result;
         }

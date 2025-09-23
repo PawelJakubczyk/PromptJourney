@@ -4,6 +4,7 @@ using Application.Extension;
 using Application.Features.Properties.Responses;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.Properties.Commands;
 
@@ -29,19 +30,22 @@ public static class PatchPropertyForVersion
             var version = ModelVersion.Create(command.Version);
             var propertyName = PropertyName.Create(command.PropertyName);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(version)
-                .CollectErrors(propertyName)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _propertiesRepository.PatchParameterForVersionAsync(
-                        version.Value,
-                        propertyName.Value,
-                        command.CharacteristicToUpdate,
-                        command.NewValue,
-                        cancellationToken),
-                    PropertyResponse.FromDomain
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                    .BeginValidationBlock()
+                        .CollectErrors(version)
+                        .CollectErrors(propertyName)
+                    .EndValidationBlock()
+                    .IfNoErrors()
+                        .Executes(() => _propertiesRepository.PatchParameterForVersionAsync
+                        (
+                            version.Value,
+                            propertyName.Value,
+                            command.CharacteristicToUpdate,
+                            command.NewValue,
+                            cancellationToken
+                        ))
+                        .MapResult(PropertyResponse.FromDomain);
 
             return result;
         }

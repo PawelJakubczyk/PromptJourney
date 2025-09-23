@@ -5,6 +5,7 @@ using Application.Features.VersionsMaster.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.VersionsMaster.Commands;
 
@@ -36,13 +37,13 @@ public static class AddVersion
                 description!
             );
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(midjourneyVersion)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken),
-                    VersionResponse.FromDomain
-                );
+                .IfNoErrors()
+                    .Executes(() => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken))
+                        .MapResult(VersionResponse.FromDomain);
+
 
             return result;
         }

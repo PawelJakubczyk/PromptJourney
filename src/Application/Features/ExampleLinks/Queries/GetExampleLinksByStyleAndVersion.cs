@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.ExampleLinks.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 
 
@@ -25,14 +26,19 @@ public static class GetExampleLinksByStyleAndVersion
             var styleName = StyleName.Create(query.StyleName);
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors<StyleName>(styleName)
-                .CollectErrors<ModelVersion>(version)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken),
-                    domainList => domainList.Select(ExampleLinkResponse.FromDomain).ToList()
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .CollectErrors(styleName)
+                .CollectErrors(version)
+                .IfNoErrors()
+                    .Executes(() => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
+                        .MapResult
+                        (
+                            domainList => domainList
+                            .Select(ExampleLinkResponse.FromDomain)
+                            .ToList()
+                        );
+
 
             return result;
         }

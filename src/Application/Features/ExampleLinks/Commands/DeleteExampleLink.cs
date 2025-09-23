@@ -4,6 +4,7 @@ using Application.Extension;
 using Application.Features.Common.Responses;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -20,14 +21,16 @@ public static class DeleteExampleLink
         {
             var link = ExampleLink.Create(command.Link);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors<ExampleLink>(link)
-                .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken),
-                    _ => DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted.")
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                    .CollectErrors<ExampleLink>(link)
+                    .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
+                    .IfNoErrors()
+                        .Executes(() => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken))
+                            .MapResult(_ => DeleteResponse.Success
+                            (
+                                $"Example link '{link.Value.Value}' was successfully deleted."
+                            ));
 
             return result;
         }

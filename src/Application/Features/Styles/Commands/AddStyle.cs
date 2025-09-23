@@ -5,6 +5,7 @@ using Application.Features.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands.AddStyle;
 
@@ -37,14 +38,14 @@ public static class AddStyle
                 tags
             );
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(style)
                 .IfStyleAlreadyExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.AddStyleAsync(style.Value, cancellationToken),
-                    StyleResponse.FromDomain
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.AddStyleAsync(style.Value, cancellationToken))
+                        .MapResult(StyleResponse.FromDomain);
+
 
             return result;
         }

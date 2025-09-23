@@ -1,9 +1,10 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -19,14 +20,13 @@ public static class GetStyleByName
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken),
-                    StyleResponse.FromDomain
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken))
+                        .MapResult(StyleResponse.FromDomain);
 
             return result;
         }

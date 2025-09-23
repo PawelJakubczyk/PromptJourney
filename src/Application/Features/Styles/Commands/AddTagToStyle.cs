@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands.AddTagToStyle;
 
@@ -20,19 +21,21 @@ public static class AddTagToStyle
             var styleName = StyleName.Create(command.StyleName);
             var tag = Tag.Create(command.Tag);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(styleName)
-                .CollectErrors(tag)
-                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken),
-                    StyleResponse.FromDomain
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .BeginValidationBlock()
+                    .CollectErrors(styleName)
+                    .CollectErrors(tag)
+                .EndValidationBlock()
+                .BeginValidationBlock()
+                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                    .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken)
+                .EndValidationBlock()
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                        .MapResult(StyleResponse.FromDomain);
 
             return result;
         }
-
     }
 }

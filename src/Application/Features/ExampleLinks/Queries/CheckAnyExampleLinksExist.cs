@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extension;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Queries;
 
@@ -16,12 +17,11 @@ public static class CheckAnyExampleLinksExist
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _exampleLinksRepository.CheckAnyExampleLinksExistAsync(cancellationToken),
-                    _ => true
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .IfNoErrors()
+                    .Executes(() => _exampleLinksRepository.CheckAnyExampleLinksExistAsync(cancellationToken))
+                        .MapResult(_ => true);
 
             return result;
         }

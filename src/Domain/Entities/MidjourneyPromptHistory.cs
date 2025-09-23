@@ -2,6 +2,7 @@
 using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Domain.Entities;
 
@@ -46,23 +47,23 @@ public class MidjourneyPromptHistory: IEntitie
         DateTime? createdOn = null
     )
     {
-        List<Error> errors = [];
 
-        errors
-            .CollectErrors<Prompt>(prompt)
-            .CollectErrors<ModelVersion>(version);
+        var result = ValidationPipeline
+            .Empty()
+            .BeginValidationBlock()
+                .CollectErrors<Prompt>(prompt)
+                .CollectErrors<ModelVersion>(version)
+            .EndValidationBlock()
+                .IfNoErrors()
+                    .Executes<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
+                    (
+                        prompt.Value,
+                        version.Value,
+                        createdOn
+                    ))
+                        .MapResult(history => history);
 
-        if (errors.Count != 0)
-            return Result.Fail<MidjourneyPromptHistory>(errors);
-
-        var history = new MidjourneyPromptHistory
-        (
-            prompt.Value,
-            version.Value,
-            createdOn
-        );
-
-        return Result.Ok(history);
+        return result;
     }
 }
 

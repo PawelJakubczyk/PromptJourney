@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extension;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -18,12 +19,11 @@ public static class CalculateHistoricalRecordCount
 
         public async Task<Result<int>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _promptHistoryRepository.CalculateHistoricalRecordCountAsync(cancellationToken),
-                    count => count
-                );
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .IfNoErrors()
+                    .Executes(() => _promptHistoryRepository.CalculateHistoricalRecordCountAsync(cancellationToken))
+                        .MapResult(count => count);
 
             return result;
         }

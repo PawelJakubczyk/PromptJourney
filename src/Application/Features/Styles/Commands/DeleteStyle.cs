@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
+using Application.Features.Common.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Features.Common.Responses;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands.RemoveStyle;
 
@@ -23,18 +24,21 @@ public static class DeleteStyle
         {
             var styleName = StyleName.Create(command.StyleName);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    async () =>
-                    {
-                        await _exampleLinksRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken);
-                        return await _styleRepository.DeleteStyleAsync(styleName.Value, cancellationToken);
-                    },
-                    _ => DeleteResponse.Success($"Style '{styleName.Value.Value}' was successfully deleted.")
-                );
+                .IfNoErrors()
+                    .Executes
+                    (
+                        async () =>
+                        {
+                            await _exampleLinksRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken);
+                            return await _styleRepository.DeleteStyleAsync(styleName.Value, cancellationToken);
+                        }
+                    )
+                        .MapResult(_ => DeleteResponse.Success($"Style '{styleName.Value.Value}' was successfully deleted."));
+
 
             return result;
         }

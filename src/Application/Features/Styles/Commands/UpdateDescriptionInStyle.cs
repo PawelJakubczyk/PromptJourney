@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extension;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Application.Extension;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands;
 
@@ -20,15 +21,16 @@ public static class UpdateDescriptionInStyle
             var styleName = StyleName.Create(command.StyleName);
             var description = Description.Create(command.NewDescription);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(styleName)
-                .CollectErrors(description)
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                .BeginValidationBlock()
+                    .CollectErrors(styleName)
+                    .CollectErrors(description)
+                .EndValidationBlock()
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken),
-                    StyleResponse.FromDomain
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
+                        .MapResult(StyleResponse.FromDomain);
 
             return result;
         }

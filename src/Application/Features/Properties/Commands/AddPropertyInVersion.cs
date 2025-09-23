@@ -5,6 +5,7 @@ using Application.Features.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.Properties.Commands;
 
@@ -48,14 +49,12 @@ public static class AddPropertyInVersion
                 descriptionResult!
             );
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(property)
-                .ExecuteAndMapResultIfNoErrors
-                (
-                    () =>  _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken),
-                    PropertyResponse.FromDomain
-                );
+                .IfNoErrors()
+                    .Executes(() => _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken))
+                        .MapResult(PropertyResponse.FromDomain);
 
             return result;
         }

@@ -4,6 +4,7 @@ using Application.Extension;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -19,13 +20,12 @@ public static class GetStylesByType
         {
             var styleType = StyleType.Create(query.StyleType);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(styleType)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _styleRepository.GetStylesByTypeAsync(styleType.Value, cancellationToken),
-                    domainList => domainList.Select(StyleResponse.FromDomain).ToList()
-                );
+                .IfNoErrors()
+                .Executes(() => _styleRepository.GetStylesByTypeAsync(styleType.Value, cancellationToken))
+                .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;
         }

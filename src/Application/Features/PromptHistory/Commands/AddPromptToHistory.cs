@@ -5,6 +5,7 @@ using Application.Features.PromptHistory.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.PromptHistory.Commands;
 
@@ -26,18 +27,14 @@ public static class AddPromptToHistory
             var prompt = Prompt.Create(command.Prompt);
             var version = ModelVersion.Create(command.Version);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
-                .CollectErrors(prompt)
-                .CollectErrors(version)
-                .ExecuteAndMapResultIfNoErrors(
-                    () =>
-                    {
-                        var history = MidjourneyPromptHistory.Create(prompt, version);
-                        return _promptHistoryRepository.AddPromptToHistoryAsync(history.Value, cancellationToken);
-                    },
-                    PromptHistoryResponse.FromDomain
-                );
+            var promptHistory = MidjourneyPromptHistory.Create(prompt, version);
+
+            var result = await ValidationPipeline
+                .EmptyAsync()
+                        .CollectErrors(promptHistory)
+                    .IfNoErrors()
+                        .Executes(() => _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value, cancellationToken))
+                            .MapResult(PromptHistoryResponse.FromDomain);
 
             return result;
         }

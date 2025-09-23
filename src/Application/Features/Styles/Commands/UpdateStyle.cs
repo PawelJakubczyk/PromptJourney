@@ -5,6 +5,7 @@ using Application.Features.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands;
 
@@ -32,15 +33,14 @@ public static class UpdateStyle
             var midjourneyStyle = MidjourneyStyle.Create(styleName, type, description!, tags);
 
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(midjourneyStyle)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteAndMapResultIfNoErrors
-                (
-                    () => _styleRepository.UpdateStyleAsync(midjourneyStyle.Value, cancellationToken),
-                    StyleResponse.FromDomain
-                );
+                .IfNoErrors()
+                    .Executes(() => _styleRepository.UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
+                        .MapResult(StyleResponse.FromDomain);
+
 
             return result;
         }

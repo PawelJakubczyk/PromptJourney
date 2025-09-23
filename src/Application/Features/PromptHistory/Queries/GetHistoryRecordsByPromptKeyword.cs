@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Features.PromptHistory.Responses;
-using FluentResults;
-using Domain.ValueObjects;
 using Application.Extension;
+using Application.Features.PromptHistory.Responses;
+using Domain.ValueObjects;
+using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.PromptHistory.Queries;
 
@@ -22,13 +23,12 @@ public static class GetHistoryRecordsByPromptKeyword
         {
             var keyword = Keyword.Create(query.Keyword);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(keyword)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword.Value, cancellationToken),
-                    domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList()
-                );
+                .IfNoErrors()
+                    .Executes(() => _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword.Value, cancellationToken))
+                        .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
 
             return result;
         }

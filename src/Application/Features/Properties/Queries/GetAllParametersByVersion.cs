@@ -4,6 +4,7 @@ using Application.Extension;
 using Application.Features.Properties.Responses;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.Properties.Queries;
 
@@ -21,13 +22,13 @@ public static class GetAllParametersByVersion
         {
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(version)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken),
-                    domainList => domainList.Select(PropertyResponse.FromDomain).ToList()
-                );
+                .IfNoErrors()
+                    .Executes(() => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken))
+                        .MapResult(domainList => domainList.Select(PropertyResponse.FromDomain).ToList());
+
 
             return result;
         }

@@ -4,6 +4,7 @@ using Application.Extension;
 using Application.Features.ExampleLinks.Responses;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Queries;
 
@@ -20,13 +21,18 @@ public static class GetExampleLinksByStyle
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ErrorFactory
-                .EmptyErrorsAsync()
+            var result = await ValidationPipeline
+                .EmptyAsync()
                 .CollectErrors(styleName)
-                .ExecuteAndMapResultIfNoErrors(
-                    () => _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value, cancellationToken),
-                    domainList => domainList.Select(ExampleLinkResponse.FromDomain).ToList()
-                );
+                .IfNoErrors()
+                    .Executes(() => _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                        .MapResult
+                        (
+                            domainList => domainList
+                            .Select(ExampleLinkResponse.FromDomain)
+                            .ToList()
+                        );
+
 
             return result;
         }
