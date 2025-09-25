@@ -23,21 +23,19 @@ public static class DeletePropertyInVersion
             var version = ModelVersion.Create(command.Version);
             var propertyName = PropertyName.Create(command.PropertyName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .BeginValidationBlock()
+                .Validate(pipeline => pipeline
                     .CollectErrors(version)
-                    .CollectErrors(propertyName)
-                .EndValidationBlock()
-                .IfNoErrors()
-                    .Executes(() => _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value, cancellationToken))
-                        .MapResult
-                        (
-                            _ => DeleteResponse.Success
-                            (
-                                $"Property '{propertyName.Value.Value}' was successfully deleted from version '{version.Value.Value}'."
-                            )
-                        );
+                    .CollectErrors(propertyName))
+                .ExecuteIfNoErrors(() => _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value, cancellationToken))
+                .MapResult
+                (
+                    _ => DeleteResponse.Success
+                    (
+                        $"Property '{propertyName.Value.Value}' was successfully deleted from version '{version.Value.Value}'."
+                    )
+                );
 
             return result;
         }

@@ -25,12 +25,11 @@ public static class DeleteAllExampleLinksByStyle
         {
             var styleName = StyleName.Create(command.StyleNameRaw);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                     .CollectErrors(styleName)
                     .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .IfNoErrors()
-                        .Executes(() => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                        .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
                             .MapResult(count => BulkDeleteResponse.Success
                             (
                                 count,

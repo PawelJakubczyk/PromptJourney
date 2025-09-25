@@ -19,11 +19,10 @@ public static class CheckStyleExist
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.CheckStyleExistsAsync(styleName.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _styleRepository.CheckStyleExistsAsync(styleName.Value, cancellationToken))
                         .MapResult(value => value);
 
 

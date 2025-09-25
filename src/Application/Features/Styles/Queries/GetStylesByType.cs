@@ -20,11 +20,10 @@ public static class GetStylesByType
         {
             var styleType = StyleType.Create(query.StyleType);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleType)
-                .IfNoErrors()
-                .Executes(() => _styleRepository.GetStylesByTypeAsync(styleType.Value, cancellationToken))
+                .ExecuteIfNoErrors(() => _styleRepository.GetStylesByTypeAsync(styleType.Value, cancellationToken))
                 .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;

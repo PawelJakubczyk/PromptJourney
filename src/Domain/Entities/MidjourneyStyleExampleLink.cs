@@ -2,7 +2,8 @@ using Domain.Abstractions;
 using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
-
+using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.Entities;
 
@@ -10,52 +11,54 @@ public class MidjourneyStyleExampleLink : IEntitie
 {
     // Primary key
     public ExampleLink Link { get; private set; }
-    
+
     // Foreign keys
     public StyleName StyleName { get; private set; }
     public ModelVersion Version { get; private set; }
-    
+
     // Navigation
     public MidjourneyStyle Style { get; private set; } = null!;
     public MidjourneyVersion VersionMaster { get; private set; } = null!;
 
     // Constructors
-    private MidjourneyStyleExampleLink() 
+    private MidjourneyStyleExampleLink()
     {
         // Parameterless constructor for EF Core
     }
 
-    private MidjourneyStyleExampleLink(ExampleLink link, StyleName styleName, ModelVersion version)
+    private MidjourneyStyleExampleLink(
+        ExampleLink link,
+        StyleName styleName,
+        ModelVersion version)
     {
         Link = link;
         StyleName = styleName;
         Version = version;
     }
-    
-    public static Result<MidjourneyStyleExampleLink> Create
-    (
-        Result<ExampleLink> link,
-        Result<StyleName> styleName,
-        Result<ModelVersion> version
-    )
+
+    public static Result<MidjourneyStyleExampleLink> Create(
+        Result<ExampleLink> linkResult,
+        Result<StyleName> styleNameResult,
+        Result<ModelVersion> versionResult)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .CollectErrors(linkResult)
+                .CollectErrors(styleNameResult)
+                .CollectErrors(versionResult))
+            .ExecuteIfNoErrors<MidjourneyStyleExampleLink>(() =>
+            {
+                var exampleLink = new MidjourneyStyleExampleLink(
+                    linkResult.Value,
+                    styleNameResult.Value,
+                    versionResult.Value
+                );
 
-        errors
-            .CollectErrors<ExampleLink>(link)
-            .CollectErrors<StyleName>(styleName)
-            .CollectErrors<ModelVersion>(version);
+                return exampleLink;
+            })
+            .MapResult(link => link);
 
-        if (errors.Count != 0)
-            return Result.Fail<MidjourneyStyleExampleLink>(errors);
-
-        var exampleLink = new MidjourneyStyleExampleLink
-        (
-            link.Value,
-            styleName.Value,
-            version.Value
-        );
-
-        return Result.Ok(exampleLink);
+        return result;
     }
 }

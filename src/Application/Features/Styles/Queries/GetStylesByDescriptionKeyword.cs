@@ -20,11 +20,10 @@ public static class GetStylesByDescriptionKeyword
         {
             var keyword = Keyword.Create(query.DescriptionKeyword);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(keyword)
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.GetStylesByDescriptionKeywordAsync(keyword.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _styleRepository.GetStylesByDescriptionKeywordAsync(keyword.Value, cancellationToken))
                         .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;

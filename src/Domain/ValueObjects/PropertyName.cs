@@ -2,6 +2,7 @@
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -13,15 +14,14 @@ public record PropertyName : ValueObject<string>, ICreatable<PropertyName, strin
 
     public static Result<PropertyName> Create(string value)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
+                .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength))
+            .ExecuteIfNoErrors<PropertyName>(() => new PropertyName(value))
+            .MapResult(p => p);
 
-        errors
-            .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
-            .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<PropertyName>(errors);
-
-        return Result.Ok(new PropertyName(value));
+        return result;
     }
 }

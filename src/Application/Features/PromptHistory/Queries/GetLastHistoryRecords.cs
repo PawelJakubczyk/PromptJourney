@@ -20,15 +20,13 @@ public static class GetLastHistoryRecords
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .BeginValidationBlock()
+                    .Validate(pipeline => pipeline
                         .IfHistoryLimitNotGreaterThanZero(query.Count)
-                        .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken)
-                    .EndValidationBlock()
-                    .IfNoErrors()
-                        .Executes(() => _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count, cancellationToken))
-                            .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
+                        .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
+                    .ExecuteIfNoErrors(() => _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count, cancellationToken))
+                    .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
 
             return result;
         }

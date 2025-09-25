@@ -2,6 +2,7 @@ using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -16,15 +17,14 @@ public record Description : ValueObject<string?>, ICreatable<Description, string
         if (value == null)
             return Result.Ok(new Description(default(string)));
 
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfWhitespace<DomainLayer, Description>(value)
+                .IfLengthTooLong<DomainLayer, Description>(value, MaxLength))
+            .ExecuteIfNoErrors<Description>(() => new Description(value))
+            .MapResult(d => d);
 
-        errors
-            .IfWhitespace<DomainLayer, Description>(value)
-            .IfLengthTooLong<DomainLayer, Description>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<Description>(errors);
-
-        return Result.Ok(new Description(value));
+        return result;
     }
 }

@@ -20,11 +20,10 @@ public static class CheckExampleLinkExist
         {
             var link = ExampleLink.Create(query.Link);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(link)
-                .IfNoErrors()
-                    .Executes(() => _exampleLinksRepository.CheckExampleLinkExistsAsync(link.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _exampleLinksRepository.CheckExampleLinkExistsAsync(link.Value, cancellationToken))
                         .MapResult(_ => true);
 
             return result;

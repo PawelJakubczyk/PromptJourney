@@ -37,12 +37,11 @@ public static class AddVersion
                 description!
             );
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(midjourneyVersion)
-                .IfNoErrors()
-                    .Executes(() => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken))
-                        .MapResult(VersionResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken))
+                .MapResult(VersionResponse.FromDomain);
 
 
             return result;

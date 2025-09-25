@@ -2,6 +2,7 @@ using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -13,18 +14,17 @@ public record MaxValue : ValueObject<string?>, ICreatable<MaxValue, string?>
 
     public static Result<MaxValue> Create(string? value)
     {
-        if (value == null)
+        if (value is null)
             return Result.Ok(new MaxValue(default(string)));
 
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfWhitespace<DomainLayer, MaxValue>(value)
+                .IfLengthTooLong<DomainLayer, MaxValue>(value, MaxLength))
+            .ExecuteIfNoErrors<MaxValue>(() => new MaxValue(value))
+            .MapResult(v => v);
 
-        errors
-            .IfWhitespace<DomainLayer, MaxValue>(value)
-            .IfLengthTooLong<DomainLayer, MaxValue>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<MaxValue>(errors);
-
-        return Result.Ok(new MaxValue(value));
+        return result;
     }
 }

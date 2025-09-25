@@ -20,12 +20,11 @@ public static class GetStyleByName
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken))
                         .MapResult(StyleResponse.FromDomain);
 
             return result;

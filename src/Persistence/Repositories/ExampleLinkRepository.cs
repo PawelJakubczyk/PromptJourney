@@ -4,7 +4,8 @@ using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
-using Persistence.Errors;
+using Utilities.Constants;
+using Utilities.Errors;
 
 namespace Persistence.Repositories;
 
@@ -17,62 +18,47 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         _midjourneyDbContext = midjourneyDbContext;
     }
 
-    // For Queries
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetAllExampleLinksAsync
-    (
-        CancellationToken cancellationToken
-    )
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetAllExampleLinksAsync(CancellationToken cancellationToken)
     {
         try
         {
             var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .Include(l => l.Style)
                 .Include(l => l.VersionMaster)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return Result.Ok(exampleLinks);
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyleExampleLink>>($"Failed to get all example links: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get all example links: {ex.Message}");
+            return Result.Fail<List<MidjourneyStyleExampleLink>>(error);
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync
-    (
-        StyleName styleName, 
-        CancellationToken cancellationToken
-    )
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(StyleName styleName, CancellationToken cancellationToken)
     {
-        List<PersistenceError> persistenceErrors = [];
-
-        persistenceErrors.IfStyleNotExists(styleName);
-
-        var validationErrors = PersistenceErrorsExtensions.CreateValidationErrorIfAny<List<MidjourneyStyleExampleLink>>(persistenceErrors);
-        if (validationErrors is not null) return validationErrors;
-
         try
         {
             var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .Include(l => l.Style)
                 .Include(l => l.VersionMaster)
                 .Where(l => l.StyleName == styleName)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return Result.Ok(exampleLinks);
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyleExampleLink>>($"Failed to get example links by style: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get example links by style: {ex.Message}");
+            return Result.Fail<List<MidjourneyStyleExampleLink>>(error);
         }
     }
 
-    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync
-    (
+    public async Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAndVersionAsync(
         StyleName styleName,
-        ModelVersion version, 
-        CancellationToken cancellationToken
-    )
+        ModelVersion version,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -80,51 +66,46 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
                 .Include(l => l.Style)
                 .Include(l => l.VersionMaster)
                 .Where(l => l.StyleName == styleName && l.Version == version)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return Result.Ok(exampleLinks);
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyleExampleLink>>($"Failed to get example links by style and version: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get example links by style and version: {ex.Message}");
+            return Result.Fail<List<MidjourneyStyleExampleLink>>(error);
         }
     }
 
-    public async Task<Result<bool>> CheckExampleLinkExistsAsync
-    (
-        ExampleLink link, 
-        CancellationToken cancellationToken
-    )
+    public async Task<Result<bool>> CheckExampleLinkExistsAsync(ExampleLink link, CancellationToken cancellationToken)
     {
         try
         {
             var exists = await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .AnyAsync(l => l.Link == link);
+                .AnyAsync(l => l.Link == link, cancellationToken);
 
             return Result.Ok(exists);
         }
         catch (Exception ex)
         {
-            return Result.Fail<bool>($"Failed to check if example link exists: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to check if example link exists: {ex.Message}");
+            return Result.Fail<bool>(error);
         }
     }
 
-    public async Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync
-    (
-        StyleName styleName
-        , CancellationToken cancellationToken
-    )
+    public async Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(StyleName styleName, CancellationToken cancellationToken)
     {
         try
         {
             var exists = await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .AnyAsync(l => l.StyleName == styleName);
+                .AnyAsync(l => l.StyleName == styleName, cancellationToken);
 
             return Result.Ok(exists);
         }
         catch (Exception ex)
         {
-            return Result.Fail<bool>($"Failed to check if example link with style exists: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to check if example link with style exists: {ex.Message}");
+            return Result.Fail<bool>(error);
         }
     }
 
@@ -133,29 +114,30 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         try
         {
             var hasAnyLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .AnyAsync();
+                .AnyAsync(cancellationToken);
 
             return Result.Ok(hasAnyLinks);
         }
         catch (Exception ex)
         {
-            return Result.Fail<bool>($"Failed to check if example links are empty: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to check if example links exist: {ex.Message}");
+            return Result.Fail<bool>(error);
         }
     }
 
-    // For Commands
     public async Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync(MidjourneyStyleExampleLink exampleLink, CancellationToken cancellationToken)
     {
         try
         {
-            await _midjourneyDbContext.MidjourneyStyleExampleLinks.AddAsync(exampleLink);
-            await _midjourneyDbContext.SaveChangesAsync();
+            await _midjourneyDbContext.MidjourneyStyleExampleLinks.AddAsync(exampleLink, cancellationToken);
+            await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Ok(exampleLink);
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyStyleExampleLink>($"Failed to add example link: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to add example link: {ex.Message}");
+            return Result.Fail<MidjourneyStyleExampleLink>(error);
         }
     }
 
@@ -164,24 +146,24 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         try
         {
             var exampleLink = await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .FirstOrDefaultAsync(l => l.Link == link);
+                .FirstOrDefaultAsync(l => l.Link == link, cancellationToken);
 
-            _midjourneyDbContext.MidjourneyStyleExampleLinks.Remove(exampleLink!);
-            await _midjourneyDbContext.SaveChangesAsync();
+            if (exampleLink == null)
+                return Result.Fail<MidjourneyStyleExampleLink>(new Error<PersistenceLayer>($"Example link not found: {link}"));
 
-            return Result.Ok(exampleLink!);
+            _midjourneyDbContext.MidjourneyStyleExampleLinks.Remove(exampleLink);
+            await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
+
+            return Result.Ok(exampleLink);
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyStyleExampleLink>($"Failed to delete example link: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to delete example link: {ex.Message}");
+            return Result.Fail<MidjourneyStyleExampleLink>(error);
         }
     }
 
-    public async Task<Result<int>> DeleteAllExampleLinksByStyleAsync
-    (
-        StyleName styleName,
-        CancellationToken cancellationToken
-    )
+    public async Task<Result<int>> DeleteAllExampleLinksByStyleAsync(StyleName styleName, CancellationToken cancellationToken)
     {
         try
         {
@@ -189,8 +171,8 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
                 .Where(l => l.StyleName == styleName)
                 .ToListAsync(cancellationToken);
 
-            if (exampleLinks.Count == 0)
-                return Result.Fail<int>($"No example links found for style '{styleName}'");
+            if (!exampleLinks.Any())
+                return Result.Fail<int>(new Error<PersistenceLayer>($"No example links found for style '{styleName}'"));
 
             _midjourneyDbContext.MidjourneyStyleExampleLinks.RemoveRange(exampleLinks);
             var deletedCount = await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -199,8 +181,8 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<int>($"Failed to delete all example links by style: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to delete all example links by style: {ex.Message}");
+            return Result.Fail<int>(error);
         }
     }
-
 }

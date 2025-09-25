@@ -2,25 +2,25 @@
 
 namespace Utilities.Validation;
 
-public class ValidationPipeline
+public class WorkflowPipeline
 {
     public Task<List<Error>> ErrorsTask { get; }
     public List<Error> Errors { get; }
     public bool BreakOnError { get; }
 
-    private ValidationPipeline(List<Error> errors, bool breakOnError)
+    private WorkflowPipeline(List<Error> errors, bool breakOnError)
     {
         Errors = errors ?? [];
         BreakOnError = breakOnError;
     }
 
-    public static ValidationPipeline Create(List<Error> errors, bool breakOnError = true) =>
-        new ValidationPipeline(errors, breakOnError);
+    public static WorkflowPipeline Create(List<Error> errors, bool breakOnError = true) =>
+        new WorkflowPipeline(errors, breakOnError);
 
-    public static ValidationPipeline Empty() =>
+    public static WorkflowPipeline Empty() =>
         Create([], breakOnError: true);
 
-    public static Task<ValidationPipeline> EmptyAsync()
+    public static Task<WorkflowPipeline> EmptyAsync()
     {
         return Task.FromResult(Create([], breakOnError: true));
     }

@@ -21,15 +21,13 @@ public static class UpdateDescriptionInStyle
             var styleName = StyleName.Create(command.StyleName);
             var description = Description.Create(command.NewDescription);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .BeginValidationBlock()
+                .Validate(pipeline => pipeline
                     .CollectErrors(styleName)
-                    .CollectErrors(description)
-                .EndValidationBlock()
+                    .CollectErrors(description))
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
                         .MapResult(StyleResponse.FromDomain);
 
             return result;

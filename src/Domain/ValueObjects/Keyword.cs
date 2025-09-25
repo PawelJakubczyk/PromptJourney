@@ -2,6 +2,7 @@
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -13,15 +14,14 @@ public record Keyword : ValueObject<string>, ICreatable<Keyword, string>
 
     public static Result<Keyword> Create(string? value)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfNullOrWhitespace<DomainLayer, Keyword>(value)
+                .IfLengthTooLong<DomainLayer, Keyword>(value, MaxLength))
+            .ExecuteIfNoErrors<Keyword>(() => new Keyword(value!))
+            .MapResult(k => k);
 
-        errors
-            .IfNullOrWhitespace<DomainLayer, Keyword>(value)
-            .IfLengthTooLong<DomainLayer, Keyword>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<Keyword>(errors);
-
-        return Result.Ok(new Keyword(value));
+        return result;
     }
 }

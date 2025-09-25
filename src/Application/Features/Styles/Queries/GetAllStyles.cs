@@ -17,10 +17,9 @@ public static class GetAllStyles
 
         public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.GetAllStylesAsync(cancellationToken))
+                    .ExecuteIfNoErrors(() => _styleRepository.GetAllStylesAsync(cancellationToken))
                         .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;

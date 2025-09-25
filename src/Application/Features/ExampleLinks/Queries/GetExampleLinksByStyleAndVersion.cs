@@ -26,12 +26,11 @@ public static class GetExampleLinksByStyleAndVersion
             var styleName = StyleName.Create(query.StyleName);
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .CollectErrors(version)
-                .IfNoErrors()
-                    .Executes(() => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
                         .MapResult
                         (
                             domainList => domainList

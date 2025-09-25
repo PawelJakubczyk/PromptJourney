@@ -3,6 +3,7 @@ using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -14,33 +15,33 @@ public record StyleType : ValueObject<string>, ICreatable<StyleType, string>
 
     public static Result<StyleType> Create(string value)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfNullOrWhitespace<DomainLayer, StyleType>(value)
+                .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
+                .IfStyleTypeNotInclude<DomainLayer>(value))
+            .ExecuteIfNoErrors<StyleType>(() => new StyleType(value))
+            .MapResult(s => s);
 
-        errors
-            .IfNullOrWhitespace<DomainLayer, StyleType>(value)
-            .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
-            .IfStyleTypeNotInclude<DomainLayer>(value);
-
-        if (errors.Count != 0)
-            return Result.Fail<StyleType>(errors);
-
-        return Result.Ok(new StyleType(value));
+        return result;
     }
 }
-internal static class StyleNameErrorsExtensions
+
+internal static class StyleTypeErrorsExtensions
 {
-    internal static List<Error> IfStyleTypeNotInclude<TLayer>(this List<Error> domainErrors, string value)
+    internal static WorkflowPipeline IfStyleTypeNotInclude<TLayer>(this WorkflowPipeline pipeline, string value)
         where TLayer : ILayer
     {
         if (!Enum.TryParse<StyleTypeEnum>(value, true, out var _))
         {
-            domainErrors.Add(new Error<TLayer>
+            pipeline.Errors.Add(new Error<TLayer>
             (
                 $"Invalid style type: {value}. Expected values are: {string.Join(", ", Enum.GetNames<StyleTypeEnum>())}"
             ));
         }
 
-        return domainErrors;
+        return pipeline;
     }
 }
 

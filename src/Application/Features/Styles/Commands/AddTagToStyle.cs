@@ -21,19 +21,16 @@ public static class AddTagToStyle
             var styleName = StyleName.Create(command.StyleName);
             var tag = Tag.Create(command.Tag);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .BeginValidationBlock()
+                .Validate(pipeline => pipeline
                     .CollectErrors(styleName)
-                    .CollectErrors(tag)
-                .EndValidationBlock()
-                .BeginValidationBlock()
+                    .CollectErrors(tag))
+                .Validate(pipeline => pipeline
                     .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken)
-                .EndValidationBlock()
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
-                        .MapResult(StyleResponse.FromDomain);
+                    .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                .MapResult(StyleResponse.FromDomain);
 
             return result;
         }

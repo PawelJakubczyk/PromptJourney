@@ -23,11 +23,10 @@ public static class GetHistoryRecordsByPromptKeyword
         {
             var keyword = Keyword.Create(query.Keyword);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(keyword)
-                .IfNoErrors()
-                    .Executes(() => _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword.Value, cancellationToken))
                         .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
 
             return result;

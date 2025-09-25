@@ -20,15 +20,13 @@ public static class GetHistoryByDateRange
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .BeginValidationBlock()
+                    .Validate(pipeline => pipeline
                         .IfDateInFuture(query.From)
                         .IfDateInFuture(query.To)
-                        .IfDateRangeNotChronological(query.From, query.To)
-                    .EndValidationBlock()
-                    .IfNoErrors()
-                        .Executes(() => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
+                        .IfDateRangeNotChronological(query.From, query.To))
+                        .ExecuteIfNoErrors(() => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
                             .MapResult
                             (
                                 domainList => domainList

@@ -2,6 +2,7 @@ using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -13,15 +14,14 @@ public record Tag : ValueObject<string>, ICreatable<Tag, string>
 
     public static Result<Tag> Create(string value)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfNullOrWhitespace<DomainLayer, Tag>(value)
+                .IfLengthTooLong<DomainLayer, Tag>(value, MaxLength))
+            .ExecuteIfNoErrors<Tag>(() => new Tag(value))
+            .MapResult(t => t);
 
-        errors
-            .IfNullOrWhitespace<DomainLayer, Tag>(value)
-            .IfLengthTooLong<DomainLayer, Tag>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<Tag>(errors);
-
-        return Result.Ok(new Tag(value));
+        return result;
     }
 }

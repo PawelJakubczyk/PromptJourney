@@ -8,11 +8,11 @@ using Utilities.Validation;
 
 namespace Application.Extension;
 
-public static class ValidationPipelineExtensions
+public static class WorkflowPipelineExtensions
 {
-    public static Task<ValidationPipeline> IfVersionNotExists
+    public static Task<WorkflowPipeline> IfVersionNotExists
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         ModelVersion version,
         IVersionRepository repo,
         CancellationToken cancellationToken
@@ -28,9 +28,9 @@ public static class ValidationPipelineExtensions
         );
     }
 
-    public static Task<ValidationPipeline> IfVersionAlreadyExists
+    public static Task<WorkflowPipeline> IfVersionAlreadyExists
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         ModelVersion version,
         IVersionRepository repo,
         CancellationToken cancellationToken
@@ -46,9 +46,9 @@ public static class ValidationPipelineExtensions
         );
     }
 
-    public static Task<ValidationPipeline> IfStyleNotExists
+    public static Task<WorkflowPipeline> IfStyleNotExists
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         StyleName style,
         IStyleRepository repo,
         CancellationToken cancellationToken
@@ -64,9 +64,9 @@ public static class ValidationPipelineExtensions
         );
     }
 
-    public static Task<ValidationPipeline> IfStyleAlreadyExists
+    public static Task<WorkflowPipeline> IfStyleAlreadyExists
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         StyleName style,
         IStyleRepository repo,
         CancellationToken cancellationToken
@@ -82,9 +82,9 @@ public static class ValidationPipelineExtensions
         );
     }
 
-    public static Task<ValidationPipeline> IfLinkNotExists
+    public static Task<WorkflowPipeline> IfLinkNotExists
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         ExampleLink link,
         IExampleLinksRepository repo,
         CancellationToken cancellationToken
@@ -99,9 +99,9 @@ public static class ValidationPipelineExtensions
         );
     }
 
-    public static Task<ValidationPipeline> IfLinkAlreadyExists
+    public static Task<WorkflowPipeline> IfLinkAlreadyExists
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         ExampleLink link,
         IExampleLinksRepository repo,
         CancellationToken cancellationToken
@@ -116,9 +116,9 @@ public static class ValidationPipelineExtensions
         );
     }
 
-    public static async Task<ValidationPipeline> IfTagAlreadyExists
+    public static async Task<WorkflowPipeline> IfTagAlreadyExists
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         StyleName styleName,
         Tag tag,
         IStyleRepository repository,
@@ -141,12 +141,12 @@ public static class ValidationPipelineExtensions
             errors.Add(new Error<ApplicationLayer>($"Tag '{tag}' already exists in style '{styleName}'."));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<ValidationPipeline> IfTagNotExist
+    public static async Task<WorkflowPipeline> IfTagNotExist
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         StyleName styleName,
         Tag tag,
         IStyleRepository repository,
@@ -169,12 +169,12 @@ public static class ValidationPipelineExtensions
             errors.Add(new Error<ApplicationLayer>($"Tag '{tag}' does not exist in style '{styleName}'."));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<ValidationPipeline> IfDateInFuture
+    public static async Task<WorkflowPipeline> IfDateInFuture
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         DateTime date)
     {
         var pipeline = await pipelineTask;
@@ -188,12 +188,12 @@ public static class ValidationPipelineExtensions
             errors.Add(new Error<DomainLayer>($"Date '{date:yyyy-MM-dd}' cannot be in the future."));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<ValidationPipeline> IfDateRangeNotChronological
+    public static async Task<WorkflowPipeline> IfDateRangeNotChronological
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         DateTime from,
         DateTime to
     )
@@ -210,12 +210,12 @@ public static class ValidationPipelineExtensions
                 $"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd})."));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<ValidationPipeline> IfHistoryLimitNotGreaterThanZero
+    public static async Task<WorkflowPipeline> IfHistoryLimitNotGreaterThanZero
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         int count
     )
     {
@@ -230,12 +230,12 @@ public static class ValidationPipelineExtensions
             errors.Add(new Error($"History count must be greater than zero. Provided: {count}."));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<ValidationPipeline> IfHistoryCountExceedsAvailable
+    public static async Task<WorkflowPipeline> IfHistoryCountExceedsAvailable
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         int requestedCount,
         IPromptHistoryRepository repository,
         CancellationToken cancellationToken
@@ -252,7 +252,7 @@ public static class ValidationPipelineExtensions
         if (availableCountResult.IsFailed)
         {
             errors.AddRange(availableCountResult.Errors.OfType<Error>());
-            return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+            return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
         }
 
         if (requestedCount > availableCountResult.Value)
@@ -261,11 +261,11 @@ public static class ValidationPipelineExtensions
                 $"Requested {requestedCount} records, but only {availableCountResult.Value} are available."));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<ValidationPipeline> IfListIsNullOrEmpty<TValue>(
-        this Task<ValidationPipeline> pipelineTask,
+    public static async Task<WorkflowPipeline> IfListIsNullOrEmpty<TValue>(
+        this Task<WorkflowPipeline> pipelineTask,
         List<TValue>? items)
     {
         var pipeline = await pipelineTask;
@@ -280,12 +280,12 @@ public static class ValidationPipelineExtensions
             errors.Add(new Error($"List of '{name}' must not be empty."));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<ValidationPipeline> ValidateExistence<TType>
+    public static async Task<WorkflowPipeline> ValidateExistence<TType>
     (
-        this Task<ValidationPipeline> pipelineTask,
+        this Task<WorkflowPipeline> pipelineTask,
         TType item,
         Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
         string entityName,
@@ -314,6 +314,6 @@ public static class ValidationPipelineExtensions
             ));
         }
 
-        return ValidationPipeline.Create(errors, pipeline.BreakOnError);
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 }

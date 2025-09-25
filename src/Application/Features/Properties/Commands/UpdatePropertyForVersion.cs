@@ -51,11 +51,10 @@ public static class UpdatePropertyForVersion
                 description?.Value
             );
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                .IfNoErrors()
-                    .Executes(() => _propertiesRepository.UpdateParameterForVersionAsync(property.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _propertiesRepository.UpdateParameterForVersionAsync(property.Value, cancellationToken))
                         .MapResult(PropertyResponse.FromDomain);
 
 

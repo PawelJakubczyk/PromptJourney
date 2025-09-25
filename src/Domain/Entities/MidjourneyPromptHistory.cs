@@ -48,20 +48,18 @@ public class MidjourneyPromptHistory: IEntitie
     )
     {
 
-        var result = ValidationPipeline
+        var result = WorkflowPipeline
             .Empty()
-            .BeginValidationBlock()
+            .Validate(pipeline => pipeline
                 .CollectErrors<Prompt>(prompt)
-                .CollectErrors<ModelVersion>(version)
-            .EndValidationBlock()
-                .IfNoErrors()
-                    .Executes<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
-                    (
-                        prompt.Value,
-                        version.Value,
-                        createdOn
-                    ))
-                        .MapResult(history => history);
+                .CollectErrors<ModelVersion>(version))
+            .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
+            (
+                prompt.Value,
+                version.Value,
+                createdOn
+            ))
+            .MapResult(history => history);
 
         return result;
     }

@@ -2,6 +2,7 @@
 using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Domain.Entities;
 
@@ -36,13 +37,11 @@ public class MidjourneyVersion : IEntitie
         // Parameterless constructor for EF Core
     }
 
-    private MidjourneyVersion
-    (
+    private MidjourneyVersion(
         ModelVersion version,
         Param parameter,
         DateTime? releaseDate = null,
-        Description? description = null
-    )
+        Description? description = null)
     {
         Version = version;
         Parameter = parameter;
@@ -50,32 +49,32 @@ public class MidjourneyVersion : IEntitie
         Description = description;
     }
 
-    public static Result<MidjourneyVersion> Create
-    (
+    public static Result<MidjourneyVersion> Create(
         Result<ModelVersion> versionResult,
         Result<Param> parameterResult,
         DateTime? releaseDate = null,
-        Result<Description?>? descriptionResult = null
-    )
+        Result<Description?>? descriptionResult = null)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .CollectErrors(versionResult)
+                .CollectErrors(parameterResult)
+                .CollectErrors(descriptionResult))
+            .ExecuteIfNoErrors<MidjourneyVersion>(() =>
+            {
+                var versionMaster = new MidjourneyVersion(
+                    versionResult.Value,
+                    parameterResult.Value,
+                    releaseDate,
+                    descriptionResult?.Value
+                );
 
-        errors
-            .CollectErrors<ModelVersion>(versionResult)
-            .CollectErrors<Param>(parameterResult)
-            .CollectErrors<Description>(descriptionResult);
+                return versionMaster;
+            })
+            .MapResult(vm => vm);
 
-        if (errors.Count != 0)
-            return Result.Fail<MidjourneyVersion>(errors);
-
-        var versionMaster = new MidjourneyVersion
-        (
-            versionResult.Value,
-            parameterResult.Value,
-            releaseDate,
-            descriptionResult?.Value
-        );
-
-        return Result.Ok(versionMaster);
+        return result;
     }
+
 }

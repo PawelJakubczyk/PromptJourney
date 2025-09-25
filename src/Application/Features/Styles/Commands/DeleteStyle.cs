@@ -24,20 +24,19 @@ public static class DeleteStyle
         {
             var styleName = StyleName.Create(command.StyleName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .IfNoErrors()
-                    .Executes
-                    (
-                        async () =>
-                        {
-                            await _exampleLinksRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken);
-                            return await _styleRepository.DeleteStyleAsync(styleName.Value, cancellationToken);
-                        }
-                    )
-                        .MapResult(_ => DeleteResponse.Success($"Style '{styleName.Value.Value}' was successfully deleted."));
+                .ExecuteIfNoErrors
+                (
+                    async () =>
+                    {
+                        await _exampleLinksRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken);
+                        return await _styleRepository.DeleteStyleAsync(styleName.Value, cancellationToken);
+                    }
+                )
+                .MapResult(_ => DeleteResponse.Success($"Style '{styleName.Value.Value}' was successfully deleted."));
 
 
             return result;

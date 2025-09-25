@@ -4,6 +4,7 @@ using FluentResults;
 using System.Text.RegularExpressions;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -14,23 +15,23 @@ public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, strin
 
     public static Result<ModelVersion> Create(string value)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
+                .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
+                .IfVersionFormatInvalid<DomainLayer>(value))
+            .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value))
+            .MapResult(v => v);
 
-        errors
-            .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
-            .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
-            .IfVersionFormatInvalid<DomainLayer>(value);
-
-        if (errors.Count != 0)
-            return Result.Fail<ModelVersion>(errors);
-
-        return Result.Ok(new ModelVersion(value));
+        return result;
     }
 }
 
 internal static class ModelVersionErrorsExtensions
 {
-    internal static List<Error> IfVersionFormatInvalid<TLayer>(this List<Error> Errors, string value)
+    internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>(
+        this WorkflowPipeline pipeline, string value)
         where TLayer : ILayer
     {
         bool isValidNumeric = _validNumericRegex.IsMatch(value);
@@ -38,13 +39,12 @@ internal static class ModelVersionErrorsExtensions
 
         if (!isValidNumeric && !isValidNiji)
         {
-            Errors.Add(new Error<TLayer>
-            (
+            pipeline.Errors.Add(new Error<TLayer>(
                 $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')"
             ));
         }
 
-        return Errors;
+        return pipeline;
     }
 
     private static readonly Regex _validNumericRegex =

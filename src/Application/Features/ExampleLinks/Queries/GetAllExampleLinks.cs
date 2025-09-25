@@ -18,10 +18,9 @@ public static class GetAllExampleLinks
 
         public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .IfNoErrors()
-                    .Executes(() => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken))
+                    .ExecuteIfNoErrors(() => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken))
                         .MapResult
                         (
                             domainList => domainList

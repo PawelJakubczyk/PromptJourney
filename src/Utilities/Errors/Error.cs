@@ -7,6 +7,7 @@ public class Error<TLayer> : Error
     where TLayer : ILayer
 {
     public LayersEnum Layer { get; }
+    public ErrorCode error { get; }
 
     public Error(string message) : base($"[{ResolveLayer()}] {message}")
     {
@@ -28,3 +29,17 @@ public class Error<TLayer> : Error
     }
 }
 
+public class ErrorCode
+{
+    public string Code { get; }
+    public string Message { get; }
+    public ErrorCode(string code, string message)
+    {
+        Code = code;
+        Message = message;
+    }
+    public override string ToString()
+    {
+        return $"{Code}: {Message}";
+    }
+}

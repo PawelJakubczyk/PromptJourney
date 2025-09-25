@@ -22,14 +22,12 @@ public static class CheckPropertyExistsInVersion
             var version = ModelVersion.Create(query.Version);
             var propertyName = PropertyName.Create(query.PropertyName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .BeginValidationBlock()
+                .Validate(pipeline => pipeline
                     .CollectErrors(version)
-                    .CollectErrors(propertyName)
-                .EndValidationBlock()
-                .IfNoErrors()
-                    .Executes(() => _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))
+                    .CollectErrors(propertyName))
+                    .ExecuteIfNoErrors(() => _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))
                         .MapResult(value => value);
 
 

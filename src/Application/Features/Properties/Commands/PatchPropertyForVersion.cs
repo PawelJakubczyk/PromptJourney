@@ -30,22 +30,20 @@ public static class PatchPropertyForVersion
             var version = ModelVersion.Create(command.Version);
             var propertyName = PropertyName.Create(command.PropertyName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .BeginValidationBlock()
+                    .Validate(pipeline => pipeline
                         .CollectErrors(version)
-                        .CollectErrors(propertyName)
-                    .EndValidationBlock()
-                    .IfNoErrors()
-                        .Executes(() => _propertiesRepository.PatchParameterForVersionAsync
-                        (
-                            version.Value,
-                            propertyName.Value,
-                            command.CharacteristicToUpdate,
-                            command.NewValue,
-                            cancellationToken
-                        ))
-                        .MapResult(PropertyResponse.FromDomain);
+                        .CollectErrors(propertyName))
+                    .ExecuteIfNoErrors(() => _propertiesRepository.PatchParameterForVersionAsync
+                    (
+                        version.Value,
+                        propertyName.Value,
+                        command.CharacteristicToUpdate,
+                        command.NewValue,
+                        cancellationToken
+                    ))
+                    .MapResult(PropertyResponse.FromDomain);
 
             return result;
         }

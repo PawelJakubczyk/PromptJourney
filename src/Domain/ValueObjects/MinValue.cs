@@ -2,6 +2,7 @@ using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -13,18 +14,17 @@ public record MinValue : ValueObject<string?>, ICreatable<MinValue, string?>
 
     public static Result<MinValue> Create(string? value)
     {
-        if (value == null)
+        if (value is null)
             return Result.Ok(new MinValue(default(string)));
 
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfWhitespace<DomainLayer, MinValue>(value)
+                .IfLengthTooLong<DomainLayer, MinValue>(value, MaxLength))
+            .ExecuteIfNoErrors<MinValue>(() => new MinValue(value))
+            .MapResult(v => v);
 
-        errors
-            .IfWhitespace<DomainLayer, MinValue>(value)
-            .IfLengthTooLong<DomainLayer, MinValue>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<MinValue>(errors);
-
-        return Result.Ok(new MinValue(value));
+        return result;
     }
 }

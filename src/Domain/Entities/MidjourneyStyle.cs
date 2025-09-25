@@ -4,6 +4,7 @@ using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Validation;
 
 namespace Domain.Entities;
 
@@ -47,80 +48,80 @@ public class MidjourneyStyle : IEntitie
         List<Result<Tag>>? tagsResultsList = null
     )
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+        .Empty()
+        .Validate(pipeline => pipeline
+            .CollectErrors(nameResult)
+            .CollectErrors(typeResult)
+            .CollectErrors(descriptionResult)
+            .CollectErrors(tagsResultsList)
+            .IfListIsEmpty<DomainLayer, Tag>(tagsResultsList?.ToValueList())
+            .IfListHasDuplicates<DomainLayer, Tag>(tagsResultsList?.ToValueList()))
+        .ExecuteIfNoErrors<MidjourneyStyle>(() =>
+        {
+            var style = new MidjourneyStyle
+            (
+                 nameResult.Value,
+                 typeResult.Value,
+                 descriptionResult?.Value,
+                 tagsResultsList.ToValueList()
+            );
+            return style;
+        })
+        .MapResult(style => style);
 
-        errors
-            .CollectErrors<StyleName>(nameResult)
-            .CollectErrors<StyleType>(typeResult)
-            .CollectErrors<Description>(descriptionResult)
-            .CollectErrors<Tag>(tagsResultsList);
-
-        var tagsList = tagsResultsList.ToValueList();
-
-        errors
-            .IfListHasDuplicates<DomainLayer, Tag>(tagsList);
-
-        if (errors.Count != 0)
-            return Result.Fail<MidjourneyStyle>(errors);
-
-        var style = new MidjourneyStyle
-        (
-            nameResult.Value,
-            typeResult.Value,
-            descriptionResult?.Value,
-            tagsList
-        );
-
-        return Result.Ok(style);
+        return result;
     }
 
-    public Result AddTag(Result<Tag> tag)
+
+    public Result<Tag> AddTag(Result<Tag> tag)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .CollectErrors(tag)
+                .IfListContain<DomainLayer, Tag>(Tags, tag.Value))
+            .ExecuteIfNoErrors<Tag>(() =>
+            {
+                Tags ??= [];
+                Tags.Add(tag.Value);
+                return tag;
+            })
+            .MapResult(tags => tags);
 
-        errors
-            .CollectErrors<Tag>(tag)
-            .IfListContain<DomainLayer, Tag>(Tags, tag.Value);
-
-        if (errors.Count != 0)
-            return Result.Fail(errors);
-
-        Tags ??= [];
-        Tags.Add(tag.Value);
-
-        return Result.Ok();
+        return result;
     }
 
-    public Result RemoveTag(Result<Tag> tag)
+    public Result<Tag> RemoveTag(Result<Tag> tag)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .CollectErrors(tag)
+                .IfListIsNull<DomainLayer, Tag>(Tags)
+                .IfListIsEmpty<DomainLayer, Tag>(Tags)
+                .IfListNotContain<DomainLayer, Tag>(Tags, tag.Value))
+            .ExecuteIfNoErrors(() =>
+            {
+                Tags!.RemoveAll(t => t.Equals(tag.Value));
+                return tag;
+            });
 
-        errors
-            .CollectErrors<Tag>(tag)
-            .IfListIsEmpty<DomainLayer, Tag>(Tags)
-            .IfListIsNull<DomainLayer, Tag>(Tags)
-            .IfListNotContain<DomainLayer, Tag>(Tags, tag.Value);
-
-        if (errors.Count != 0)
-            return Result.Fail(errors);
-
-        Tags!.RemoveAll(t => t.Equals(tag.Value));
-
-        return Result.Ok();
+        return result;
     }
 
-    public Result EditDescription(Result<Description?> description)
+    public Result<Description> EditDescription(Result<Description?> description)
     {
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .CollectErrors(description)
+            .ExecuteIfNoErrors<Description>(() =>
+            {
+                Description = description.Value;
+                return description;
+            });
 
-        errors.CollectErrors<Description>(description);
-
-        if (errors.Count != 0)
-            return Result.Fail(errors);
-
-        Description = description.Value;
-
-        return Result.Ok();
+        return result;
     }
 
     public override int GetHashCode()
@@ -129,49 +130,67 @@ public class MidjourneyStyle : IEntitie
     }
 }
 
-internal static class MidjourneyStyleErrorsExtensions
+internal static class MidjourneyStylePipelineExtensions
 {
-    public static List<Error> IfListIsNull<TLayer, TValue>(this List<Error> Errors, List<TValue?> value)
+    public static WorkflowPipeline IfListIsNull<TLayer, TValue>(
+        this WorkflowPipeline pipeline,
+        List<TValue?>? value)
         where TLayer : ILayer
         where TValue : ValueObject<string>
     {
         if (value is null)
         {
-            Errors.Add(new Error<TLayer>($"List of {typeof(TValue).Name}: cannot be null."));
+            pipeline.Errors.Add(
+                new Error<TLayer>($"List of {typeof(TValue).Name}: cannot be null.")
+            );
         }
-        return Errors;
+        return pipeline;
     }
 
-    public static List<Error> IfListIsEmpty<TLayer, TValue>(this List<Error> Errors, List<TValue>? items)
-    where TLayer : ILayer
-    where TValue : ValueObject<string>
-    {
-        if (items != null && items.Count == 0)
-        {
-            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Cannot be an empty collection."));
-        }
-        return Errors;
-    }
-
-    public static List<Error> IfListNotContain<TLayer, TValue>(this List<Error> Errors, List<TValue>? items, TValue element)
+    public static WorkflowPipeline IfListIsEmpty<TLayer, TValue>(
+        this WorkflowPipeline pipeline,
+        List<TValue>? items)
         where TLayer : ILayer
         where TValue : ValueObject<string>
     {
-        if (items != null && items.Contains(element) == false)
+        if (items != null && items.Count == 0)
         {
-            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Collection does not contain the required element."));
+            pipeline.Errors.Add(
+                new Error<TLayer>($"{typeof(TValue).Name}: cannot be an empty collection.")
+            );
         }
-        return Errors;
+        return pipeline;
     }
 
-    public static List<Error> IfListContain<TLayer, TValue>(this List<Error> Errors, List<TValue>? items, TValue element)
+    public static WorkflowPipeline IfListNotContain<TLayer, TValue>(
+        this WorkflowPipeline pipeline,
+        List<TValue>? items,
+        TValue element)
+        where TLayer : ILayer
+        where TValue : ValueObject<string>
+    {
+        if (items != null && !items.Contains(element))
+        {
+            pipeline.Errors.Add(
+                new Error<TLayer>($"{typeof(TValue).Name}: collection does not contain the required element.")
+            );
+        }
+        return pipeline;
+    }
+
+    public static WorkflowPipeline IfListContain<TLayer, TValue>(
+        this WorkflowPipeline pipeline,
+        List<TValue>? items,
+        TValue element)
         where TLayer : ILayer
         where TValue : ValueObject<string>
     {
         if (items != null && items.Contains(element))
         {
-            Errors.Add(new Error<TLayer>($"{typeof(TValue).Name}: Collection already contains the element."));
+            pipeline.Errors.Add(
+                new Error<TLayer>($"{typeof(TValue).Name}: collection already contains the element.")
+            );
         }
-        return Errors;
+        return pipeline;
     }
 }

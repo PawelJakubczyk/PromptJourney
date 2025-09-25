@@ -20,16 +20,14 @@ public class CheckTagExistInStyle
             var styleName = StyleName.Create(query.StyleName);
             var tag = Tag.Create(query.Tag);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .BeginValidationBlock()
+                .Validate(pipeline => pipeline
                     .CollectErrors(styleName)
-                    .CollectErrors(tag)
-                .EndValidationBlock()
+                    .CollectErrors(tag))
                 .IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken)
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
-                        .MapResult(value => value);
+                .ExecuteIfNoErrors(() => _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                    .MapResult(value => value);
 
 
             return result;

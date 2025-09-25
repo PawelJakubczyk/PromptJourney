@@ -29,11 +29,10 @@ public static class AddPromptToHistory
 
             var promptHistory = MidjourneyPromptHistory.Create(prompt, version);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                         .CollectErrors(promptHistory)
-                    .IfNoErrors()
-                        .Executes(() => _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value, cancellationToken))
+                        .ExecuteIfNoErrors(() => _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value, cancellationToken))
                             .MapResult(PromptHistoryResponse.FromDomain);
 
             return result;

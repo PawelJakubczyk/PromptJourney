@@ -20,12 +20,11 @@ public static class GetVersionByVersion
         {
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                .IfNoErrors()
-                    .Executes(() => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken))
                         .MapResult(VersionResponse.FromDomain);
 
             return result;

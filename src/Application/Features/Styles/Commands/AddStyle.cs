@@ -38,12 +38,11 @@ public static class AddStyle
                 tags
             );
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(style)
                 .IfStyleAlreadyExists(styleName.Value, _styleRepository, cancellationToken)
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.AddStyleAsync(style.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _styleRepository.AddStyleAsync(style.Value, cancellationToken))
                         .MapResult(StyleResponse.FromDomain);
 
 

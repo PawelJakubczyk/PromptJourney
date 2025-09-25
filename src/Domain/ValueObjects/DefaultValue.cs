@@ -2,6 +2,7 @@ using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -16,15 +17,14 @@ public record DefaultValue : ValueObject<string?>, ICreatable<DefaultValue, stri
         if (value == null)
             return Result.Ok(new DefaultValue(default(string)));
 
-        List<Error> errors = [];
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfWhitespace<DomainLayer, DefaultValue>(value)
+                .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength))
+            .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
+            .MapResult(v => v);
 
-        errors
-            .IfWhitespace<DomainLayer, DefaultValue>(value)
-            .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<DefaultValue>(errors);
-
-        return Result.Ok(new DefaultValue(value));
+        return result;
     }
 }

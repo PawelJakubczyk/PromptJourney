@@ -58,38 +58,35 @@ public class MidjourneyPropertiesBase : IEntitie
         Result<Description?>? descriptionResult = null
     )
     {
-        var result = ValidationPipeline
+        var result = WorkflowPipeline
         .Empty()
-        .CollectErrors<PropertyName>(propertyNameResult)
-        .CollectErrors<ModelVersion>(versionResult)
-        //.CollectErrors<Param>(paramResultsList)
-        .CollectErrors<DefaultValue>(defaultValueResult)
-        .CollectErrors<MinValue>(minValueResult)
-        .CollectErrors<MaxValue>(maxValueResult)
-        .CollectErrors<Description>(descriptionResult)
-        .IfNoErrors()
-        .Executes(() =>
+        .Validate(pipeline => pipeline
+            .CollectErrors<PropertyName>(propertyNameResult)
+            .CollectErrors<ModelVersion>(versionResult)
+            .CollectErrors<Param>(paramResultsList)
+            .CollectErrors<DefaultValue>(defaultValueResult)
+            .CollectErrors<MinValue>(minValueResult)
+            .CollectErrors<MaxValue>(maxValueResult)
+            .CollectErrors<Description>(descriptionResult)
+            .IfListIsEmpty<DomainLayer, Param>(paramResultsList.ToValueList())
+            .IfListHasDuplicates<DomainLayer, Param>(paramResultsList.ToValueList()))
+        .ExecuteIfNoErrors(() =>
         {
+            var versionBase = new MidjourneyPropertiesBase
+            (
+                propertyNameResult.Value,
+                versionResult.Value,
+                paramResultsList.ToValueList(),
+                defaultValueResult?.Value,
+                minValueResult?.Value,
+                maxValueResult?.Value,
+                descriptionResult?.Value
+            );
 
-        var paramList = paramResultsList.ToValueList();
+            return Result.Ok(versionBase);
+        })
+        .MapResult(properties => properties);
 
-        var errors = new List<Error>();
-        errors.IfListHasDuplicates<DomainLayer, Param>(paramList);
-        if (errors.Count != 0)
-            return Result.Fail<MidjourneyPropertiesBase>(errors);
-
-        var versionBase = new MidjourneyPropertiesBase(
-            propertyNameResult.Value,
-            versionResult.Value,
-            paramList,
-            defaultValueResult?.Value,
-            minValueResult?.Value,
-            maxValueResult?.Value,
-            descriptionResult?.Value
-        );
-
-        return Result.Ok(versionBase);
-    })
-    .MapResult(v => v);
+    return result;
     }
 }

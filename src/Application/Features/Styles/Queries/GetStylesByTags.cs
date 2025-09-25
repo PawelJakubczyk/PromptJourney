@@ -20,13 +20,12 @@ public static class GetStylesByTags
         {
             var tags = query.Tags?.Select(Tag.Create).ToList();
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .IfListIsNullOrEmpty(query.Tags)
-                .CollectErrors<List<Result<Tag>>>(tags!)
-                .IfNoErrors()
-                    .Executes(() => _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
-                        .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
+                .CollectErrors(tags!)
+                .ExecuteIfNoErrors(() => _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
+                .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;
         }

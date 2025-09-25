@@ -21,12 +21,11 @@ public static class DeleteExampleLink
         {
             var link = ExampleLink.Create(command.Link);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                     .CollectErrors<ExampleLink>(link)
                     .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
-                    .IfNoErrors()
-                        .Executes(() => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken))
+                        .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken))
                             .MapResult(_ => DeleteResponse.Success
                             (
                                 $"Example link '{link.Value.Value}' was successfully deleted."

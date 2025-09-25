@@ -19,10 +19,9 @@ public static class CalculateHistoricalRecordCount
 
         public async Task<Result<int>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .IfNoErrors()
-                    .Executes(() => _promptHistoryRepository.CalculateHistoricalRecordCountAsync(cancellationToken))
+                    .ExecuteIfNoErrors(() => _promptHistoryRepository.CalculateHistoricalRecordCountAsync(cancellationToken))
                         .MapResult(count => count);
 
             return result;

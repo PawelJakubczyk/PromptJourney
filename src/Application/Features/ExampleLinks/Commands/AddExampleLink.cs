@@ -37,16 +37,14 @@ public static class AddExampleLink
                 version.Value
             );
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                     .CollectErrors(linkResult)
-                    .BeginValidationBlock()
+                    .Validate(pipeline => pipeline
                         .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
                         .IfStyleNotExists(style.Value, _styleRepository, cancellationToken)
-                        .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken)
-                    .EndValidationBlock()
-                    .IfNoErrors()
-                        .Executes(() => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken))
+                        .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
+                        .ExecuteIfNoErrors(() => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken))
                             .MapResult(_ => new ExampleLinkResponse(command.Link, command.Style, command.Version));
 
             return result;

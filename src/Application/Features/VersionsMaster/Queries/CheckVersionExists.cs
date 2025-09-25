@@ -19,11 +19,10 @@ public static class CheckVersionExists
         {
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                .IfNoErrors()
-                    .Executes(() => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken))
                         .MapResult(value => value);
 
 

@@ -2,6 +2,7 @@
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
@@ -13,16 +14,14 @@ public record Prompt : ValueObject<string>, ICreatable<Prompt, string>
 
     public static Result<Prompt> Create(string value)
     {
+        var result = WorkflowPipeline
+            .Empty()
+            .Validate(pipeline => pipeline
+                .IfNullOrWhitespace<DomainLayer, Prompt>(value)
+                .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength))
+            .ExecuteIfNoErrors<Prompt>(() => new Prompt(value))
+            .MapResult(p => p);
 
-        List<Error> errors = [];
-
-        errors
-            .IfNullOrWhitespace<DomainLayer, Prompt>(value)
-            .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<Prompt>(errors);
-
-        return Result.Ok(new Prompt(value));
+        return result;
     }
 }

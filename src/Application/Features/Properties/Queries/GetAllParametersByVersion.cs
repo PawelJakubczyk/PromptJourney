@@ -22,11 +22,10 @@ public static class GetAllParametersByVersion
         {
             var version = ModelVersion.Create(query.Version);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                .IfNoErrors()
-                    .Executes(() => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken))
                         .MapResult(domainList => domainList.Select(PropertyResponse.FromDomain).ToList());
 
 

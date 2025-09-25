@@ -17,10 +17,9 @@ public static class GetAllVersions
 
         public async Task<Result<List<VersionResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .IfNoErrors()
-                    .Executes(() => _versionRepository.GetAllVersionsAsync(cancellationToken))
+                    .ExecuteIfNoErrors(() => _versionRepository.GetAllVersionsAsync(cancellationToken))
                         .MapResult(versions => versions.Select(VersionResponse.FromDomain).ToList());
 
             return result;

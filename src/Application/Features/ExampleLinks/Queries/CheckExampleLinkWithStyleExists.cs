@@ -20,11 +20,10 @@ public static class CheckExampleLinkWithStyleExists
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .IfNoErrors()
-                    .Executes(() => _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
                         .MapResult(_ => true);
 
             return result;

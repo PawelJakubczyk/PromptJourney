@@ -20,10 +20,9 @@ public static class GetAllHistoryRecords
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
-                .IfNoErrors()
-                    .Executes(() => _promptHistoryRepository.GetAllHistoryRecordsAsync(cancellationToken))
+                    .ExecuteIfNoErrors(() => _promptHistoryRepository.GetAllHistoryRecordsAsync(cancellationToken))
                         .MapResult
                         (
                             domainList => domainList

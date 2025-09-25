@@ -2,8 +2,10 @@ using Application.Abstractions.IRepository;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Context;
+using Utilities.Constants;
+using Utilities.Errors;
 
 public sealed class PromptHistoryRepository : IPromptHistoryRepository
 {
@@ -29,7 +31,8 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get all history records: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get all history records: {ex.Message}");
+            return Result.Fail<List<MidjourneyPromptHistory>>(error);
         }
     }
 
@@ -48,7 +51,8 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get history by date range: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get history by date range: {ex.Message}");
+            return Result.Fail<List<MidjourneyPromptHistory>>(error);
         }
     }
 
@@ -67,7 +71,8 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get history records by prompt keyword: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get history records by prompt keyword: {ex.Message}");
+            return Result.Fail<List<MidjourneyPromptHistory>>(error);
         }
     }
 
@@ -90,7 +95,8 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get last history records: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get last history records: {ex.Message}");
+            return Result.Fail<List<MidjourneyPromptHistory>>(error);
         }
     }
 
@@ -103,7 +109,8 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<int>($"Failed to calculate historical record count: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to calculate historical record count: {ex.Message}");
+            return Result.Fail<int>(error);
         }
     }
 
@@ -119,7 +126,8 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyPromptHistory>($"Failed to add prompt to history: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to add prompt to history: {ex.Message}");
+            return Result.Fail<MidjourneyPromptHistory>(error);
         }
     }
 }

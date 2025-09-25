@@ -49,11 +49,10 @@ public static class AddPropertyInVersion
                 descriptionResult!
             );
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                .IfNoErrors()
-                    .Executes(() => _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken))
                         .MapResult(PropertyResponse.FromDomain);
 
             return result;

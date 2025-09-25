@@ -21,11 +21,10 @@ public static class GetExampleLinksByStyle
         {
             var styleName = StyleName.Create(query.StyleName);
 
-            var result = await ValidationPipeline
+            var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .IfNoErrors()
-                    .Executes(() => _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                    .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
                         .MapResult
                         (
                             domainList => domainList
