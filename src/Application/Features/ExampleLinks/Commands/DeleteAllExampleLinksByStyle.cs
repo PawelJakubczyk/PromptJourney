@@ -10,7 +10,7 @@ namespace Application.Features.ExampleLinks.Commands;
 
 public static class DeleteAllExampleLinksByStyle
 {
-    public sealed record Command(string StyleNameRaw) : ICommand<BulkDeleteResponse>;
+    public sealed record Command(string StyleName) : ICommand<BulkDeleteResponse>;
 
     public sealed class Handler
     (
@@ -23,18 +23,18 @@ public static class DeleteAllExampleLinksByStyle
 
         public async Task<Result<BulkDeleteResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var styleName = StyleName.Create(command.StyleNameRaw);
+            var styleName = StyleName.Create(command.StyleName);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
                     .CollectErrors(styleName)
                     .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                        .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
-                            .MapResult(count => BulkDeleteResponse.Success
-                            (
-                                count,
-                                $"Successfully deleted example links for style '{styleName.Value}'."
-                            ));
+                    .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                    .MapResult(count => BulkDeleteResponse.Success
+                    (
+                        count,
+                        $"Successfully deleted example links for style '{styleName.Value}'."
+                    ));
 
             return result;
         }

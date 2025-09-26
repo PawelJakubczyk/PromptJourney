@@ -11,7 +11,7 @@ namespace Application.Features.ExampleLinks.Commands;
 
 public static class AddExampleLink
 {
-    public sealed record Command(string Link, string Style, string Version) : ICommand<ExampleLinkResponse>;
+    public sealed record Command(string Link, string StyleName, string Version) : ICommand<ExampleLinkResponse>;
 
     public sealed class Handler
     (
@@ -27,13 +27,13 @@ public static class AddExampleLink
         public async Task<Result<ExampleLinkResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var link = ExampleLink.Create(command.Link);
-            var style = StyleName.Create(command.Style);
+            var styleName = StyleName.Create(command.StyleName);
             var version = ModelVersion.Create(command.Version);
 
             var linkResult = MidjourneyStyleExampleLink.Create
             (
                 link.Value,
-                style.Value,
+                styleName.Value,
                 version.Value
             );
 
@@ -42,10 +42,11 @@ public static class AddExampleLink
                     .CollectErrors(linkResult)
                     .Validate(pipeline => pipeline
                         .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                        .IfStyleNotExists(style.Value, _styleRepository, cancellationToken)
+                        .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                        .IfVersionNotInSuportedVersions(version.Value, _versionRepository, cancellationToken)
                         .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
-                        .ExecuteIfNoErrors(() => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken))
-                            .MapResult(_ => new ExampleLinkResponse(command.Link, command.Style, command.Version));
+                    .ExecuteIfNoErrors(() => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken))
+                    .MapResult(_ => new ExampleLinkResponse(command.Link, command.StyleName, command.Version));
 
             return result;
         }

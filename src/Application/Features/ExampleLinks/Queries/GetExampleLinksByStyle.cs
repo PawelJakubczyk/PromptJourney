@@ -12,10 +12,14 @@ public static class GetExampleLinksByStyle
 {
     public sealed record Query(string StyleName) : IQuery<List<ExampleLinkResponse>>;
 
-    public sealed class Handler(IExampleLinksRepository exampleLinkRepository)
-        : IQueryHandler<Query, List<ExampleLinkResponse>>
+    public sealed class Handler
+    (
+        IExampleLinksRepository exampleLinkRepository,
+        IStyleRepository styleRepository
+    ) : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
+        private readonly IStyleRepository _styleRepository = styleRepository;
 
         public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
@@ -24,13 +28,14 @@ public static class GetExampleLinksByStyle
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                    .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
-                        .MapResult
-                        (
-                            domainList => domainList
-                            .Select(ExampleLinkResponse.FromDomain)
-                            .ToList()
-                        );
+                .IfStyleNotExists(styleName?.Value!, _styleRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                .MapResult
+                (
+                    domainList => domainList
+                    .Select(ExampleLinkResponse.FromDomain)
+                    .ToList()
+                );
 
 
             return result;

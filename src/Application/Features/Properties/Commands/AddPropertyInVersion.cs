@@ -5,6 +5,7 @@ using Application.Features.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using System;
 using Utilities.Validation;
 
 namespace Application.Features.Properties.Commands;
@@ -52,8 +53,11 @@ public static class AddPropertyInVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                    .ExecuteIfNoErrors(() => _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken))
-                        .MapResult(PropertyResponse.FromDomain);
+                .Validate(pipeline => pipeline
+                    .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
+                    .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken))
+                .MapResult(PropertyResponse.FromDomain);
 
             return result;
         }

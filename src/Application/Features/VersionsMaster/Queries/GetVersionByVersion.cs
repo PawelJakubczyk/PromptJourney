@@ -24,8 +24,8 @@ public static class GetVersionByVersion
                 .EmptyAsync()
                 .CollectErrors(version)
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                    .ExecuteIfNoErrors(() => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken))
-                        .MapResult(VersionResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken))
+                .MapResult(VersionResponse.FromDomain);
 
             return result;
         }

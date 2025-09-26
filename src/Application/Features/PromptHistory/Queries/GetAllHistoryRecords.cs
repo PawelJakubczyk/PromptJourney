@@ -22,14 +22,13 @@ public static class GetAllHistoryRecords
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .ExecuteIfNoErrors(() => _promptHistoryRepository.GetAllHistoryRecordsAsync(cancellationToken))
-                        .MapResult
-                        (
-                            domainList => domainList
-                            .Select(PromptHistoryResponse.FromDomain)
-                            .ToList()
-                        );
-
+                .ExecuteIfNoErrors(() => _promptHistoryRepository.GetAllHistoryRecordsAsync(cancellationToken))
+                .MapResult
+                (
+                    domainList => domainList
+                    .Select(PromptHistoryResponse.FromDomain)
+                    .ToList()
+                );
 
             return result;
         }

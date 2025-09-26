@@ -1,6 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
 using Utilities.Constants;
 using Utilities.Errors;
@@ -40,7 +41,8 @@ internal static class ModelVersionErrorsExtensions
         if (!isValidNumeric && !isValidNiji)
         {
             pipeline.Errors.Add(new Error<TLayer>(
-                $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')"
+                $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')", 
+                StatusCodes.Status400BadRequest
             ));
         }
 

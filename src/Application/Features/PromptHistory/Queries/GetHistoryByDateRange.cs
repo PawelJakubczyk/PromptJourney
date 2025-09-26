@@ -22,17 +22,17 @@ public static class GetHistoryByDateRange
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .Validate(pipeline => pipeline
-                        .IfDateInFuture(query.From)
-                        .IfDateInFuture(query.To)
-                        .IfDateRangeNotChronological(query.From, query.To))
-                        .ExecuteIfNoErrors(() => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
-                            .MapResult
-                            (
-                                domainList => domainList
-                                .Select(PromptHistoryResponse.FromDomain)
-                                .ToList()
-                            );
+                .Validate(pipeline => pipeline
+                    .IfDateInFuture(query.From)
+                    .IfDateInFuture(query.To)
+                    .IfDateRangeNotChronological(query.From, query.To))
+                .ExecuteIfNoErrors(() => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
+                .MapResult
+                (
+                    domainList => domainList
+                    .Select(PromptHistoryResponse.FromDomain)
+                    .ToList()
+                );
 
             return result;
         }

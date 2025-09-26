@@ -22,11 +22,11 @@ public static class GetLastHistoryRecords
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .Validate(pipeline => pipeline
-                        .IfHistoryLimitNotGreaterThanZero(query.Count)
-                        .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
-                    .ExecuteIfNoErrors(() => _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count, cancellationToken))
-                    .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
+                .Validate(pipeline => pipeline
+                    .IfHistoryLimitNotGreaterThanZero(query.Count)
+                    .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count, cancellationToken))
+                .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
 
             return result;
         }

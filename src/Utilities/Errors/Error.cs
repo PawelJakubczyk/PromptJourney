@@ -7,11 +7,17 @@ public class Error<TLayer> : Error
     where TLayer : ILayer
 {
     public LayersEnum Layer { get; }
-    public ErrorCode error { get; }
+    public int ErrorCode { get; }
 
     public Error(string message) : base($"[{ResolveLayer()}] {message}")
     {
         Layer = ResolveLayer();
+    }
+
+    public Error(string message, int errorCode) : base($"[{ResolveLayer()}] {message}")
+    {
+        Layer = ResolveLayer();
+        ErrorCode = errorCode;
     }
 
     private static LayersEnum ResolveLayer()

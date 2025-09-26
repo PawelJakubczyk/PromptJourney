@@ -24,8 +24,8 @@ public static class GetStyleByName
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .ExecuteIfNoErrors(() => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken))
-                        .MapResult(StyleResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken))
+                .MapResult(StyleResponse.FromDomain);
 
             return result;
         }

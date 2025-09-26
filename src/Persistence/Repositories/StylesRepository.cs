@@ -2,8 +2,11 @@
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using Persistence.Context;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Context;
+using Utilities.Constants;
+using Utilities.Errors;
 
 public sealed class StylesRepository : IStyleRepository
 {
@@ -26,7 +29,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyle>>($"Failed to get all styles: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get all styles: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<List<MidjourneyStyle>>(error);
         }
     }
 
@@ -44,7 +48,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyStyle>($"Failed to get style: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get style: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<MidjourneyStyle>(error);
         }
     }
 
@@ -57,13 +62,18 @@ public sealed class StylesRepository : IStyleRepository
                 .Where(s => s.Type == type)
                 .ToListAsync(cancellationToken);
 
-            return styles.Count == 0
-                ? Result.Fail<List<MidjourneyStyle>>($"No styles found for type '{type.Value}'")
-                : Result.Ok(styles);
+            if (styles.Count == 0)
+            {
+                var error = new Error<PersistenceLayer>($"No styles found for type '{type.Value}'", StatusCodes.Status404NotFound);
+                return Result.Fail<List<MidjourneyStyle>>(error);
+            }
+            
+            return Result.Ok(styles);
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyle>>($"Failed to get styles by type: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get styles by type: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<List<MidjourneyStyle>>(error);
         }
     }
 
@@ -82,7 +92,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyle>>($"Failed to get styles by tags: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get styles by tags: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<List<MidjourneyStyle>>(error);
         }
     }
 
@@ -99,7 +110,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<List<MidjourneyStyle>>($"Failed to get styles by description keyword: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to get styles by description keyword: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<List<MidjourneyStyle>>(error);
         }
     }
 
@@ -114,7 +126,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<bool>($"Failed to check if style exists: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to check if style exists: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<bool>(error);
         }
     }
 
@@ -130,8 +143,9 @@ public sealed class StylesRepository : IStyleRepository
                 : Result.Ok(style.Tags?.Any(t => t.Value == tag.Value) ?? false);
         }
         catch (Exception ex)
-        {
-            return Result.Fail<bool>($"Failed to check if tag exists: {ex.Message}");
+        {   
+            var error = new Error<PersistenceLayer>($"Failed to check if tag exists in style: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<bool>(error);
         }
     }
 
@@ -146,7 +160,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<bool>($"Failed to check if tag exists: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to check if tag exists: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<bool>(error);
         }
     }
 
@@ -160,7 +175,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyStyle>($"Failed to add style: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to add style: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<MidjourneyStyle>(error);
         }
     }
 
@@ -174,7 +190,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyStyle>($"Failed to update style: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to update style: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<MidjourneyStyle>(error);
         }
     }
 
@@ -187,7 +204,10 @@ public sealed class StylesRepository : IStyleRepository
                 .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
             if (style is null)
-                return Result.Fail<MidjourneyStyle>($"Style '{styleName.Value}' not found");
+            {
+                var error = new Error<PersistenceLayer>($"Style '{styleName.Value}' not found", StatusCodes.Status404NotFound);
+                return Result.Fail<MidjourneyStyle>(error);
+            }
 
             _dbContext.MidjourneyStyle.Remove(style);
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -195,7 +215,8 @@ public sealed class StylesRepository : IStyleRepository
         }
         catch (Exception ex)
         {
-            return Result.Fail<MidjourneyStyle>($"Failed to delete style: {ex.Message}");
+            var error = new Error<PersistenceLayer>($"Failed to delete style: {ex.Message}", StatusCodes.Status500InternalServerError);
+            return Result.Fail<MidjourneyStyle>(error);
         }
     }
 
@@ -205,6 +226,7 @@ public sealed class StylesRepository : IStyleRepository
         {
             var style = await _dbContext.MidjourneyStyle.FindAsync([styleName], cancellationToken);
             if (style is null)
+
                 return Result.Fail<MidjourneyStyle>($"Style '{styleName.Value}' not found");
 
             var result = style.AddTag(tagResult);

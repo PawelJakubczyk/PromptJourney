@@ -22,8 +22,8 @@ public static class CheckStyleExist
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                    .ExecuteIfNoErrors(() => _styleRepository.CheckStyleExistsAsync(styleName.Value, cancellationToken))
-                        .MapResult(value => value);
+                .ExecuteIfNoErrors(() => _styleRepository.CheckStyleExistsAsync(styleName.Value, cancellationToken))
+                .MapResult(value => value);
 
 
             return result;

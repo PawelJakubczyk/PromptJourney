@@ -25,7 +25,6 @@ public class CheckTagExistInStyle
                 .Validate(pipeline => pipeline
                     .CollectErrors(styleName)
                     .CollectErrors(tag))
-                .IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
                     .MapResult(value => value);
 

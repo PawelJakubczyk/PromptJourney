@@ -23,8 +23,8 @@ public static class CheckExampleLinkWithStyleExists
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                    .ExecuteIfNoErrors(() => _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
-                        .MapResult(_ => true);
+                .ExecuteIfNoErrors(() => _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
+                .MapResult(_ => true);
 
             return result;
         }

@@ -29,6 +29,7 @@ public static class UpdatePropertyForVersion
     ) : ICommandHandler<Command, PropertyResponse>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
+        private readonly IVersionRepository _versionRepository = versionRepository;
 
         public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
@@ -54,8 +55,11 @@ public static class UpdatePropertyForVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                    .ExecuteIfNoErrors(() => _propertiesRepository.UpdateParameterForVersionAsync(property.Value, cancellationToken))
-                        .MapResult(PropertyResponse.FromDomain);
+                .Validate(pipeline => pipeline
+                    .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                    .IfPropertyNotExists(propertyName.Value, version.Value, _propertiesRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _propertiesRepository.UpdateParameterForVersionAsync(property.Value, cancellationToken))
+                .MapResult(PropertyResponse.FromDomain);
 
 
             return result;

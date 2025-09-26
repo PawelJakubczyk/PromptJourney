@@ -12,10 +12,12 @@ public static class CheckPropertyExistsInVersion
     public sealed record Query(string Version, string PropertyName) : IQuery<bool>;
 
     public sealed class Handler(
-        IPropertiesRepository propertiesRepository
+        IPropertiesRepository propertiesRepository,
+        IVersionRepository versionRepository
     ) : IQueryHandler<Query, bool>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
+        private readonly IVersionRepository _versionRepository = versionRepository;
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
@@ -27,8 +29,9 @@ public static class CheckPropertyExistsInVersion
                 .Validate(pipeline => pipeline
                     .CollectErrors(version)
                     .CollectErrors(propertyName))
-                    .ExecuteIfNoErrors(() => _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))
-                        .MapResult(value => value);
+                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))
+                .MapResult(value => value);
 
 
             return result;

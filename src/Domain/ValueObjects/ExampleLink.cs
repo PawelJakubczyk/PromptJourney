@@ -1,6 +1,7 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Validation;
@@ -38,7 +39,7 @@ internal static class ExampleLinkErrorsExtensions
 
         if (!isValid)
         {
-            pipeline.Errors.Add(new Error<TLayer>($"Invalid URL format: {value}"));
+            pipeline.Errors.Add(new Error<TLayer>($"Invalid URL format: {value}", StatusCodes.Status400BadRequest));
         }
 
         return pipeline;

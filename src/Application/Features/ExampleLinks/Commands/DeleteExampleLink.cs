@@ -23,13 +23,13 @@ public static class DeleteExampleLink
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .CollectErrors<ExampleLink>(link)
-                    .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
-                        .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken))
-                            .MapResult(_ => DeleteResponse.Success
-                            (
-                                $"Example link '{link.Value.Value}' was successfully deleted."
-                            ));
+                .CollectErrors<ExampleLink>(link)
+                .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken))
+                .MapResult(_ => DeleteResponse.Success
+                (
+                    $"Example link '{link.Value.Value}' was successfully deleted."
+                ));
 
             return result;
         }

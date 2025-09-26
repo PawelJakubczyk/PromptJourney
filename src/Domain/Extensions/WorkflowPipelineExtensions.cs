@@ -1,5 +1,6 @@
 ﻿using Domain.Abstractions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Validation;
@@ -17,7 +18,7 @@ public static class WorkflowPipelineExtensions
         if (string.IsNullOrWhiteSpace(value))
         {
             pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: value cannot be null or whitespace.")
+                new Error<TLayer>($"{typeof(TValue).Name}: value cannot be null or whitespace.", StatusCodes.Status400BadRequest)
             );
         }
         return pipeline;
@@ -32,7 +33,7 @@ public static class WorkflowPipelineExtensions
         if (!string.IsNullOrEmpty(value) && string.IsNullOrWhiteSpace(value))
         {
             pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: cannot be whitespace.")
+                new Error<TLayer>($"{typeof(TValue).Name}: cannot be whitespace.", StatusCodes.Status400BadRequest)
             );
         }
         return pipeline;
@@ -48,7 +49,7 @@ public static class WorkflowPipelineExtensions
         if (value?.Length > maxLength)
         {
             pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: '{value}' cannot be longer than {maxLength} characters.")
+                new Error<TLayer>($"{typeof(TValue).Name}: '{value}' cannot be longer than {maxLength} characters.", StatusCodes.Status400BadRequest)
             );
         }
         return pipeline;
@@ -73,7 +74,7 @@ public static class WorkflowPipelineExtensions
         {
             var duplicateNames = string.Join(", ", duplicates.Select(d => d.ToString()));
             pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: contains duplicates -> {duplicateNames}.")
+                new Error<TLayer>($"{typeof(TValue).Name}: contains duplicates -> {duplicateNames}.", StatusCodes.Status400BadRequest)
             );
         }
 

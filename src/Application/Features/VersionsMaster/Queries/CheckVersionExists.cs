@@ -22,8 +22,8 @@ public static class CheckVersionExists
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                    .ExecuteIfNoErrors(() => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken))
-                        .MapResult(value => value);
+                .ExecuteIfNoErrors(() => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken))
+                .MapResult(value => value);
 
 
             return result;

@@ -2,6 +2,7 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Validation;
@@ -44,6 +45,43 @@ public static class WorkflowPipelineExtensions
             shouldExist: false,
             cancellationToken
         );
+    }
+
+    public static async Task<WorkflowPipeline> IfVersionNotInSuportedVersions
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        ModelVersion version,
+        IVersionRepository repo,
+        CancellationToken cancellationToken
+    )
+    {
+        var pipeline = await pipelineTask;
+        var errors = (await pipelineTask).Errors;
+
+        if (pipeline.BreakOnError && errors.Count != 0)
+            return pipeline;
+
+        var result = await repo.GetAllSuportedVersionsAsync(cancellationToken);
+
+        if (result.IsFailed)
+        {
+            errors.Add
+            (
+                new Error<PersistenceLayer>(
+                    $"Failed to check if {version} is supported version", 
+                    StatusCodes.Status500InternalServerError
+            ));
+        }
+
+        if (result.IsSuccess && !result.Value.Contains(version))
+            {
+            errors.Add(new Error<ApplicationLayer>(
+                $"Version '{version}' is not in supported versions",
+                StatusCodes.Status400BadRequest
+            ));
+        }
+
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
     public static Task<WorkflowPipeline> IfStyleNotExists
@@ -99,6 +137,41 @@ public static class WorkflowPipelineExtensions
         );
     }
 
+    public static Task<WorkflowPipeline> IfPropertyAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        PropertyName property,
+        ModelVersion version,
+        IPropertiesRepository repo,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.ValidateExistence(
+            property,
+            (property, ct) => repo.CheckParameterExistsInVersionAsync(version, property, ct),
+            "Property",
+            shouldExist: false,
+            cancellationToken
+        );
+    }
+    public static Task<WorkflowPipeline> IfPropertyNotExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        PropertyName property,
+        ModelVersion version,
+        IPropertiesRepository repo,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.ValidateExistence(
+            property,
+            (property, ct) => repo.CheckParameterExistsInVersionAsync(version, property, ct),
+            "Property",
+            shouldExist: true,
+            cancellationToken
+        );
+    }
+
     public static Task<WorkflowPipeline> IfLinkAlreadyExists
     (
         this Task<WorkflowPipeline> pipelineTask,
@@ -116,7 +189,7 @@ public static class WorkflowPipelineExtensions
         );
     }
 
-    public static async Task<WorkflowPipeline> IfTagAlreadyExists
+    public static Task<WorkflowPipeline> IfTagAlreadyExists
     (
         this Task<WorkflowPipeline> pipelineTask,
         StyleName styleName,
@@ -125,26 +198,17 @@ public static class WorkflowPipelineExtensions
         CancellationToken cancellationToken
     )
     {
-        var pipeline = await pipelineTask;
-        var errors =  pipeline.Errors;
-
-        if (pipeline.BreakOnError && errors.Count != 0)
-            return pipeline;
-
-        var result = await repository.CheckTagExistsInStyleAsync(styleName, tag, cancellationToken);
-        if (result.IsFailed)
-        {
-            errors.AddRange(result.Errors.OfType<Error>());
-        }
-        else if (result.Value)
-        {
-            errors.Add(new Error<ApplicationLayer>($"Tag '{tag}' already exists in style '{styleName}'."));
-        }
-
-        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
+        return pipelineTask.ValidateExistence(
+            tag,
+            (t, ct) => repository.CheckTagExistsInStyleAsync(styleName, t, ct),
+            $"Tag in style '{styleName}'",
+            shouldExist: false,
+            cancellationToken
+        );
     }
 
-    public static async Task<WorkflowPipeline> IfTagNotExist
+
+    public static Task<WorkflowPipeline> IfTagNotExist
     (
         this Task<WorkflowPipeline> pipelineTask,
         StyleName styleName,
@@ -153,23 +217,13 @@ public static class WorkflowPipelineExtensions
         CancellationToken cancellationToken
     )
     {
-        var pipeline = await pipelineTask;
-        var errors = pipeline.Errors;
-
-        if (pipeline.BreakOnError && errors.Count != 0)
-            return pipeline;
-
-        var result = await repository.CheckTagExistsInStyleAsync(styleName, tag, cancellationToken);
-        if (result.IsFailed)
-        {
-            errors.AddRange(result.Errors.OfType<Error>());
-        }
-        else if (!result.Value)
-        {
-            errors.Add(new Error<ApplicationLayer>($"Tag '{tag}' does not exist in style '{styleName}'."));
-        }
-
-        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
+        return pipelineTask.ValidateExistence(
+            tag,
+            (t, ct) => repository.CheckTagExistsInStyleAsync(styleName, t, ct),
+            $"Tag in style '{styleName}'",
+            shouldExist: true,
+            cancellationToken
+        );
     }
 
     public static async Task<WorkflowPipeline> IfDateInFuture
@@ -185,7 +239,9 @@ public static class WorkflowPipelineExtensions
 
         if (date > DateTime.UtcNow)
         {
-            errors.Add(new Error<DomainLayer>($"Date '{date:yyyy-MM-dd}' cannot be in the future."));
+            errors.Add(new Error<DomainLayer>(
+                $"Date '{date:yyyy-MM-dd}' cannot be in the future.",
+                StatusCodes.Status400BadRequest));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -207,7 +263,9 @@ public static class WorkflowPipelineExtensions
         if (from > to)
         {
             errors.Add(new Error<DomainLayer>(
-                $"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd})."));
+                $"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).",
+                StatusCodes.Status400BadRequest
+                ));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -227,7 +285,9 @@ public static class WorkflowPipelineExtensions
 
         if (count <= 0)
         {
-            errors.Add(new Error($"History count must be greater than zero. Provided: {count}."));
+            errors.Add(new Error<ApplicationLayer>(
+                $"History count must be greater than zero. Provided: {count}.", 
+                StatusCodes.Status400BadRequest));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -257,8 +317,9 @@ public static class WorkflowPipelineExtensions
 
         if (requestedCount > availableCountResult.Value)
         {
-            errors.Add(new Error(
-                $"Requested {requestedCount} records, but only {availableCountResult.Value} are available."));
+            errors.Add(new Error<ApplicationLayer>(
+                $"Requested {requestedCount} records, but only {availableCountResult.Value} are available.", 
+                StatusCodes.Status400BadRequest));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -277,7 +338,9 @@ public static class WorkflowPipelineExtensions
         if (items is null || items.Count == 0)
         {
             var name = typeof(TValue).Name;
-            errors.Add(new Error($"List of '{name}' must not be empty."));
+            errors.Add(new Error<ApplicationLayer>(
+                $"List of '{name}' must not be empty.", 
+                StatusCodes.Status400BadRequest));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -304,13 +367,17 @@ public static class WorkflowPipelineExtensions
 
         if (result.IsFailed)
         {
-            errors.Add(new Error<PersistenceLayer>($"Failed to check if {entityName} exists"));
+            errors.Add
+            (
+                new Error<PersistenceLayer>($"Failed to check if {entityName} exists", StatusCodes.Status500InternalServerError)
+            );
         }
 
         if (result.IsSuccess && result.Value != shouldExist)
         {
             errors.Add(new Error<ApplicationLayer>(
-                $"{entityName} '{item}' {(shouldExist ? "not found" : "already exists")}"
+                $"{entityName} '{item}' {(shouldExist ? "not found" : "already exists")}",
+                shouldExist ? StatusCodes.Status404NotFound : StatusCodes.Status409Conflict
             ));
         }
 

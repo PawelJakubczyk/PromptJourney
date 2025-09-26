@@ -23,8 +23,8 @@ public static class GetStylesByDescriptionKeyword
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(keyword)
-                    .ExecuteIfNoErrors(() => _styleRepository.GetStylesByDescriptionKeywordAsync(keyword.Value, cancellationToken))
-                        .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
+                .ExecuteIfNoErrors(() => _styleRepository.GetStylesByDescriptionKeywordAsync(keyword.Value, cancellationToken))
+                .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
             return result;
         }

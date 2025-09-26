@@ -13,10 +13,12 @@ public static class GetAllParametersByVersion
     public sealed record Query(string Version) : IQuery<List<PropertyResponse>>;
 
     public sealed class Handler(
-        IPropertiesRepository propertiesRepository
+        IPropertiesRepository propertiesRepository,
+        IVersionRepository versionRepository
     ) : IQueryHandler<Query, List<PropertyResponse>>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
+        private readonly IVersionRepository _versionRepository = versionRepository;
 
         public async Task<Result<List<PropertyResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
@@ -25,8 +27,9 @@ public static class GetAllParametersByVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                    .ExecuteIfNoErrors(() => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken))
-                        .MapResult(domainList => domainList.Select(PropertyResponse.FromDomain).ToList());
+                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken))
+                .MapResult(domainList => domainList.Select(PropertyResponse.FromDomain).ToList());
 
 
             return result;

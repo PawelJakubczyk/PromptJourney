@@ -20,13 +20,13 @@ public static class GetAllExampleLinks
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .ExecuteIfNoErrors(() => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken))
-                        .MapResult
-                        (
-                            domainList => domainList
-                            .Select(ExampleLinkResponse.FromDomain)
-                            .ToList()
-                        );
+                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken))
+                .MapResult
+                (
+                    domainList => domainList
+                    .Select(ExampleLinkResponse.FromDomain)
+                    .ToList()
+                );
 
             return result;
         }

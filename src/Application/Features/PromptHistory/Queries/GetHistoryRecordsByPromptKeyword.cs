@@ -26,8 +26,8 @@ public static class GetHistoryRecordsByPromptKeyword
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(keyword)
-                    .ExecuteIfNoErrors(() => _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword.Value, cancellationToken))
-                        .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
+                .ExecuteIfNoErrors(() => _promptHistoryRepository.GetHistoryRecordsByPromptKeywordAsync(keyword.Value, cancellationToken))
+                .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
 
             return result;
         }

@@ -35,6 +35,9 @@ public static class PatchPropertyForVersion
                     .Validate(pipeline => pipeline
                         .CollectErrors(version)
                         .CollectErrors(propertyName))
+                    .Validate(pipeline => pipeline
+                        .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                        .IfPropertyNotExists(propertyName.Value, version.Value, _propertiesRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _propertiesRepository.PatchParameterForVersionAsync
                     (
                         version.Value,

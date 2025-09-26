@@ -28,6 +28,9 @@ public static class DeletePropertyInVersion
                 .Validate(pipeline => pipeline
                     .CollectErrors(version)
                     .CollectErrors(propertyName))
+                .Validate(pipeline => pipeline
+                    .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                    .IfPropertyNotExists(propertyName.Value, version.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository.DeleteParameterInVersionAsync(version.Value, propertyName.Value, cancellationToken))
                 .MapResult
                 (

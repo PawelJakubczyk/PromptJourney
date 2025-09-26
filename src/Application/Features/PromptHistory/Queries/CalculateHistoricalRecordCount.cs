@@ -21,8 +21,8 @@ public static class CalculateHistoricalRecordCount
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .ExecuteIfNoErrors(() => _promptHistoryRepository.CalculateHistoricalRecordCountAsync(cancellationToken))
-                        .MapResult(count => count);
+                .ExecuteIfNoErrors(() => _promptHistoryRepository.CalculateHistoricalRecordCountAsync(cancellationToken))
+                .MapResult(count => count);
 
             return result;
         }

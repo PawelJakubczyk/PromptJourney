@@ -40,6 +40,7 @@ public static class AddVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(midjourneyVersion)
+                .IfVersionAlreadyExists(version.Value, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken))
                 .MapResult(VersionResponse.FromDomain);
 

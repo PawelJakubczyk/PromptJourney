@@ -27,8 +27,8 @@ public static class UpdateDescriptionInStyle
                     .CollectErrors(styleName)
                     .CollectErrors(description))
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
-                        .MapResult(StyleResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
+                .MapResult(StyleResponse.FromDomain);
 
             return result;
         }

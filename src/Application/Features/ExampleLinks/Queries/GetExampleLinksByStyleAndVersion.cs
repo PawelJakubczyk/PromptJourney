@@ -16,10 +16,14 @@ public static class GetExampleLinksByStyleAndVersion
 
     public sealed class Handler
     (
-        IExampleLinksRepository exampleLinkRepository
+        IExampleLinksRepository exampleLinkRepository,
+        IStyleRepository _styleRepository,
+        IVersionRepository _versionRepository
     ) : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
+        private readonly IStyleRepository _styleRepository = _styleRepository;
+        private readonly IVersionRepository _versionRepository = _versionRepository;
 
         public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
@@ -28,15 +32,20 @@ public static class GetExampleLinksByStyleAndVersion
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CollectErrors(styleName)
-                .CollectErrors(version)
-                    .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
-                        .MapResult
-                        (
-                            domainList => domainList
-                            .Select(ExampleLinkResponse.FromDomain)
-                            .ToList()
-                        );
+                .Validate(pipeline => pipeline
+                    .CollectErrors(styleName)
+                    .CollectErrors(version))
+                .Validate(pipeline => pipeline
+                    .IfStyleNotExists(styleName?.Value!, _styleRepository, cancellationToken)
+                    .IfVersionNotExists(version?.Value!, _versionRepository, cancellationToken)
+                    .IfVersionNotInSuportedVersions(version?.Value!, _versionRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
+                .MapResult
+                (
+                    domainList => domainList
+                    .Select(ExampleLinkResponse.FromDomain)
+                    .ToList()
+                );
 
 
             return result;

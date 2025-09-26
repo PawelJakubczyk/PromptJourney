@@ -37,8 +37,8 @@ public static class UpdateStyle
                 .EmptyAsync()
                 .CollectErrors(midjourneyStyle)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
-                        .MapResult(StyleResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
+                .MapResult(StyleResponse.FromDomain);
 
 
             return result;
