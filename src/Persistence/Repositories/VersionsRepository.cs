@@ -2,8 +2,12 @@
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using Persistence.Context;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Context;
+using static Persistence.Repositories.Helper.RepositoryHelper;
+
+namespace Persistence.Repositories;
 
 public sealed class VersionsRepository : IVersionRepository
 {
@@ -15,97 +19,60 @@ public sealed class VersionsRepository : IVersionRepository
     }
 
     // For Queries
-    public async Task<Result<bool>> CheckVersionExistsInVersionsAsync(ModelVersion version, CancellationToken cancellationToken)
+    public Task<Result<bool>> CheckVersionExistsInVersionsAsync(ModelVersion version, CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var exists = await _dbContext.MidjourneyVersionsMaster
+            return await _dbContext.MidjourneyVersionsMaster
                 .AnyAsync(v => v.Version == version, cancellationToken);
-
-            return Result.Ok(exists);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<bool>($"Database error while checking version existence: {ex.Message}");
-        }
+        }, $"Database error while checking version existence '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<bool>> CheckIfAnySupportedVersionExistsAsync(CancellationToken cancellationToken)
+    public Task<Result<bool>> CheckIfAnySupportedVersionExistsAsync(CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var hasAny = await _dbContext.MidjourneyVersionsMaster
-                .AnyAsync(cancellationToken);
-
-            return Result.Ok(hasAny);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<bool>($"Database error while checking for supported versions: {ex.Message}");
-        }
+            return await _dbContext.MidjourneyVersionsMaster.AnyAsync(cancellationToken);
+        }, "Database error while checking for supported versions", StatusCodes.Status500InternalServerError);
     }
 
     public async Task<Result<MidjourneyVersion>> GetMasterVersionByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
     {
-        try
+        var fetchResult = await ExecuteAsync(async () =>
         {
-            var versionMaster = await _dbContext.MidjourneyVersionsMaster
+            return await _dbContext.MidjourneyVersionsMaster
                 .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
+        }, $"Database error while retrieving version '{version.Value}'", StatusCodes.Status500InternalServerError);
 
-            return versionMaster is null
-                ? Result.Fail<MidjourneyVersion>($"Version '{version.Value}' not found")
-                : Result.Ok(versionMaster);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<MidjourneyVersion>($"Database error while retrieving version '{version.Value}': {ex.Message}");
-        }
+        return Result.Ok(fetchResult.Value);
     }
 
-    public async Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync(CancellationToken cancellationToken)
+    public Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync(CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var versions = await _dbContext.MidjourneyVersionsMaster
-                .ToListAsync(cancellationToken);
-
-            return Result.Ok(versions);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<List<MidjourneyVersion>>($"Database error while retrieving all versions: {ex.Message}");
-        }
+            return await _dbContext.MidjourneyVersionsMaster.ToListAsync(cancellationToken);
+        }, "Database error while retrieving all versions", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<List<ModelVersion>>> GetAllSuportedVersionsAsync(CancellationToken cancellationToken)
+    public Task<Result<List<ModelVersion>>> GetAllSuportedVersionsAsync(CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var supportedVersions = await _dbContext.MidjourneyVersionsMaster
+            return await _dbContext.MidjourneyVersionsMaster
                 .Select(x => x.Version)
                 .ToListAsync(cancellationToken);
-
-            return Result.Ok(supportedVersions);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<List<ModelVersion>>($"Database error while retrieving supported versions: {ex.Message}");
-        }
+        }, "Database error while retrieving supported versions", StatusCodes.Status500InternalServerError);
     }
 
     // For Commands
-    public async Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion newVersion, CancellationToken cancellationToken)
+    public Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion newVersion, CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
             await _dbContext.MidjourneyVersionsMaster.AddAsync(newVersion, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return Result.Ok(newVersion);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<MidjourneyVersion>($"Database error while adding version: {ex.Message}");
-        }
+            return newVersion;
+        }, "Database error while adding version", StatusCodes.Status500InternalServerError);
     }
 }

@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
+using Persistence.Repositories;
 
 namespace Integration.Tests.Repositories;
 
