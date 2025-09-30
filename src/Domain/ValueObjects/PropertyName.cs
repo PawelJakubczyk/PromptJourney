@@ -6,19 +6,18 @@ using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public record PropertyName : ValueObject<string>, ICreatable<PropertyName, string>
+public record PropertyName : ValueObject<string?>, ICreatable<PropertyName, string?>
 {
     public const int MaxLength = 25;
 
-    private PropertyName(string value) : base(value) { }
+    private PropertyName(string? value) : base(value) { }
 
-    public static Result<PropertyName> Create(string value)
+    public static Result<PropertyName> Create(string? value)
     {
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
-                .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
-                .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength))
+            .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
+            .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength)
             .ExecuteIfNoErrors<PropertyName>(() => new PropertyName(value))
             .MapResult(p => p);
 

@@ -50,6 +50,7 @@ public class DefaultValueTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be("[Domain] DefaultValue: cannot be whitespace.");
     }
 
     [Fact]
@@ -65,6 +66,7 @@ public class DefaultValueTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
+        result.Errors[0].Message.Should().Be($"[Domain] DefaultValue: '{tooLongValue}' cannot be longer than 50 characters.");
     }
 
     [Fact]

@@ -9,11 +9,6 @@ public class Error<TLayer> : Error
     public LayersEnum Layer { get; }
     public int ErrorCode { get; }
 
-    public Error(string message) : base($"[{ResolveLayer()}] {message}")
-    {
-        Layer = ResolveLayer();
-    }
-
     public Error(string message, int errorCode) : base($"[{ResolveLayer()}] {message}")
     {
         Layer = ResolveLayer();
@@ -32,20 +27,5 @@ public class Error<TLayer> : Error
             var t when t == typeof(UtilitiesLayer) => LayersEnum.Utilities,
             _ => LayersEnum.Unknown
         };
-    }
-}
-
-public class ErrorCode
-{
-    public string Code { get; }
-    public string Message { get; }
-    public ErrorCode(string code, string message)
-    {
-        Code = code;
-        Message = message;
-    }
-    public override string ToString()
-    {
-        return $"{Code}: {Message}";
     }
 }

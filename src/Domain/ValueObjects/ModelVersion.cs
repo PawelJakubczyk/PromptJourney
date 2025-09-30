@@ -9,17 +9,17 @@ using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, string>
+public record ModelVersion : ValueObject<string?>, ICreatable<ModelVersion, string?>
 {
     public const int MaxLength = 10;
-    private ModelVersion(string value) : base(value) { }
+    private ModelVersion(string? value) : base(value) { }
 
-    public static Result<ModelVersion> Create(string value)
+    public static Result<ModelVersion> Create(string? value)
     {
         var result = WorkflowPipeline
             .Empty()
+            .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
             .Validate(pipeline => pipeline
-                .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
                 .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
                 .IfVersionFormatInvalid<DomainLayer>(value))
             .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value))
@@ -32,13 +32,15 @@ public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, strin
 internal static class ModelVersionErrorsExtensions
 {
     internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>(
-        this WorkflowPipeline pipeline, string value)
+        this WorkflowPipeline pipeline, string? value)
         where TLayer : ILayer
     {
-        bool isValidNumeric = _validNumericRegex.IsMatch(value);
-        bool isValidNiji = _validNijiRegex.IsMatch(value);
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+            return pipeline;
 
-        if (!isValidNumeric && !isValidNiji)
+        if (value is null) return pipeline;
+
+        if (!_validNumericRegex.IsMatch(value) && !_validNijiRegex.IsMatch(value))
         {
             pipeline.Errors.Add(new Error<TLayer>(
                 $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')", 

@@ -5,6 +5,8 @@ namespace Unit.Domain.Tests.ValueObjects;
 
 public class TagTests
 {
+
+
     [Theory]
     [InlineData("abstract")]
     [InlineData("realistic")]

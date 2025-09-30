@@ -6,7 +6,7 @@ using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public record Keyword : ValueObject<string>, ICreatable<Keyword, string>
+public record Keyword : ValueObject<string?>, ICreatable<Keyword, string?>
 {
     public const int MaxLength = 50;
 
@@ -16,9 +16,8 @@ public record Keyword : ValueObject<string>, ICreatable<Keyword, string>
     {
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
-                .IfNullOrWhitespace<DomainLayer, Keyword>(value)
-                .IfLengthTooLong<DomainLayer, Keyword>(value, MaxLength))
+            .IfNullOrWhitespace<DomainLayer, Keyword>(value)
+            .IfLengthTooLong<DomainLayer, Keyword>(value, MaxLength)
             .ExecuteIfNoErrors<Keyword>(() => new Keyword(value!))
             .MapResult(k => k);
 

@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extension;
+using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
 using FluentResults;
 using Utilities.Validation;
@@ -30,6 +30,5 @@ public static class GetAllExampleLinks
 
             return result;
         }
-
     }
 }

@@ -1,7 +1,8 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Entities;
+using Domain.ValueObjects;
 using FluentAssertions;
 using Persistence.Repositories;
-using Domain.Entities;
+using System.ComponentModel;
 
 namespace Integration.Tests.Repositories;
 
@@ -10,14 +11,17 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
     private const string TestLink1 = "https://example.com/default-image1.jpg";
     private const string TestLink2 = "https://example.com/default-image2.jpg";
     private const string TestLink3 = "https://example.com/default-image3.jpg";
+    private const string IncorectLink = "IncorectLink";
 
     private const string TestStyleName1 = "DefaultTestStyle1";
     private const string TestStyleName2 = "DefaultTestStyle2";
     private const string TestStyleName3 = "DefaultTestStyle3";
+    private const string IncorectName = "";
 
     private const string TestVersion1 = "1.0";
     private const string TestVersion2 = "2.0";
     private const string TestVersion3 = "3.0";
+    private const string IncorecteVersion = "";
 
     private readonly VersionsRepository _versionsRepository;
     private readonly ExampleLinkRepository _exampleLinkRepository;
@@ -32,9 +36,9 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         _stylesRepository = new StylesRepository(DbContext);
     }
 
-    // AddExampleLink Tests
+    #region AddExampleLink
     [Fact]
-    public async Task AddExampleLink_WithValidData_ShouldSucceed_WhenVersionAndStyleExist()
+    public async Task AddExampleLink_WithValidData_ShouldSucceed_WhenVersionAndStyleExistAndLinkNotExist()
     {
         // Arrange
         await CreateAndSaveTestVersionAsync(TestVersion1);
@@ -42,9 +46,9 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
 
         var exampleLink = MidjourneyStyleExampleLink.Create
         (
-            ExampleLink.Create(TestLink1).Value,
-            StyleName.Create(TestStyleName1).Value,
-            ModelVersion.Create(TestVersion1).Value
+            ExampleLink.Create(TestLink1),
+            StyleName.Create(TestStyleName1),
+            ModelVersion.Create(TestVersion1)
         ).Value;
 
         // Act
@@ -57,6 +61,32 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Link.Value.Should().Be(TestLink1);
         result.Value.StyleName.Value.Should().Be(TestStyleName1);
         result.Value.Version.Value.Should().Be(TestVersion1);
+    }
+
+    [Theory]
+    [InlineData(null, TestStyleName1, TestVersion1)]
+    [InlineData(TestLink1, null, TestVersion1)]
+    [InlineData(TestLink1, TestStyleName1, null)]
+    [InlineData(IncorectLink, TestStyleName1, TestVersion1)]
+    [InlineData(TestLink1, IncorectName, TestVersion1)]
+    [InlineData(TestLink1, TestStyleName1, IncorecteVersion)]
+    public async Task AddExampleLink_WithInvalidData_ShouldFail(string? link, string? styleName, string? version)
+    {
+        // Arrange
+        await CreateAndSaveTestVersionAsync(TestVersion1);
+        await CreateAndSaveTestStyleAsync(TestStyleName1);
+
+        // Act
+
+        var invalidExampleLink = MidjourneyStyleExampleLink.Create
+        (
+            ExampleLink.Create(link),
+            StyleName.Create(styleName),
+            ModelVersion.Create(version)
+        );
+
+        // Assert
+        invalidExampleLink.IsSuccess.Should().BeFalse();
     }
 
     [Fact]
@@ -86,16 +116,6 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task AddExampleLink_WithInvalidUrl_ShouldFail()
-    {
-        // This should fail during ExampleLink.Create() due to invalid URL format
-        var invalidLinkResult = ExampleLink.Create("not-a-valid-url");
-
-        // Assert that creating an invalid link fails
-        invalidLinkResult.IsSuccess.Should().BeFalse();
     }
 
     [Fact]
@@ -195,8 +215,9 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().NotBeEmpty();
     }
+    #endregion AddExampleLink
+    #region CheckExampleLinkExists
 
-    // CheckExampleLinkExists Tests
     [Fact]
     public async Task CheckExampleLinkExists_WithExistingLink_ShouldReturnTrue()
     {
@@ -231,7 +252,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeFalse();
     }
 
-    // CheckExampleLinkWithStyleExists Tests
+    #endregion CheckExampleLinkExists
+    #region CheckExampleLinkWithStyle
     [Fact]
     public async Task CheckExampleLinkWithStyleExists_WithExistingStyle_ShouldReturnTrue()
     {
@@ -266,7 +288,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeFalse();
     }
 
-    // CheckAnyExampleLinksExist Tests
+    #endregion CheckExampleLinkWithStyleExists
+    #region CheckAnyExampleLinksExist
     [Fact]
     public async Task CheckAnyExampleLinksExist_WithExistingLinks_ShouldReturnTrue()
     {
@@ -296,7 +319,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeFalse();
     }
 
-    // GetAllExampleLinks Tests
+    #endregion CheckAnyExampleLinksExist
+    #region GetAllExampleLinks
     [Fact]
     public async Task GetAllExampleLinks_WithMultipleLinks_ShouldReturnAllLinks()
     {
@@ -339,7 +363,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeEmpty();
     }
 
-    // GetExampleLinksByStyle Tests
+    #endregion GetAllExampleLinks
+    #region GetExampleLinksByStyle
     [Fact]
     public async Task GetExampleLinksByStyle_WithExistingStyle_ShouldReturnMatchingLinks()
     {
@@ -389,7 +414,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeEmpty();
     }
 
-    // GetExampleLinksByStyleAndVersion Tests
+    #endregion GetExampleLinksByStyle
+    #region GetExampleLinksByStyleAndVersion
     [Fact]
     public async Task GetExampleLinksByStyleAndVersion_WithExistingStyleAndVersion_ShouldReturnMatchingLinks()
     {
@@ -486,7 +512,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Value.Should().BeEmpty();
     }
 
-    // DeleteExampleLink Tests
+    #endregion GetExampleLinksByStyleAndVersion
+    #region DeleteExampleLink
     [Fact]
     public async Task DeleteExampleLink_WithExistingLink_ShouldSucceed()
     {
@@ -528,7 +555,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         result.Errors.Should().Contain(e => e.Message.Contains("Failed to delete example link: Value cannot be null. (Parameter 'entity')"));
     }
 
-    // DeleteAllExampleLinksByStyle Tests
+    #endregion DeleteExampleLink
+    #region DeleteAllExampleLinksByStyle
     [Fact]
     public async Task DeleteAllExampleLinksByStyle_WithExistingStyle_ShouldDeleteAllMatchingLinks()
     {
@@ -583,7 +611,8 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         allLinks.Value.Should().HaveCount(1);
     }
 
-    // Helper methods
+    #endregion DeleteAllExampleLinksByStyle
+    #region HelperMethods
     private async Task<MidjourneyVersion> CreateAndSaveTestVersionAsync(string versionValue)
     {
         var version = ModelVersion.Create(versionValue).Value;
@@ -624,5 +653,6 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         var result = await _exampleLinkRepository.AddExampleLinkAsync(exampleLink, _cancellationToken);
         return result.Value;
     }
+    #endregion HelperMethods
 }
 

@@ -14,16 +14,12 @@ public record DefaultValue : ValueObject<string?>, ICreatable<DefaultValue, stri
 
     public static Result<DefaultValue> Create(string? value)
     {
-        if (value == null)
-            return Result.Ok(new DefaultValue(default(string)));
-
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
-                .IfWhitespace<DomainLayer, DefaultValue>(value)
-                .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength))
+            .IfWhitespace<DomainLayer, DefaultValue>(value)
+            .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength)
             .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
-            .MapResult(v => v);
+            .MapResult(defaultValue => defaultValue);
 
         return result;
     }

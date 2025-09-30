@@ -103,12 +103,7 @@ public class StyleTypeTests
         result.Should().NotBeNull();
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().NotBeEmpty();
-
-        var errorMessages = result.Errors.Select(e => e.ToString()).ToList();
-        errorMessages.Should().Contain
-        (
-            $"DomainError with Message='{nameof(StyleType)}: {maxLengthValue} cannot be longer than {StyleType.MaxLength} characters.'"
-        );
+        result.Errors[0].Message.Should().Be($"[Domain] StyleType: '{maxLengthValue}' cannot be longer than 30 characters.");
     }
 
     [Fact]

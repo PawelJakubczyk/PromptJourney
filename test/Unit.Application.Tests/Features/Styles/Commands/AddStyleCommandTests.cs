@@ -1,10 +1,10 @@
-//using Application.Features.Styles.Commands;
-//using Application.Features.Styles.Responses;
 //using Application.Abstractions.IRepository;
 //using Domain.ValueObjects;
 //using Moq;
 //using Application.Features.Styles.Commands.AddStyle;
 //using Domain.Entities;
+//using FluentResults;
+//using FluentAssertions;
 
 //namespace Unit.Test.Application.Features.Styles.Commands;
 
@@ -12,6 +12,7 @@
 //{
 //    private readonly Mock<IStyleRepository> _mockStyleRepository;
 //    private readonly AddStyle.Handler _handler;
+//    private readonly CancellationToken cancellationToken = CancellationToken.None;
 
 //    public AddStyleCommandTests()
 //    {
@@ -34,17 +35,17 @@
 //        var expectedStyle = MidjourneyStyle.Create
 //        (
 //            StyleName.Create("Abstract Art"),
-//            StyleType.Create("Abstract"),
+//            StyleType.Create("Custom"),
 //            Description.Create("Beautiful abstract art style"),
 //            [Tag.Create("modern"), Tag.Create("colorful")]
 //        ).Value;
 
 //        _mockStyleRepository
-//            .Setup(x => x.CheckStyleExistsAsync(It.IsAny<StyleName>()))
+//            .Setup(x => x.CheckStyleExistsAsync(It.IsAny<StyleName>(), CancellationToken.None))
 //            .ReturnsAsync(Result.Ok(false));
 
 //        _mockStyleRepository
-//            .Setup(x => x.AddStyleAsync(It.IsAny<MidjourneyStyle>()))
+//            .Setup(x => x.AddStyleAsync(It.IsAny<MidjourneyStyle>(), CancellationToken.None))
 //            .ReturnsAsync(Result.Ok(expectedStyle));
 
 //        // Act
@@ -55,13 +56,13 @@
 //        result.IsSuccess.Should().BeTrue();
 //        result.Value.Should().NotBeNull();
 //        result.Value.Name.Should().Be("Abstract Art");
-//        result.Value.Type.Should().Be("Abstract");
+//        result.Value.Type.Should().Be("Custom");
 //        result.Value.Description.Should().Be("Beautiful abstract art style");
 //        result.Value.Tags.Should().Contain("modern");
 //        result.Value.Tags.Should().Contain("colorful");
 
-//        _mockStyleRepository.Verify(x => x.CheckStyleExistsAsync(It.IsAny<StyleName>()), Times.Once);
-//        _mockStyleRepository.Verify(x => x.AddStyleAsync(It.IsAny<MidjourneyStyle>()), Times.Once);
+//        _mockStyleRepository.Verify(x => x.CheckStyleExistsAsync(It.IsAny<StyleName>(), cancellationToken), Times.Once);
+//        _mockStyleRepository.Verify(x => x.AddStyleAsync(It.IsAny<MidjourneyStyle>(), cancellationToken), Times.Once);
 //    }
 
 //    [Fact]

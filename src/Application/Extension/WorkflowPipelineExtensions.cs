@@ -7,7 +7,7 @@ using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Validation;
 
-namespace Application.Extension;
+namespace Application.Extensions;
 
 public static class WorkflowPipelineExtensions
 {

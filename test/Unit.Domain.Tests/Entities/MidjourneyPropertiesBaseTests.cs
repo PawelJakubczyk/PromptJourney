@@ -71,8 +71,7 @@ public class MidjourneyPropertiesBaseTests
         result.Value.Should().NotBeNull();
         result.Value.PropertyName.Value.Should().Be("quality");
         result.Value.Version.Value.Should().Be("5.1");
-        result.Value.Parameters.Should().NotBeNull();
-        result.Value.Parameters.Should().BeEmpty();
+        result.Value.Parameters.Should().BeNull();
         result.Value.DefaultValue.Should().BeNull();
         result.Value.MinValue.Should().BeNull();
         result.Value.MaxValue.Should().BeNull();
@@ -104,8 +103,7 @@ public class MidjourneyPropertiesBaseTests
         result.Value.Should().NotBeNull();
         result.Value.PropertyName.Value.Should().Be("stylize");
         result.Value.Version.Value.Should().Be("niji 6");
-        result.Value.Parameters.Should().NotBeNull();
-        result.Value.Parameters.Should().BeEmpty();
+        result.Value.Parameters.Should().BeNull();
         result.Value.DefaultValue.Should().BeNull();
         result.Value.MinValue.Should().BeNull();
         result.Value.MaxValue.Should().BeNull();
@@ -131,9 +129,6 @@ public class MidjourneyPropertiesBaseTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Parameters.Should().NotBeNull();
-        result.Value.Parameters.Should().BeEmpty();
     }
 
     [Fact]

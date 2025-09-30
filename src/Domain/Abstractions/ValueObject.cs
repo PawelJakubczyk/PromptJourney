@@ -1,10 +1,10 @@
 ﻿namespace Domain.Abstractions;
 
-public abstract record ValueObject<TType> : IValueObject<TType>
+public abstract record ValueObject<TType> : IValueObject<TType?>
 {
-    public TType Value { get; }
+    public TType? Value { get; } = default;
 
-    protected ValueObject(TType value)
+    protected ValueObject(TType? value)
     {
         Value = value;
     }

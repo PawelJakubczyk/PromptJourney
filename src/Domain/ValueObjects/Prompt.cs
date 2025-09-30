@@ -6,19 +6,18 @@ using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public record Prompt : ValueObject<string>, ICreatable<Prompt, string>
+public record Prompt : ValueObject<string?>, ICreatable<Prompt, string?>
 {
     public const int MaxLength = 1000;
 
-    private Prompt(string value) : base(value) { }
+    private Prompt(string? value) : base(value) { }
 
-    public static Result<Prompt> Create(string value)
+    public static Result<Prompt> Create(string? value)
     {
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
-                .IfNullOrWhitespace<DomainLayer, Prompt>(value)
-                .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength))
+            .IfNullOrWhitespace<DomainLayer, Prompt>(value)
+            .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength)
             .ExecuteIfNoErrors<Prompt>(() => new Prompt(value))
             .MapResult(p => p);
 

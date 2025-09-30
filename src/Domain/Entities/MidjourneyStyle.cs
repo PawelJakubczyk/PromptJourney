@@ -65,7 +65,7 @@ public class MidjourneyStyle : IEntitie
                  nameResult.Value,
                  typeResult.Value,
                  descriptionResult?.Value,
-                 tagsResultsList.ToValueList()
+                 tagsResultsList?.ToValueList() ?? null
             );
             return style;
         })
@@ -152,7 +152,7 @@ internal static class MidjourneyStylePipelineExtensions
         this WorkflowPipeline pipeline,
         List<TValue>? items)
         where TLayer : ILayer
-        where TValue : ValueObject<string>
+        where TValue : ValueObject<string?>?
     {
         if (items != null && items.Count == 0)
         {

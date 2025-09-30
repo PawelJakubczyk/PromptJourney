@@ -1,10 +1,12 @@
-﻿using Application.Features.ExampleLinks.Commands;
-using Application.Features.ExampleLinks.Queries;
-using Application.Features.ExampleLinks.Responses;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
+using Presentation.Controllers.ControllersUtilities;
+using Application.Features.ExampleLinks.Commands;
+using Application.Features.ExampleLinks.Queries;
+using Application.Features.ExampleLinks.Responses;
+
 
 namespace Presentation.Controllers;
 
@@ -18,14 +20,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var query = new GetAllExampleLinks.Query();
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetAllExampleLinks.Query(), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/examplelinks/style/{styleName}
@@ -35,14 +34,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByStyle(string styleName, CancellationToken cancellationToken)
     {
-        var query = new GetExampleLinksByStyle.Query(styleName);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetExampleLinksByStyle.Query(styleName), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/examplelinks/style/{styleName}/version/{version}
@@ -52,14 +48,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByStyleAndVersion(string styleName, string version, CancellationToken cancellationToken)
     {
-        var query = new GetExampleLinksByStyleAndVersion.Query(styleName, version);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetExampleLinksByStyleAndVersion.Query(styleName, version), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/examplelinks/{link}/exists
@@ -68,14 +61,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CheckLinkExists(string link, CancellationToken cancellationToken)
     {
-        var query = new CheckExampleLinkExist.Query(link);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(new { exists = result.Value });
+        return await Sender
+            .Send(new CheckExampleLinkExist.Query(link), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
+            .ToActionResultAsync();
     }
 
     // GET api/examplelinks/style/{styleName}/exists
@@ -84,14 +74,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CheckLinkWithStyleExists(string styleName, CancellationToken cancellationToken)
     {
-        var query = new CheckExampleLinkWithStyleExists.Query(styleName);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(new { exists = result.Value });
+        return await Sender
+            .Send(new CheckExampleLinkWithStyleExists.Query(styleName), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
+            .ToActionResultAsync();
     }
 
     // GET api/examplelinks/empty
@@ -99,14 +86,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     public async Task<IActionResult> CheckLinksEmpty(CancellationToken cancellationToken)
     {
-        var query = new CheckAnyExampleLinksExist.Query();
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(new { isEmpty = result.Value });
+        return await Sender
+            .Send(new CheckAnyExampleLinksExist.Query(), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { isEmpty = payload })))
+            .ToActionResultAsync();
     }
 
     // POST api/examplelinks
@@ -122,16 +106,19 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             request.Version
         );
 
-        var result = await Sender.Send(command, cancellationToken);
+        return await Sender
+            .Send(command, cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
+            {
+                if (payload is not null)
+                {
+                    return CreatedAtAction(nameof(CheckLinkExists), new { link = ((dynamic)payload).Link }, payload);
+                }
 
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return CreatedAtAction(
-            nameof(CheckLinkExists), 
-            new { link = result.Value.Link }, 
-            result.Value
-        );
+                return NoContent();
+            }))
+            .ToActionResultAsync();
     }
 
     // DELETE api/examplelinks/{link}
@@ -141,14 +128,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteExampleLink(string link, CancellationToken cancellationToken)
     {
-        var command = new DeleteExampleLink.Command(link);
-
-        var result = await Sender.Send(command, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return NoContent();
+        return await Sender
+            .Send(new DeleteExampleLink.Command(link), cancellationToken)
+            .IfErrors(p => p.PrepareErrorResponse())
+            .Else(p => p.PrepareOKResponse(_ => NoContent()))
+            .ToActionResultAsync();
     }
 
     // DELETE api/examplelinks/style/{styleName}
@@ -158,14 +142,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteAllByStyle(string styleName, CancellationToken cancellationToken)
     {
-        var command = new DeleteAllExampleLinksByStyle.Command(styleName);
-
-        var result = await Sender.Send(command, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return NoContent();
+        return await Sender
+            .Send(new DeleteAllExampleLinksByStyle.Command(styleName), cancellationToken)
+            .IfErrors(p => p.PrepareErrorResponse())
+            .Else(p => p.PrepareOKResponse(_ => NoContent()))
+            .ToActionResultAsync();
     }
 }
 

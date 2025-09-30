@@ -13,8 +13,11 @@ public static class WorkflowPipelineExtensions
         this WorkflowPipeline pipeline,
         string? value)
         where TLayer : ILayer
-        where TValue : ValueObject<string>
+        where TValue : ValueObject<string?>?
     {
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+            return pipeline;
+
         if (string.IsNullOrWhiteSpace(value))
         {
             pipeline.Errors.Add(
@@ -28,9 +31,12 @@ public static class WorkflowPipelineExtensions
         this WorkflowPipeline pipeline,
         string? value)
         where TLayer : ILayer
-        where TValue : ValueObject<string>
+        where TValue : ValueObject<string?>?
     {
-        if (!string.IsNullOrEmpty(value) && string.IsNullOrWhiteSpace(value))
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+            return pipeline;
+
+        if (value != null && string.IsNullOrWhiteSpace(value))
         {
             pipeline.Errors.Add(
                 new Error<TLayer>($"{typeof(TValue).Name}: cannot be whitespace.", StatusCodes.Status400BadRequest)
@@ -44,8 +50,11 @@ public static class WorkflowPipelineExtensions
         string? value,
         int maxLength)
         where TLayer : ILayer
-        where TValue : ValueObject<string>
+        where TValue : ValueObject<string?>?
     {
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+            return pipeline;
+
         if (value?.Length > maxLength)
         {
             pipeline.Errors.Add(
@@ -59,18 +68,18 @@ public static class WorkflowPipelineExtensions
         this WorkflowPipeline pipeline,
         List<TValue>? values)
         where TLayer : ILayer
-        where TValue : ValueObject<string>
+        where TValue : ValueObject<string?>?
     {
-        if (values is null)
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
             return pipeline;
 
-        var duplicates = values
+        var duplicates = values?
             .GroupBy(v => v)
             .Where(g => g.Count() > 1)
             .Select(g => g.Key)
             .ToList();
 
-        if (duplicates.Count != 0)
+        if (duplicates?.Count != 0 && duplicates is not null)
         {
             var duplicateNames = string.Join(", ", duplicates.Select(d => d.ToString()));
             pipeline.Errors.Add(

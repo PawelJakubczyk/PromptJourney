@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extension;
+using Application.Extensions;
 using Application.Features.PromptHistory.Responses;
 using Domain.ValueObjects;
 using FluentResults;

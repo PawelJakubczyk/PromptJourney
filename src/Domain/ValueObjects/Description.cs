@@ -14,16 +14,12 @@ public record Description : ValueObject<string?>, ICreatable<Description, string
 
     public static Result<Description> Create(string? value)
     {
-        if (value == null)
-            return Result.Ok(new Description(default(string)));
-
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
-                .IfWhitespace<DomainLayer, Description>(value)
-                .IfLengthTooLong<DomainLayer, Description>(value, MaxLength))
+            .IfWhitespace<DomainLayer, Description>(value)
+            .IfLengthTooLong<DomainLayer, Description>(value, MaxLength)
             .ExecuteIfNoErrors<Description>(() => new Description(value))
-            .MapResult(d => d);
+            .MapResult(description => description);
 
         return result;
     }

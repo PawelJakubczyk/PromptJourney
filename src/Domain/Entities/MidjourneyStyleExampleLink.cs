@@ -37,9 +37,9 @@ public class MidjourneyStyleExampleLink : IEntitie
     }
 
     public static Result<MidjourneyStyleExampleLink> Create(
-        Result<ExampleLink> linkResult,
-        Result<StyleName> styleNameResult,
-        Result<ModelVersion> versionResult)
+        Result<ExampleLink>? linkResult,
+        Result<StyleName>? styleNameResult,
+        Result<ModelVersion>? versionResult)
     {
         var result = WorkflowPipeline
             .Empty()
@@ -50,9 +50,9 @@ public class MidjourneyStyleExampleLink : IEntitie
             .ExecuteIfNoErrors<MidjourneyStyleExampleLink>(() =>
             {
                 var exampleLink = new MidjourneyStyleExampleLink(
-                    linkResult.Value,
-                    styleNameResult.Value,
-                    versionResult.Value
+                    linkResult?.Value!,
+                    styleNameResult?.Value!,
+                    versionResult?.Value!
                 );
 
                 return exampleLink;

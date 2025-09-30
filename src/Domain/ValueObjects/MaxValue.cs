@@ -14,14 +14,10 @@ public record MaxValue : ValueObject<string?>, ICreatable<MaxValue, string?>
 
     public static Result<MaxValue> Create(string? value)
     {
-        if (value is null)
-            return Result.Ok(new MaxValue(default(string)));
-
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
-                .IfWhitespace<DomainLayer, MaxValue>(value)
-                .IfLengthTooLong<DomainLayer, MaxValue>(value, MaxLength))
+            .IfWhitespace<DomainLayer, MaxValue>(value)
+            .IfLengthTooLong<DomainLayer, MaxValue>(value, MaxLength)
             .ExecuteIfNoErrors<MaxValue>(() => new MaxValue(value))
             .MapResult(v => v);
 

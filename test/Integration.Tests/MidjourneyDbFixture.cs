@@ -54,9 +54,6 @@ public class MidjourneyDbFixture : IDisposable
     {
         if (!_disposed)
         {
-            // NIE usuwaj bazy danych - tylko oczyœæ zasoby
-            // Baza danych powinna pozostaæ dla kolejnych uruchomieñ testów
-            
             _disposed = true;
         }
     }
@@ -65,5 +62,5 @@ public class MidjourneyDbFixture : IDisposable
 [CollectionDefinition("Database collection")]
 public class DatabaseCollection : ICollectionFixture<MidjourneyDbFixture>
 {
-    // This class is just a marker for the collection definition
+
 }

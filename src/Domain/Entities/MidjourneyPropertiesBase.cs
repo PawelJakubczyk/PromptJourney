@@ -68,8 +68,8 @@ public class MidjourneyPropertiesBase : IEntitie
             .CollectErrors<MinValue>(minValueResult)
             .CollectErrors<MaxValue>(maxValueResult)
             .CollectErrors<Description>(descriptionResult)
-            .IfListIsEmpty<DomainLayer, Param>(paramResultsList.ToValueList())
-            .IfListHasDuplicates<DomainLayer, Param>(paramResultsList.ToValueList()))
+            .IfListIsEmpty<DomainLayer, Param>(paramResultsList?.ToValueList())
+            .IfListHasDuplicates<DomainLayer, Param>(paramResultsList?.ToValueList()))
         .ExecuteIfNoErrors(() =>
         {
             var versionBase = new MidjourneyPropertiesBase

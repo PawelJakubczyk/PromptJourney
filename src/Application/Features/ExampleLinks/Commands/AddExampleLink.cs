@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extension;
+using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
@@ -52,3 +52,4 @@ public static class AddExampleLink
         }
     }
 }
+
