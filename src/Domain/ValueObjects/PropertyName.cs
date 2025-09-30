@@ -1,32 +1,26 @@
 ﻿using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed class PropertyName : IValueObject<PropertyName, string>
+public record PropertyName : ValueObject<string?>, ICreatable<PropertyName, string?>
 {
     public const int MaxLength = 25;
-    public string Value { get; }
 
-    private PropertyName(string value)
+    private PropertyName(string? value) : base(value) { }
+
+    public static Result<PropertyName> Create(string? value)
     {
-        Value = value;
+        var result = WorkflowPipeline
+            .Empty()
+            .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
+            .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength)
+            .ExecuteIfNoErrors<PropertyName>(() => new PropertyName(value))
+            .MapResult(p => p);
+
+        return result;
     }
-
-    public static Result<PropertyName> Create(string value)
-    {
-        List<DomainError> errors = [];
-
-        errors
-            .IfNullOrWhitespace<PropertyName>(value)
-            .IfLengthTooLong<PropertyName>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<PropertyName>(errors);
-
-        return Result.Ok(new PropertyName(value));
-    }
-
-    public override string ToString() => Value;
 }

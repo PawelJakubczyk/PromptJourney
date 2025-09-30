@@ -1,11 +1,10 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -19,35 +18,17 @@ public static class GetStylesByTags
 
         public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            List<DomainError> domainErrors = [];
+            var tags = query.Tags?.Select(Tag.Create).ToList();
 
-            domainErrors
-                .IfListIsEmpty<string>(query.Tags);
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .IfListIsNullOrEmpty(query.Tags)
+                .CollectErrors(tags!)
+                .ExecuteIfNoErrors(() => _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
+                .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
-            var tags = query.Tags?.Select(t => Tag.Create(t)).ToList();
-
-            if (tags != null)
-            {
-                foreach (var tag in tags)
-                {
-                    domainErrors
-                        .CollectErrors<Tag>(tag);
-                }
-            }
-
-            var validationErrors = CreateValidationErrorIfAny<List<StyleResponse>>(domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? []);
-
-            if (result.IsFailed)
-                return Result.Fail<List<StyleResponse>>(result.Errors);
-
-            var responses = result.Value
-                .Select(StyleResponse.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
     }
+
 }

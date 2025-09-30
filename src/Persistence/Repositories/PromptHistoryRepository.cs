@@ -1,11 +1,11 @@
 using Application.Abstractions.IRepository;
-using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
-
-namespace Persistence.Repositories;
+using static Persistence.Repositories.Helper.RepositoryHelper;
 
 public sealed class PromptHistoryRepository : IPromptHistoryRepository
 {
@@ -17,116 +17,73 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     }
 
     // For Queries
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetAllHistoryRecordsAsync()
+    public Task<Result<List<MidjourneyPromptHistory>>> GetAllHistoryRecordsAsync(CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
+            return await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
                 .OrderByDescending(h => h.CreatedOn)
-                .ToListAsync();
-
-            return Result.Ok(historyRecords);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get all history records: {ex.Message}");
-        }
+                .ToListAsync(cancellationToken);
+        }, "Failed to get all history records", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryByDateRangeAsync(DateTime dateFrom, DateTime dateTo)
+    public Task<Result<List<MidjourneyPromptHistory>>> GetHistoryByDateRangeAsync(DateTime dateFrom, DateTime dateTo, CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
+            return await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
                 .Where(h => h.CreatedOn >= dateFrom && h.CreatedOn <= dateTo)
                 .OrderByDescending(h => h.CreatedOn)
-                .ToListAsync();
-
-            return Result.Ok(historyRecords);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get history by date range: {ex.Message}");
-        }
+                .ToListAsync(cancellationToken);
+        }, "Failed to get history by date range", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetHistoryRecordsByPromptKeywordAsync(Keyword keyword)
+    public Task<Result<List<MidjourneyPromptHistory>>> GetHistoryRecordsByPromptKeywordAsync(Keyword keyword, CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
+            return await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
-                .Where(h => h.Prompt.Value.Contains(keyword.Value))
+                .Where(h => EF.Functions.Like(h.Prompt.Value, $"%{keyword.Value}%"))
                 .OrderByDescending(h => h.CreatedOn)
-                .ToListAsync();
-
-            return Result.Ok(historyRecords);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get history records by prompt keyword: {ex.Message}");
-        }
+                .ToListAsync(cancellationToken);
+        }, "Failed to get history records by prompt keyword", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<List<MidjourneyPromptHistory>>> GetLastHistoryRecordsAsync(int records)
+    public Task<Result<List<MidjourneyPromptHistory>>> GetLastHistoryRecordsAsync(int records, CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            // Get total record count first to validate the count parameter
-            var totalRecords = await CalculateHistoricalRecordCountAsync();
-            if (totalRecords.IsFailed)
-            {
-                return Result.Fail<List<MidjourneyPromptHistory>>("Failed to validate record count");
-            }
-
-            var historyRecords = await _midjourneyDbContext.MidjourneyPromptHistory
+            return await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
                 .OrderByDescending(h => h.CreatedOn)
                 .Take(records)
-                .ToListAsync();
-
-            return Result.Ok(historyRecords);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<List<MidjourneyPromptHistory>>($"Failed to get last history records: {ex.Message}");
-        }
+                .ToListAsync(cancellationToken);
+        }, "Failed to get last history records", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<int>> CalculateHistoricalRecordCountAsync()
+    public Task<Result<int>> CalculateHistoricalRecordCountAsync(CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            var count = await _midjourneyDbContext.MidjourneyPromptHistory
-                .CountAsync();
-
-            return Result.Ok(count);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<int>($"Failed to calculate historical record count: {ex.Message}");
-        }
+            return await _midjourneyDbContext.MidjourneyPromptHistory.CountAsync(cancellationToken);
+        }, "Failed to calculate historical record count", StatusCodes.Status500InternalServerError);
     }
 
     // For Commands
-    public async Task<Result<MidjourneyPromptHistory>> AddPromptToHistoryAsync(MidjourneyPromptHistory history)
+    public Task<Result<MidjourneyPromptHistory>> AddPromptToHistoryAsync(MidjourneyPromptHistory history, CancellationToken cancellationToken)
     {
-        try
+        return ExecuteAsync(async () =>
         {
-            await _midjourneyDbContext.MidjourneyPromptHistory.AddAsync(history);
-            await _midjourneyDbContext.SaveChangesAsync();
-
-            return Result.Ok(history);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<MidjourneyPromptHistory>($"Failed to add prompt to history: {ex.Message}");
-        }
+            await _midjourneyDbContext.MidjourneyPromptHistory.AddAsync(history, cancellationToken);
+            await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
+            return history;
+        }, "Failed to add prompt to history", StatusCodes.Status500InternalServerError);
     }
 }

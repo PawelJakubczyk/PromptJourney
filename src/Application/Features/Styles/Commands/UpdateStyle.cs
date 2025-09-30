@@ -1,11 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Styles.Responses;
-using Domain.Entities.MidjourneyStyle;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands;
 
@@ -27,35 +27,21 @@ public static class UpdateStyle
         {
             var styleName = StyleName.Create(command.StyleName);
             var type = StyleType.Create(command.Type);
-            var description = command.Description != null ? Description.Create(command.Description) : null;
-            var tags = command.Tags?.Select(t => Tag.Create(t)).ToList();
+            var description = command.Description is not null ? Description.Create(command.Description) : null;
+            var tags = command.Tags?.Select(Tag.Create).ToList();
 
-            List<ApplicationError> applicationErrors = [];
+            var midjourneyStyle = MidjourneyStyle.Create(styleName, type, description!, tags);
 
-            applicationErrors
-                .IfStyleNotExists(styleName.Value, _styleRepository);
 
-            var styleResult = MidjourneyStyle.Create
-            (
-                styleName,
-                type,
-                description,
-                tags
-            );
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors(midjourneyStyle)
+                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
+                .MapResult(StyleResponse.FromDomain);
 
-            var domainErrors = styleResult.Errors;
 
-            var validationErrors = CreateValidationErrorIfAny<StyleResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _styleRepository.UpdateStyleAsync(styleResult.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<StyleResponse>(result.Errors);
-
-            var response = StyleResponse.FromDomain(result.Value);
-
-            return Result.Ok(response);
+            return result;
         }
     }
 }

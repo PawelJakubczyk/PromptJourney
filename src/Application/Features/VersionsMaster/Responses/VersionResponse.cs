@@ -1,4 +1,4 @@
-﻿using Domain.Entities.MidjourneyVersions;
+﻿using Domain.Entities;
 
 namespace Application.Features.VersionsMaster.Responses;
 

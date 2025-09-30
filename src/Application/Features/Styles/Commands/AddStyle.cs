@@ -1,11 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Styles.Responses;
-using Domain.Entities.MidjourneyStyle;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands.AddStyle;
 
@@ -25,36 +25,29 @@ public static class AddStyle
 
         public async Task<Result<StyleResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var name = StyleName.Create(command.Name);
-            var type = StyleType.Create(command.Type);
-            var description = command.Description != null ? Description.Create(command.Description) : null;
-            var tags = command.Tags?.Select(t => Tag.Create(t)).ToList();
+            var styleName = StyleName.Create(command.Name);
+            var styleType = StyleType.Create(command.Type);
+            var description = command.Description is not null ? Description.Create(command.Description) : null;
+            var tags = command.Tags?.Select(Tag.Create).ToList();
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfStyleAlreadyExists(name.Value, _styleRepository);
-
-            var styleResult = MidjourneyStyle.Create(
-                name.Value,
-                type.Value,
+            var style = MidjourneyStyle.Create
+            (
+                styleName.Value,
+                styleType.Value,
                 description?.Value,
                 tags
             );
 
-            var domainErrors = styleResult.Errors;
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors(style)
+                .IfStyleAlreadyExists(styleName.Value, _styleRepository, cancellationToken)
+                    .ExecuteIfNoErrors(() => _styleRepository.AddStyleAsync(style.Value, cancellationToken))
+                        .MapResult(StyleResponse.FromDomain);
 
-            var validationErrors = CreateValidationErrorIfAny<StyleResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
 
-            var result = await _styleRepository.AddStyleAsync(styleResult.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<StyleResponse>(result.Errors);
-
-            var response = StyleResponse.FromDomain(result.Value);
-
-            return Result.Ok(response);
+            return result;
         }
+
     }
 }

@@ -1,35 +1,26 @@
 using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed class MinValue : IValueObject<MinValue, string?>
+public record MinValue : ValueObject<string?>, ICreatable<MinValue, string?>
 {
     public const int MaxLength = 50;
-    public string? Value { get; }
 
-    private MinValue(string? value)
-    {
-        Value = value;
-    }
+    private MinValue(string? value) : base(value) { }
 
     public static Result<MinValue> Create(string? value)
     {
-        if (value == null)
-            return Result.Ok(new MinValue(null));
+        var result = WorkflowPipeline
+            .Empty()
+            .IfWhitespace<DomainLayer, MinValue>(value)
+            .IfLengthTooLong<DomainLayer, MinValue>(value, MaxLength)
+            .ExecuteIfNoErrors<MinValue>(() => new MinValue(value))
+            .MapResult(v => v);
 
-        List<DomainError> errors = [];
-
-        errors
-            .IfWhitespace<MinValue>(value)
-            .IfLengthTooLong<MinValue>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<MinValue>(errors);
-
-        return Result.Ok(new MinValue(value));
+        return result;
     }
-
-    public override string? ToString() => Value;
 }

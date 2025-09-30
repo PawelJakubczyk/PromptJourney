@@ -1,35 +1,26 @@
 using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed class MaxValue : IValueObject<MaxValue, string?>
+public record MaxValue : ValueObject<string?>, ICreatable<MaxValue, string?>
 {
     public const int MaxLength = 50;
-    public string? Value { get; }
 
-    private MaxValue(string? value)
-    {
-        Value = value;
-    }
+    private MaxValue(string? value) : base(value) { }
 
     public static Result<MaxValue> Create(string? value)
     {
-        if (value == null)
-            return Result.Ok(new MaxValue(null));
+        var result = WorkflowPipeline
+            .Empty()
+            .IfWhitespace<DomainLayer, MaxValue>(value)
+            .IfLengthTooLong<DomainLayer, MaxValue>(value, MaxLength)
+            .ExecuteIfNoErrors<MaxValue>(() => new MaxValue(value))
+            .MapResult(v => v);
 
-        List<DomainError> errors = [];
-
-        errors
-            .IfWhitespace<MaxValue>(value)
-            .IfLengthTooLong<MaxValue>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<MaxValue>(errors);
-
-        return Result.Ok(new MaxValue(value));
+        return result;
     }
-
-    public override string? ToString() => Value;
 }

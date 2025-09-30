@@ -1,11 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Common.Responses;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -26,29 +25,18 @@ public static class DeleteAllExampleLinksByStyle
         {
             var styleName = StyleName.Create(command.StyleName);
 
-            List<DomainError> domainErrors = [];
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                    .CollectErrors(styleName)
+                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                    .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                    .MapResult(count => BulkDeleteResponse.Success
+                    (
+                        count,
+                        $"Successfully deleted example links for style '{styleName.Value}'."
+                    ));
 
-            domainErrors
-                .CollectErrors<StyleName>(styleName);
-
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfStyleNotExists(styleName.Value, _styleRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<BulkDeleteResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var deleteResult = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value);
-
-            if (deleteResult.IsFailed) 
-                return Result.Fail<BulkDeleteResponse>(deleteResult.Errors);
-
-            var deletedCount = deleteResult.Value.Count;
-            var response = BulkDeleteResponse.Success(deletedCount, 
-                $"Successfully deleted {deletedCount} example links for style '{styleName.Value.Value}'.");
-
-            return Result.Ok(response);
+            return result;
         }
     }
 }

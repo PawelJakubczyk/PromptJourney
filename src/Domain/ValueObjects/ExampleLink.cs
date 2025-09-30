@@ -1,33 +1,53 @@
 using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
+using Utilities.Constants;
+using Utilities.Errors;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed partial class ExampleLink : IValueObject<ExampleLink, string>
+public record ExampleLink : ValueObject<string?>, ICreatable<ExampleLink, string?>
 {
     public const int MaxLength = 200;
-    public string Value { get; }
 
-    private ExampleLink(string value)
+    private ExampleLink(string? value) : base(value) { }
+
+    public static Result<ExampleLink> Create(string? value)
     {
-        Value = value;
-    }
+        var result = WorkflowPipeline
+            .Empty()
+            .IfNullOrWhitespace<DomainLayer, ExampleLink>(value)
+            .Validate(pipeline => pipeline
+                .IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength)
+                .IfLinkFormatInvalid<DomainLayer>(value))
+            .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value))
+            .MapResult(link => link);
 
-    public static Result<ExampleLink> Create(string value)
+        return result;
+    }
+}
+
+internal static class ExampleLinkErrorsExtensions
+{
+    internal static WorkflowPipeline IfLinkFormatInvalid<TLayer>(this WorkflowPipeline pipeline, string? value)
+        where TLayer : ILayer
     {
-        List<DomainError> errors = [];
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+            return pipeline;
 
-        errors
-            .IfNullOrWhitespace<ExampleLink>(value)
-            .IfLengthTooLong<ExampleLink>(value, MaxLength)
-            .IfLinkFormatInvalid(value);
+        if (string.IsNullOrWhiteSpace(value))
+            return pipeline;
 
-        if (errors.Count != 0)
-            return Result.Fail<ExampleLink>(errors);
+        var isValid = Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
 
-        return Result.Ok(new ExampleLink(value));
+        if (!isValid)
+        {
+            pipeline.Errors.Add(new Error<TLayer>($"Invalid URL format: {value}", StatusCodes.Status400BadRequest));
+        }
+
+        return pipeline;
     }
-
-    public override string ToString() => Value;
 }

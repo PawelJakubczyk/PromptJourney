@@ -1,30 +1,26 @@
 using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed class StyleName : IValueObject<StyleName, string>
+public record StyleName : ValueObject<string?>, ICreatable<StyleName, string?>
 {
     public const int MaxLength = 150;
-    public string Value { get; }
 
-    private StyleName(string value)
+    private StyleName(string? value) : base(value) { }
+
+    public static Result<StyleName> Create(string? value)
     {
-        Value = value;
-    }
+        var result = WorkflowPipeline
+            .Empty()
+            .IfNullOrWhitespace<DomainLayer, StyleName>(value)
+            .IfLengthTooLong<DomainLayer, StyleName>(value, MaxLength)
+            .ExecuteIfNoErrors<StyleName>(() => new StyleName(value))
+            .MapResult(s => s);
 
-    public static Result<StyleName> Create(string value)
-    {
-        List<DomainError> errors = [];
-
-        errors
-            .IfNullOrWhitespace<StyleName>(value)
-            .IfLengthTooLong<StyleName>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<StyleName>(errors);
-
-        return Result.Ok(new StyleName(value));
+        return result;
     }
 }

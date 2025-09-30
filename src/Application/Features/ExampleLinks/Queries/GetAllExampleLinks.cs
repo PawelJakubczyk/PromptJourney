@@ -1,31 +1,34 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetAllExampleLinks
 {
-    public sealed record Query : IQuery<List<ExampleLinkRespose>>;
+    public sealed record Query : IQuery<List<ExampleLinkResponse>>;
 
-    public sealed class Handler(IExampleLinksRepository exampleLinkRepository)
-        : IQueryHandler<Query, List<ExampleLinkRespose>>
+    public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
+        : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
-        private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
+        private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
 
-        public async Task<Result<List<ExampleLinkRespose>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await _exampleLinkRepository.GetAllExampleLinksAsync();
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken))
+                .MapResult
+                (
+                    domainList => domainList
+                    .Select(ExampleLinkResponse.FromDomain)
+                    .ToList()
+                );
 
-            if (result.IsFailed)
-                return Result.Fail<List<ExampleLinkRespose>>(result.Errors);
-
-            var responses = result.Value
-                .Select(ExampleLinkRespose.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

@@ -1,10 +1,5 @@
-﻿using Domain.Entities.MidjourneyPromtHistory;
-using Domain.Entities.MidjourneyProperties;
-using Domain.Entities.MidjourneyStyleExampleLinks;
-using Domain.Entities.MidjourneyStyle;
-using Domain.Entities.MidjourneyVersions;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
 
 namespace Persistence.Context;
 

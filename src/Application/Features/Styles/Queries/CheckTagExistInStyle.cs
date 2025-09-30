@@ -1,10 +1,9 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -21,20 +20,16 @@ public class CheckTagExistInStyle
             var styleName = StyleName.Create(query.StyleName);
             var tag = Tag.Create(query.Tag);
 
-            List<DomainError> domainErrors = [];
-            domainErrors
-                .CollectErrors<StyleName>(styleName)
-                .CollectErrors<Tag>(tag);
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .Validate(pipeline => pipeline
+                    .CollectErrors(styleName)
+                    .CollectErrors(tag))
+                .ExecuteIfNoErrors(() => _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                    .MapResult(value => value);
 
-            List<ApplicationError> applicationErrors = [];
 
-            applicationErrors
-                .IfTagNotExists(styleName.Value, tag.Value, _styleRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<bool>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            return await _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value);
+            return result;
         }
     }
 }

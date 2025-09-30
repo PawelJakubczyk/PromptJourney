@@ -1,11 +1,12 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Properties.Responses;
-using Domain.Entities.MidjourneyProperties;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using System;
+using Utilities.Validation;
 
 namespace Application.Features.Properties.Commands;
 
@@ -32,42 +33,34 @@ public static class AddPropertyInVersion
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
-            var parametersResult = command.Parameters.Select(p => Param.Create(p)).ToList();
-            var defaultValueResult = command.DefaultValue != null ? DefaultValue.Create(command.DefaultValue) : null;
-            var minValueResult = command.MinValue != null ? MinValue.Create(command.MinValue) : null;
-            var maxValueResult = command.MaxValue != null ? MaxValue.Create(command.MaxValue) : null;
-            var descriptionResult = command.Description != null ? Description.Create(command.Description) : null;
+            var parametersResult = command.Parameters.Select(Param.Create).ToList();
+            var defaultValueResult = command.DefaultValue is not null ? DefaultValue.Create(command.DefaultValue) : null;
+            var minValueResult = command.MinValue is not null ? MinValue.Create(command.MinValue) : null;
+            var maxValueResult = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : null;
+            var descriptionResult = command.Description is not null ? Description.Create(command.Description) : null;
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfVersionNotExists(versionResult.Value, _versionRepository)
-                .IfPropertyAlreadyExists(versionResult.Value, propertyNameResult.Value, _propertiesRepository);
-
-            var propertyResult = MidjourneyPropertiesBase.Create
+            var property = MidjourneyPropertiesBase.Create
             (
                 propertyNameResult,
                 versionResult,
                 parametersResult,
-                defaultValueResult,
-                minValueResult,
-                maxValueResult,
-                descriptionResult
+                defaultValueResult!,
+                minValueResult!,
+                maxValueResult!,
+                descriptionResult!
             );
 
-            var domainErrors = propertyResult.Errors;
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors(property)
+                .Validate(pipeline => pipeline
+                    .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
+                    .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken))
+                .MapResult(PropertyResponse.FromDomain);
 
-            var validationErrors = CreateValidationErrorIfAny<PropertyResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _propertiesRepository.AddParameterToVersionAsync(propertyResult.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<PropertyResponse>(result.Errors);
-
-            var response = PropertyResponse.FromDomain(result.Value);
-
-            return Result.Ok(response);
+            return result;
         }
+
     }
 }

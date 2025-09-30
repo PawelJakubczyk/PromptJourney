@@ -1,6 +1,6 @@
 using Application.Registrations;
 using Persistence.Registrations;
-using Presentation.Registrations;
+using Application.Registrations;
 
 try
 {

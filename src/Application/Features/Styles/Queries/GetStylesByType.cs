@@ -1,11 +1,10 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Styles.Responses;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -21,24 +20,13 @@ public static class GetStylesByType
         {
             var styleType = StyleType.Create(query.StyleType);
 
-            List<DomainError> domainErrors = [];
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors(styleType)
+                .ExecuteIfNoErrors(() => _styleRepository.GetStylesByTypeAsync(styleType.Value, cancellationToken))
+                .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
-            domainErrors
-                .CollectErrors<StyleType>(styleType);
-
-            var validationErrors = CreateValidationErrorIfAny<List<StyleResponse>>(domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _styleRepository.GetStylesByTypeAsync(styleType.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<List<StyleResponse>>(result.Errors);
-
-            var responses = result.Value
-                .Select(StyleResponse.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

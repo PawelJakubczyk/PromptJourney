@@ -1,11 +1,10 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.VersionsMaster.Responses;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.VersionsMaster.Queries;
 
@@ -21,27 +20,15 @@ public static class GetVersionByVersion
         {
             var version = ModelVersion.Create(query.Version);
 
-            List<ApplicationError> applicationErrors = [];
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors(version)
+                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken))
+                .MapResult(VersionResponse.FromDomain);
 
-            applicationErrors
-                .IfVersionNotExists(version.Value, _versionRepository);
-
-            List<DomainError> domainErrors = [];
-
-            domainErrors
-                .CollectErrors<ModelVersion>(version);
-
-            var validationErrors = CreateValidationErrorIfAny<VersionResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _versionRepository.GetMasterVersionByVersionAsync(version.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<VersionResponse>(result.Errors);
-
-            var response = VersionResponse.FromDomain(result.Value);
-
-            return Result.Ok(response);
+            return result;
         }
     }
+
 }

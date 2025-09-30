@@ -1,7 +1,9 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Application.Features.Styles.Responses;
 using FluentResults;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Queries;
 
@@ -15,16 +17,12 @@ public static class GetAllStyles
 
         public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await _styleRepository.GetAllStylesAsync();
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                    .ExecuteIfNoErrors(() => _styleRepository.GetAllStylesAsync(cancellationToken))
+                        .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
 
-            if (result.IsFailed)
-                return Result.Fail<List<StyleResponse>>(result.Errors);
-
-            var responses = result.Value
-                .Select(StyleResponse.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

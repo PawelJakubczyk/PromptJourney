@@ -1,11 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Common.Responses;
-using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Commands;
 
@@ -22,27 +21,18 @@ public static class DeleteExampleLink
         {
             var link = ExampleLink.Create(command.Link);
 
-            List<DomainError> domainErrors = [];
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors<ExampleLink>(link)
+                .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken))
+                .MapResult(_ => DeleteResponse.Success
+                (
+                    $"Example link '{link.Value.Value}' was successfully deleted."
+                ));
 
-            domainErrors
-                .CollectErrors<ExampleLink>(link);
-
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfLinkNotExists(link.Value, _exampleLinkRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<DeleteResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var deleteResult = await _exampleLinkRepository.DeleteExampleLinkAsync(link.Value);
-
-            if (deleteResult.IsFailed) 
-                return Result.Fail<DeleteResponse>(deleteResult.Errors);
-
-            var response = DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted.");
-
-            return Result.Ok(response);
+            return result;
         }
+
     }
 }

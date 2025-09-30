@@ -1,22 +1,9 @@
-﻿using Domain.Entities.MidjourneyProperties;
-using Domain.ValueObjects;
+﻿using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PropertyNameConverter = Persistence.Mapping.ValueObjects.PropertyNameMapping.Converter;
-using PropertyNameComparer = Persistence.Mapping.ValueObjects.PropertyNameMapping.Comparer;
-using ParamListConverter = Persistence.Mapping.ValueObjects.ParamListMapping.Converter;
-using ParamListComparer = Persistence.Mapping.ValueObjects.ParamListMapping.Comparer;
-using ModelVersionConverter = Persistence.Mapping.ValueObjects.ModelVersionMapping.Converter;
-using ModelVersionComparer = Persistence.Mapping.ValueObjects.ModelVersionMapping.Comparer;
-using DefaultValueConverter = Persistence.Mapping.ValueObjects.DefaultValueMapping.Converter;
-using DefaultValueComparer = Persistence.Mapping.ValueObjects.DefaultValueMapping.Comparer;
-using MinValueConverter = Persistence.Mapping.ValueObjects.MinValueMapping.Converter;
-using MinValueComparer = Persistence.Mapping.ValueObjects.MinValueMapping.Comparer;
-using MaxValueConverter = Persistence.Mapping.ValueObjects.MaxValueMapping.Converter;
-using MaxValueComparer = Persistence.Mapping.ValueObjects.MaxValueMapping.Comparer;
-using DescriptionConverter = Persistence.Mapping.ValueObjects.DescriptionMapping.Converter;
-using DescriptionComparer = Persistence.Mapping.ValueObjects.DescriptionMapping.Comparer;
+using static Persistence.Mapping.ValueObjectsMapping;
 using static Persistence.Constants.PersistenceConstants;
+using Domain.Entities;
 
 namespace Persistence.Configuration;
 

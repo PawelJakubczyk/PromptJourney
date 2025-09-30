@@ -1,32 +1,26 @@
 using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed class Param : IValueObject<Param, string>
+public record Param : ValueObject<string?>, ICreatable<Param, string?>
 {
     public const int MaxLength = 100;
-    public string Value { get; }
 
-    private Param(string value)
+    private Param(string? value) : base(value) { }
+
+    public static Result<Param> Create(string? value)
     {
-        Value = value;
+        var result = WorkflowPipeline
+            .Empty()
+            .IfNullOrWhitespace<DomainLayer, Param>(value)
+            .IfLengthTooLong<DomainLayer, Param>(value, MaxLength)
+            .ExecuteIfNoErrors<Param>(() => new Param(value))
+            .MapResult(p => p);
+
+        return result;
     }
-
-    public static Result<Param> Create(string value)
-    {
-        List<DomainError> errors = [];
-
-        errors
-            .IfNullOrWhitespace<Param>(value)
-            .IfLengthTooLong<Param>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<Param>(errors);
-
-        return Result.Ok(new Param(value));
-    }
-
-    public override string ToString() => Value;
 }

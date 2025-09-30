@@ -1,55 +1,54 @@
 ﻿using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
+using Utilities.Constants;
+using Utilities.Errors;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed class ModelVersion : IValueObject<ModelVersion, string>
+public record ModelVersion : ValueObject<string?>, ICreatable<ModelVersion, string?>
 {
     public const int MaxLength = 10;
-    public string Value { get; }
-    public Result<ModelVersion> ModelVersionResult => Create(Value);
+    private ModelVersion(string? value) : base(value) { }
 
-    private ModelVersion(string value)
+    public static Result<ModelVersion> Create(string? value)
     {
-        Value = value;
+        var result = WorkflowPipeline
+            .Empty()
+            .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
+            .Validate(pipeline => pipeline
+                .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
+                .IfVersionFormatInvalid<DomainLayer>(value))
+            .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value))
+            .MapResult(v => v);
+
+        return result;
     }
-
-    public static Result<ModelVersion> Create(string value)
-    {
-        List<DomainError> errors = [];
-
-        errors
-            .IfNullOrWhitespace<ModelVersion>(value)
-            .IfLengthTooLong<ModelVersion>(value, MaxLength)
-            .IfVersionFormatInvalid(value);
-
-        if (errors.Count != 0)
-            return Result.Fail<ModelVersion>(errors);
-
-        return Result.Ok(new ModelVersion(value));
-    }
-
-    public override string ToString() => Value;
 }
 
-public static class ModelVersionErrorsExtensions
+internal static class ModelVersionErrorsExtensions
 {
-    internal static List<DomainError> IfVersionFormatInvalid(this List<DomainError> domainErrors, string value)
+    internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>(
+        this WorkflowPipeline pipeline, string? value)
+        where TLayer : ILayer
     {
-        bool isValidNumeric = _validNumericRegex.IsMatch(value);
-        bool isValidNiji = _validNijiRegex.IsMatch(value);
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+            return pipeline;
 
-        if (!isValidNumeric && !isValidNiji)
+        if (value is null) return pipeline;
+
+        if (!_validNumericRegex.IsMatch(value) && !_validNijiRegex.IsMatch(value))
         {
-            domainErrors.Add(new DomainError
-            (
-                $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')"
+            pipeline.Errors.Add(new Error<TLayer>(
+                $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')", 
+                StatusCodes.Status400BadRequest
             ));
         }
 
-        return domainErrors;
+        return pipeline;
     }
 
     private static readonly Regex _validNumericRegex =

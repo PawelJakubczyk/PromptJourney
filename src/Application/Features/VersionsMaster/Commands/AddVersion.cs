@@ -1,11 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.VersionsMaster.Responses;
-using Domain.Entities.MidjourneyVersions;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.VersionsMaster.Commands;
 
@@ -27,37 +27,26 @@ public static class AddVersion
         {
             var version = ModelVersion.Create(command.Version);
             var parameter = Param.Create(command.Parameter);
-            var description = command.Description != null ? Description.Create(command.Description) : null;
+            var description = command.Description is not null ? Description.Create(command.Description) : null;
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfVersionAlreadyExists(version.Value, _versionRepository);
-
-            var versionResult = MidjourneyVersion.Create
+            var midjourneyVersion = MidjourneyVersion.Create
             (
-                version.Value,
-                parameter.Value,
-                command.ReleaseDate,
-                description?.Value
+                version, 
+                parameter, 
+                command.ReleaseDate, 
+                description!
             );
 
-            var domainErrors = versionResult.Errors;
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors(midjourneyVersion)
+                .IfVersionAlreadyExists(version.Value, _versionRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken))
+                .MapResult(VersionResponse.FromDomain);
 
-            var validationErrors = CreateValidationErrorIfAny<VersionResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
 
-
-
-
-            var result = await _versionRepository.AddVersionAsync(versionResult.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<VersionResponse>(result.Errors);
-
-            var response = VersionResponse.FromDomain(result.Value);
-
-            return Result.Ok(response);
+            return result;
         }
     }
+
 }

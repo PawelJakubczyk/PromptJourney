@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyPromtHistory;
+using Domain.Entities;
 
 namespace Application.Features.PromptHistory.Responses;
 

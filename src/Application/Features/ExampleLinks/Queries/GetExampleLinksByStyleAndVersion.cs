@@ -1,59 +1,54 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
+
+
 
 namespace Application.Features.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyleAndVersion
 {
-    public sealed record Query(string Style, string Version) : IQuery<List<ExampleLinkRespose>>;
+    public sealed record Query(string StyleName, string Version) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler
     (
         IExampleLinksRepository exampleLinkRepository,
-        IStyleRepository styleRepository,
-        IVersionRepository versionRepository
-    ) : IQueryHandler<Query, List<ExampleLinkRespose>>
+        IStyleRepository _styleRepository,
+        IVersionRepository _versionRepository
+    ) : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
-        private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
-        private readonly IStyleRepository _styleRepository = styleRepository;
-        private readonly IVersionRepository _versionRepository = versionRepository;
+        private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
+        private readonly IStyleRepository _styleRepository = _styleRepository;
+        private readonly IVersionRepository _versionRepository = _versionRepository;
 
-        public async Task<Result<List<ExampleLinkRespose>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var style = StyleName.Create(query.Style);
+            var styleName = StyleName.Create(query.StyleName);
             var version = ModelVersion.Create(query.Version);
 
-            List<DomainError> domainErrors = [];
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .Validate(pipeline => pipeline
+                    .CollectErrors(styleName)
+                    .CollectErrors(version))
+                .Validate(pipeline => pipeline
+                    .IfStyleNotExists(styleName?.Value!, _styleRepository, cancellationToken)
+                    .IfVersionNotExists(version?.Value!, _versionRepository, cancellationToken)
+                    .IfVersionNotInSuportedVersions(version?.Value!, _versionRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
+                .MapResult
+                (
+                    domainList => domainList
+                    .Select(ExampleLinkResponse.FromDomain)
+                    .ToList()
+                );
 
-            domainErrors
-                .CollectErrors<StyleName>(style)
-                .CollectErrors<ModelVersion>(version);
 
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfVersionNotExists(version.Value, _versionRepository)
-                .IfStyleNotExists(style.Value, _styleRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<List<ExampleLinkRespose>>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _exampleLinkRepository.GetExampleLinksByStyleAndVersionAsync(style.Value, version.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<List<ExampleLinkRespose>>(result.Errors);
-
-            var responses = result.Value
-                .Select(ExampleLinkRespose.FromDomain)
-                .ToList();
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }

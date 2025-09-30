@@ -1,11 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.Styles.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Domain.Errors;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.Styles.Commands.AddTagToStyle;
 
@@ -22,29 +21,18 @@ public static class AddTagToStyle
             var styleName = StyleName.Create(command.StyleName);
             var tag = Tag.Create(command.Tag);
 
-            List<DomainError> domainErrors = [];
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .Validate(pipeline => pipeline
+                    .CollectErrors(styleName)
+                    .CollectErrors(tag))
+                .Validate(pipeline => pipeline
+                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                    .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                .MapResult(StyleResponse.FromDomain);
 
-            domainErrors
-                .CollectErrors<StyleName>(styleName)
-                .CollectErrors<Tag>(tag);
-
-            List<ApplicationError> applicationErrors = [];
-
-            applicationErrors
-                .IfStyleNotExists(styleName.Value, _styleRepository)
-                .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<StyleResponse>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var result = await _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value);
-
-            if (result.IsFailed)
-                return Result.Fail<StyleResponse>(result.Errors);
-
-            var response = StyleResponse.FromDomain(result.Value);
-
-            return Result.Ok(response);
+            return result;
         }
     }
 }

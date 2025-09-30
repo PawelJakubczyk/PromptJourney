@@ -1,4 +1,4 @@
-using Domain.Entities.MidjourneyProperties;
+using Domain.Entities;
 
 namespace Application.Features.Properties.Responses;
 

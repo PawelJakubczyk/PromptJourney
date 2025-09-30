@@ -1,35 +1,26 @@
 using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Utilities.Constants;
+using Utilities.Validation;
 
 namespace Domain.ValueObjects;
 
-public sealed class DefaultValue : IValueObject<DefaultValue, string?>
+public record DefaultValue : ValueObject<string?>, ICreatable<DefaultValue, string?>
 {
     public const int MaxLength = 50;
-    public string? Value { get; }
 
-    private DefaultValue(string? value)
-    {
-        Value = value;
-    }
+    private DefaultValue(string? value) : base(value) { }
 
     public static Result<DefaultValue> Create(string? value)
     {
-        if (value == null)
-            return Result.Ok(new DefaultValue(null));
+        var result = WorkflowPipeline
+            .Empty()
+            .IfWhitespace<DomainLayer, DefaultValue>(value)
+            .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength)
+            .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
+            .MapResult(defaultValue => defaultValue);
 
-        List<DomainError> errors = [];
-
-        errors
-            .IfWhitespace<DefaultValue>(value)
-            .IfLengthTooLong<DefaultValue>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<DefaultValue>(errors);
-
-        return Result.Ok(new DefaultValue(value));
+        return result;
     }
-
-    public override string? ToString() => Value;
 }

@@ -1,31 +1,55 @@
 using Domain.Abstractions;
-using Domain.Errors;
+using Domain.Extensions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
+using Utilities.Constants;
+using Utilities.Errors;
+using Utilities.Validation;
+
 namespace Domain.ValueObjects;
 
-public sealed class StyleType : IValueObject<StyleType, string>
+public record StyleType : ValueObject<string?>, ICreatable<StyleType, string?>
 {
-    public const int MaxLength = 100;
-    public string Value { get; }
+    public const int MaxLength = 30;
 
-    private StyleType(string value)
+    private StyleType(string? value) : base(value) { }
+
+    public static Result<StyleType> Create(string? value)
     {
-        Value = value;
-    }
+        var result = WorkflowPipeline
+            .Empty()
+            .IfNullOrWhitespace<DomainLayer, StyleType>(value)
+            .Validate(pipeline => pipeline
+                .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
+                .IfStyleTypeNotInclude<DomainLayer>(value))
+            .ExecuteIfNoErrors<StyleType>(() => new StyleType(value))
+            .MapResult(s => s);
 
-    public static Result<StyleType> Create(string value)
+        return result;
+    }
+}
+
+internal static class StyleTypeErrorsExtensions
+{
+    internal static WorkflowPipeline IfStyleTypeNotInclude<TLayer>(this WorkflowPipeline pipeline, string? value)
+        where TLayer : ILayer
     {
-        List<DomainError> errors = [];
+        if (!Enum.TryParse<StyleTypeEnum>(value, true, out var _))
+        {
+            pipeline.Errors.Add(new Error<TLayer>
+            (
+                $"Invalid style type: {value}. Expected values are: {string.Join(", ", Enum.GetNames<StyleTypeEnum>())}",
+                StatusCodes.Status400BadRequest
+            ));
+        }
 
-        errors
-            .IfNullOrWhitespace<StyleType>(value)
-            .IfLengthTooLong<StyleType>(value, MaxLength);
-
-        if (errors.Count != 0)
-            return Result.Fail<StyleType>(errors);
-
-        return Result.Ok(new StyleType(value));
+        return pipeline;
     }
+}
 
-    public override string ToString() => Value;
+public enum StyleTypeEnum
+{
+    Custom,
+    StyleReferences,
+    Personalization
 }

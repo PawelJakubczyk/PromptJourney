@@ -1,55 +1,55 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Errors;
+using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
-using Domain.Entities.MidjourneyStyleExampleLinks;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using static Application.Errors.ApplicationErrorsExtensions;
+using Utilities.Validation;
 
 namespace Application.Features.ExampleLinks.Commands;
 
 public static class AddExampleLink
 {
-    public sealed record Command(string Link, string Style, string Version) : ICommand<ExampleLinkRespose>;
+    public sealed record Command(string Link, string StyleName, string Version) : ICommand<ExampleLinkResponse>;
 
     public sealed class Handler
     (
         IExampleLinksRepository exampleLinkRepository,
         IStyleRepository styleRepository,
         IVersionRepository versionRepository
-    ) : ICommandHandler<Command, ExampleLinkRespose>
+    ) : ICommandHandler<Command, ExampleLinkResponse>
     {
         private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
         private readonly IStyleRepository _styleRepository = styleRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<ExampleLinkRespose>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<ExampleLinkResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var link = ExampleLink.Create(command.Link);
-            var style = StyleName.Create(command.Style);
+            var styleName = StyleName.Create(command.StyleName);
             var version = ModelVersion.Create(command.Version);
 
-            var linkResult = MidjourneyStyleExampleLink.Create(link.Value, style.Value, version.Value);
-            var domainErrors = linkResult.Errors;
+            var linkResult = MidjourneyStyleExampleLink.Create
+            (
+                link.Value,
+                styleName.Value,
+                version.Value
+            );
 
-            List<ApplicationError> applicationErrors = [];
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                    .CollectErrors(linkResult)
+                    .Validate(pipeline => pipeline
+                        .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                        .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                        .IfVersionNotInSuportedVersions(version.Value, _versionRepository, cancellationToken)
+                        .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
+                    .ExecuteIfNoErrors(() => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken))
+                    .MapResult(_ => new ExampleLinkResponse(command.Link, command.StyleName, command.Version));
 
-            applicationErrors
-                .IfVersionNotExists(version.Value, _versionRepository)
-                .IfStyleNotExists(style.Value, _styleRepository)
-                .IfLinkAlreadyExists(link.Value, _exampleLinkRepository);
-
-            var validationErrors = CreateValidationErrorIfAny<ExampleLinkRespose>(applicationErrors, domainErrors);
-            if (validationErrors is not null) return validationErrors;
-
-            var addExampleLinkResult = await _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value);
-
-            if (addExampleLinkResult.IsFailed) return Result.Fail<ExampleLinkRespose>(addExampleLinkResult.Errors);
-
-            var responses = ExampleLinkRespose.FromDomain(addExampleLinkResult.Value);
-
-            return Result.Ok(responses);
+            return result;
         }
     }
 }
+
