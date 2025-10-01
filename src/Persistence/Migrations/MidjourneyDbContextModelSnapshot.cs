@@ -22,37 +22,7 @@ namespace Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyPromtHistory.MidjourneyPromptHistory", b =>
-                {
-                    b.Property<Guid>("HistoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("Uuid")
-                        .HasColumnName("history_id");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_on")
-                        .HasDefaultValueSql("NOW()");
-
-                    b.Property<string>("Prompt")
-                        .IsRequired()
-                        .HasColumnType("varchar(1000)")
-                        .HasColumnName("prompt");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("properties");
-
-                    b.HasKey("HistoryId");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("midjourney_prompt_history", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion1", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion1", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -96,7 +66,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_1", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion2", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion2", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -140,7 +110,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_2", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion3", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion3", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -184,7 +154,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_3", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion4", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion4", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -228,7 +198,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_4", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion5", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion5", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -272,7 +242,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_5", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion51", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion51", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -316,7 +286,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_5_1", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion52", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion52", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -360,7 +330,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_5_2", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion6", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion6", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -404,7 +374,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_6", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion61", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion61", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -448,7 +418,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_6_1", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion7", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion7", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -492,7 +462,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_7", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji4", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji4", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -536,7 +506,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_niji_4", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji5", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji5", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -580,7 +550,7 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_niji_5", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji6", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji6", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -624,7 +594,37 @@ namespace Persistence.Migrations
                     b.ToTable("properties_version_niji_6", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyStyle.MidjourneyStyle", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyPromptHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Uuid")
+                        .HasColumnName("history_id");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_on")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Prompt")
+                        .IsRequired()
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("prompt");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("properties");
+
+                    b.HasKey("HistoryId");
+
+                    b.HasIndex("Version");
+
+                    b.ToTable("midjourney_prompt_history", "public");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyStyle", b =>
                 {
                     b.Property<string>("StyleName")
                         .HasColumnType("varchar(150)")
@@ -640,7 +640,7 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("varchar(30)")
                         .HasColumnName("type");
 
                     b.HasKey("StyleName");
@@ -648,7 +648,7 @@ namespace Persistence.Migrations
                     b.ToTable("midjourney_styles", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyStyleExampleLinks.MidjourneyStyleExampleLink", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyStyleExampleLink", b =>
                 {
                     b.Property<string>("Link")
                         .HasColumnType("varchar(200)")
@@ -671,7 +671,7 @@ namespace Persistence.Migrations
                     b.ToTable("midjourney_style_example_links", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyVersion", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyVersion", b =>
                 {
                     b.Property<string>("Version")
                         .HasColumnType("varchar(10)")
@@ -710,9 +710,204 @@ namespace Persistence.Migrations
                     b.ToTable("MidjourneyPromptHistoryMidjourneyStyle", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyPromtHistory.MidjourneyPromptHistory", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion1", b =>
                 {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions1")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion2", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions2")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion3", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions3")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion4", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions4")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion5", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions5")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion51", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions51")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion52", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions52")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion6", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions6")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion61", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions61")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion7", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("Versions7")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji4", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("VersionsNiji4")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji5", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("VersionsNiji5")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji6", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
+                        .WithMany("VersionsNiji6")
+                        .HasForeignKey("MidjourneyVersionVersion");
+
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                        .WithMany()
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VersionMaster");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyPromptHistory", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
                         .WithMany("Histories")
                         .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -721,210 +916,15 @@ namespace Persistence.Migrations
                     b.Navigation("VersionMaster");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion1", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyStyleExampleLink", b =>
                 {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions1")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion2", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions2")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion3", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions3")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion4", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions4")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion5", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions5")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion51", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions51")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion52", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions52")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion6", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions6")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion61", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions61")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion7", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("Versions7")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji4", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("VersionsNiji4")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji5", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("VersionsNiji5")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperties.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji6", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", null)
-                        .WithMany("VersionsNiji6")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyStyleExampleLinks.MidjourneyStyleExampleLink", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyStyle.MidjourneyStyle", "Style")
+                    b.HasOne("Domain.Entities.MidjourneyStyle", "Style")
                         .WithMany("ExampleLinks")
                         .HasForeignKey("StyleName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.MidjourneyVersions.MidjourneyVersion", "VersionMaster")
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
                         .WithMany()
                         .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -937,25 +937,25 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("MidjourneyPromptHistoryMidjourneyStyle", b =>
                 {
-                    b.HasOne("Domain.Entities.MidjourneyPromtHistory.MidjourneyPromptHistory", null)
+                    b.HasOne("Domain.Entities.MidjourneyPromptHistory", null)
                         .WithMany()
                         .HasForeignKey("MidjourneyPromptHistoriesHistoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.MidjourneyStyle.MidjourneyStyle", null)
+                    b.HasOne("Domain.Entities.MidjourneyStyle", null)
                         .WithMany()
                         .HasForeignKey("MidjourneyStylesStyleName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyStyle.MidjourneyStyle", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyStyle", b =>
                 {
                     b.Navigation("ExampleLinks");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyVersions.MidjourneyVersion", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyVersion", b =>
                 {
                     b.Navigation("Histories");
 

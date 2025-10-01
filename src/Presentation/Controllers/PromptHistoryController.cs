@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
+using Presentation.Controllers.ControllersUtilities;
 
 namespace Presentation.Controllers;
 
@@ -18,14 +19,11 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var query = new GetAllHistoryRecords.Query();
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetAllHistoryRecords.Query(), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/prompthistory/last/{count}
@@ -34,14 +32,11 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetLast(int count, CancellationToken cancellationToken)
     {
-        var query = new GetLastHistoryRecords.Query(count);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetLastHistoryRecords.Query(count), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/prompthistory/daterange?from=2024-01-01&to=2024-12-31
@@ -50,14 +45,11 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to, CancellationToken cancellationToken)
     {
-        var query = new GetHistoryByDateRange.Query(from, to);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetHistoryByDateRange.Query(from, to), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/prompthistory/keyword/{keyword}
@@ -66,14 +58,11 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetByKeyword(string keyword, CancellationToken cancellationToken)
     {
-        var query = new GetHistoryRecordsByPromptKeyword.Query(keyword);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetHistoryRecordsByPromptKeyword.Query(keyword), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/prompthistory/count
@@ -82,14 +71,11 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRecordCount(CancellationToken cancellationToken)
     {
-        var query = new CalculateHistoricalRecordCount.Query();
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
-
-        return Ok(new { count = result.Value });
+        return await Sender
+            .Send(new CalculateHistoricalRecordCount.Query(), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { count = payload })))
+            .ToActionResultAsync();
     }
 
     // POST api/prompthistory
@@ -104,16 +90,19 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
             request.Version
         );
 
-        var result = await Sender.Send(command, cancellationToken);
+        return await Sender
+            .Send(command, cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
+            {
+                if (payload is not null)
+                {
+                    return CreatedAtAction(nameof(GetRecordCount), null, payload);
+                }
 
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return CreatedAtAction(
-            nameof(GetRecordCount),
-            null,
-            result.Value
-        );
+                return NoContent();
+            }))
+            .ToActionResultAsync();
     }
 }
 

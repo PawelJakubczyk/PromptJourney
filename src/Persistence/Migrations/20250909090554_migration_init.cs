@@ -20,7 +20,7 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     name = table.Column<string>(type: "varchar(150)", nullable: false),
-                    type = table.Column<string>(type: "varchar(100)", nullable: false),
+                    type = table.Column<string>(type: "varchar(30)", nullable: false),
                     description = table.Column<string>(type: "varchar(500)", nullable: true),
                     tags = table.Column<string[]>(type: "Text[]", nullable: true)
                 },

@@ -4,7 +4,7 @@ using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 using Utilities.Validation;
 
 namespace Application.Extensions;
@@ -67,18 +67,22 @@ public static class WorkflowPipelineExtensions
         {
             errors.Add
             (
-                new Error<PersistenceLayer>(
-                    $"Failed to check if {version} is supported version", 
-                    StatusCodes.Status500InternalServerError
-            ));
+            ErrorFactory.Create()
+                .Withlayer(typeof(PersistenceLayer))
+                .WithMessage($"Failed to check if {version} is supported version")
+                .WithErrorCode(StatusCodes.Status500InternalServerError)
+            );
         }
 
         if (result.IsSuccess && !result.Value.Contains(version))
-            {
-            errors.Add(new Error<ApplicationLayer>(
-                $"Version '{version}' is not in supported versions",
-                StatusCodes.Status400BadRequest
-            ));
+        {
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(ApplicationLayer))
+                .WithMessage($"Version '{version}' is not in supported versions")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -239,9 +243,13 @@ public static class WorkflowPipelineExtensions
 
         if (date > DateTime.UtcNow)
         {
-            errors.Add(new Error<DomainLayer>(
-                $"Date '{date:yyyy-MM-dd}' cannot be in the future.",
-                StatusCodes.Status400BadRequest));
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(DomainLayer))
+                .WithMessage($"Date '{date:yyyy-MM-dd}' cannot be in the future.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -262,10 +270,13 @@ public static class WorkflowPipelineExtensions
 
         if (from > to)
         {
-            errors.Add(new Error<DomainLayer>(
-                $"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).",
-                StatusCodes.Status400BadRequest
-                ));
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(DomainLayer))
+                .WithMessage($"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -285,9 +296,13 @@ public static class WorkflowPipelineExtensions
 
         if (count <= 0)
         {
-            errors.Add(new Error<ApplicationLayer>(
-                $"History count must be greater than zero. Provided: {count}.", 
-                StatusCodes.Status400BadRequest));
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(ApplicationLayer))
+                .WithMessage($"History count must be greater than zero. Provided: {count}.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -317,9 +332,13 @@ public static class WorkflowPipelineExtensions
 
         if (requestedCount > availableCountResult.Value)
         {
-            errors.Add(new Error<ApplicationLayer>(
-                $"Requested {requestedCount} records, but only {availableCountResult.Value} are available.", 
-                StatusCodes.Status400BadRequest));
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(ApplicationLayer))
+                .WithMessage($"Requested {requestedCount} records, but only {availableCountResult.Value} are available.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -338,9 +357,13 @@ public static class WorkflowPipelineExtensions
         if (items is null || items.Count == 0)
         {
             var name = typeof(TValue).Name;
-            errors.Add(new Error<ApplicationLayer>(
-                $"List of '{name}' must not be empty.", 
-                StatusCodes.Status400BadRequest));
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(ApplicationLayer))
+                .WithMessage($"List of '{name}' must not be empty.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -369,16 +392,22 @@ public static class WorkflowPipelineExtensions
         {
             errors.Add
             (
-                new Error<PersistenceLayer>($"Failed to check if {entityName} exists", StatusCodes.Status500InternalServerError)
+            ErrorFactory.Create()
+                .Withlayer(typeof(PersistenceLayer))
+                .WithMessage($"Failed to check if {entityName} exists")
+                .WithErrorCode(StatusCodes.Status500InternalServerError)
             );
         }
 
         if (result.IsSuccess && result.Value != shouldExist)
         {
-            errors.Add(new Error<ApplicationLayer>(
-                $"{entityName} '{item}' {(shouldExist ? "not found" : "already exists")}",
-                shouldExist ? StatusCodes.Status404NotFound : StatusCodes.Status409Conflict
-            ));
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(ApplicationLayer))
+                .WithMessage($"{entityName} '{item}' {(shouldExist ? "not found" : "already exists")}")
+                .WithErrorCode(StatusCodes.Status409Conflict)
+            );
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);

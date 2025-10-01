@@ -3,7 +3,7 @@ using Domain.Extensions;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 using Utilities.Validation;
 
 namespace Domain.ValueObjects;
@@ -36,11 +36,13 @@ internal static class StyleTypeErrorsExtensions
     {
         if (!Enum.TryParse<StyleTypeEnum>(value, true, out var _))
         {
-            pipeline.Errors.Add(new Error<TLayer>
+            pipeline.Errors.Add
             (
-                $"Invalid style type: {value}. Expected values are: {string.Join(", ", Enum.GetNames<StyleTypeEnum>())}",
-                StatusCodes.Status400BadRequest
-            ));
+            ErrorFactory.Create()
+                .Withlayer(typeof(TLayer))
+                .WithMessage($"Invalid style type: {value}. Expected values are: {string.Join(", ", Enum.GetNames<StyleTypeEnum>())}")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return pipeline;

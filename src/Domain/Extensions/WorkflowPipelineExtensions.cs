@@ -1,8 +1,7 @@
 ﻿using Domain.Abstractions;
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 using Utilities.Validation;
 
 namespace Domain.Extensions;
@@ -20,8 +19,12 @@ public static class WorkflowPipelineExtensions
 
         if (string.IsNullOrWhiteSpace(value))
         {
-            pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: value cannot be null or whitespace.", StatusCodes.Status400BadRequest)
+            pipeline.Errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(TLayer))
+                .WithMessage($"{typeof(TValue).Name}: value cannot be null or whitespace.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
             );
         }
         return pipeline;
@@ -38,8 +41,12 @@ public static class WorkflowPipelineExtensions
 
         if (value != null && string.IsNullOrWhiteSpace(value))
         {
-            pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: cannot be whitespace.", StatusCodes.Status400BadRequest)
+            pipeline.Errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(TLayer))
+                .WithMessage($"{typeof(TValue).Name}: cannot be whitespace.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
             );
         }
         return pipeline;
@@ -57,8 +64,12 @@ public static class WorkflowPipelineExtensions
 
         if (value?.Length > maxLength)
         {
-            pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: '{value}' cannot be longer than {maxLength} characters.", StatusCodes.Status400BadRequest)
+            pipeline.Errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(TLayer))
+                .WithMessage($"{typeof(TValue).Name}: '{value}' cannot be longer than {maxLength} characters.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
             );
         }
         return pipeline;
@@ -82,8 +93,12 @@ public static class WorkflowPipelineExtensions
         if (duplicates?.Count != 0 && duplicates is not null)
         {
             var duplicateNames = string.Join(", ", duplicates.Select(d => d.ToString()));
-            pipeline.Errors.Add(
-                new Error<TLayer>($"{typeof(TValue).Name}: contains duplicates -> {duplicateNames}.", StatusCodes.Status400BadRequest)
+            pipeline.Errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(TLayer))
+                .WithMessage($"{typeof(TValue).Name}: contains duplicates -> {duplicateNames}.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
             );
         }
 

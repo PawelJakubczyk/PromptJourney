@@ -12,7 +12,7 @@ internal class MidjourneyDbContextFactory : IDesignTimeDbContextFactory<Midjourn
             .AddJsonFile("connectionString.json")
             .Build();
 
-        var connectionString = configuration.GetConnectionString("StageConnection");
+        var connectionString = configuration.GetConnectionString("TestConnection");
 
         var optionsBuilder = new DbContextOptionsBuilder<MidjourneyDbContext>();
         optionsBuilder.UseNpgsql(connectionString);

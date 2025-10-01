@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
+using Presentation.Controllers.ControllersUtilities;
 
 namespace Presentation.Controllers;
 
@@ -22,14 +23,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var query = new GetAllStyles.Query();
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetAllStyles.Query(), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/styles/{name}
@@ -39,14 +37,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetByName(string name, CancellationToken cancellationToken)
     {
-        var query = new GetStyleByName.Query(name);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetStyleByName.Query(name), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/styles/by-type/{type}
@@ -56,14 +51,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetByType(string type, CancellationToken cancellationToken)
     {
-        var query = new GetStylesByType.Query(type);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetStylesByType.Query(type), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/styles/by-tags?tags=tag1&tags=tag2
@@ -73,14 +65,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetByTags([FromQuery] List<string> tags, CancellationToken cancellationToken)
     {
-        var query = new GetStylesByTags.Query(tags);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetStylesByTags.Query(tags), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/styles/by-description?keyword=forest
@@ -90,14 +79,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetByDescription([FromQuery] string keyword, CancellationToken cancellationToken)
     {
-        var query = new GetStylesByDescriptionKeyword.Query(keyword);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new GetStylesByDescriptionKeyword.Query(keyword), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // GET api/styles/{name}/exists
@@ -107,14 +93,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CheckExists(string name, CancellationToken cancellationToken)
     {
-        var query = new CheckStyleExist.Query(name);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
-
-        return Ok(new { exists = result.Value });
+        return await Sender
+            .Send(new CheckStyleExist.Query(name), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
+            .ToActionResultAsync();
     }
 
     // GET api/styles/{styleName}/tags/{tag}/exists
@@ -124,14 +107,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CheckTagExists(string styleName, string tag, CancellationToken cancellationToken)
     {
-        var query = new CheckTagExistInStyle.Query(styleName, tag);
-
-        var result = await Sender.Send(query, cancellationToken);
-
-        if (result.IsFailed)
-            return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
-
-        return Ok(new { exists = result.Value });
+        return await Sender
+            .Send(new CheckTagExistInStyle.Query(styleName, tag), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
+            .ToActionResultAsync();
     }
 
     // POST api/styles
@@ -147,12 +127,19 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             request.Tags
         );
 
-        var result = await Sender.Send(command, cancellationToken);
+        return await Sender
+            .Send(command, cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
+            {
+                if (payload is not null)
+                {
+                    return CreatedAtAction(nameof(GetByName), new { name = ((StyleResponse)payload).Name }, payload);
+                }
 
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return CreatedAtAction(nameof(GetByName), new { name = result.Value.Name }, result.Value);
+                return NoContent();
+            }))
+            .ToActionResultAsync();
     }
 
     // PUT api/styles/{name}
@@ -172,12 +159,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             request.Tags
         );
 
-        var result = await Sender.Send(command, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(command, cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // DELETE api/styles/{name}
@@ -187,14 +173,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete(string name, CancellationToken cancellationToken)
     {
-        var command = new DeleteStyle.Command(name);
-
-        var result = await Sender.Send(command, cancellationToken);
-
-        if (result.IsFailed)
-            return NotFound(result.Errors);
-
-        return NoContent();
+        return await Sender
+            .Send(new DeleteStyle.Command(name), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(_ => NoContent()))
+            .ToActionResultAsync();
     }
 
     // POST api/styles/{name}/tags
@@ -204,14 +187,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddTag(string name, [FromBody] AddTagRequest request, CancellationToken cancellationToken)
     {
-        var command = new AddTagToStyle.Command(name, request.Tag);
-
-        var result = await Sender.Send(command, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(new AddTagToStyle.Command(name, request.Tag), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 
     // DELETE api/styles/{name}/tags/{tag}
@@ -221,14 +201,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveTag(string name, string tag, CancellationToken cancellationToken)
     {
-        var command = new DeleteTagFromStyle.Command(name, tag);
-
-        var result = await Sender.Send(command, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return NoContent();
+        return await Sender
+            .Send(new DeleteTagFromStyle.Command(name, tag), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(_ => NoContent()))
+            .ToActionResultAsync();
     }
 
     // PUT api/styles/{name}/description
@@ -240,12 +217,11 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     {
         var command = new UpdateDescriptionInStyle.Command(name, request.Description);
 
-        var result = await Sender.Send(command, cancellationToken);
-
-        if (result.IsFailed)
-            return BadRequest(result.Errors);
-
-        return Ok(result.Value);
+        return await Sender
+            .Send(command, cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
     }
 }
 
