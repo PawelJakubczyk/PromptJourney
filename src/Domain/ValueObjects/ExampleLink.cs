@@ -3,7 +3,7 @@ using Domain.Extensions;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 using Utilities.Validation;
 
 namespace Domain.ValueObjects;
@@ -40,14 +40,21 @@ internal static class ExampleLinkErrorsExtensions
         if (string.IsNullOrWhiteSpace(value))
             return pipeline;
 
-        var isValid = Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
-            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+        var decodedValue = Uri.UnescapeDataString(value);
+
+        var isValid = Uri.TryCreate(decodedValue, UriKind.Absolute, out var uri) &&
+                      (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
 
         if (!isValid)
         {
-            pipeline.Errors.Add(new Error<TLayer>($"Invalid URL format: {value}", StatusCodes.Status400BadRequest));
+            pipeline.Errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(TLayer))
+                .WithMessage($"Invalid URL format: {value}")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
-
         return pipeline;
     }
 }

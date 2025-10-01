@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 
 namespace Persistence.Repositories.Helper;
 
@@ -16,7 +16,11 @@ public static class RepositoryHelper
         }
         catch (Exception ex)
         {
-            var error = new Error<PersistenceLayer>($"{errorMessage}: {ex.Message}", statusCode);
+            var error = ErrorFactory.Create()
+                .Withlayer(typeof(PersistenceLayer))
+                .WithMessage($"{errorMessage}: {ex.Message}")
+                .WithErrorCode(statusCode);
+
             return Result.Fail<TType>(error);
         }
     }

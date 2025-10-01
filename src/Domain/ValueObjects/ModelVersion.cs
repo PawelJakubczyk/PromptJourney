@@ -4,7 +4,7 @@ using FluentResults;
 using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 using Utilities.Validation;
 
 namespace Domain.ValueObjects;
@@ -42,10 +42,13 @@ internal static class ModelVersionErrorsExtensions
 
         if (!_validNumericRegex.IsMatch(value) && !_validNijiRegex.IsMatch(value))
         {
-            pipeline.Errors.Add(new Error<TLayer>(
-                $"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')", 
-                StatusCodes.Status400BadRequest
-            ));
+            pipeline.Errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(TLayer))
+                .WithMessage($"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
         }
 
         return pipeline;

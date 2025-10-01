@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
@@ -114,7 +114,15 @@ public sealed class PropertiesRepository : IPropertiesRepository
 
         var parameter = findResult.Value;
         if (parameter == null)
-            return Result.Fail<MidjourneyPropertiesBase>(new Error<PersistenceLayer>($"Parameter '{propertyName.Value}' not found in version '{version.Value}'", StatusCodes.Status404NotFound));
+            return Result.Fail<MidjourneyPropertiesBase>
+                (
+                    ErrorFactory.Create()
+                    .Withlayer(typeof(PersistenceLayer))
+                    .WithMessage($"Parameter '{propertyName.Value}' not found in version '{version.Value}'")
+                    .WithErrorCode(StatusCodes.Status404NotFound)
+                );
+
+
 
         var deleteResult = await ExecuteAsync(async () =>
         {

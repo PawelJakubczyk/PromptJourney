@@ -12,7 +12,7 @@ public static class PersistenceRegistration
     {
         services.AddDbContext<MidjourneyDbContext>(options =>
         {
-            options.UseNpgsql("Host=localhost;Port=5432;Database=midjourney_stage;Username=admin_0;Password=GR52MqngWxfT");
+            options.UseNpgsql("Host=localhost;Port=5432;Database=midjourney_test;Username=admin_0;Password=GR52MqngWxfT");
         });
 
         // Register repositories

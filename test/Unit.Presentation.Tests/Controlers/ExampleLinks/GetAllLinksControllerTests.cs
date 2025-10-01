@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Application.Features.ExampleLinks.Responses;
 using Utilities.Constants;
-using Utilities.Errors;
+using Utilities.Extensions;
 
 namespace Integration.Tests.Controlers.ExampleLinks;
 
@@ -43,7 +43,11 @@ public class GetAllLinksControllerTests: ExampleLinksControllerTestsBase
     public async Task GetAll_ReturnsErrorResponse_WhenHandlerFails_WithSingleLayerError()
     {
         // Arrange
-        var error = new Error<PersistenceLayer>("Database failure", StatusCodes.Status500InternalServerError);
+        var error = ErrorFactory.Create()
+            .Withlayer(typeof(PersistenceLayer))
+            .WithMessage("Database failure")
+            .WithErrorCode(StatusCodes.Status500InternalServerError);
+
         var result = Result.Fail(new List<Error> { error });
         var senderMock = new Mock<ISender>();
         senderMock
@@ -85,9 +89,21 @@ public class GetAllLinksControllerTests: ExampleLinksControllerTestsBase
     public async Task GetAll_ReturnsHighestPriorityStatus_WhenMultipleLayerErrorsPresent()
     {
         // Arrange
-        var err500 = new Error<PersistenceLayer>("DB crash", StatusCodes.Status500InternalServerError);
-        var err400 = new Error<ApplicationLayer>("Bad input", StatusCodes.Status400BadRequest);
-        var err409 = new Error<DomainLayer>("Conflict", StatusCodes.Status409Conflict);
+        var err500 = ErrorFactory.Create()
+            .Withlayer(typeof(PersistenceLayer))
+            .WithMessage("Database failure")
+            .WithErrorCode(StatusCodes.Status500InternalServerError);
+
+        var err400 = ErrorFactory.Create()
+            .Withlayer(typeof(ApplicationLayer))
+            .WithMessage("Bad input")
+            .WithErrorCode(StatusCodes.Status400BadRequest);
+
+        var err409 = ErrorFactory.Create()
+            .Withlayer(typeof(DomainLayer))
+            .WithMessage("Conflict")
+            .WithErrorCode(StatusCodes.Status409Conflict);
+
 
         // Order of insertion shouldn't matter — controller should pick highest priority (500 over 409/400)
         var result = Result.Fail(new List<Error> { err400, err409, err500 });
@@ -117,10 +133,19 @@ public class GetAllLinksControllerTests: ExampleLinksControllerTestsBase
     public async Task GetAll_IncludesAllErrorsInResponseBody_WhenFailed()
     {
         // Arrange
-        var e1 = new Error<PersistenceLayer>("DB crash", StatusCodes.Status500InternalServerError);
-        var e2 = new Error<ApplicationLayer>("Invalid", StatusCodes.Status400BadRequest);
+        var err500 = ErrorFactory.Create()
+            .Withlayer(typeof(PersistenceLayer))
+            .WithMessage("Database failure")
+            .WithErrorCode(StatusCodes.Status500InternalServerError);
 
-        var result = Result.Fail(new List<Error> { e1, e2 });
+        var err400 = ErrorFactory.Create()
+            .Withlayer(typeof(ApplicationLayer))
+            .WithMessage("Bad input")
+            .WithErrorCode(StatusCodes.Status400BadRequest);
+
+
+
+        var result = Result.Fail(new List<Error> { err500, err400 });
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -150,8 +175,8 @@ public class GetAllLinksControllerTests: ExampleLinksControllerTestsBase
             }
         }
 
-        Assert.Contains("DB crash", messages);
-        Assert.Contains("Invalid", messages);
+        Assert.Contains("Database failure", messages);
+        Assert.Contains("Bad input", messages);
         Assert.Equal(2, messages.Count);
     }
 }

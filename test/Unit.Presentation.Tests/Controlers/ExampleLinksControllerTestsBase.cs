@@ -1,11 +1,6 @@
-﻿using FluentResults;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
 using Moq;
 using Presentation.Controllers;
-using Utilities.Constants;
-using Utilities.Errors;
 
 namespace Integration.Tests.Controlers.ExampleLinks;
 

@@ -81,8 +81,8 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .ToActionResultAsync();
     }
 
-    // GET api/examplelinks/empty
-    [HttpGet("empty")]
+    // GET api/examplelinks/noempty
+    [HttpGet("noempty")]
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     public async Task<IActionResult> CheckLinksEmpty(CancellationToken cancellationToken)
     {
