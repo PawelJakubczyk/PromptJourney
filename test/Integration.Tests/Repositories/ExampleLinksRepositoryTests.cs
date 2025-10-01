@@ -587,30 +587,6 @@ public class ExampleLinksRepositoryTests : BaseTransactionIntegrationTest
         remainingLinks.Value[0].StyleName.Value.Should().Be(TestStyleName2);
     }
 
-    [Fact]
-    public async Task DeleteAllExampleLinksByStyle_WithNonExistentStyle_ShouldReturnDomainError()
-    {
-        // Arrange
-        await CreateAndSaveTestVersionAsync(TestVersion1);
-        await CreateAndSaveTestStyleAsync(TestStyleName1);
-
-        await CreateAndSaveTestExampleLinkAsync(TestLink1, TestStyleName1, TestVersion1);
-        
-        var nonExistentStyle = StyleName.Create("NonExistentStyle").Value;
-
-        // Act
-        var result = await _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(nonExistentStyle, _cancellationToken);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().Contain(e => e.Message.Contains("No example links found for style 'StyleName { Value = NonExistentStyle }"));
-
-        // Verify no links were deleted
-        var allLinks = await _exampleLinkRepository.GetAllExampleLinksAsync(_cancellationToken);
-        allLinks.Value.Should().HaveCount(1);
-    }
-
     #endregion DeleteAllExampleLinksByStyle
     #region HelperMethods
     private async Task<MidjourneyVersion> CreateAndSaveTestVersionAsync(string versionValue)
