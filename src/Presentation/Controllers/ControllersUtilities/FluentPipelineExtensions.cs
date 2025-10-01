@@ -60,13 +60,20 @@ public sealed class Pipeline<TResponse>
         ArgumentNullException.ThrowIfNull(errors);
         if (errors.Count == 0) throw new ArgumentException("errors must contain at least one item", nameof(errors));
 
-        return errors
-            .OrderBy(error =>
+        var genericError = new Error("An error occurred");
+
+        var mainErrorCode = errors
+            .Select(er => er.GetErrorCode())
+            .OrderBy(code =>
             {
-                var code = error.GetErrorCode();
-                return code.HasValue && StatusPriorityDict.TryGetValue(code.Value, out var p) ? p : int.MaxValue;
+                if (code.HasValue && StatusPriorityDict.TryGetValue(code.Value, out var priority))
+                    return priority;
+                return int.MaxValue;
             })
+            .ToList()
             .First();
+
+        return genericError.WithErrorCode(mainErrorCode);
     }
 }
 

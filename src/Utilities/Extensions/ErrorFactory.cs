@@ -12,11 +12,11 @@ public static class ErrorFactory
 
     public static Error Withlayer(this Error error, Type layer)
     {
-        error.Metadata.TryAdd("Layer", layer.ToString());
+        error.Metadata.TryAdd("Layer", layer.Name.ToString());
         return error;
     }
 
-    public static Error WithErrorCode(this Error error, int errorCode)
+    public static Error WithErrorCode(this Error error, int? errorCode)
     {
         error.Metadata.TryAdd("ErrorCode", errorCode);
         return error;

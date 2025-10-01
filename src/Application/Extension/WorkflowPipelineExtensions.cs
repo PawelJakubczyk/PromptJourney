@@ -81,7 +81,7 @@ public static class WorkflowPipelineExtensions
             ErrorFactory.Create()
                 .Withlayer(typeof(ApplicationLayer))
                 .WithMessage($"Version '{version}' is not in supported versions")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
+                .WithErrorCode(StatusCodes.Status404NotFound)
             );
         }
 
@@ -395,7 +395,7 @@ public static class WorkflowPipelineExtensions
             ErrorFactory.Create()
                 .Withlayer(typeof(PersistenceLayer))
                 .WithMessage($"Failed to check if {entityName} exists")
-                .WithErrorCode(StatusCodes.Status500InternalServerError)
+                .WithErrorCode(StatusCodes.Status404NotFound)
             );
         }
 
