@@ -41,7 +41,7 @@ public static class UpdatePropertyForVersion
             var maxValue = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : null;
             var description = command.Description is not null ? Description.Create(command.Description) : null;
 
-            var property = MidjourneyPropertiesBase.Create
+            var property = MidjourneyProperties.Create
             (
                 propertyName.Value,
                 version.Value,

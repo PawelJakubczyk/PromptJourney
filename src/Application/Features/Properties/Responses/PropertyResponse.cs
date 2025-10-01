@@ -13,7 +13,7 @@ public sealed record PropertyResponse
     string? Description
 )
 {
-    public static PropertyResponse FromDomain(MidjourneyPropertiesBase property) =>
+    public static PropertyResponse FromDomain(MidjourneyProperties property) =>
         new(
             property.PropertyName.Value,
             property.Version.Value,

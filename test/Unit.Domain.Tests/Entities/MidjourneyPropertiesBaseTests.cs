@@ -24,7 +24,7 @@ public class MidjourneyPropertiesBaseTests
         var descriptionResult = Description.Create("Aspect ratio parameter");
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -59,7 +59,7 @@ public class MidjourneyPropertiesBaseTests
         var versionResult = ModelVersion.Create("5.1");
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult
@@ -86,7 +86,7 @@ public class MidjourneyPropertiesBaseTests
         var versionResult = ModelVersion.Create("niji 6");
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -119,7 +119,7 @@ public class MidjourneyPropertiesBaseTests
         var emptyParametersResults = new List<Result<Param>>();
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -139,7 +139,7 @@ public class MidjourneyPropertiesBaseTests
         var versionResult = ModelVersion.Create("6.0");
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             invalidPropertyNameResult,
             versionResult
@@ -159,7 +159,7 @@ public class MidjourneyPropertiesBaseTests
         var invalidVersionResult = ModelVersion.Create("invalid_version");
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             invalidVersionResult
@@ -184,7 +184,7 @@ public class MidjourneyPropertiesBaseTests
         };
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -206,7 +206,7 @@ public class MidjourneyPropertiesBaseTests
         var invalidDefaultValueResult = DefaultValue.Create(""); // Invalid empty value
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -229,7 +229,7 @@ public class MidjourneyPropertiesBaseTests
         var invalidMinValueResult = MinValue.Create("   "); // Invalid whitespace
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -253,7 +253,7 @@ public class MidjourneyPropertiesBaseTests
         var invalidMaxValueResult = MaxValue.Create("\t"); // Invalid whitespace
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -278,7 +278,7 @@ public class MidjourneyPropertiesBaseTests
         var invalidDescriptionResult = Description.Create(""); // Invalid empty description
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -307,7 +307,7 @@ public class MidjourneyPropertiesBaseTests
         };
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             invalidPropertyNameResult,
             invalidVersionResult,
@@ -338,7 +338,7 @@ public class MidjourneyPropertiesBaseTests
         };
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -368,7 +368,7 @@ public class MidjourneyPropertiesBaseTests
         };
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -397,7 +397,7 @@ public class MidjourneyPropertiesBaseTests
         var nullDescriptionResult = Description.Create(null);
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -435,7 +435,7 @@ public class MidjourneyPropertiesBaseTests
         var descriptionResult = Description.Create("Controls the aspect ratio of the generated image. Common values include 1:1 (square), 16:9 (widescreen), 9:16 (portrait)");
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult,
@@ -476,7 +476,7 @@ public class MidjourneyPropertiesBaseTests
         var versionResult = ModelVersion.Create(version);
 
         // Act
-        var result = MidjourneyPropertiesBase.Create
+        var result = MidjourneyProperties.Create
         (
             propertyNameResult,
             versionResult
