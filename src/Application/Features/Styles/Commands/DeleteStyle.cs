@@ -4,7 +4,7 @@ using Application.Extensions;
 using Application.Features.Common.Responses;
 using Domain.ValueObjects;
 using FluentResults;
-using Utilities.Validation;
+using Utilities.Workflows;
 
 namespace Application.Features.Styles.Commands.RemoveStyle;
 

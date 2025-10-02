@@ -5,7 +5,7 @@ using Application.Features.ExampleLinks.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using Utilities.Validation;
+using Utilities.Workflows;
 
 namespace Application.Features.ExampleLinks.Commands;
 

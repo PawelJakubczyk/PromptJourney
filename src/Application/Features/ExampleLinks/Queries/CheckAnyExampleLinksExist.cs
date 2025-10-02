@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using FluentResults;
-using Utilities.Validation;
+using Utilities.Workflows;
 
 namespace Application.Features.ExampleLinks.Queries;
 

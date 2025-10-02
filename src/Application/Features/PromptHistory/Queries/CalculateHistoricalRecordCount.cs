@@ -2,7 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using FluentResults;
-using Utilities.Validation;
+using Utilities.Workflows;
 
 namespace Application.Features.PromptHistory.Queries;
 

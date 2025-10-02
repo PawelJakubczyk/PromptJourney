@@ -60,20 +60,17 @@ public sealed class Pipeline<TResponse>
         ArgumentNullException.ThrowIfNull(errors);
         if (errors.Count == 0) throw new ArgumentException("errors must contain at least one item", nameof(errors));
 
-        var genericError = new Error("An error occurred");
-
         var mainErrorCode = errors
             .Select(er => er.GetErrorCode())
-            .OrderBy(code =>
-            {
-                if (code.HasValue && StatusPriorityDict.TryGetValue(code.Value, out var priority))
-                    return priority;
-                return int.MaxValue;
-            })
-            .ToList()
-            .First();
+            .Where(code => code.HasValue)
+            .OrderBy(code => StatusPriorityDict.GetValueOrDefault(code!.Value, int.MaxValue))
+            .FirstOrDefault() ?? StatusCodes.Status500InternalServerError;
 
-        return genericError.WithErrorCode(mainErrorCode);
+        var mainError = errors
+            .Where(e => e.GetErrorCode() == mainErrorCode)
+            .FirstOrDefault() ?? new Error("An error occurred");
+
+        return mainError;
     }
 }
 
@@ -106,6 +103,6 @@ public static class PipelineExtensions
         var pipeline = await pipelineTask.ConfigureAwait(false);
         ArgumentNullException.ThrowIfNull(pipeline);
 
-        return await Task.FromResult(pipeline.Response).ConfigureAwait(false);
+        return pipeline.Response;
     }
 }

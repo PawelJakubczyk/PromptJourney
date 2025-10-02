@@ -1,7 +1,7 @@
 ﻿using Domain.ValueObjects;
 using FluentResults;
 using Moq;
-using Utilities.Validation;
+using Utilities.Workflows;
 using Application.Extensions;
 
 namespace Unit.Application.Tests.Extensions;
