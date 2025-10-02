@@ -5,7 +5,7 @@ namespace Unit.Domain.Tests.ValueObjects;
 
 public class TagTests
 {
-
+    // Valid Creation Tests
 
     [Theory]
     [InlineData("abstract")]
@@ -25,6 +25,42 @@ public class TagTests
         result.Value.Should().NotBeNull();
         result.Value.Value.Should().Be(validTag);
     }
+
+    [Fact]
+    public void Create_WithValueAtMaxLength_ShouldReturnSuccess()
+    {
+        // Arrange
+        var maxLengthValue = new string('A', Tag.MaxLength);
+
+        // Act
+        var result = Tag.Create(maxLengthValue);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Value.Should().Be(maxLengthValue);
+        result.Value.Value.Should().HaveLength(Tag.MaxLength);
+    }
+
+    [Theory]
+    [InlineData("art-style")]
+    [InlineData("3D_render")]
+    [InlineData("photo.realistic")]
+    [InlineData("AI-generated")]
+    public void Create_WithSpecialCharacters_ShouldReturnSuccess(string tagWithSpecialChars)
+    {
+        // Act
+        var result = Tag.Create(tagWithSpecialChars);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Value.Should().Be(tagWithSpecialChars);
+    }
+
+    // Invalid Creation Tests
 
     [Theory]
     [InlineData(null)]
@@ -58,22 +94,7 @@ public class TagTests
         result.Errors.Should().NotBeEmpty();
     }
 
-    [Fact]
-    public void Create_WithValueAtMaxLength_ShouldReturnSuccess()
-    {
-        // Arrange
-        var maxLengthValue = new string('A', Tag.MaxLength);
-
-        // Act
-        var result = Tag.Create(maxLengthValue);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(maxLengthValue);
-        result.Value.Value.Should().HaveLength(Tag.MaxLength);
-    }
+    // ToString Tests
 
     [Fact]
     public void ToString_ShouldReturnValue()
@@ -89,22 +110,7 @@ public class TagTests
         result.Should().Be(tagString);
     }
 
-    [Theory]
-    [InlineData("art-style")]
-    [InlineData("3D_render")]
-    [InlineData("photo.realistic")]
-    [InlineData("AI-generated")]
-    public void Create_WithSpecialCharacters_ShouldReturnSuccess(string tagWithSpecialChars)
-    {
-        // Act
-        var result = Tag.Create(tagWithSpecialChars);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(tagWithSpecialChars);
-    }
+    // Constants Tests
 
     [Fact]
     public void MaxLength_ShouldBe50()

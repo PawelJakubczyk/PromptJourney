@@ -117,7 +117,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
         return deleteResult;
     }
 
-    #region Helpers
+    // Helpers
 
     private static void UpdateParameterProperty(MidjourneyProperties parameter, string propertyToUpdate, string? newValue)
     {
@@ -144,5 +144,4 @@ public sealed class PropertiesRepository : IPropertiesRepository
                 break;
         }
     }
-    #endregion
 }

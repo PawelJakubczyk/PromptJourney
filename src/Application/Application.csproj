@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-	<LangVersion>12</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -60,12 +59,12 @@
     <PackageReference Include="NUlid" Version="1.7.3" />
   </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Domain\Domain.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
 </Project>

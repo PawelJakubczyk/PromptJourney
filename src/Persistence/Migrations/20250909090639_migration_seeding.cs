@@ -33,434 +33,351 @@ namespace Persistence.Migrations
                     { "niji 6", "--niji 6", new DateTime(2024, 4, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Enhanced anime styling with better character design" }
                 });
 
-            // Version 1 seeding
+            // Properties seeding
             migrationBuilder.InsertData(
                 schema: "public",
-                table: "properties_version_1",
+                table: "properties",
                 columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
                 values: new object[,]
                 {
-                    { "aspectRatio", "1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "1", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Generation quality setting" },
-                    { "seed", "1", new string[] { "--seed" }, null, "0", "4294967295", "Seed number for reproducible results" },
-                    { "no", "1", new string[] { "--no" }, null, null, null, "Negative prompting to exclude concepts" },
-                    { "stop", "1", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percentage" },
-                    { "upscale", "1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "visibility", "1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "performance", "1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 2 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_2",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "2", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "2", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "2", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "2", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "2", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "chaos", "2", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "2", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "2", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "2", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "2", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
-                    { "weird", "2", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of strange/unconventional output" },
-                    { "styleReference", "2", new string[] { "--sref" }, null, null, null, "Use style reference image for output guidance" },
-                    { "visibility", "2", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "2", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "2", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 3 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_3",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "3", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "3", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "3", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "3", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "3", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "3", new string[] { "--s", "--stylize" }, "30000", "625", "60000", "Strength of artistic style" },
-                    { "chaos", "3", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "3", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "3", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "3", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "3", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
-                    { "styleReference", "3", new string[] { "--sref" }, null, null, null, "Use style reference image for output guidance" },
-                    { "weird", "3", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "visibility", "3", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "3", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "3", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 4 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_4",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "4", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "4", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "4", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "4", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "4", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "4", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "4", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "4", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "4", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "4", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "4", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
-                    { "weird", "4", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "oref", "4", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "personalization", "4", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "4", new string[] { "--sref" }, null, null, null, "Use style reference image" },
-                    { "visibility", "4", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "4", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "4", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 5 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_5",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "5", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "5", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "5", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "5", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "5", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "5", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "5", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "5", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "5", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "5", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "5", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "styleWeight", "5", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "5", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "5", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "omniReference", "5", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "profile", "5", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "5", new string[] { "--sref" }, null, null, null, "Use style reference image" },
-                    { "video", "5", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
-                    { "visibility", "5", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "5", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "5", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 5.1 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_5_1",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "5.1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "5.1", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "5.1", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "5.1", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "5.1", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "5.1", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "5.1", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "5.1", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "5.1", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "5.1", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "5.1", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "styleWeight", "5.1", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "5.1", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "5.1", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "omniReference", "5.1", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "profile", "5.1", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "5.1", new string[] { "--sref" }, null, null, null, "Use style reference image" },
-                    { "video", "5.1", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
-                    { "visibility", "5.1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "5.1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "5.1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 5.2 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_5_2",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "5.2", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "5.2", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "5.2", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "5.2", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "5.2", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "5.2", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "5.2", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "5.2", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "5.2", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "5.2", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "5.2", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "styleWeight", "5.2", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "5.2", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "5.2", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "omniReference", "5.2", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "profile", "5.2", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "5.2", new string[] { "--sref" }, null, null, null, "Use style reference image" },
-                    { "video", "5.2", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
-                    { "visibility", "5.2", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "5.2", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "5.2", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 6 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_6",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "6", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "6", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
-                    { "seed", "6", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "6", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "6", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "6", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "6", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "6", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "6", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling / photorealistic" },
-                    { "tile", "6", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "styleWeight", "6", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "6", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "6", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "imageWeight", "6", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "imageStyleRandom", "6", new string[] { "--style random" }, null, null, null, "Apply a random base style" },
-                    { "draft", "6", new string[] { "--draft" }, null, null, null, "Generate draft images at lower GPU cost" },
-                    { "visibility", "6", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "6", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "6", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 6.1 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_6_1",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "6.1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "6.1", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
-                    { "seed", "6.1", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "6.1", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "6.1", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "6.1", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "6.1", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "6.1", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "6.1", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling / photorealistic" },
-                    { "tile", "6.1", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "styleWeight", "6.1", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "6.1", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "6.1", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "imageWeight", "6.1", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "imageStyleRandom", "6.1", new string[] { "--style random" }, null, null, null, "Apply a random base style" },
-                    { "draft", "6.1", new string[] { "--draft" }, null, null, null, "Generate draft images at lower GPU cost" },
-                    { "visibility", "6.1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "6.1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "6.1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version 7 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_7",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "7", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "7", new string[] { "--q", "--quality" }, "1", "0.5", "4", "Rendering quality/time (0.5, 1, 2, 4*) – *Q4 is experimental, not compatible with oref" },
-                    { "seed", "7", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "7", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "7", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "7", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Artistic flair strength" },
-                    { "chaos", "7", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness" },
-                    { "repeat", "7", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "7", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "7", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "7", new string[] { "--iw" }, "1", "0", "3", "Influence of image prompt" },
-                    { "weird", "7", new string[] { "--weird", "--w" }, "0", "0", "3000", "Experimental/unconventional creativity" },
-                    { "niji", "7", new string[] { "--niji" }, null, null, null, "Switch to anime‑focused model" },
-                    { "draft", "7", new string[] { "--draft" }, null, null, null, "Draft Mode: fast, low‑cost prototyping" },
-                    { "omniReference", "7", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "styleReference", "7", new string[] { "--sref" }, null, null, null, "Style reference image" },
-                    { "styleWeight", "7", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference" },
-                    { "versionFlag", "7", new string[] { "--v", "--version" }, "7", null, null, "Explicit version flag" },
-                    { "characterReference", "7", new string[] { "--cref" }, null, null, null, "Content reference image" },
-                    { "stealth", "7", new string[] { "--stealth" }, null, null, null, "Private/unpublished job" },
-                    { "public", "7", new string[] { "--public" }, null, null, null, "Force public job" },
-                    { "fast", "7", new string[] { "--fast" }, null, null, null, "Fast Mode: high‑speed rendering" },
-                    { "relax", "7", new string[] { "--relax" }, null, null, null, "Relax Mode: low‑priority queue" },
-                    { "turbo", "7", new string[] { "--turbo" }, null, null, null, "Turbo Mode: fastest rendering" },
-                    { "exp", "7", new string[] { "--exp" }, null, null, null, "Experimental aesthetics mode" },
-                    { "sv", "7", new string[] { "--sv" }, "7", "4", "7", "Style‑version for sref codes" },
-                    { "profile", "7", new string[] { "--style", "--profile" }, null, null, null, "Base style for the generation" },
-                    { "blend", "7", new string[] { "--blend" }, null, null, null, "Blend multiple images together" },
-                    { "visibility", "7", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "7", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "7", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version niji_4 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_niji_4",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "niji 4", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "niji 4", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "niji 4", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "niji 4", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "niji 4", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "niji 4", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "niji 4", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "niji 4", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "niji 4", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "niji 4", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "niji 4", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
-                    { "weird", "niji 4", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "oref", "niji 4", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "personalization", "niji 4", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "niji 4", new string[] { "--sref" }, null, null, null, "Use style reference image" },
-                    { "visibility", "niji 4", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "niji 4", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "niji 4", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version niji_5 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_niji_5",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "niji 5", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "niji 5", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
-                    { "seed", "niji 5", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "niji 5", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "niji 5", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "niji 5", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "niji 5", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "niji 5", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "niji 5", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
-                    { "tile", "niji 5", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "imageWeight", "niji 5", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "styleWeight", "niji 5", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "niji 5", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "niji 5", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "omniReference", "niji 5", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
-                    { "profile", "niji 5", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
-                    { "styleReference", "niji 5", new string[] { "--sref" }, null, null, null, "Use style reference image" },
-                    { "video", "niji 5", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
-                    { "visibility", "niji 5", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "niji 5", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "niji 5", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
-                });
-
-            // Version niji_6 seeding
-            migrationBuilder.InsertData(
-                schema: "public",
-                table: "properties_version_niji_6",
-                columns: ["property_name", "version", "parameters", "default_value", "min_value", "max_value", "description"],
-                values: new object[,]
-                {
-                    { "aspectRatio", "niji 6", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
-                    { "quality", "niji 6", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
-                    { "seed", "niji 6", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
-                    { "no", "niji 6", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
-                    { "stop", "niji 6", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
-                    { "stylize", "niji 6", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
-                    { "chaos", "niji 6", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
-                    { "repeat", "niji 6", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
-                    { "raw", "niji 6", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling / photorealistic" },
-                    { "tile", "niji 6", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
-                    { "styleWeight", "niji 6", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
-                    { "characterWeight", "niji 6", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
-                    { "weird", "niji 6", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
-                    { "imageWeight", "niji 6", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
-                    { "imageStyleRandom", "niji 6", new string[] { "--style random" }, null, null, null, "Apply a random base style" },
-                    { "draft", "niji 6", new string[] { "--draft" }, null, null, null, "Generate draft images at lower GPU cost" },
-                    { "visibility", "niji 6", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
-                    { "upscale", "niji 6", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
-                    { "performance", "niji 6", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
+                    // Version 1 properties
+                    { "aspectRatio_v1", "1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v1", "1", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Generation quality setting" },
+                    { "seed_v1", "1", new string[] { "--seed" }, null, "0", "4294967295", "Seed number for reproducible results" },
+                    { "no_v1", "1", new string[] { "--no" }, null, null, null, "Negative prompting to exclude concepts" },
+                    { "stop_v1", "1", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percentage" },
+                    { "upscale_v1", "1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "visibility_v1", "1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "performance_v1", "1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 2 properties
+                    { "aspectRatio_v2", "2", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v2", "2", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_v2", "2", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v2", "2", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v2", "2", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "chaos_v2", "2", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v2", "2", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v2", "2", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_v2", "2", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_v2", "2", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
+                    { "weird_v2", "2", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of strange/unconventional output" },
+                    { "styleReference_v2", "2", new string[] { "--sref" }, null, null, null, "Use style reference image for output guidance" },
+                    { "visibility_v2", "2", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v2", "2", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v2", "2", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 3 properties
+                    { "aspectRatio_v3", "3", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v3", "3", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_v3", "3", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v3", "3", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v3", "3", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v3", "3", new string[] { "--s", "--stylize" }, "30000", "625", "60000", "Strength of artistic style" },
+                    { "chaos_v3", "3", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v3", "3", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v3", "3", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_v3", "3", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_v3", "3", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
+                    { "styleReference_v3", "3", new string[] { "--sref" }, null, null, null, "Use style reference image for output guidance" },
+                    { "weird_v3", "3", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "visibility_v3", "3", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v3", "3", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v3", "3", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 4 properties
+                    { "aspectRatio_v4", "4", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v4", "4", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_v4", "4", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v4", "4", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v4", "4", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v4", "4", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_v4", "4", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v4", "4", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v4", "4", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_v4", "4", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_v4", "4", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
+                    { "weird_v4", "4", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "oref_v4", "4", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "personalization_v4", "4", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference_v4", "4", new string[] { "--sref" }, null, null, null, "Use style reference image" },
+                    { "visibility_v4", "4", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v4", "4", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v4", "4", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 5 properties
+                    { "aspectRatio_v5", "5", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v5", "5", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_v5", "5", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v5", "5", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v5", "5", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v5", "5", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_v5", "5", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v5", "5", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v5", "5", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_v5", "5", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_v5", "5", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "styleWeight_v5", "5", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight_v5", "5", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
+                    { "weird_v5", "5", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "omniReference_v5", "5", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "profile_v5", "5", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference_v5", "5", new string[] { "--sref" }, null, null, null, "Use style reference image" },
+                    { "video_v5", "5", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
+                    { "visibility_v5", "5", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v5", "5", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v5", "5", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 5.1 properties
+                    { "aspectRatio_v5_1", "5.1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v5_1", "5.1", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_v5_1", "5.1", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v5_1", "5.1", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v5_1", "5.1", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v5_1", "5.1", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_v5_1", "5.1", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v5_1", "5.1", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v5_1", "5.1", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_v5_1", "5.1", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_v5_1", "5.1", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "styleWeight_v5_1", "5.1", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight_v5_1", "5.1", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
+                    { "weird_v5_1", "5.1", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "omniReference_v5_1", "5.1", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "profile_v5_1", "5.1", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference_v5_1", "5.1", new string[] { "--sref" }, null, null, null, "Use style reference image" },
+                    { "video_v5_1", "5.1", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
+                    { "visibility_v5_1", "5.1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v5_1", "5.1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v5_1", "5.1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 5.2 properties
+                    { "aspectRatio_v5_2", "5.2", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v5_2", "5.2", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_v5_2", "5.2", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v5_2", "5.2", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v5_2", "5.2", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v5_2", "5.2", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_v5_2", "5.2", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v5_2", "5.2", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v5_2", "5.2", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_v5_2", "5.2", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_v5_2", "5.2", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "styleWeight_v5_2", "5.2", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight_v5_2", "5.2", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
+                    { "weird_v5_2", "5.2", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "omniReference_v5_2", "5.2", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "profile_v5_2", "5.2", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference_v5_2", "5.2", new string[] { "--sref" }, null, null, null, "Use style reference image" },
+                    { "video_v5_2", "5.2", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
+                    { "visibility_v5_2", "5.2", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v5_2", "5.2", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v5_2", "5.2", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 6 properties
+                    { "aspectRatio_v6", "6", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v6", "6", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
+                    { "seed_v6", "6", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v6", "6", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v6", "6", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v6", "6", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_v6", "6", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v6", "6", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v6", "6", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling / photorealistic" },
+                    { "tile_v6", "6", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "styleWeight_v6", "6", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight_v6", "6", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
+                    { "weird_v6", "6", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "imageWeight_v6", "6", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "imageStyleRandom_v6", "6", new string[] { "--style random" }, null, null, null, "Apply a random base style" },
+                    { "draft_v6", "6", new string[] { "--draft" }, null, null, null, "Generate draft images at lower GPU cost" },
+                    { "visibility_v6", "6", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v6", "6", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v6", "6", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 6.1 properties
+                    { "aspectRatio_v6_1", "6.1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v6_1", "6.1", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
+                    { "seed_v6_1", "6.1", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v6_1", "6.1", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v6_1", "6.1", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v6_1", "6.1", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_v6_1", "6.1", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_v6_1", "6.1", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v6_1", "6.1", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling / photorealistic" },
+                    { "tile_v6_1", "6.1", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "styleWeight_v6_1", "6.1", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight_v6_1", "6.1", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
+                    { "weird_v6_1", "6.1", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "imageWeight_v6_1", "6.1", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "imageStyleRandom_v6_1", "6.1", new string[] { "--style random" }, null, null, null, "Apply a random base style" },
+                    { "draft_v6_1", "6.1", new string[] { "--draft" }, null, null, null, "Generate draft images at lower GPU cost" },
+                    { "visibility_v6_1", "6.1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v6_1", "6.1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v6_1", "6.1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Version 7 properties
+                    { "aspectRatio_v7", "7", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_v7", "7", new string[] { "--q", "--quality" }, "1", "0.5", "4", "Rendering quality/time (0.5, 1, 2, 4*) – *Q4 is experimental, not compatible with oref" },
+                    { "seed_v7", "7", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_v7", "7", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_v7", "7", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_v7", "7", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Artistic flair strength" },
+                    { "chaos_v7", "7", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness" },
+                    { "repeat_v7", "7", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_v7", "7", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_v7", "7", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_v7", "7", new string[] { "--iw" }, "1", "0", "3", "Influence of image prompt" },
+                    { "weird_v7", "7", new string[] { "--weird", "--w" }, "0", "0", "3000", "Experimental/unconventional creativity" },
+                    { "niji_v7", "7", new string[] { "--niji" }, null, null, null, "Switch to anime‑focused model" },
+                    { "draft_v7", "7", new string[] { "--draft" }, null, null, null, "Draft Mode: fast, low‑cost prototyping" },
+                    { "omniReference_v7", "7", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "styleReference_v7", "7", new string[] { "--sref" }, null, null, null, "Style reference image" },
+                    { "styleWeight_v7", "7", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference" },
+                    { "versionFlag_v7", "7", new string[] { "--v", "--version" }, "7", null, null, "Explicit version flag" },
+                    { "characterReference_v7", "7", new string[] { "--cref" }, null, null, null, "Content reference image" },
+                    { "stealth_v7", "7", new string[] { "--stealth" }, null, null, null, "Private/unpublished job" },
+                    { "public_v7", "7", new string[] { "--public" }, null, null, null, "Force public job" },
+                    { "fast_v7", "7", new string[] { "--fast" }, null, null, null, "Fast Mode: high‑speed rendering" },
+                    { "relax_v7", "7", new string[] { "--relax" }, null, null, null, "Relax Mode: low‑priority queue" },
+                    { "turbo_v7", "7", new string[] { "--turbo" }, null, null, null, "Turbo Mode: fastest rendering" },
+                    { "exp_v7", "7", new string[] { "--exp" }, null, null, null, "Experimental aesthetics mode" },
+                    { "sv_v7", "7", new string[] { "--sv" }, "7", "4", "7", "Style‑version for sref codes" },
+                    { "profile_v7", "7", new string[] { "--style", "--profile" }, null, null, null, "Base style for the generation" },
+                    { "blend_v7", "7", new string[] { "--blend" }, null, null, null, "Blend multiple images together" },
+                    { "visibility_v7", "7", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_v7", "7", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_v7", "7", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Niji 4 properties
+                    { "aspectRatio_niji4", "niji 4", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_niji4", "niji 4", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_niji4", "niji 4", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_niji4", "niji 4", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_niji4", "niji 4", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_niji4", "niji 4", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_niji4", "niji 4", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_niji4", "niji 4", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_niji4", "niji 4", new string[] { "--raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_niji4", "niji 4", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_niji4", "niji 4", new string[] { "--iw" }, "1", "0.5", "2", "Relative importance of image prompt vs. text" },
+                    { "weird_niji4", "niji 4", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "oref_niji4", "niji 4", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "personalization_niji4", "niji 4", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference_niji4", "niji 4", new string[] { "--sref" }, null, null, null, "Use style reference image" },
+                    { "visibility_niji4", "niji 4", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_niji4", "niji 4", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_niji4", "niji 4", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Niji 5 properties
+                    { "aspectRatio_niji5", "niji 5", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_niji5", "niji 5", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
+                    { "seed_niji5", "niji 5", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_niji5", "niji 5", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_niji5", "niji 5", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_niji5", "niji 5", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_niji5", "niji 5", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_niji5", "niji 5", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_niji5", "niji 5", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling" },
+                    { "tile_niji5", "niji 5", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "imageWeight_niji5", "niji 5", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "styleWeight_niji5", "niji 5", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight_niji5", "niji 5", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
+                    { "weird_niji5", "niji 5", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "omniReference_niji5", "niji 5", new string[] { "--oref" }, null, null, null, "Omni‑reference (image/person likeness)" },
+                    { "profile_niji5", "niji 5", new string[] { "--profile", "--p" }, null, null, null, "Use personalization profile/moodboard" },
+                    { "styleReference_niji5", "niji 5", new string[] { "--sref" }, null, null, null, "Use style reference image" },
+                    { "video_niji5", "niji 5", new string[] { "--video" }, null, null, null, "Generate grid creation video" },
+                    { "visibility_niji5", "niji 5", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_niji5", "niji 5", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_niji5", "niji 5", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
+                    
+                    // Niji 6 properties
+                    { "aspectRatio_niji6", "niji 6", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
+                    { "quality_niji6", "niji 6", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
+                    { "seed_niji6", "niji 6", new string[] { "--seed" }, null, "0", "4294967295", "Seed for reproducibility" },
+                    { "no_niji6", "niji 6", new string[] { "--no" }, null, null, null, "Exclude specified elements" },
+                    { "stop_niji6", "niji 6", new string[] { "--stop" }, "100", "10", "100", "Stop generation at percent" },
+                    { "stylize_niji6", "niji 6", new string[] { "--s", "--stylize" }, "100", "0", "1000", "Strength of artistic style" },
+                    { "chaos_niji6", "niji 6", new string[] { "--c", "--chaos" }, "0", "0", "100", "Variation/randomness in results" },
+                    { "repeat_niji6", "niji 6", new string[] { "--r", "--repeat" }, "1", "1", "40", "Generate multiple jobs" },
+                    { "raw_niji6", "niji 6", new string[] { "--raw", "--style raw" }, null, null, null, "Raw Mode: minimal styling / photorealistic" },
+                    { "tile_niji6", "niji 6", new string[] { "--tile" }, null, null, null, "Seamless repeating pattern" },
+                    { "styleWeight_niji6", "niji 6", new string[] { "--sw" }, "100", "0", "1000", "Strength of style reference image" },
+                    { "characterWeight_niji6", "niji 6", new string[] { "--cw" }, "100", "0", "100", "Strength of character reference image" },
+                    { "weird_niji6", "niji 6", new string[] { "--weird", "--w" }, "0", "0", "3000", "Level of unconventional creativity" },
+                    { "imageWeight_niji6", "niji 6", new string[] { "--iw" }, "1", "0", "2", "Relative importance of image prompt vs. text" },
+                    { "imageStyleRandom_niji6", "niji 6", new string[] { "--style random" }, null, null, null, "Apply a random base style" },
+                    { "draft_niji6", "niji 6", new string[] { "--draft" }, null, null, null, "Generate draft images at lower GPU cost" },
+                    { "visibility_niji6", "niji 6", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
+                    { "upscale_niji6", "niji 6", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
+                    { "performance_niji6", "niji 6", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" }
                 });
 
             // Styles
             migrationBuilder.InsertData(
-            schema: "public",
-            table: "midjourney_styles",
-            columns: new[] { "name", "type", "description", "tags" },
-            values: new object[,]
-            {
-                { "Anime Style", "Custom", "Classic anime inspired visuals", new[] { "anime", "2D", "manga" } },
-                { "Realistic Portrait", "Custom", "High realism human portraits", new[] { "realistic", "portrait", "photo" } },
-                { "Cyberpunk", "Custom", "Futuristic cyberpunk city scenes", new[] { "cyberpunk", "futuristic", "neon" } },
-                { "Minimalist", "Custom", "Clean minimalist design", new[] { "minimal", "simple", "clean" } },
-                { "Fantasy Landscape", "Custom", "Epic fantasy environments", new[] { "fantasy", "landscape", "epic" } },
-                { "Cartoon", "Custom", "Cartoonish style with bold colors", new[] { "cartoon", "2D", "fun" } },
-                { "Pixel Art", "Custom", "Retro pixel art style", new[] { "pixel", "retro", "8bit" } },
-                { "Watercolor", "Custom", "Soft watercolor painting style", new[] { "watercolor", "painting", "soft" } },
-                { "Oil Painting", "Custom", "Classical oil painting style", new[] { "oil", "painting", "classic" } },
-                { "Low Poly", "Custom", "Low-poly 3D models and scenes", new[] { "lowpoly", "3D", "geometric" } },
-                { "Surreal", "Custom", "Dreamlike surreal imagery", new[] { "surreal", "abstract", "dream" } },
-                { "Gothic", "Custom", "Dark gothic aesthetics", new[] { "gothic", "dark", "architecture" } },
-                { "Steampunk", "Custom", "Retro-futuristic steampunk style", new[] { "steampunk", "retro", "mechanical" } },
-                { "Fantasy Portrait", "Custom", "Fantasy characters and portraits", new[] { "fantasy", "portrait", "characters" } },
-                { "3D Realistic", "Custom", "High-fidelity 3D rendered style", new[] { "3D", "realistic", "render" } },
-                { "Comic Book", "Custom", "Bold comic book style", new[] { "comic", "bold", "lines" } },
-                { "Chibi", "Custom", "Cute chibi style characters", new[] { "chibi", "cute", "anime" } },
-                { "Flat Design", "Custom", "Minimalist flat illustrations", new[] { "flat", "design", "vector" } },
-                { "Concept Art", "Custom", "High-quality concept art", new[] { "concept", "art", "illustration" } },
-                { "Impressionism", "Custom", "Painterly impressionist style", new[] { "impressionism", "painting", "brush" } },
-                { "Expressionism", "Custom", "Emotional expressive painting style", new[] { "expressionism", "art", "colorful" } },
-                { "Sketch", "Custom", "Hand-drawn sketch style", new[] { "sketch", "pencil", "drawing" } },
-                { "Neon Glow", "Custom", "Vibrant neon lights effect", new[] { "neon", "lights", "glow" } },
-                { "Dark Fantasy", "Custom", "Moody fantasy visuals", new[] { "dark", "fantasy", "epic" } },
-                { "Anime Chiaroscuro", "Custom", "High contrast anime shading", new[] { "anime", "shading", "chiaroscuro" } },
-                { "Realistic Landscape", "Custom", "Detailed natural landscapes", new[] { "realistic", "landscape", "nature" } },
-                { "Sci-Fi", "Custom", "Science fiction inspired visuals", new[] { "sci-fi", "futuristic", "technology" } },
-                { "Pop Art", "Custom", "Bright pop-art illustrations", new[] { "popart", "colorful", "retro" } },
-                { "Vintage", "Custom", "Retro vintage look and feel", new[] { "vintage", "retro", "oldschool" } },
-                { "Photo Manipulation", "Custom", "Composite photo manipulations", new[] { "photo", "composite", "editing" } },
-                { "Character Design", "Custom", "Original character concepts", new[] { "character", "design", "concept" } },
-                { "Children Book", "Custom", "Illustration style for children books", new[] { "children", "book", "cute" } },
-                { "Abstract Art", "Custom", "Non-representational abstract style", new[] { "abstract", "art", "colors" } },
-                { "Line Art", "Custom", "Clean line drawings", new[] { "line", "drawing", "vector" } },
-                { "Realistic Animals", "Custom", "Photorealistic animal renders", new[] { "animals", "realistic", "photo" } },
-                { "Low-Key Lighting", "Custom", "Dark scene with low key lighting", new[] { "lowkey", "dark", "lighting" } },
-                { "High-Key Lighting", "Custom", "Bright high key lighting", new[] { "highkey", "bright", "lighting" } },
-                { "Matte Painting", "Custom", "Cinematic matte painting style", new[] { "matte", "painting", "cinematic" } },
-                { "Fantasy Creature", "Custom", "Imaginary fantasy creatures", new[] { "fantasy", "creature", "mythical" } },
-                { "Architecture", "Custom", "Detailed building and architecture style", new[] { "architecture", "building", "design" } },
-                { "Street Art", "Custom", "Graffiti and street art style", new[] { "street", "graffiti", "urban" } },
-                { "Vector Art", "Custom", "Sharp vector graphics style", new[] { "vector", "digital", "illustration" } },
-                { "Neoclassicism", "Custom", "Classical art inspired style", new[] { "neoclassicism", "painting", "historic" } },
-                { "3D Low Poly", "Custom", "Stylized 3D low poly models", new[] { "3D", "lowpoly", "stylized" } },
-                { "Ghibli Inspired", "Custom", "Whimsical Studio Ghibli-like visuals", new[] { "ghibli", "anime", "fantasy" } },
-                { "Horror", "Custom", "Scary and horror style visuals", new[] { "horror", "dark", "scary" } },
-                { "Surrealism", "Custom", "Dreamlike surrealistic images", new[] { "surrealism", "dream", "abstract" } },
-                { "Neo-Noir", "Custom", "Modern noir cinematic style", new[] { "neo-noir", "dark", "cinematic" } },
-                { "Pixel Fantasy", "Custom", "Retro fantasy pixel art", new[] { "pixel", "fantasy", "retro" } },
-                { "Anime Realism", "Custom", "Realistic anime style characters", new[] { "anime", "realistic", "characters" } },
-                { "Digital Painting", "Custom", "General digital painting style", new[] { "digital", "painting", "art" } },
-                { "Concept Sci-Fi", "Custom", "Science fiction concept art", new[] { "sci-fi", "concept", "art" } },
-                { "Futurism", "Custom", "Futuristic abstract visuals", new[] { "futurism", "abstract", "future" } },
-                { "Surreal Landscape", "Custom", "Unreal dreamlike landscapes", new[] { "surreal", "landscape", "dream" } },
-                { "Cute Mascot", "Custom", "Cute cartoon mascot characters", new[] { "cute", "mascot", "cartoon" } },
-                { "Retro Futuristic", "Custom", "Retro-futuristic design style", new[] { "retro", "futuristic", "80s" } }
-            });
+                schema: "public",
+                table: "midjourney_styles",
+                columns: new[] { "name", "type", "description", "tags" },
+                values: new object[,]
+                {
+                    { "Anime Style", "Custom", "Classic anime inspired visuals", new[] { "anime", "2D", "manga" } },
+                    { "Realistic Portrait", "Custom", "High realism human portraits", new[] { "realistic", "portrait", "photo" } },
+                    { "Cyberpunk", "Custom", "Futuristic cyberpunk city scenes", new[] { "cyberpunk", "futuristic", "neon" } },
+                    { "Minimalist", "Custom", "Clean minimalist design", new[] { "minimal", "simple", "clean" } },
+                    { "Fantasy Landscape", "Custom", "Epic fantasy environments", new[] { "fantasy", "landscape", "epic" } },
+                    { "Cartoon", "Custom", "Cartoonish style with bold colors", new[] { "cartoon", "2D", "fun" } },
+                    { "Pixel Art", "Custom", "Retro pixel art style", new[] { "pixel", "retro", "8bit" } },
+                    { "Watercolor", "Custom", "Soft watercolor painting style", new[] { "watercolor", "painting", "soft" } },
+                    { "Oil Painting", "Custom", "Classical oil painting style", new[] { "oil", "painting", "classic" } },
+                    { "Low Poly", "Custom", "Low-poly 3D models and scenes", new[] { "lowpoly", "3D", "geometric" } },
+                    { "Surreal", "Custom", "Dreamlike surreal imagery", new[] { "surreal", "abstract", "dream" } },
+                    { "Gothic", "Custom", "Dark gothic aesthetics", new[] { "gothic", "dark", "architecture" } },
+                    { "Steampunk", "Custom", "Retro-futuristic steampunk style", new[] { "steampunk", "retro", "mechanical" } },
+                    { "Fantasy Portrait", "Custom", "Fantasy characters and portraits", new[] { "fantasy", "portrait", "characters" } },
+                    { "3D Realistic", "Custom", "High-fidelity 3D rendered style", new[] { "3D", "realistic", "render" } },
+                    { "Comic Book", "Custom", "Bold comic book style", new[] { "comic", "bold", "lines" } },
+                    { "Chibi", "Custom", "Cute chibi style characters", new[] { "chibi", "cute", "anime" } },
+                    { "Flat Design", "Custom", "Minimalist flat illustrations", new[] { "flat", "design", "vector" } },
+                    { "Concept Art", "Custom", "High-quality concept art", new[] { "concept", "art", "illustration" } },
+                    { "Impressionism", "Custom", "Painterly impressionist style", new[] { "impressionism", "painting", "brush" } },
+                    { "Expressionism", "Custom", "Emotional expressive painting style", new[] { "expressionism", "art", "colorful" } },
+                    { "Sketch", "Custom", "Hand-drawn sketch style", new[] { "sketch", "pencil", "drawing" } },
+                    { "Neon Glow", "Custom", "Vibrant neon lights effect", new[] { "neon", "lights", "glow" } },
+                    { "Dark Fantasy", "Custom", "Moody fantasy visuals", new[] { "dark", "fantasy", "epic" } },
+                    { "Anime Chiaroscuro", "Custom", "High contrast anime shading", new[] { "anime", "shading", "chiaroscuro" } },
+                    { "Realistic Landscape", "Custom", "Detailed natural landscapes", new[] { "realistic", "landscape", "nature" } },
+                    { "Sci-Fi", "Custom", "Science fiction inspired visuals", new[] { "sci-fi", "futuristic", "technology" } },
+                    { "Pop Art", "Custom", "Bright pop-art illustrations", new[] { "popart", "colorful", "retro" } },
+                    { "Vintage", "Custom", "Retro vintage look and feel", new[] { "vintage", "retro", "oldschool" } },
+                    { "Photo Manipulation", "Custom", "Composite photo manipulations", new[] { "photo", "composite", "editing" } },
+                    { "Character Design", "Custom", "Original character concepts", new[] { "character", "design", "concept" } },
+                    { "Children Book", "Custom", "Illustration style for children books", new[] { "children", "book", "cute" } },
+                    { "Abstract Art", "Custom", "Non-representational abstract style", new[] { "abstract", "art", "colors" } },
+                    { "Line Art", "Custom", "Clean line drawings", new[] { "line", "drawing", "vector" } },
+                    { "Realistic Animals", "Custom", "Photorealistic animal renders", new[] { "animals", "realistic", "photo" } },
+                    { "Low-Key Lighting", "Custom", "Dark scene with low key lighting", new[] { "lowkey", "dark", "lighting" } },
+                    { "High-Key Lighting", "Custom", "Bright high key lighting", new[] { "highkey", "bright", "lighting" } },
+                    { "Matte Painting", "Custom", "Cinematic matte painting style", new[] { "matte", "painting", "cinematic" } },
+                    { "Fantasy Creature", "Custom", "Imaginary fantasy creatures", new[] { "fantasy", "creature", "mythical" } },
+                    { "Architecture", "Custom", "Detailed building and architecture style", new[] { "architecture", "building", "design" } },
+                    { "Street Art", "Custom", "Graffiti and street art style", new[] { "street", "graffiti", "urban" } },
+                    { "Vector Art", "Custom", "Sharp vector graphics style", new[] { "vector", "digital", "illustration" } },
+                    { "Neoclassicism", "Custom", "Classical art inspired style", new[] { "neoclassicism", "painting", "historic" } },
+                    { "3D Low Poly", "Custom", "Stylized 3D low poly models", new[] { "3D", "lowpoly", "stylized" } },
+                    { "Ghibli Inspired", "Custom", "Whimsical Studio Ghibli-like visuals", new[] { "ghibli", "anime", "fantasy" } },
+                    { "Horror", "Custom", "Scary and horror style visuals", new[] { "horror", "dark", "scary" } },
+                    { "Surrealism", "Custom", "Dreamlike surrealistic images", new[] { "surrealism", "dream", "abstract" } },
+                    { "Neo-Noir", "Custom", "Modern noir cinematic style", new[] { "neo-noir", "dark", "cinematic" } },
+                    { "Pixel Fantasy", "Custom", "Retro fantasy pixel art", new[] { "pixel", "fantasy", "retro" } },
+                    { "Anime Realism", "Custom", "Realistic anime style characters", new[] { "anime", "realistic", "characters" } },
+                    { "Digital Painting", "Custom", "General digital painting style", new[] { "digital", "painting", "art" } },
+                    { "Concept Sci-Fi", "Custom", "Science fiction concept art", new[] { "sci-fi", "concept", "art" } },
+                    { "Futurism", "Custom", "Futuristic abstract visuals", new[] { "futurism", "abstract", "future" } },
+                    { "Surreal Landscape", "Custom", "Unreal dreamlike landscapes", new[] { "surreal", "landscape", "dream" } },
+                    { "Cute Mascot", "Custom", "Cute cartoon mascot characters", new[] { "cute", "mascot", "cartoon" } },
+                    { "Retro Futuristic", "Custom", "Retro-futuristic design style", new[] { "retro", "futuristic", "80s" } }
+                });
         }
 
         /// <inheritdoc />
@@ -475,142 +392,20 @@ namespace Persistence.Migrations
                 keyColumn: "name",
                 keyValues: new object[]
                 {
-                    "Anime Style",
-                    "Realistic Portrait",
-                    "Cyberpunk",
-                    "Minimalist",
-                    "Fantasy Landscape",
-                    "Cartoon",
-                    "Pixel Art",
-                    "Watercolor",
-                    "Oil Painting",
-                    "Low Poly",
-                    "Surreal",
-                    "Gothic",
-                    "Steampunk",
-                    "Fantasy Portrait",
-                    "3D Realistic",
-                    "Comic Book",
-                    "Chibi",
-                    "Flat Design",
-                    "Concept Art",
-                    "Impressionism",
-                    "Expressionism",
-                    "Sketch",
-                    "Neon Glow",
-                    "Dark Fantasy",
-                    "Anime Chiaroscuro",
-                    "Realistic Landscape",
-                    "Sci-Fi",
-                    "Pop Art",
-                    "Vintage",
-                    "Photo Manipulation",
-                    "Character Design",
-                    "Children Book",
-                    "Abstract Art",
-                    "Line Art",
-                    "Realistic Animals",
-                    "Low-Key Lighting",
-                    "High-Key Lighting",
-                    "Matte Painting",
-                    "Fantasy Creature",
-                    "Architecture",
-                    "Street Art",
-                    "Vector Art",
-                    "Neoclassicism",
-                    "3D Low Poly",
-                    "Ghibli Inspired",
-                    "Horror",
-                    "Surrealism",
-                    "Neo-Noir",
-                    "Pixel Fantasy",
-                    "Anime Realism",
-                    "Digital Painting",
-                    "Concept Sci-Fi",
-                    "Futurism",
-                    "Surreal Landscape",
-                    "Cute Mascot",
-                    "Retro Futuristic"
+                    "Anime Style", "Realistic Portrait", "Cyberpunk", "Minimalist", "Fantasy Landscape",
+                    "Cartoon", "Pixel Art", "Watercolor", "Oil Painting", "Low Poly", "Surreal", "Gothic",
+                    "Steampunk", "Fantasy Portrait", "3D Realistic", "Comic Book", "Chibi", "Flat Design",
+                    "Concept Art", "Impressionism", "Expressionism", "Sketch", "Neon Glow", "Dark Fantasy",
+                    "Anime Chiaroscuro", "Realistic Landscape", "Sci-Fi", "Pop Art", "Vintage", "Photo Manipulation",
+                    "Character Design", "Children Book", "Abstract Art", "Line Art", "Realistic Animals",
+                    "Low-Key Lighting", "High-Key Lighting", "Matte Painting", "Fantasy Creature", "Architecture",
+                    "Street Art", "Vector Art", "Neoclassicism", "3D Low Poly", "Ghibli Inspired", "Horror",
+                    "Surrealism", "Neo-Noir", "Pixel Fantasy", "Anime Realism", "Digital Painting", "Concept Sci-Fi",
+                    "Futurism", "Surreal Landscape", "Cute Mascot", "Retro Futuristic"
                 });
 
-            // Remove properties data for all versions
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_niji_6",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "styleWeight", "characterWeight", "weird", "imageWeight", "imageStyleRandom", "draft", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_niji_5",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "styleWeight", "characterWeight", "weird", "omniReference", "profile", "styleReference", "video", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_niji_4",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "weird", "oref", "personalization", "styleReference", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_7",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "weird", "niji", "draft", "omniReference", "styleReference", "styleWeight", "versionFlag", "characterReference", "stealth", "public", "fast", "relax", "turbo", "exp", "sv", "profile", "blend", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_6_1",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "styleWeight", "characterWeight", "weird", "imageWeight", "imageStyleRandom", "draft", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_6",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "styleWeight", "characterWeight", "weird", "imageWeight", "imageStyleRandom", "draft", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_5_2",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "styleWeight", "characterWeight", "weird", "omniReference", "profile", "styleReference", "video", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_5_1",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "styleWeight", "characterWeight", "weird", "omniReference", "profile", "styleReference", "video", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_5",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "styleWeight", "characterWeight", "weird", "omniReference", "profile", "styleReference", "video", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_4",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "weird", "oref", "personalization", "styleReference", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_3",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "stylize", "chaos", "repeat", "raw", "tile", "imageWeight", "styleReference", "weird", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_2",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "chaos", "repeat", "raw", "tile", "imageWeight", "weird", "styleReference", "visibility", "upscale", "performance" });
-
-            migrationBuilder.DeleteData(
-                schema: "public",
-                table: "properties_version_1",
-                keyColumn: "property_name",
-                keyValues: new object[] { "aspectRatio", "quality", "seed", "no", "stop", "upscale", "visibility", "performance" });
+            // Remove all properties data - using WHERE clause since we can't delete by composite key with DeleteData
+            migrationBuilder.Sql("DELETE FROM public.properties");
 
             // Remove version master data last (parent table)
             migrationBuilder.DeleteData(

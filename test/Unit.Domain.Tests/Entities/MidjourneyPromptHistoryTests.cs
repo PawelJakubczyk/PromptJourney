@@ -171,7 +171,7 @@ public class MidjourneyPromptHistoryTests
     }
 
     [Fact]
-    public void Create_WithLongPrompt_ShouldReturnSuccess()
+    public void Create_WithLongPrompt_ShouldHandleCorrectly()
     {
         // Arrange
         var longPrompt = "A very detailed and comprehensive description of an artwork that includes multiple elements, styles, colors, compositions, lighting effects, and artistic techniques that should be applied to create the desired image " + new string('a', 500);
@@ -186,16 +186,15 @@ public class MidjourneyPromptHistoryTests
         );
 
         // Assert
+        result.Should().NotBeNull();
         if (longPrompt.Length <= Prompt.MaxLength)
         {
-            result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
             result.Value.Prompt.Value.Should().Be(longPrompt);
         }
         else
         {
-            result.Should().NotBeNull();
             result.IsSuccess.Should().BeFalse();
             result.Errors.Should().NotBeEmpty();
         }
@@ -290,7 +289,7 @@ public class MidjourneyPromptHistoryTests
         // Assert
         // HistoryId should have only a getter (read-only)
         history.HistoryId.Should().NotBe(Guid.Empty);
-        
+
         // This test verifies that HistoryId cannot be modified after creation
         // The property should be { get; } only
     }

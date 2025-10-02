@@ -11,14 +11,3 @@ public interface ILayer
 {
 
 }
-
-public enum LayersEnum
-{
-    Domain,
-    Application,
-    Persistence,
-    Infrastructure,
-    Presentation,
-    Utilities,
-    Unknown
-}
