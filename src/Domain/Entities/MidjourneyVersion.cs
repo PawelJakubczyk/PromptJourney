@@ -17,19 +17,8 @@ public class MidjourneyVersion : IEntitie
     // Navigation
     public List<MidjourneyPromptHistory> Histories { get; set; }
 
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1> Versions1 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2> Versions2 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion3> Versions3 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion4> Versions4 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion5> Versions5 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion51> Versions51 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion52> Versions52 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion6> Versions6 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion61> Versions61 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion7> Versions7 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji4> VersionsNiji4 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji5> VersionsNiji5 { get; set; }
-    public List<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6> VersionsNiji6 { get; set; }
+    public List<MidjourneyProperties> Properties { get; set; }
+
 
     // Constructors
     private MidjourneyVersion()

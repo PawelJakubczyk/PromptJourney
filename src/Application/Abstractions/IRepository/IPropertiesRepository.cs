@@ -8,11 +8,11 @@ namespace Application.Abstractions.IRepository;
 public interface IPropertiesRepository
 {
     // For Queries
-    Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(ModelVersion version, CancellationToken cancellationToken);
+    Task<Result<List<MidjourneyProperties>>> GetAllParametersByVersionAsync(ModelVersion version, CancellationToken cancellationToken);
     Task<Result<bool>> CheckParameterExistsInVersionAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken);
     // For Commands
-    Task<Result<MidjourneyPropertiesBase>> AddParameterToVersionAsync(MidjourneyPropertiesBase property, CancellationToken cancellationToken);
-    Task<Result<MidjourneyPropertiesBase>> UpdateParameterForVersionAsync(MidjourneyPropertiesBase property, CancellationToken cancellationToken);
-    Task<Result<MidjourneyPropertiesBase>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue, CancellationToken cancellationToken);
-    Task<Result<MidjourneyPropertiesBase>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken);
+    Task<Result<MidjourneyProperties>> AddParameterToVersionAsync(MidjourneyProperties property, CancellationToken cancellationToken);
+    Task<Result<MidjourneyProperties>> UpdateParameterForVersionAsync(MidjourneyProperties property, CancellationToken cancellationToken);
+    Task<Result<MidjourneyProperties>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue, CancellationToken cancellationToken);
+    Task<Result<MidjourneyProperties>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken);
 }

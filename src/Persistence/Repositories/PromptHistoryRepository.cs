@@ -46,10 +46,12 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
     {
         return ExecuteAsync(async () =>
         {
+            var pattern = keyword.ToString();
+
             return await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(h => h.VersionMaster)
                 .Include(h => h.MidjourneyStyles)
-                .Where(h => EF.Functions.Like(h.Prompt.Value, $"%{keyword.Value}%"))
+                .Where(h => EF.Functions.Like(h.Prompt.Value, pattern))
                 .OrderByDescending(h => h.CreatedOn)
                 .ToListAsync(cancellationToken);
         }, "Failed to get history records by prompt keyword", StatusCodes.Status500InternalServerError);

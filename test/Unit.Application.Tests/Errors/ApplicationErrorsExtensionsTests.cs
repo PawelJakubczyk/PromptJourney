@@ -1,6 +1,6 @@
 ﻿//using System.Reflection;
 //using Application.Features.Properties;
-//using Application.Extension;
+//using FluentResults;
 
 //namespace Unit.Test.Application.Errors;
 
@@ -11,7 +11,7 @@
 //    {
 //        // Arrange
 //        var appErrors = new List<global::Application.Extension.Error>();
-//        var domainErrors = new List<DomainError>();
+//        var domainErrors = new List<Error>();
 
 //        // Act
 //        var result = ErrorsExtensions.CreateValidationErrorIfAny<string>(appErrors, domainErrors);

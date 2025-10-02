@@ -15,34 +15,17 @@ public sealed class PropertiesRepository : IPropertiesRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext;
 
-    private static readonly Dictionary<string, PropertiesVersionMapping> _versionMappings = new()
-    {
-        ["1"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1), "MidjourneyPropertiesVersion1"),
-        ["2"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2), "MidjourneyPropertiesVersion2"),
-        ["3"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion3), "MidjourneyPropertiesVersion3"),
-        ["4"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion4), "MidjourneyPropertiesVersion4"),
-        ["5"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion5), "MidjourneyPropertiesVersion5"),
-        ["5.1"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion51), "MidjourneyPropertiesVersion51"),
-        ["5.2"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion52), "MidjourneyPropertiesVersion52"),
-        ["6"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion6), "MidjourneyPropertiesVersion6"),
-        ["6.1"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion61), "MidjourneyPropertiesVersion61"),
-        ["7"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion7), "MidjourneyPropertiesVersion7"),
-        ["niji 4"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji4), "MidjourneyPropertiesVersionNiji4"),
-        ["niji 5"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji5), "MidjourneyPropertiesVersionNiji5"),
-        ["niji 6"] = new(typeof(MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6), "MidjourneyPropertiesVersionNiji6")
-    };
-
     public PropertiesRepository(MidjourneyDbContext midjourneyDbContext)
     {
         _midjourneyDbContext = midjourneyDbContext;
     }
 
     // For Queries
-    public Task<Result<List<MidjourneyPropertiesBase>>> GetAllParametersByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
+    public Task<Result<List<MidjourneyProperties>>> GetAllParametersByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
-            var query = GetQueryableForVersion(version.Value);
+            var query = _midjourneyDbContext.MidjourneyProperties;
             var list = await query.Include(p => p.VersionMaster).ToListAsync(cancellationToken);
             return list;
         }, $"Failed to get parameters for version '{version.Value}'", StatusCodes.Status500InternalServerError);
@@ -52,17 +35,17 @@ public sealed class PropertiesRepository : IPropertiesRepository
     {
         return ExecuteAsync(async () =>
         {
-            var query = GetQueryableForVersion(version.Value);
+            var query = _midjourneyDbContext.MidjourneyProperties;
             return await query.AnyAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
         }, $"Failed to check parameter existence for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     // For Commands
-    public Task<Result<MidjourneyPropertiesBase>> AddParameterToVersionAsync(MidjourneyPropertiesBase property, CancellationToken cancellationToken)
+    public Task<Result<MidjourneyProperties>> AddParameterToVersionAsync(MidjourneyProperties property, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
-            var query = GetQueryableForVersion(property.Version.Value);
+            var query = _midjourneyDbContext.MidjourneyProperties;
 
             _midjourneyDbContext.Add(property);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -70,7 +53,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }, $"Failed to add parameter for version '{property.Version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<MidjourneyPropertiesBase>> UpdateParameterForVersionAsync(MidjourneyPropertiesBase property, CancellationToken cancellationToken)
+    public Task<Result<MidjourneyProperties>> UpdateParameterForVersionAsync(MidjourneyProperties property, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
@@ -83,11 +66,11 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }, $"Failed to update parameter for version '{property.Version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<MidjourneyPropertiesBase>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperties>> PatchParameterForVersionAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {
-            var query = GetQueryableForVersion(version.Value);
+            var query = _midjourneyDbContext.MidjourneyProperties;
             var parameter = await query.FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
 
             UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
@@ -101,20 +84,20 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }, $"Failed to patch parameter '{propertyName.Value}' for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<MidjourneyPropertiesBase>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperties>> DeleteParameterInVersionAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken)
     {
         var findResult = await ExecuteAsync(async () =>
         {
-            var query = GetQueryableForVersion(version.Value);
+            var query = _midjourneyDbContext.MidjourneyProperties;
             return await query.FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
         }, $"Failed to fetch parameter '{propertyName.Value}' for deletion in version '{version.Value}'", StatusCodes.Status500InternalServerError);
 
         if (findResult.IsFailed)
-            return Result.Fail<MidjourneyPropertiesBase>(findResult.Errors);
+            return Result.Fail<MidjourneyProperties>(findResult.Errors);
 
         var parameter = findResult.Value;
         if (parameter == null)
-            return Result.Fail<MidjourneyPropertiesBase>
+            return Result.Fail<MidjourneyProperties>
                 (
                     ErrorFactory.Create()
                     .Withlayer(typeof(PersistenceLayer))
@@ -136,7 +119,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
 
     #region Helpers
 
-    private static void UpdateParameterProperty(MidjourneyPropertiesBase parameter, string propertyToUpdate, string? newValue)
+    private static void UpdateParameterProperty(MidjourneyProperties parameter, string propertyToUpdate, string? newValue)
     {
         switch (propertyToUpdate.ToLowerInvariant())
         {
@@ -161,25 +144,5 @@ public sealed class PropertiesRepository : IPropertiesRepository
                 break;
         }
     }
-
-    private IQueryable<MidjourneyPropertiesBase> GetQueryableForVersion(string version)
-    {
-        var mapping = _versionMappings[version];
-
-        var setMethod = typeof(DbContext).GetMethod("Set", [typeof(Type)])
-                        ?? throw new InvalidOperationException("DbContext.Set(Type) method not found.");
-
-        var dbSetObj = setMethod.Invoke(_midjourneyDbContext, [mapping.EntityType])
-                       ?? throw new InvalidOperationException($"DbSet for type {mapping.EntityType} is null.");
-
-        var queryable = dbSetObj as IQueryable
-                        ?? throw new InvalidOperationException($"Returned DbSet is not IQueryable for type {mapping.EntityType}.");
-
-        return queryable.Cast<MidjourneyPropertiesBase>();
-    }
-
     #endregion
-
-    // Version mapping record
-    private record PropertiesVersionMapping(Type EntityType, string DbSetPropertyName);
 }

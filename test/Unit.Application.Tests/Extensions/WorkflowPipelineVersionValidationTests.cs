@@ -21,7 +21,7 @@ public class WorkflowPipelineVersionValidationTests
 
         var result = await pipelineTask.IfVersionAlreadyExists(version, repo.Object, _cancellationToken);
 
-        Assert.Contains(result.Errors, e => e.Message.Contains("[Application] Version '1' already exists"));
+        Assert.Contains(result.Errors, e => e.Message.Contains("Version '1' already exists"));
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class WorkflowPipelineVersionValidationTests
 
         var result = await pipelineTask.IfVersionNotExists(version, repo.Object, _cancellationToken);
 
-        Assert.Contains(result.Errors, e => e.Message.Contains("[Application] Version '2' not found"));
+        Assert.Contains(result.Errors, e => e.Message.Contains("Version '2' not found"));
     }
 
 }

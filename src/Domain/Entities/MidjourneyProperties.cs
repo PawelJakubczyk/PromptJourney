@@ -7,7 +7,7 @@ using Utilities.Validation;
 
 namespace Domain.Entities;
 
-public class MidjourneyPropertiesBase : IEntitie
+public class MidjourneyProperties : IEntitie
 {
     // Columns
     public PropertyName PropertyName { get; set; }
@@ -22,12 +22,12 @@ public class MidjourneyPropertiesBase : IEntitie
     public MidjourneyVersion VersionMaster { get; set; }
 
     // Constructors
-    protected MidjourneyPropertiesBase()
+    protected MidjourneyProperties()
     {
         // Parameterless constructor for EF Core
     }
 
-    protected MidjourneyPropertiesBase
+    protected MidjourneyProperties
     (
         PropertyName propertyName,
         ModelVersion version,
@@ -47,7 +47,7 @@ public class MidjourneyPropertiesBase : IEntitie
         Description = description;
     }
 
-    public static Result<MidjourneyPropertiesBase> Create
+    public static Result<MidjourneyProperties> Create
     (
         Result<PropertyName> propertyNameResult,
         Result<ModelVersion> versionResult,
@@ -72,7 +72,7 @@ public class MidjourneyPropertiesBase : IEntitie
             .IfListHasDuplicates<DomainLayer, Param>(paramResultsList?.ToValueList()))
         .ExecuteIfNoErrors(() =>
         {
-            var versionBase = new MidjourneyPropertiesBase
+            var versionBase = new MidjourneyProperties
             (
                 propertyNameResult.Value,
                 versionResult.Value,

@@ -6,19 +6,8 @@ namespace Persistence.Context;
 public class MidjourneyDbContext : DbContext
 {
     public DbSet<MidjourneyVersion> MidjourneyVersionsMaster { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion1> MidjourneyPropertiesVersion1 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion2> MidjourneyPropertiesVersion2 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion3> MidjourneyPropertiesVersion3 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion4> MidjourneyPropertiesVersion4 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion5> MidjourneyPropertiesVersion5 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion51> MidjourneyPropertiesVersion51 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion52> MidjourneyPropertiesVersion52 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion6> MidjourneyPropertiesVersion6 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion61> MidjourneyPropertiesVersion61 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersion7> MidjourneyPropertiesVersion7 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji4> MidjourneyPropertiesVersionNiji4 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji5> MidjourneyPropertiesVersionNiji5 { get; set; }
-    public DbSet<MidjourneyAllPropertiesVersions.MidjourneyPropertiesVersionNiji6> MidjourneyPropertiesVersionNiji6 { get; set; }
+    public DbSet<MidjourneyProperties> MidjourneyProperties { get; set; }
+
     public DbSet<MidjourneyStyle> MidjourneyStyle { get; set; }
     public DbSet<MidjourneyPromptHistory> MidjourneyPromptHistory { get; set; }
     public DbSet<MidjourneyStyleExampleLink> MidjourneyStyleExampleLinks { get; set; }

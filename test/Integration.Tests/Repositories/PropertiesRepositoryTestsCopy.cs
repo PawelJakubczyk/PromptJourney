@@ -1,48 +1,49 @@
 //using Domain.Entities;
 //using Domain.ValueObjects;
 //using FluentAssertions;
+//using FluentResults;
 //using Persistence.Repositories;
 //using System.Threading;
 
 //namespace Integration.Tests.Repositories;
 
-//public class PropertiesRepositoryTests : BaseTransactionIntegrationTest
+//public class PropertiesRepositoryTestsCopy : BaseTransactionIntegrationTest
 //{
-//    private const string TestVersion1 = "1";
-//    private const string TestVersion2 = "2";
-//    private const string TestVersion3 = "5.1";
-//    private const string TestVersion4 = "niji 4";
+//    private Result<ModelVersion> TestVersion1 = ModelVersion.Create("1");
+//    private Result<ModelVersion> TestVersion2 = ModelVersion.Create("2");
+//    private Result<ModelVersion> TestVersion3 = ModelVersion.Create("5.1");
+//    private Result<ModelVersion> TestVersion4 = ModelVersion.Create("niji 4");
 
-//    private const string TestPropertyName1 = "aspect";
-//    private const string TestPropertyName2 = "quality";
-//    private const string TestPropertyName3 = "stylize";
+//    private PropertyName TestPropertyName1 = PropertyName.Create("aspect").Value;
+//    private string TestPropertyName2 = "quality";
+//    private string TestPropertyName3 = "stylize";
 
-//    private const string TestParam1 = "--ar";
-//    private const string TestParam2 = "--q";
-//    private const string TestParam3 = "--s";
+//    private List<Result<Param>> TestParam1 = [Param.Create("--ar"), Param.Create("--ar2")];
+//    private string TestParam2 = "--q";
+//    private string TestParam3 = "--s";
 
-//    private const string TestDefaultValue1 = "1:1";
-//    private const string TestDefaultValue2 = "1";
-//    private const string TestDefaultValue3 = "100";
+//    private DefaultValue TestDefaultValue1 = DefaultValue.Create("1:1").Value;
+//    private string TestDefaultValue2 = "1";
+//    private string TestDefaultValue3 = "100";
 
-//    private const string TestMinValue1 = "1:3";
-//    private const string TestMinValue2 = "0.25";
-//    private const string TestMinValue3 = "0";
+//    private MinValue TestMinValue1 = MinValue.Create("1:3").Value;
+//    private string TestMinValue2 = "0.25";
+//    private string TestMinValue3 = "0";
 
-//    private const string TestMaxValue1 = "3:1";
-//    private const string TestMaxValue2 = "2";
-//    private const string TestMaxValue3 = "1000";
+//    private MaxValue TestMaxValue1 = MaxValue.Create("3:1").Value;
+//    private string TestMaxValue2 = "2";
+//    private string TestMaxValue3 = "1000";
 
-//    private const string TestDescription1 = "Aspect ratio parameter";
-//    private const string TestDescription2 = "Quality parameter";
-//    private const string TestDescription3 = "Stylize parameter";
+//    private Description TestDescription1 = Description.Create("Aspect ratio parameter").Value;
+//    private string TestDescription2 = "Quality parameter";
+//    private string TestDescription3 = "Stylize parameter";
 
 //    private readonly PropertiesRepository _propertiesRepository;
 //    private readonly VersionsRepository _versionsRepository;
 
 //    private readonly CancellationToken _cancellationToken;
 
-//    public PropertiesRepositoryTests(MidjourneyDbFixture fixture) : base(fixture)
+//    public PropertiesRepositoryTestsCopy(MidjourneyDbFixture fixture) : base(fixture)
 //    {
 //        _propertiesRepository = new PropertiesRepository(DbContext);
 //        _versionsRepository = new VersionsRepository(DbContext);
@@ -53,12 +54,12 @@
 //    public async Task AddParameterToVersionAsync_WithValidData_ShouldSucceed()
 //    {
 //        // Arrange
-//        await CreateAndSaveTestVersionAsync(TestVersion1);
+//        await CreateAndSaveTestVersionAsync(TestVersion1.Value);
 
 //        var property = await CreateTestPropertyAsync(
 //            TestVersion1, 
 //            TestPropertyName1, 
-//            [TestParam1], 
+//            TestParam1, 
 //            TestDefaultValue1, 
 //            TestMinValue1, 
 //            TestMaxValue1, 
@@ -71,12 +72,12 @@
 //        result.Should().NotBeNull();
 //        result.IsSuccess.Should().BeTrue();
 //        result.Value.Should().NotBeNull();
-//        result.Value.PropertyName.Value.Should().Be(TestPropertyName1);
-//        result.Value.Version.Value.Should().Be(TestVersion1);
-//        result.Value.DefaultValue?.Value.Should().Be(TestDefaultValue1);
-//        result.Value.MinValue?.Value.Should().Be(TestMinValue1);
-//        result.Value.MaxValue?.Value.Should().Be(TestMaxValue1);
-//        result.Value.Description?.Value.Should().Be(TestDescription1);
+//        result.Value.PropertyName.Value.Should().Be(TestPropertyName1.Value);
+//        result.Value.Version.Value.Should().Be(TestVersion1.Value);
+//        result.Value.DefaultValue?.Value.Should().Be(TestDefaultValue1.Value);
+//        result.Value.MinValue?.Value.Should().Be(TestMinValue1.Value);
+//        result.Value.MaxValue?.Value.Should().Be(TestMaxValue1.Value);
+//        result.Value.Description?.Value.Should().Be(TestDescription1.Value);
 //    }
 
 //    [Fact]
@@ -604,42 +605,36 @@
 //    }
 
 //    private async Task<MidjourneyPropertiesBase> CreateTestPropertyAsync(
-//        string version, 
-//        string propertyName, 
-//        List<string> parameters, 
-//        string? defaultValue = null, 
-//        string? minValue = null, 
-//        string? maxValue = null, 
-//        string? description = null)
+//        ModelVersion version, 
+//        PropertyName propertyName, 
+//        List<Result<Param>> parameters, 
+//        DefaultValue? defaultValue = null, 
+//        MinValue? minValue = null, 
+//        MaxValue? maxValue = null, 
+//        Description? description = null)
 //    {
-//        var propertyNameVo = PropertyName.Create(propertyName).Value;
-//        var versionVo = ModelVersion.Create(version).Value;
-//        var parametersVo = parameters.Select(p => Param.Create(p)).ToList();
-//        var defaultValueVo = defaultValue != null ? DefaultValue.Create(defaultValue).Value : null;
-//        var minValueVo = minValue != null ? MinValue.Create(minValue).Value : null;
-//        var maxValueVo = maxValue != null ? MaxValue.Create(maxValue).Value : null;
-//        var descriptionVo = description != null ? Description.Create(description).Value : null;
+
 
 //        var property = MidjourneyPropertiesBase.Create(
-//            propertyNameVo,
-//            versionVo,
-//            parametersVo,
-//            defaultValueVo,
-//            minValueVo,
-//            maxValueVo,
-//            descriptionVo).Value;
+//            propertyName,
+//            version,
+//            parameters,
+//            defaultValue,
+//            minValue,
+//            maxValue,
+//            description).Value;
 
 //        return property;
 //    }
 
 //    private async Task<MidjourneyPropertiesBase> CreateAndSaveTestPropertyAsync(
-//        string version, 
-//        string propertyName, 
-//        List<string> parameters, 
-//        string? defaultValue = null, 
-//        string? minValue = null, 
-//        string? maxValue = null, 
-//        string? description = null)
+//        ModelVersion version, 
+//        PropertyName propertyName,
+//        List<Result<Param>> parameters, 
+//        DefaultValue? defaultValue = null, 
+//        MinValue? minValue = null, 
+//        MaxValue? maxValue = null, 
+//        Description? description = null)
 //    {
 //        var property = await CreateTestPropertyAsync(version, propertyName, parameters, defaultValue, minValue, maxValue, description);
 //        var result = await _propertiesRepository.AddParameterToVersionAsync(property, _cancellationToken);

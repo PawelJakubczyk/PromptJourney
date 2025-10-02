@@ -5,7 +5,6 @@ using Application.Features.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using System;
 using Utilities.Validation;
 
 namespace Application.Features.Properties.Commands;
@@ -39,7 +38,7 @@ public static class AddPropertyInVersion
             var maxValueResult = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : null;
             var descriptionResult = command.Description is not null ? Description.Create(command.Description) : null;
 
-            var property = MidjourneyPropertiesBase.Create
+            var property = MidjourneyProperties.Create
             (
                 propertyNameResult,
                 versionResult,
