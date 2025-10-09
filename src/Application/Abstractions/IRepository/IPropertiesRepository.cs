@@ -10,6 +10,7 @@ public interface IPropertiesRepository
     Task<Result<List<MidjourneyProperties>>> GetAllPropertiesByVersionAsync(ModelVersion version, CancellationToken cancellationToken);
     Task<Result<List<MidjourneyProperties>>> GetAllProperties(CancellationToken cancellationToken);
     Task<Result<bool>> CheckPropertyExistsInVersionAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken);
+    
     // For Commands
     Task<Result<MidjourneyProperties>> AddProperyAsync(MidjourneyProperties property, CancellationToken cancellationToken);
     Task<Result<MidjourneyProperties>> UpdatePropertyAsync(MidjourneyProperties property, CancellationToken cancellationToken);

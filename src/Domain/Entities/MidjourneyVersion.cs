@@ -18,7 +18,6 @@ public class MidjourneyVersion : IEntitie
 
     public List<MidjourneyProperties> Properties { get; set; }
 
-
     // Constructors
     private MidjourneyVersion()
     {
@@ -64,5 +63,4 @@ public class MidjourneyVersion : IEntitie
 
         return result;
     }
-
 }

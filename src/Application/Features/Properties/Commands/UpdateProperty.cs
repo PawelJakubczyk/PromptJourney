@@ -66,7 +66,6 @@ public static class UpdateProperty
                 .MapResult<MidjourneyProperties, PropertyResponse>
                     (property => PropertyResponse.FromDomain(property));
 
-
             return result;
         }
     }

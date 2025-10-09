@@ -17,7 +17,7 @@ public class MidjourneyStyle : IEntitie
     public StyleType Type { get; set; }
     public Description? Description { get; set; }
     public List<Tag>? Tags { get; set; }
-    
+
     // Navigation properties
     public List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
     public List<MidjourneyStyleExampleLink> ExampleLinks { get; set; } = [];
@@ -74,7 +74,6 @@ public class MidjourneyStyle : IEntitie
 
         return result;
     }
-
 
     public Result<Tag> AddTag(Result<Tag> tag)
     {

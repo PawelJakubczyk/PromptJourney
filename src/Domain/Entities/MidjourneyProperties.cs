@@ -87,7 +87,7 @@ public class MidjourneyProperties : IEntitie
         })
         .MapResult<MidjourneyProperties>();
 
-    return result;
+        return result;
     }
 
     public Result<Description> EditDescription(Result<Description?> description)

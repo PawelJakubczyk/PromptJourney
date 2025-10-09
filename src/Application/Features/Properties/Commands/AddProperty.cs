@@ -24,7 +24,7 @@ public static class AddProperty
     ) : ICommand<PropertyResponse>;
 
     public sealed class Handler(
-        IVersionRepository versionRepository, 
+        IVersionRepository versionRepository,
         IPropertiesRepository propertiesRepository,
         HybridCache cache
         )
@@ -68,6 +68,5 @@ public static class AddProperty
 
             return result;
         }
-
     }
 }

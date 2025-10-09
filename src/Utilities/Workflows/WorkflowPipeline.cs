@@ -35,4 +35,3 @@ public class WorkflowPipeline
     public static Task<WorkflowPipeline> EmptyAsync() =>
         Task.FromResult(Create([], breakOnError: true));
 }
-

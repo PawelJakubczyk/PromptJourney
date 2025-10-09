@@ -51,11 +51,10 @@ public static class PatchProperty
                             command.NewValue,
                             cancellationToken
                         ))
-                    .MapResult<MidjourneyProperties ,PropertyResponse>
+                    .MapResult<MidjourneyProperties, PropertyResponse>
                         (property => PropertyResponse.FromDomain(property));
 
             return result;
         }
-
     }
 }

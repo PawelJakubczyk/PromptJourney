@@ -1,9 +1,9 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Entities;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Persistence.Mapping.ValueObjectsMapping;
 using static Persistence.Constants.PersistenceConstants;
-using Domain.Entities;
+using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 

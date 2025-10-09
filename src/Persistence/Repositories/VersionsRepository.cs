@@ -5,7 +5,6 @@ using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Options;
 using Persistence.Context;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
@@ -13,8 +12,8 @@ namespace Persistence.Repositories;
 
 public sealed class VersionsRepository : IVersionRepository
 {
-    const string supportedVersionsCacheKey = "supported_versions";
-    const string allVersionsCacheKey = "all_versions";
+    private const string supportedVersionsCacheKey = "supported_versions";
+    private const string allVersionsCacheKey = "all_versions";
 
     private readonly MidjourneyDbContext _dbContext;
     private readonly HybridCache _cache;

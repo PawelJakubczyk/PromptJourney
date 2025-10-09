@@ -14,8 +14,8 @@ namespace Persistence.Repositories;
 
 public sealed class PropertiesRepository : IPropertiesRepository
 {
-    const string allPropertiesCacheKey = "all_properties";
-    const string allSuportedPropertiesCacheKey = "all_suported_properties";
+    private const string allPropertiesCacheKey = "all_properties";
+    private const string allSuportedPropertiesCacheKey = "all_suported_properties";
 
     private readonly MidjourneyDbContext _midjourneyDbContext;
     private readonly HybridCache _cache;
@@ -195,19 +195,24 @@ public sealed class PropertiesRepository : IPropertiesRepository
             case "defaultvalue":
                 parameter.DefaultValue = newValue != null ? DefaultValue.Create(newValue).Value : null;
                 break;
+
             case "minvalue":
                 parameter.MinValue = newValue != null ? MinValue.Create(newValue).Value : null;
                 break;
+
             case "maxvalue":
                 parameter.MaxValue = newValue != null ? MaxValue.Create(newValue).Value : null;
                 break;
+
             case "description":
                 parameter.Description = newValue != null ? Description.Create(newValue).Value : null;
                 break;
+
             case "parameters":
                 parameter.Parameters = newValue?.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(p => Param.Create(p.Trim()).Value).ToList();
                 break;
+
             default:
                 // ignore unknown properties
                 break;

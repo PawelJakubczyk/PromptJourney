@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
-using Application.Extensions;
 using Application.Features.Versions.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
@@ -34,9 +33,9 @@ public static class AddVersion
 
             var midjourneyVersion = MidjourneyVersion.Create
             (
-                version, 
-                parameter, 
-                command.ReleaseDate, 
+                version,
+                parameter,
+                command.ReleaseDate,
                 description!
             );
 
@@ -52,5 +51,4 @@ public static class AddVersion
             return result;
         }
     }
-
 }

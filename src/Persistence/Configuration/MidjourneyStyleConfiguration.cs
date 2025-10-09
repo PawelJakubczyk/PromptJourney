@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Domain.Entities;
 using Domain.ValueObjects;
-using static Persistence.Mapping.ValueObjectsMapping;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using static Persistence.Constants.PersistenceConstants;
-using Domain.Entities;
+using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 
@@ -13,24 +13,24 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
     {
         builder.ToTable("midjourney_styles", schema: "public");
         builder.HasKey(style => style.StyleName);
-        
+
         builder.Property(style => style.StyleName)
             .HasConversion<StyleNameConverter, StyleNameComparer>()
             .HasColumnName("name")
             .HasColumnType(ColumnType.VarChar(StyleName.MaxLength))
             .IsRequired();
-            
+
         builder.Property(style => style.Type)
             .HasConversion<StyleTypeConverter, StyleTypeComparer>()
             .HasColumnName("type")
             .HasColumnType(ColumnType.VarChar(StyleType.MaxLength))
             .IsRequired();
-            
+
         builder.Property(style => style.Description)
             .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
             .HasColumnType(ColumnType.VarChar(Description.MaxLength));
-            
+
         builder.Property(style => style.Tags)
             .HasConversion<TagListConverter, TagListComparer>()
             .HasColumnName("tags")
