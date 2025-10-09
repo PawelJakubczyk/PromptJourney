@@ -32,11 +32,11 @@ public static class AddPromptToHistory
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(promptHistory)
-                .Validate(pipeline => pipeline
-                    .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                    .IfVersionNotInSuportedVersions(version.Value, _versionRepository, cancellationToken))
-                .ExecuteIfNoErrors(() => _promptHistoryRepository.AddPromptToHistoryAsync(promptHistory.Value, cancellationToken))
-                .MapResult(PromptHistoryResponse.FromDomain);
+                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .ExecuteIfNoErrors(() => _promptHistoryRepository
+                    .AddPromptToHistoryAsync(promptHistory.Value, cancellationToken))
+                .MapResult<MidjourneyPromptHistory, PromptHistoryResponse>
+                    (history => PromptHistoryResponse.FromDomain(history));
 
             return result;
         }

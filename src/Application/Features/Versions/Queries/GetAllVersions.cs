@@ -1,11 +1,11 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
-using Application.Features.VersionsMaster.Responses;
+using Application.Features.Versions.Responses;
+using Domain.Entities;
 using FluentResults;
 using Utilities.Workflows;
 
-namespace Application.Features.VersionsMaster.Queries;
+namespace Application.Features.Versions.Queries;
 
 public static class GetAllVersions
 {
@@ -19,8 +19,10 @@ public static class GetAllVersions
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .ExecuteIfNoErrors(() => _versionRepository.GetAllVersionsAsync(cancellationToken))
-                .MapResult(versions => versions.Select(VersionResponse.FromDomain).ToList());
+                .ExecuteIfNoErrors(() => _versionRepository
+                    .GetAllVersionsAsync(cancellationToken))
+                .MapResult<List<MidjourneyVersion>, List<VersionResponse>>
+                    (versions => [.. versions.Select(VersionResponse.FromDomain)]);
 
             return result;
         }

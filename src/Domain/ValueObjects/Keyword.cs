@@ -19,7 +19,7 @@ public record Keyword : ValueObject<string?>, ICreatable<Keyword, string?>
             .IfNullOrWhitespace<DomainLayer, Keyword>(value)
             .IfLengthTooLong<DomainLayer, Keyword>(value, MaxLength)
             .ExecuteIfNoErrors<Keyword>(() => new Keyword(value!))
-            .MapResult(k => k);
+            .MapResult<Keyword>();
 
         return result;
     }

@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -25,9 +24,9 @@ public class CheckTagExistInStyle
                 .Validate(pipeline => pipeline
                     .CollectErrors(styleName)
                     .CollectErrors(tag))
-                .ExecuteIfNoErrors(() => _styleRepository.CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
-                    .MapResult(value => value);
-
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                .MapResult<bool>();
 
             return result;
         }

@@ -1,7 +1,6 @@
-﻿using Application.Features.VersionsMaster.Responses;
+﻿using Application.Features.Versions.Responses;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using System.Net;
 using System.Net.Http.Json;
 

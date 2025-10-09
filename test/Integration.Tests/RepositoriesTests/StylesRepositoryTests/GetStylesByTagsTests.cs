@@ -11,6 +11,7 @@ public sealed class GetStylesByTagsTests : RepositoryTestsBase
 
     // Test Constants
     private const string TestTag1 = "modern";
+
     private const string TestTag2 = "abstract";
     private const string TestTag3 = "colorful";
 

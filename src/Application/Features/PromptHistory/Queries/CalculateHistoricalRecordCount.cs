@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using FluentResults;
 using Utilities.Workflows;
 
@@ -21,11 +20,11 @@ public static class CalculateHistoricalRecordCount
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .ExecuteIfNoErrors(() => _promptHistoryRepository.CalculateHistoricalRecordCountAsync(cancellationToken))
-                .MapResult(count => count);
+                .ExecuteIfNoErrors(() => _promptHistoryRepository
+                    .CalculateHistoricalRecordCountAsync(cancellationToken))
+                .MapResult<int>();
 
             return result;
         }
-
     }
 }

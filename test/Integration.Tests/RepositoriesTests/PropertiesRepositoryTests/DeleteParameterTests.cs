@@ -21,14 +21,14 @@ public class DeleteParameterTests : RepositoryTestsBase
         var propertyName = PropertyName.Create(DefaultTestPropertyName1).Value;
 
         // Act
-        var result = await PropertiesRepository.DeleteParameterInVersionAsync(version, propertyName, CancellationToken);
+        var result = await PropertiesRepository.DeletePropertyAsync(version, propertyName, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
         result.Value.PropertyName.Value.Should().Be(DefaultTestPropertyName1);
 
         // Verify it's been deleted
-        var checkResult = await PropertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, CancellationToken);
+        var checkResult = await PropertiesRepository.CheckPropertyExistsInVersionAsync(version, propertyName, CancellationToken);
         checkResult.Value.Should().BeFalse();
     }
 
@@ -42,7 +42,7 @@ public class DeleteParameterTests : RepositoryTestsBase
         var propertyName = PropertyName.Create("NonExistent").Value;
 
         // Act
-        var result = await PropertiesRepository.DeleteParameterInVersionAsync(version, propertyName, CancellationToken);
+        var result = await PropertiesRepository.DeletePropertyAsync(version, propertyName, CancellationToken);
 
         // Assert
         AssertFailureResult(result);
@@ -60,13 +60,13 @@ public class DeleteParameterTests : RepositoryTestsBase
         var propertyName = PropertyName.Create(DefaultTestPropertyName1).Value;
 
         // Act
-        var deleteResult = await PropertiesRepository.DeleteParameterInVersionAsync(version, propertyName, CancellationToken);
+        var deleteResult = await PropertiesRepository.DeletePropertyAsync(version, propertyName, CancellationToken);
 
         // Assert
         AssertSuccessResult(deleteResult);
 
         // Verify it doesn't exist anymore
-        var allProperties = await PropertiesRepository.GetAllParametersByVersionAsync(version, CancellationToken);
+        var allProperties = await PropertiesRepository.GetAllPropertiesByVersionAsync(version, CancellationToken);
         allProperties.Value.Should().HaveCount(1);
         allProperties.Value.Should().NotContain(p => p.PropertyName.Value == DefaultTestPropertyName1);
         allProperties.Value.Should().Contain(p => p.PropertyName.Value == DefaultTestPropertyName2);

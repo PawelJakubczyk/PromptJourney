@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -22,12 +21,11 @@ public static class CheckStyleExist
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .ExecuteIfNoErrors(() => _styleRepository.CheckStyleExistsAsync(styleName.Value, cancellationToken))
-                .MapResult(value => value);
-
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .CheckStyleExistsAsync(styleName.Value, cancellationToken))
+                .MapResult<bool>();
 
             return result;
         }
-
     }
 }

@@ -1,11 +1,9 @@
-﻿using FluentResults;
+﻿using Application.Features.ExampleLinks.Responses;
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Application.Features.ExampleLinks.Responses;
 using Utilities.Constants;
-using FluentAssertions;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinks;
 

@@ -19,7 +19,7 @@ public record Prompt : ValueObject<string?>, ICreatable<Prompt, string?>
             .IfNullOrWhitespace<DomainLayer, Prompt>(value)
             .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength)
             .ExecuteIfNoErrors<Prompt>(() => new Prompt(value))
-            .MapResult(p => p);
+            .MapResult<Prompt>();
 
         return result;
     }

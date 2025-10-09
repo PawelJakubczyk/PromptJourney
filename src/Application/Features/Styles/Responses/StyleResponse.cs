@@ -12,8 +12,8 @@ public sealed record StyleResponse
 {
     public static StyleResponse FromDomain(MidjourneyStyle style) =>
     new(
-        style.StyleName.Value, 
-        style.Type.Value, 
+        style.StyleName.Value,
+        style.Type.Value,
         style.Description?.Value,
         style.Tags?.Select(t => t.Value).ToList()
     );

@@ -15,7 +15,7 @@ public abstract class BaseTransactionIntegrationTest : IDisposable
     {
         Fixture = fixture;
         DbContext = fixture.CreateDbContext();
-        
+
         // Start a transaction that will be rolled back after each test
         _transaction = DbContext.Database.BeginTransaction();
     }
@@ -29,10 +29,10 @@ public abstract class BaseTransactionIntegrationTest : IDisposable
                 // Rollback transaction instead of cleaning database
                 _transaction.Rollback();
                 _transaction.Dispose();
-                
+
                 // Clear change tracker
                 DbContext.ChangeTracker.Clear();
-                
+
                 // Dispose the context
                 DbContext.Dispose();
             }

@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.PromptHistory.Responses;
+using Domain.Entities;
 using FluentResults;
 using Utilities.Workflows;
 
@@ -25,8 +26,10 @@ public static class GetLastHistoryRecords
                 .Validate(pipeline => pipeline
                     .IfHistoryLimitNotGreaterThanZero(query.Count)
                     .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
-                .ExecuteIfNoErrors(() => _promptHistoryRepository.GetLastHistoryRecordsAsync(query.Count, cancellationToken))
-                .MapResult(domainList => domainList.Select(PromptHistoryResponse.FromDomain).ToList());
+                .ExecuteIfNoErrors(() => _promptHistoryRepository
+                    .GetLastHistoryRecordsAsync(query.Count, cancellationToken))
+                .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>
+                    (promptHistoryList => [.. promptHistoryList.Select(PromptHistoryResponse.FromDomain)]);
 
             return result;
         }

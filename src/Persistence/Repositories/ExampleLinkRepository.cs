@@ -24,7 +24,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .Include(l => l.Style)
-                .Include(l => l.VersionMaster)
+                .Include(l => l.Version)
                 .ToListAsync(cancellationToken);
         }, "Failed to get all example links", StatusCodes.Status500InternalServerError);
     }
@@ -35,7 +35,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .Include(l => l.Style)
-                .Include(l => l.VersionMaster)
+                .Include(l => l.Version)
                 .Where(l => l.StyleName == styleName)
                 .ToListAsync(cancellationToken);
         }, "Failed to get example links by style", StatusCodes.Status500InternalServerError);
@@ -50,7 +50,7 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .Include(l => l.Style)
-                .Include(l => l.VersionMaster)
+                .Include(l => l.Version)
                 .Where(l => l.StyleName == styleName && l.Version == version)
                 .ToListAsync(cancellationToken);
         }, "Failed to get example links by style and version", StatusCodes.Status500InternalServerError);

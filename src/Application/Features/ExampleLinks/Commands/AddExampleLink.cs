@@ -43,10 +43,10 @@ public static class AddExampleLink
                     .Validate(pipeline => pipeline
                         .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
                         .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                        .IfVersionNotInSuportedVersions(version.Value, _versionRepository, cancellationToken)
                         .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
-                    .ExecuteIfNoErrors(() => _exampleLinkRepository.AddExampleLinkAsync(linkResult.Value, cancellationToken))
-                    .MapResult(_ => new ExampleLinkResponse(command.Link, command.StyleName, command.Version));
+                    .ExecuteIfNoErrors(() => _exampleLinkRepository
+                        .AddExampleLinkAsync(linkResult.Value, cancellationToken))
+                    .MapResult(() => new ExampleLinkResponse(command.Link, command.StyleName, command.Version));
 
             return result;
         }

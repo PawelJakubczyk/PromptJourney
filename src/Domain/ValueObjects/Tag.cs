@@ -19,7 +19,7 @@ public record Tag : ValueObject<string?>, ICreatable<Tag, string?>
             .IfNullOrWhitespace<DomainLayer, Tag>(value)
             .IfLengthTooLong<DomainLayer, Tag>(value, MaxLength)
             .ExecuteIfNoErrors<Tag>(() => new Tag(value))
-            .MapResult(t => t);
+            .MapResult<Tag>();
 
         return result;
     }

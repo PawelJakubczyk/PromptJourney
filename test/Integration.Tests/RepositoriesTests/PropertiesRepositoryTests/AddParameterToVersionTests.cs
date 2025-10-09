@@ -10,6 +10,7 @@ public class AddParameterToVersionTests : RepositoryTestsBase
 
     // Test Constants
     private const string TestPropertyName1 = "aspect";
+
     private const string TestParam1 = "--ar";
     private const string TestDefaultValue1 = "1:1";
     private const string TestDescription1 = "Aspect ratio parameter";
@@ -31,7 +32,7 @@ public class AddParameterToVersionTests : RepositoryTestsBase
             TestDescription1);
 
         // Act
-        var result = await PropertiesRepository.AddParameterToVersionAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -53,7 +54,7 @@ public class AddParameterToVersionTests : RepositoryTestsBase
             [TestParam1]);
 
         // Act
-        var result = await PropertiesRepository.AddParameterToVersionAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -81,7 +82,7 @@ public class AddParameterToVersionTests : RepositoryTestsBase
             TestDescription1);
 
         // Act
-        var result = await PropertiesRepository.AddParameterToVersionAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);

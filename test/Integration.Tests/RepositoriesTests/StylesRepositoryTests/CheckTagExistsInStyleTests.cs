@@ -11,6 +11,7 @@ public sealed class CheckTagExistsInStyleTests : RepositoryTestsBase
 
     // Test Constants
     private const string TestTag1 = "modern";
+
     private const string TestTag2 = "abstract";
 
     [Fact]

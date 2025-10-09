@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Styles.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -27,8 +28,10 @@ public static class UpdateDescriptionInStyle
                     .CollectErrors(styleName)
                     .CollectErrors(description))
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
-                .MapResult(StyleResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
+                .MapResult<MidjourneyStyle, StyleResponse>
+                    (style => StyleResponse.FromDomain(style));
 
             return result;
         }

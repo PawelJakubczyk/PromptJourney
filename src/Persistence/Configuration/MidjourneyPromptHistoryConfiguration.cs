@@ -41,14 +41,19 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
             .IsRequired();
 
         builder
-            .HasOne(history => history.VersionMaster)
-            .WithMany(master => master.Histories)
+            .HasOne(history => history.MidjourneyVersion)
+            .WithMany(version => version.Histories)
             .HasForeignKey(history => history.Version)
-            .HasPrincipalKey(master => master.Version)
+            .HasPrincipalKey(version => version.Version)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasMany(history => history.MidjourneyStyles)
             .WithMany(style => style.MidjourneyPromptHistories);
+
+        // Indexes for performance
+        builder
+            .HasIndex(history => history.Prompt)
+            .HasDatabaseName("IX_midjourney_prompt_history_prompt");
     }
 }

@@ -17,7 +17,7 @@ public sealed class CheckVersionExistsInVersionsTests : RepositoryTestsBase
         var version = ModelVersion.Create(DefaultTestVersion1).Value;
 
         // Act
-        var result = await VersionsRepository.CheckVersionExistsInVersionsAsync(version, CancellationToken);
+        var result = await VersionsRepository.CheckVersionExists(version, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -31,7 +31,7 @@ public sealed class CheckVersionExistsInVersionsTests : RepositoryTestsBase
         var version = ModelVersion.Create("99.0").Value;
 
         // Act
-        var result = await VersionsRepository.CheckVersionExistsInVersionsAsync(version, CancellationToken);
+        var result = await VersionsRepository.CheckVersionExists(version, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -45,7 +45,7 @@ public sealed class CheckVersionExistsInVersionsTests : RepositoryTestsBase
         var version = ModelVersion.Create(DefaultTestVersion1).Value;
 
         // Act
-        var result = await VersionsRepository.CheckVersionExistsInVersionsAsync(version, CancellationToken);
+        var result = await VersionsRepository.CheckVersionExists(version, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -63,11 +63,11 @@ public sealed class CheckVersionExistsInVersionsTests : RepositoryTestsBase
         var nonExistingVersion = ModelVersion.Create(DefaultTestVersion3).Value;
 
         // Act & Assert
-        var existingResult = await VersionsRepository.CheckVersionExistsInVersionsAsync(existingVersion, CancellationToken);
+        var existingResult = await VersionsRepository.CheckVersionExists(existingVersion, CancellationToken);
         AssertSuccessResult(existingResult);
         existingResult.Value.Should().BeTrue();
 
-        var nonExistingResult = await VersionsRepository.CheckVersionExistsInVersionsAsync(nonExistingVersion, CancellationToken);
+        var nonExistingResult = await VersionsRepository.CheckVersionExists(nonExistingVersion, CancellationToken);
         AssertSuccessResult(nonExistingResult);
         nonExistingResult.Value.Should().BeFalse();
     }
@@ -82,11 +82,11 @@ public sealed class CheckVersionExistsInVersionsTests : RepositoryTestsBase
         var differentVersion = ModelVersion.Create("5.3").Value;
 
         // Act & Assert
-        var exactResult = await VersionsRepository.CheckVersionExistsInVersionsAsync(exactVersion, CancellationToken);
+        var exactResult = await VersionsRepository.CheckVersionExists(exactVersion, CancellationToken);
         AssertSuccessResult(exactResult);
         exactResult.Value.Should().BeTrue();
 
-        var differentResult = await VersionsRepository.CheckVersionExistsInVersionsAsync(differentVersion, CancellationToken);
+        var differentResult = await VersionsRepository.CheckVersionExists(differentVersion, CancellationToken);
         AssertSuccessResult(differentResult);
         differentResult.Value.Should().BeFalse();
     }

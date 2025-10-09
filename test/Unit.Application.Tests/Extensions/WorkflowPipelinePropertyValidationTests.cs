@@ -19,7 +19,7 @@ public class WorkflowPipelinePropertyValidationTests
         var version = ModelVersion.Create("1").Value;
 
         var repo = new Mock<IPropertiesRepository>();
-        repo.Setup(r => r.CheckParameterExistsInVersionAsync(version, property, _cancellationToken)).ReturnsAsync(Result.Ok(true));
+        repo.Setup(r => r.CheckPropertyExistsInVersionAsync(version, property, _cancellationToken)).ReturnsAsync(Result.Ok(true));
 
         var result = await pipelineTask.IfPropertyAlreadyExists(property, version, repo.Object, _cancellationToken);
 
@@ -34,7 +34,7 @@ public class WorkflowPipelinePropertyValidationTests
         var version = ModelVersion.Create("2").Value;
 
         var repo = new Mock<IPropertiesRepository>();
-        repo.Setup(r => r.CheckParameterExistsInVersionAsync(version, property, _cancellationToken)).ReturnsAsync(Result.Ok(false));
+        repo.Setup(r => r.CheckPropertyExistsInVersionAsync(version, property, _cancellationToken)).ReturnsAsync(Result.Ok(false));
 
         var result = await pipelineTask.IfPropertyNotExists(property, version, repo.Object, _cancellationToken);
 

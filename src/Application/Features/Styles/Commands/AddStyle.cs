@@ -42,12 +42,12 @@ public static class AddStyle
                 .EmptyAsync()
                 .CollectErrors(style)
                 .IfStyleAlreadyExists(styleName.Value, _styleRepository, cancellationToken)
-                    .ExecuteIfNoErrors(() => _styleRepository.AddStyleAsync(style.Value, cancellationToken))
-                        .MapResult(StyleResponse.FromDomain);
-
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .AddStyleAsync(style.Value, cancellationToken))
+                .MapResult<MidjourneyStyle, StyleResponse>
+                    (style => StyleResponse.FromDomain(style));
 
             return result;
         }
-
     }
 }

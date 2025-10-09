@@ -1,6 +1,5 @@
 ﻿using Domain.ValueObjects;
 using FluentAssertions;
-using FluentResults;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
@@ -12,6 +11,7 @@ public sealed class AddTagToStyleTests : RepositoryTestsBase
 
     // Test Constants
     private const string TestTag1 = "modern";
+
     private const string TestTag2 = "abstract";
 
     [Fact]

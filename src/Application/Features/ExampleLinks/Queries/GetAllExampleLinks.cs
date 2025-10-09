@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
+using Domain.Entities;
 using FluentResults;
 using Utilities.Workflows;
 
@@ -20,13 +20,10 @@ public static class GetAllExampleLinks
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetAllExampleLinksAsync(cancellationToken))
-                .MapResult
-                (
-                    domainList => domainList
-                    .Select(ExampleLinkResponse.FromDomain)
-                    .ToList()
-                );
+                .ExecuteIfNoErrors(() => _exampleLinksRepository
+                    .GetAllExampleLinksAsync(cancellationToken))
+                .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>
+                    (linksList => [.. linksList.Select(ExampleLinkResponse.FromDomain)]);
 
             return result;
         }

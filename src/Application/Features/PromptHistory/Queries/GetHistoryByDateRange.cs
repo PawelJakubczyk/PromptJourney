@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.PromptHistory.Responses;
+using Domain.Entities;
 using FluentResults;
 using Utilities.Workflows;
 
@@ -26,16 +27,12 @@ public static class GetHistoryByDateRange
                     .IfDateInFuture(query.From)
                     .IfDateInFuture(query.To)
                     .IfDateRangeNotChronological(query.From, query.To))
-                .ExecuteIfNoErrors(() => _promptHistoryRepository.GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
-                .MapResult
-                (
-                    domainList => domainList
-                    .Select(PromptHistoryResponse.FromDomain)
-                    .ToList()
-                );
+                .ExecuteIfNoErrors(() => _promptHistoryRepository
+                    .GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
+                .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>
+                    (promptHistoryList => [.. promptHistoryList.Select(PromptHistoryResponse.FromDomain)]);
 
             return result;
         }
-
     }
 }

@@ -19,7 +19,7 @@ public record Param : ValueObject<string?>, ICreatable<Param, string?>
             .IfNullOrWhitespace<DomainLayer, Param>(value)
             .IfLengthTooLong<DomainLayer, Param>(value, MaxLength)
             .ExecuteIfNoErrors<Param>(() => new Param(value))
-            .MapResult(p => p);
+            .MapResult<Param>();
 
         return result;
     }

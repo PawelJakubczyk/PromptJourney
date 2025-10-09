@@ -1,9 +1,12 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Application.Features.Styles.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
+using Utilities.Constants;
+using Utilities.Extensions;
 using Utilities.Workflows;
 
 namespace Application.Features.Styles.Queries;
@@ -24,11 +27,41 @@ public static class GetStylesByTags
                 .EmptyAsync()
                 .IfListIsNullOrEmpty(query.Tags)
                 .CollectErrors(tags!)
-                .ExecuteIfNoErrors(() => _styleRepository.GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
-                .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
+                .MapResult<List<MidjourneyStyle>, List<StyleResponse>>
+                    (styleList => [.. styleList.Select(StyleResponse.FromDomain)]);
 
             return result;
         }
     }
 
+}
+
+file static class CollectionValidationExtensions
+{
+    public static async Task<WorkflowPipeline> IfListIsNullOrEmpty<TValue>(
+    this Task<WorkflowPipeline> pipelineTask,
+    List<TValue>? items)
+    {
+        var pipeline = await pipelineTask;
+        var errors = pipeline.Errors;
+
+        if (pipeline.BreakOnError && errors.Count != 0)
+            return pipeline;
+
+        if (items is null || items.Count == 0)
+        {
+            var name = typeof(TValue).Name;
+            errors.Add
+            (
+            ErrorFactory.Create()
+                .Withlayer(typeof(ApplicationLayer))
+                .WithMessage($"List of '{name}' must not be empty.")
+                .WithErrorCode(StatusCodes.Status400BadRequest)
+            );
+        }
+
+        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
+    }
 }

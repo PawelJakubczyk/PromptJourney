@@ -14,6 +14,7 @@ public static partial class PersistenceConstants
         internal static string Bytea = nameof(Bytea);
 
         internal static string TimestampWithTimeZone() => "timestamp with time zone";
+
         internal static string VarChar(int length) => $"varchar({length})";
     }
 }

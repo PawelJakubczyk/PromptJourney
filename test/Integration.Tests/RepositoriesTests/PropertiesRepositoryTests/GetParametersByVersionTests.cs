@@ -5,7 +5,6 @@ namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
 public class GetParametersByVersionTests : RepositoryTestsBase
 {
-
     public GetParametersByVersionTests(MidjourneyDbFixture fixture) : base(fixture)
     {
     }
@@ -22,7 +21,7 @@ public class GetParametersByVersionTests : RepositoryTestsBase
         var version = ModelVersion.Create(DefaultTestVersion1).Value;
 
         // Act
-        var result = await PropertiesRepository.GetAllParametersByVersionAsync(version, CancellationToken);
+        var result = await PropertiesRepository.GetAllPropertiesByVersionAsync(version, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -39,7 +38,7 @@ public class GetParametersByVersionTests : RepositoryTestsBase
         var version = ModelVersion.Create("99.0").Value;
 
         // Act
-        var result = await PropertiesRepository.GetAllParametersByVersionAsync(version, CancellationToken);
+        var result = await PropertiesRepository.GetAllPropertiesByVersionAsync(version, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -60,8 +59,8 @@ public class GetParametersByVersionTests : RepositoryTestsBase
         var version2 = ModelVersion.Create(DefaultTestVersion2).Value;
 
         // Act
-        var result1 = await PropertiesRepository.GetAllParametersByVersionAsync(version1, CancellationToken);
-        var result2 = await PropertiesRepository.GetAllParametersByVersionAsync(version2, CancellationToken);
+        var result1 = await PropertiesRepository.GetAllPropertiesByVersionAsync(version1, CancellationToken);
+        var result2 = await PropertiesRepository.GetAllPropertiesByVersionAsync(version2, CancellationToken);
 
         // Assert
         result1.Value.Should().HaveCount(2);

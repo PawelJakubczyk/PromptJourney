@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Application.Features.PromptHistory.Responses;
+using Domain.Entities;
 using FluentResults;
 using Utilities.Workflows;
 
@@ -22,16 +22,12 @@ public static class GetAllHistoryRecords
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .ExecuteIfNoErrors(() => _promptHistoryRepository.GetAllHistoryRecordsAsync(cancellationToken))
-                .MapResult
-                (
-                    domainList => domainList
-                    .Select(PromptHistoryResponse.FromDomain)
-                    .ToList()
-                );
+                .ExecuteIfNoErrors(() => _promptHistoryRepository
+                    .GetAllHistoryRecordsAsync(cancellationToken))
+                .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>
+                    (promptHistoryList => [.. promptHistoryList.Select(PromptHistoryResponse.FromDomain)]);
 
             return result;
         }
-
     }
 }

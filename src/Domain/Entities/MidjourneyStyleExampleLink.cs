@@ -1,8 +1,6 @@
 using Domain.Abstractions;
-using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
-using Utilities.Constants;
 using Utilities.Workflows;
 
 namespace Domain.Entities;
@@ -57,7 +55,7 @@ public class MidjourneyStyleExampleLink : IEntitie
 
                 return exampleLink;
             })
-            .MapResult(link => link);
+            .MapResult<MidjourneyStyleExampleLink>();
 
         return result;
     }

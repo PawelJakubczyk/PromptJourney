@@ -19,7 +19,7 @@ public class MidjourneyProperties : IEntitie
     public Description? Description { get; set; }
 
     // Navigation
-    public MidjourneyVersion VersionMaster { get; set; }
+    public MidjourneyVersion MidjourneyVersion { get; set; }
 
     // Constructors
     protected MidjourneyProperties()
@@ -85,8 +85,19 @@ public class MidjourneyProperties : IEntitie
 
             return Result.Ok(versionBase);
         })
-        .MapResult(properties => properties);
+        .MapResult<MidjourneyProperties>();
 
     return result;
+    }
+
+    public Result<Description> EditDescription(Result<Description?> description)
+    {
+        var result = WorkflowPipeline
+            .Empty()
+            .CollectErrors(description)
+            .ExecuteIfNoErrors<Description>(() => description.Value)
+            .MapResult<Description>();
+
+        return result;
     }
 }

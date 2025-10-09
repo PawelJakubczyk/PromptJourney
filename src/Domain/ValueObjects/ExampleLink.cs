@@ -23,7 +23,7 @@ public record ExampleLink : ValueObject<string?>, ICreatable<ExampleLink, string
                 .IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength)
                 .IfLinkFormatInvalid<DomainLayer>(value))
             .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value))
-            .MapResult(link => link);
+            .MapResult<ExampleLink>();
 
         return result;
     }

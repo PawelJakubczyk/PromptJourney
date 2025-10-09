@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -29,17 +30,12 @@ public static class GetExampleLinksByStyle
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName?.Value!, _styleRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
-                .MapResult
-                (
-                    domainList => domainList
-                    .Select(ExampleLinkResponse.FromDomain)
-                    .ToList()
-                );
-
+                .ExecuteIfNoErrors(() => _exampleLinksRepository
+                    .GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>
+                    (linksList => [.. linksList.Select(ExampleLinkResponse.FromDomain)]);
 
             return result;
         }
-
     }
 }

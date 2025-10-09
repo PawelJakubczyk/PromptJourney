@@ -1,6 +1,5 @@
 using Application.Registrations;
 using Persistence.Registrations;
-using Application.Registrations;
 
 try
 {
@@ -35,7 +34,7 @@ try
         //.UseHttpsRedirection()
         //.UseApplicationLayer()
         .UsePresentationLayer();
-        //.UsePersistenceLayer();
+    //.UsePersistenceLayer();
 
     webApplication.MapControllers();
 

@@ -19,7 +19,7 @@ public record DefaultValue : ValueObject<string?>, ICreatable<DefaultValue, stri
             .IfWhitespace<DomainLayer, DefaultValue>(value)
             .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength)
             .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
-            .MapResult(defaultValue => defaultValue);
+            .MapResult<DefaultValue>();
 
         return result;
     }

@@ -38,5 +38,4 @@ public class WorkflowPipelineStyleValidationTests
 
         Assert.Contains(result.Errors, e => e.Message.Contains("Style 'MissingStyle' not found"));
     }
-
 }

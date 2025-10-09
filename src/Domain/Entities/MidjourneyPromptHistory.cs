@@ -1,5 +1,4 @@
 ﻿using Domain.Abstractions;
-using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -15,7 +14,7 @@ public class MidjourneyPromptHistory: IEntitie
     public DateTime CreatedOn { get; }
 
     // Navigation
-    public MidjourneyVersion VersionMaster { get; set; }
+    public MidjourneyVersion MidjourneyVersion { get; set; }
     public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
 
     // Constructors
@@ -59,7 +58,7 @@ public class MidjourneyPromptHistory: IEntitie
                 version.Value,
                 createdOn
             ))
-            .MapResult(history => history);
+            .MapResult<MidjourneyPromptHistory, MidjourneyPromptHistory>(history => history);
 
         return result;
     }

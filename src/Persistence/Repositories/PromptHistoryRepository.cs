@@ -22,9 +22,9 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyPromptHistory
-                .Include(h => h.VersionMaster)
-                .Include(h => h.MidjourneyStyles)
-                .OrderByDescending(h => h.CreatedOn)
+                .Include(history => history.MidjourneyVersion)
+                .Include(history => history.MidjourneyStyles)
+                .OrderByDescending(history => history.CreatedOn)
                 .ToListAsync(cancellationToken);
         }, "Failed to get all history records", StatusCodes.Status500InternalServerError);
     }
@@ -34,10 +34,10 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyPromptHistory
-                .Include(h => h.VersionMaster)
-                .Include(h => h.MidjourneyStyles)
-                .Where(h => h.CreatedOn >= dateFrom && h.CreatedOn <= dateTo)
-                .OrderByDescending(h => h.CreatedOn)
+                .Include(history => history.MidjourneyVersion)
+                .Include(history => history.MidjourneyStyles)
+                .Where(history => history.CreatedOn >= dateFrom && history.CreatedOn <= dateTo)
+                .OrderByDescending(history => history.CreatedOn)
                 .ToListAsync(cancellationToken);
         }, "Failed to get history by date range", StatusCodes.Status500InternalServerError);
     }
@@ -49,10 +49,10 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
             var pattern = keyword.ToString();
 
             return await _midjourneyDbContext.MidjourneyPromptHistory
-                .Include(h => h.VersionMaster)
-                .Include(h => h.MidjourneyStyles)
-                .Where(h => EF.Functions.Like(h.Prompt.Value, pattern))
-                .OrderByDescending(h => h.CreatedOn)
+                .Include(history => history.MidjourneyVersion)
+                .Include(history => history.MidjourneyStyles)
+                .Where(history => EF.Functions.Like(history.Prompt.Value, pattern))
+                .OrderByDescending(history => history.CreatedOn)
                 .ToListAsync(cancellationToken);
         }, "Failed to get history records by prompt keyword", StatusCodes.Status500InternalServerError);
     }
@@ -62,9 +62,9 @@ public sealed class PromptHistoryRepository : IPromptHistoryRepository
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyPromptHistory
-                .Include(h => h.VersionMaster)
-                .Include(h => h.MidjourneyStyles)
-                .OrderByDescending(h => h.CreatedOn)
+                .Include(history => history.MidjourneyVersion)
+                .Include(history => history.MidjourneyStyles)
+                .OrderByDescending(history => history.CreatedOn)
                 .Take(records)
                 .ToListAsync(cancellationToken);
         }, "Failed to get last history records", StatusCodes.Status500InternalServerError);

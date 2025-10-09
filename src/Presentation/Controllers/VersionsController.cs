@@ -1,6 +1,6 @@
-﻿using Application.Features.VersionsMaster.Commands;
-using Application.Features.VersionsMaster.Queries;
-using Application.Features.VersionsMaster.Responses;
+﻿using Application.Features.Versions.Commands;
+using Application.Features.Versions.Queries;
+using Application.Features.Versions.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +47,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
     public async Task<IActionResult> GetByVersion(string version, CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(new GetVersionByVersion.Query(version), cancellationToken)
+            .Send(new GetVersion.Query(version), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();

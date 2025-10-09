@@ -1,13 +1,15 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
-using Application.Features.VersionsMaster.Responses;
+using Application.Extensions;
+using Application.Features.Versions.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Workflows;
 
-namespace Application.Features.VersionsMaster.Commands;
+namespace Application.Features.Versions.Commands;
 
 public static class AddVersion
 {
@@ -19,9 +21,10 @@ public static class AddVersion
         string? Description = null
     ) : ICommand<VersionResponse>;
 
-    public sealed class Handler(IVersionRepository versionRepository) : ICommandHandler<Command, VersionResponse>
+    public sealed class Handler(IVersionRepository versionRepository, HybridCache cache) : ICommandHandler<Command, VersionResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
+        private readonly HybridCache _cache = cache;
 
         public async Task<Result<VersionResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
@@ -41,9 +44,10 @@ public static class AddVersion
                 .EmptyAsync()
                 .CollectErrors(midjourneyVersion)
                 .IfVersionAlreadyExists(version.Value, _versionRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _versionRepository.AddVersionAsync(midjourneyVersion.Value, cancellationToken))
-                .MapResult(VersionResponse.FromDomain);
-
+                .ExecuteIfNoErrors(() => _versionRepository
+                    .AddVersionAsync(midjourneyVersion.Value, cancellationToken))
+                .MapResult<MidjourneyVersion, VersionResponse>
+                    (version => VersionResponse.FromDomain(version));
 
             return result;
         }

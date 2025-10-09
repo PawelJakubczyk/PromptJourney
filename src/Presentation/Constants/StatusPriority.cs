@@ -76,5 +76,4 @@ public static class StatusPriority
         [StatusCodes.Status508LoopDetected] = 1,
         [StatusCodes.Status511NetworkAuthenticationRequired] = 1
     };
-
 }

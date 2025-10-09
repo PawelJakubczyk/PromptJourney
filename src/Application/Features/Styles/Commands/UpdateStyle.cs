@@ -32,14 +32,14 @@ public static class UpdateStyle
 
             var midjourneyStyle = MidjourneyStyle.Create(styleName, type, description!, tags);
 
-
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(midjourneyStyle)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _styleRepository.UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
-                .MapResult(StyleResponse.FromDomain);
-
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
+                .MapResult<MidjourneyStyle, StyleResponse>
+                    (style => StyleResponse.FromDomain(style));
 
             return result;
         }

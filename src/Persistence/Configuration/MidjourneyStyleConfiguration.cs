@@ -47,5 +47,13 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
         builder
             .HasMany(style => style.MidjourneyPromptHistories)
             .WithMany(history => history.MidjourneyStyles);
+
+        // Indexes for performance
+        builder
+            .HasIndex(p => p.Type)
+            .HasDatabaseName("IX_midjourney_styles_type");
+        builder
+            .HasIndex(p => p.Tags)
+            .HasDatabaseName("IX_midjourney_styles_tags");
     }
 }

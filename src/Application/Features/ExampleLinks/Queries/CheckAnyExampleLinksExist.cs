@@ -18,8 +18,9 @@ public static class CheckAnyExampleLinksExist
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .ExecuteIfNoErrors(() => _exampleLinksRepository.CheckAnyExampleLinksExistAsync(cancellationToken))
-                .MapResult(_ => true);
+                .ExecuteIfNoErrors(() => _exampleLinksRepository
+                    .CheckAnyExampleLinksExistAsync(cancellationToken))
+                .MapResult(() => true);
 
             return result;
         }

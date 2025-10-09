@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Common.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -28,19 +29,18 @@ public static class DeleteStyle
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteIfNoErrors
-                (
-                    async () =>
-                    {
-                        await _exampleLinksRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken);
-                        return await _styleRepository.DeleteStyleAsync(styleName.Value, cancellationToken);
-                    }
-                )
-                .MapResult(_ => DeleteResponse.Success($"Style '{styleName.Value.Value}' was successfully deleted."));
-
+                .ExecuteIfNoErrors(() => _exampleLinksRepository
+                    .DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .DeleteStyleAsync(styleName.Value, cancellationToken))
+                .MapResult(() => DeleteResponse.Success($"Style '{styleName.Value.Value}' was successfully deleted."));
 
             return result;
         }
-
     }
+}
+
+internal static class DeleteStyleExtensions
+{
+    internal record DeleteResults(int? DeletedCount = null, MidjourneyStyle? Style = null);
 }

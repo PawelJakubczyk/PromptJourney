@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Application.Features.VersionsMaster.Responses;
+namespace Application.Features.Versions.Responses;
 
 public sealed record VersionResponse
 (

@@ -22,578 +22,6 @@ namespace Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion1", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_1", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion2", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_2", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion3", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_3", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion4", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_4", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion5", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_5", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion51", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_5_1", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion52", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_5_2", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion6", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_6", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion61", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_6_1", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion7", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_7", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji4", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_niji_4", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji5", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_niji_5", "public");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji6", b =>
-                {
-                    b.Property<string>("PropertyName")
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("property_name");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("default_value");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("Text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("MaxValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("max_value");
-
-                    b.Property<string>("MidjourneyVersionVersion")
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("MinValue")
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("min_value");
-
-                    b.Property<string[]>("Parameters")
-                        .IsRequired()
-                        .HasColumnType("Text[]")
-                        .HasColumnName("parameters");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("version");
-
-                    b.HasKey("PropertyName");
-
-                    b.HasIndex("MidjourneyVersionVersion");
-
-                    b.HasIndex("Version");
-
-                    b.ToTable("properties_version_niji_6", "public");
-                });
-
             modelBuilder.Entity("Domain.Entities.MidjourneyPromptHistory", b =>
                 {
                     b.Property<Guid>("HistoryId")
@@ -619,9 +47,54 @@ namespace Persistence.Migrations
 
                     b.HasKey("HistoryId");
 
+                    b.HasIndex("Prompt")
+                        .HasDatabaseName("IX_midjourney_prompt_history_prompt");
+
                     b.HasIndex("Version");
 
                     b.ToTable("midjourney_prompt_history", "public");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyProperties", b =>
+                {
+                    b.Property<string>("PropertyName")
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("property_name");
+
+                    b.Property<string>("Version")
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("version");
+
+                    b.Property<string>("DefaultValue")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("default_value");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("Text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("MaxValue")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("max_value");
+
+                    b.Property<string>("MinValue")
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("min_value");
+
+                    b.Property<string[]>("Parameters")
+                        .IsRequired()
+                        .HasColumnType("Text[]")
+                        .HasColumnName("parameters");
+
+                    b.HasKey("PropertyName", "Version");
+
+                    b.HasIndex("PropertyName")
+                        .HasDatabaseName("IX_midjourney_properties_property_name");
+
+                    b.HasIndex("Version")
+                        .HasDatabaseName("IX_midjourney_properties_version");
+
+                    b.ToTable("midjourney_properties", "public");
                 });
 
             modelBuilder.Entity("Domain.Entities.MidjourneyStyle", b =>
@@ -645,6 +118,12 @@ namespace Persistence.Migrations
 
                     b.HasKey("StyleName");
 
+                    b.HasIndex("Tags")
+                        .HasDatabaseName("IX_midjourney_styles_tags");
+
+                    b.HasIndex("Type")
+                        .HasDatabaseName("IX_midjourney_styles_type");
+
                     b.ToTable("midjourney_styles", "public");
                 });
 
@@ -664,7 +143,8 @@ namespace Persistence.Migrations
 
                     b.HasKey("Link", "StyleName", "Version");
 
-                    b.HasIndex("StyleName");
+                    b.HasIndex("StyleName")
+                        .HasDatabaseName("IX_midjourney_style_example_links_style_name");
 
                     b.HasIndex("Version");
 
@@ -692,7 +172,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Version");
 
-                    b.ToTable("version_master", "public");
+                    b.ToTable("midjourney_versions", "public");
                 });
 
             modelBuilder.Entity("MidjourneyPromptHistoryMidjourneyStyle", b =>
@@ -710,210 +190,26 @@ namespace Persistence.Migrations
                     b.ToTable("MidjourneyPromptHistoryMidjourneyStyle", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion1", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions1")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion2", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions2")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion3", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions3")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion4", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions4")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion5", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions5")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion51", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions51")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion52", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions52")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion6", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions6")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion61", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions61")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersion7", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("Versions7")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji4", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("VersionsNiji4")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji5", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("VersionsNiji5")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MidjourneyAllPropertiesVersions+MidjourneyPropertiesVersionNiji6", b =>
-                {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", null)
-                        .WithMany("VersionsNiji6")
-                        .HasForeignKey("MidjourneyVersionVersion");
-
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
-                        .WithMany()
-                        .HasForeignKey("Version")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("VersionMaster");
-                });
-
             modelBuilder.Entity("Domain.Entities.MidjourneyPromptHistory", b =>
                 {
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "VersionMaster")
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "MidjourneyVersion")
                         .WithMany("Histories")
                         .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("VersionMaster");
+                    b.Navigation("MidjourneyVersion");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyProperties", b =>
+                {
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "MidjourneyVersion")
+                        .WithMany("Properties")
+                        .HasForeignKey("Version")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MidjourneyVersion");
                 });
 
             modelBuilder.Entity("Domain.Entities.MidjourneyStyleExampleLink", b =>
@@ -959,31 +255,7 @@ namespace Persistence.Migrations
                 {
                     b.Navigation("Histories");
 
-                    b.Navigation("Versions1");
-
-                    b.Navigation("Versions2");
-
-                    b.Navigation("Versions3");
-
-                    b.Navigation("Versions4");
-
-                    b.Navigation("Versions5");
-
-                    b.Navigation("Versions51");
-
-                    b.Navigation("Versions52");
-
-                    b.Navigation("Versions6");
-
-                    b.Navigation("Versions61");
-
-                    b.Navigation("Versions7");
-
-                    b.Navigation("VersionsNiji4");
-
-                    b.Navigation("VersionsNiji5");
-
-                    b.Navigation("VersionsNiji6");
+                    b.Navigation("Properties");
                 });
 #pragma warning restore 612, 618
         }

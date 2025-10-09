@@ -19,7 +19,7 @@ public record PropertyName : ValueObject<string?>, ICreatable<PropertyName, stri
             .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
             .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength)
             .ExecuteIfNoErrors<PropertyName>(() => new PropertyName(value))
-            .MapResult(p => p);
+            .MapResult<PropertyName>();
 
         return result;
     }

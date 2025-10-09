@@ -2,17 +2,19 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Properties.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
 namespace Application.Features.Properties.Queries;
 
-public static class GetAllParametersByVersion
+public static class GetPropertiesByVersion
 {
     public sealed record Query(string Version) : IQuery<List<PropertyResponse>>;
 
-    public sealed class Handler(
+    public sealed class Handler
+    (
         IPropertiesRepository propertiesRepository,
         IVersionRepository versionRepository
     ) : IQueryHandler<Query, List<PropertyResponse>>
@@ -28,9 +30,10 @@ public static class GetAllParametersByVersion
                 .EmptyAsync()
                 .CollectErrors(version)
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _propertiesRepository.GetAllParametersByVersionAsync(version.Value, cancellationToken))
-                .MapResult(domainList => domainList.Select(PropertyResponse.FromDomain).ToList());
-
+                .ExecuteIfNoErrors(() => _propertiesRepository
+                    .GetAllPropertiesByVersionAsync(version.Value, cancellationToken))
+                .MapResult<List<MidjourneyProperties>, List<PropertyResponse>>
+                    (propertiesList => [.. propertiesList.Select(PropertyResponse.FromDomain)]);
 
             return result;
         }

@@ -29,11 +29,11 @@ public static class DeleteAllExampleLinksByStyle
                 .EmptyAsync()
                     .CollectErrors(styleName)
                     .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
-                    .MapResult(count => BulkDeleteResponse.Success
-                    (
+                    .ExecuteIfNoErrors(() => _exampleLinkRepository
+                        .DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
+                    .MapResult<int, BulkDeleteResponse>(count => BulkDeleteResponse.Success(
                         count,
-                        $"Successfully deleted example links for style '{styleName.Value}'."
+                        $"Successfully deleted {count} example links for style '{styleName.Value}'."
                     ));
 
             return result;

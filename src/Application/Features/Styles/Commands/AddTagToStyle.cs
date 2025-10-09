@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Styles.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -29,8 +30,10 @@ public static class AddTagToStyle
                 .Validate(pipeline => pipeline
                     .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
                     .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
-                .ExecuteIfNoErrors(() => _styleRepository.AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
-                .MapResult(StyleResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
+                .MapResult<MidjourneyStyle, StyleResponse>
+                    (style => StyleResponse.FromDomain(style));
 
             return result;
         }

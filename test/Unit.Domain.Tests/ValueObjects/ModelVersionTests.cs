@@ -116,8 +116,6 @@ public class ModelVersionTests
         result.Should().Be(versionString);
     }
 
-
-
     [Fact]
     public void MaxLength_ShouldBe10()
     {

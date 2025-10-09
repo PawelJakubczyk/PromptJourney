@@ -25,14 +25,11 @@ public static class DeleteExampleLink
                 .EmptyAsync()
                 .CollectErrors<ExampleLink>(link)
                 .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _exampleLinkRepository.DeleteExampleLinkAsync(link.Value, cancellationToken))
-                .MapResult(_ => DeleteResponse.Success
-                (
-                    $"Example link '{link.Value.Value}' was successfully deleted."
-                ));
+                .ExecuteIfNoErrors(() => _exampleLinkRepository
+                    .DeleteExampleLinkAsync(link.Value, cancellationToken))
+                .MapResult(() => DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted."));
 
             return result;
         }
-
     }
 }

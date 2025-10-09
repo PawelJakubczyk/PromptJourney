@@ -27,7 +27,7 @@ public sealed class StylesRepository : IStyleRepository
         }, "Failed to get all styles", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<MidjourneyStyle>> GetStyleByNameAsync(StyleName name, CancellationToken cancellationToken)
+    public Task<Result<MidjourneyStyle?>> GetStyleByNameAsync(StyleName name, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {

@@ -2,6 +2,7 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Styles.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -30,8 +31,8 @@ public static class DeleteTagFromStyle
                     .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
                     .IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository.DeleteTagFromStyleAsync(styleName.Value, tag.Value, cancellationToken))
-                .MapResult(StyleResponse.FromDomain);
-
+                .MapResult<MidjourneyStyle, StyleResponse>
+                    (style => StyleResponse.FromDomain(style));
 
             return result;
         }

@@ -21,7 +21,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     public async Task<IActionResult> GetAllByVersion(string version, CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(new GetAllParametersByVersion.Query(version), cancellationToken)
+            .Send(new GetPropertiesByVersion.Query(version), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();
@@ -34,7 +34,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     public async Task<IActionResult> CheckPropertyExists(string version, string propertyName, CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(new CheckPropertyExistsInVersion.Query(version, propertyName), cancellationToken)
+            .Send(new CheckPropertyExists.Query(version, propertyName), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
             .ToActionResultAsync();
@@ -47,7 +47,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddProperty(string version, [FromBody] AddPropertyRequest request, CancellationToken cancellationToken)
     {
-        var command = new AddPropertyInVersion.Command(
+        var command = new AddProperty.Command(
             version,
             request.PropertyName,
             request.Parameters,
@@ -86,7 +86,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
         if (version != request.Version || propertyName != request.PropertyName)
             return BadRequest("Route parameters must match payload values");
 
-        var command = new UpdatePropertyForVersion.Command(
+        var command = new UpdateProperty.Command(
             request.Version,
             request.PropertyName,
             request.Parameters,
@@ -110,7 +110,8 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PatchProperty(string version, string propertyName, [FromBody] PatchPropertyRequest request, CancellationToken cancellationToken)
     {
-        var command = new PatchPropertyForVersion.Command(
+        var command = new PatchProperty.Command
+        (
             version,
             propertyName,
             request.CharacteristicToUpdate,
@@ -132,7 +133,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     public async Task<IActionResult> DeleteProperty(string version, string propertyName, CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(new DeletePropertyInVersion.Command(version, propertyName), cancellationToken)
+            .Send(new DeleteProperty.Command(version, propertyName), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(_ => NoContent()))
             .ToActionResultAsync();

@@ -1,11 +1,12 @@
 ﻿using Application.Abstractions.IRepository;
+using Application.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Moq;
-using Application.Extensions;
 using Utilities.Workflows;
 
 namespace Unit.Application.Tests.Extensions;
+
 public class WorkflowPipelineVersionValidationTests
 {
     private readonly CancellationToken _cancellationToken = CancellationToken.None;
@@ -17,7 +18,7 @@ public class WorkflowPipelineVersionValidationTests
         var version = ModelVersion.Create("1").Value;
 
         var repo = new Mock<IVersionRepository>();
-        repo.Setup(r => r.CheckVersionExistsInVersionsAsync(version, _cancellationToken)).ReturnsAsync(Result.Ok(true));
+        repo.Setup(r => r.CheckVersionExists(version, _cancellationToken)).ReturnsAsync(Result.Ok(true));
 
         var result = await pipelineTask.IfVersionAlreadyExists(version, repo.Object, _cancellationToken);
 
@@ -31,11 +32,10 @@ public class WorkflowPipelineVersionValidationTests
         var version = ModelVersion.Create("2").Value;
 
         var repo = new Mock<IVersionRepository>();
-        repo.Setup(r => r.CheckVersionExistsInVersionsAsync(version, _cancellationToken)).ReturnsAsync(Result.Ok(false));
+        repo.Setup(r => r.CheckVersionExists(version, _cancellationToken)).ReturnsAsync(Result.Ok(false));
 
         var result = await pipelineTask.IfVersionNotExists(version, repo.Object, _cancellationToken);
 
         Assert.Contains(result.Errors, e => e.Message.Contains("Version '2' not found"));
     }
-
 }
