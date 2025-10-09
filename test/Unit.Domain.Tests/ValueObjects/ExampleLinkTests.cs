@@ -81,7 +81,7 @@ public class ExampleLinkTests
 
         // Adjust to exactly 200 characters
         var adjustedUrl = "https://" + new string('a', 185) + ".com"; // 193 chars - close to limit
-        
+
         // Act
         var result = ExampleLink.Create(adjustedUrl);
 

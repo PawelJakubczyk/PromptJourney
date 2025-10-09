@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -23,11 +22,11 @@ public static class CheckExampleLinkWithStyleExists
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .ExecuteIfNoErrors(() => _exampleLinksRepository.CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
-                .MapResult(_ => true);
+                .ExecuteIfNoErrors(() => _exampleLinksRepository
+                    .CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
+                .MapResult(() => true);
 
             return result;
         }
-
     }
 }

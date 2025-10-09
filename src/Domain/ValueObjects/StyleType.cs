@@ -23,7 +23,7 @@ public record StyleType : ValueObject<string?>, ICreatable<StyleType, string?>
                 .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
                 .IfStyleTypeNotInclude<DomainLayer>(value))
             .ExecuteIfNoErrors<StyleType>(() => new StyleType(value))
-            .MapResult(s => s);
+            .MapResult<StyleType>();
 
         return result;
     }

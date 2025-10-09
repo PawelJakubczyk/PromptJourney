@@ -1,12 +1,11 @@
-﻿using MediatR;
+﻿using Application.Features.ExampleLinks.Commands;
+using Application.Features.ExampleLinks.Queries;
+using Application.Features.ExampleLinks.Responses;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.ControllersUtilities;
-using Application.Features.ExampleLinks.Commands;
-using Application.Features.ExampleLinks.Queries;
-using Application.Features.ExampleLinks.Responses;
-
 
 namespace Presentation.Controllers;
 

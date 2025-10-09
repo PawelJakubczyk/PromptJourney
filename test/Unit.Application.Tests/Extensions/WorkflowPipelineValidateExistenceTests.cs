@@ -1,8 +1,8 @@
-﻿using Domain.ValueObjects;
+﻿using Application.Extensions;
+using Domain.ValueObjects;
 using FluentResults;
 using Moq;
 using Utilities.Workflows;
-using Application.Extensions;
 
 namespace Unit.Application.Tests.Extensions;
 
@@ -73,4 +73,3 @@ public class WorkflowPipelineValidateExistenceTests
         Assert.Empty(result.Errors);
     }
 }
-

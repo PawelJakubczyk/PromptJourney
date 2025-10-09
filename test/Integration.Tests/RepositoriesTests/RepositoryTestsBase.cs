@@ -2,6 +2,7 @@
 using Domain.ValueObjects;
 using FluentAssertions;
 using FluentResults;
+using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Repositories;
 
 namespace Integration.Tests.RepositoriesTests;
@@ -15,15 +16,16 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
     protected readonly PromptHistoryRepository PromptHistoryRepository;
     protected readonly PropertiesRepository PropertiesRepository;
     protected readonly CancellationToken CancellationToken = CancellationToken.None;
+    protected readonly HybridCache Cache;
 
     // Constructor
     protected RepositoryTestsBase(MidjourneyDbFixture fixture) : base(fixture)
     {
-        VersionsRepository = new VersionsRepository(DbContext);
+        VersionsRepository = new VersionsRepository(DbContext, Cache);
         StylesRepository = new StylesRepository(DbContext);
         ExampleLinkRepository = new ExampleLinkRepository(DbContext);
         PromptHistoryRepository = new PromptHistoryRepository(DbContext);
-        PropertiesRepository = new PropertiesRepository(DbContext);
+        PropertiesRepository = new PropertiesRepository(DbContext, Cache);
     }
 
     // Common Test Data Constants
@@ -240,7 +242,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         string? description = null)
     {
         var property = await CreateTestPropertyAsync(version, propertyName, parameters, defaultValue, minValue, maxValue, description);
-        var result = await PropertiesRepository.AddParameterToVersionAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
 
         AssertSuccessResult(result);
         return result.Value;

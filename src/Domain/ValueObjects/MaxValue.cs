@@ -19,7 +19,7 @@ public record MaxValue : ValueObject<string?>, ICreatable<MaxValue, string?>
             .IfWhitespace<DomainLayer, MaxValue>(value)
             .IfLengthTooLong<DomainLayer, MaxValue>(value, MaxLength)
             .ExecuteIfNoErrors<MaxValue>(() => new MaxValue(value))
-            .MapResult(v => v);
+            .MapResult<MaxValue>();
 
         return result;
     }

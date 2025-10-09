@@ -19,7 +19,7 @@ public record Description : ValueObject<string?>, ICreatable<Description, string
             .IfWhitespace<DomainLayer, Description>(value)
             .IfLengthTooLong<DomainLayer, Description>(value, MaxLength)
             .ExecuteIfNoErrors<Description>(() => new Description(value))
-            .MapResult(description => description);
+            .MapResult<Description>();
 
         return result;
     }

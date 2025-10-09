@@ -7,60 +7,70 @@ using Domain.Entities;
 
 namespace Persistence.Configuration;
 
-public abstract class MidjourneyPropertiesConfiguration<T> : IEntityTypeConfiguration<T>
-    where T : MidjourneyProperties
+public class MidjourneyPropertiesConfiguration : IEntityTypeConfiguration<MidjourneyProperties>
 {
-    public virtual void Configure(EntityTypeBuilder<T> builder)
+    public virtual void Configure(EntityTypeBuilder<MidjourneyProperties> builder)
     {
-        builder.ToTable("properties", schema: "public");
+        builder.ToTable("midjourney_properties", schema: "public");
 
-        builder.HasKey(version => version.PropertyName);
+        // COMPOSITE KEY - PropertyName + Version
+        builder.HasKey(p => new { p.PropertyName, p.Version });
 
+        // PropertyName configuration
         builder
-            .Property(version => version.PropertyName)
+            .Property(property => property.PropertyName)
             .HasConversion<PropertyNameConverter, PropertyNameComparer>()
             .HasColumnName("property_name")
             .HasColumnType(ColumnType.VarChar(PropertyName.MaxLength))
             .IsRequired();
 
-        builder.Property(version => version.Version)
+        builder.Property(property => property.Version)
             .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
             .HasColumnType(ColumnType.VarChar(ModelVersion.MaxLength))
             .IsRequired();
 
-        builder.Property(version => version.Parameters)
+        builder.Property(property => property.Parameters)
             .HasConversion<ParamListConverter, ParamListComparer>()
             .HasColumnName("parameters")
             .HasColumnType(ColumnType.TextArray)
             .IsRequired();
 
-        builder.Property(version => version.DefaultValue)
+        builder.Property(property => property.DefaultValue)
             .HasConversion<DefaultValueConverter, DefaultValueComparer>()
             .HasColumnName("default_value")
             .HasColumnType(ColumnType.VarChar(DefaultValue.MaxLength));
 
-        builder.Property(version => version.MinValue)
+        builder.Property(property => property.MinValue)
             .HasConversion<MinValueConverter, MinValueComparer>()
             .HasColumnName("min_value")
             .HasColumnType(ColumnType.VarChar(MinValue.MaxLength));
 
-        builder.Property(version => version.MaxValue)
+        builder.Property(property => property.MaxValue)
             .HasConversion<MaxValueConverter, MaxValueComparer>()
             .HasColumnName("max_value")
             .HasColumnType(ColumnType.VarChar(MaxValue.MaxLength));
 
-        builder.Property(version => version.Description)
+        builder.Property(property => property.Description)
             .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
             .HasColumnType(ColumnType.Text);
 
         // Foreign key relationship
         builder
-            .HasOne(version => version.VersionMaster)
+            .HasOne(version => version.MidjourneyVersion)
             .WithMany()
             .HasForeignKey(version => version.Version)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Indexes for performance
+        builder
+            .HasIndex(p => p.Version)
+            .HasDatabaseName("IX_midjourney_properties_version");
+        builder
+            .HasIndex(p => p.PropertyName)
+            .HasDatabaseName("IX_midjourney_properties_property_name");
+
     }
 }
 

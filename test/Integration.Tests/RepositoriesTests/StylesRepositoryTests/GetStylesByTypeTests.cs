@@ -11,6 +11,7 @@ public sealed class GetStylesByTypeTests : RepositoryTestsBase
 
     // Test Constants
     private const string TestStyleType1 = "Abstract";
+
     private const string TestStyleType2 = "Realistic";
 
     [Fact]

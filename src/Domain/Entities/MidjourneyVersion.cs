@@ -1,5 +1,4 @@
 ﻿using Domain.Abstractions;
-using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -52,16 +51,16 @@ public class MidjourneyVersion : IEntitie
                 .CollectErrors(descriptionResult))
             .ExecuteIfNoErrors<MidjourneyVersion>(() =>
             {
-                var versionMaster = new MidjourneyVersion(
+                var midjourneyVersion = new MidjourneyVersion(
                     versionResult.Value,
                     parameterResult.Value,
                     releaseDate,
                     descriptionResult?.Value
                 );
 
-                return versionMaster;
+                return midjourneyVersion;
             })
-            .MapResult(vm => vm);
+            .MapResult<MidjourneyVersion>();
 
         return result;
     }

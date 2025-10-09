@@ -14,37 +14,42 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
         builder.ToTable("midjourney_style_example_links", schema: "public");
         
         // Composite primary key
-        builder.HasKey(el => new { el.Link, el.StyleName, el.Version });
+        builder.HasKey(link => new { link.Link, link.StyleName, link.Version });
         
-        builder.Property(el => el.Link)
+        builder.Property(link => link.Link)
             .HasConversion<ExampleLinkConverter, ExampleLinkComparer>()
             .HasColumnName("link")
             .HasColumnType(ColumnType.VarChar(ExampleLink.MaxLength))
             .IsRequired();
             
-        builder.Property(el => el.StyleName)
+        builder.Property(link => link.StyleName)
             .HasConversion<StyleNameConverter, StyleNameComparer>()
             .HasColumnName("style_name")
             .HasColumnType(ColumnType.VarChar(StyleName.MaxLength))
             .IsRequired();
             
-        builder.Property(el => el.Version)
+        builder.Property(link => link.Version)
             .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
             .HasColumnType(ColumnType.VarChar(ModelVersion.MaxLength))
             .IsRequired();
             
         // Configure relationships
-        builder.HasOne(el => el.Style)
-            .WithMany(s => s.ExampleLinks)
-            .HasForeignKey(el => el.StyleName)
-            .HasPrincipalKey(s => s.StyleName)
+        builder.HasOne(link => link.Style)
+            .WithMany(style => style.ExampleLinks)
+            .HasForeignKey(link => link.StyleName)
+            .HasPrincipalKey(style => style.StyleName)
             .OnDelete(DeleteBehavior.Cascade);
             
-        builder.HasOne(el => el.VersionMaster)
+        builder.HasOne(link => link.VersionMaster)
             .WithMany()
-            .HasForeignKey(el => el.Version)
-            .HasPrincipalKey(vm => vm.Version)
+            .HasForeignKey(link => link.Version)
+            .HasPrincipalKey(version => version.Version)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Indexes for performance
+        builder
+            .HasIndex(link => link.StyleName)
+            .HasDatabaseName("IX_midjourney_style_example_links_style_name");
     }
 }

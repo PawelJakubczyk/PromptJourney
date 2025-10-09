@@ -1,11 +1,6 @@
 ﻿using FluentAssertions;
 using FluentResults;
-using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using System.Text.Json;
-using Utilities.Constants;
 using Utilities.Extensions;
 
 namespace Unit.Presentation.Tests.MoqControlersTests;

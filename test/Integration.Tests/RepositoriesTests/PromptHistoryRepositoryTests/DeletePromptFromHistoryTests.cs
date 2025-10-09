@@ -10,6 +10,7 @@ public class DeletePromptFromHistoryTests : RepositoryTestsBase
 
     // Test Constants
     private const string TestVersion1 = "1.0";
+
     private const string TestStyleName1 = "TestStyle1";
     private const string TestPrompt1 = "A beautiful landscape";
 
@@ -20,10 +21,10 @@ public class DeletePromptFromHistoryTests : RepositoryTestsBase
     [Fact]
     public async Task DeletePromptFromHistoryAsync_PlaceholderTest_ShouldPassWhenMethodImplemented()
     {
-        // This is a placeholder test since DeletePromptFromHistoryAsync method 
+        // This is a placeholder test since DeletePromptFromHistoryAsync method
         // is not currently implemented in IPromptHistoryRepository
         // When the method is added to the repository, replace this with actual tests
-        
+
         // Arrange
         var (version, style) = await CreateBasicTestDataAsync();
         var promptHistory = await CreateAndSaveTestPromptHistoryAsync(TestPrompt1, version, [style]);

@@ -450,7 +450,7 @@ public class MidjourneyPropertiesBaseTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        
+
         // Verify all properties are set correctly
         result.Value.PropertyName.Value.Should().Be("aspect");
         result.Value.Version.Value.Should().Be("6.0");

@@ -7,7 +7,7 @@ using Utilities.Workflows;
 
 namespace Application.Features.Properties.Queries;
 
-public static class CheckPropertyExistsInVersion
+public static class CheckPropertyExists
 {
     public sealed record Query(string Version, string PropertyName) : IQuery<bool>;
 
@@ -30,12 +30,11 @@ public static class CheckPropertyExistsInVersion
                     .CollectErrors(version)
                     .CollectErrors(propertyName))
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _propertiesRepository.CheckParameterExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))
-                .MapResult(value => value);
-
+                .ExecuteIfNoErrors(() => _propertiesRepository
+                    .CheckPropertyExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))
+                .MapResult<bool>();
 
             return result;
         }
-
     }
 }

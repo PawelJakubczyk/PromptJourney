@@ -5,11 +5,12 @@ using Application.Features.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
+using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Workflows;
 
 namespace Application.Features.Properties.Commands;
 
-public static class AddPropertyInVersion
+public static class AddProperty
 {
     public sealed record Command
     (
@@ -22,11 +23,16 @@ public static class AddPropertyInVersion
         string? Description
     ) : ICommand<PropertyResponse>;
 
-    public sealed class Handler(IVersionRepository versionRepository, IPropertiesRepository propertiesRepository)
+    public sealed class Handler(
+        IVersionRepository versionRepository, 
+        IPropertiesRepository propertiesRepository,
+        HybridCache cache
+        )
         : ICommandHandler<Command, PropertyResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
+        private readonly HybridCache _cache = cache;
 
         public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
@@ -55,8 +61,10 @@ public static class AddPropertyInVersion
                 .Validate(pipeline => pipeline
                     .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
                     .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
-                .ExecuteIfNoErrors(() => _propertiesRepository.AddParameterToVersionAsync(property.Value, cancellationToken))
-                .MapResult(PropertyResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _propertiesRepository
+                    .AddProperyAsync(property.Value, cancellationToken))
+                .MapResult<MidjourneyProperties, PropertyResponse>
+                    (property => PropertyResponse.FromDomain(property));
 
             return result;
         }

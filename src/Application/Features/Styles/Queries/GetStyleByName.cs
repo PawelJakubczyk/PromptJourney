@@ -2,6 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Styles.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -24,11 +25,12 @@ public static class GetStyleByName
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _styleRepository.GetStyleByNameAsync(styleName.Value, cancellationToken))
-                .MapResult(StyleResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .GetStyleByNameAsync(styleName.Value, cancellationToken))
+                .MapResult<MidjourneyStyle, StyleResponse>
+                    (styleList => StyleResponse.FromDomain(styleList));
 
             return result;
         }
     }
-
 }

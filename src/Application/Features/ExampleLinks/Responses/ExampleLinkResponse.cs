@@ -5,7 +5,7 @@ namespace Application.Features.ExampleLinks.Responses;
 public sealed record ExampleLinkResponse
 (
     string Link,
-    string Style, 
+    string Style,
     string Version
 )
 {

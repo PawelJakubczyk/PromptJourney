@@ -1,7 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Application.Features.Styles.Responses;
+using Domain.Entities;
 using FluentResults;
 using Utilities.Workflows;
 
@@ -19,8 +19,10 @@ public static class GetAllStyles
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .ExecuteIfNoErrors(() => _styleRepository.GetAllStylesAsync(cancellationToken))
-                        .MapResult(domainList => domainList.Select(StyleResponse.FromDomain).ToList());
+                .ExecuteIfNoErrors(() => _styleRepository
+                    .GetAllStylesAsync(cancellationToken))
+                .MapResult<List<MidjourneyStyle>, List<StyleResponse>>
+                    (styleList => [.. styleList.Select(StyleResponse.FromDomain)]);
 
             return result;
         }

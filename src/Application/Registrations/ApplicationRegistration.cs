@@ -2,7 +2,8 @@
 
 namespace Application.Registrations;
 
-public class MyMarker { }
+public class MyMarker
+{ }
 
 public static class ApplicationRegistration
 {

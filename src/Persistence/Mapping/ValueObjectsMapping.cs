@@ -7,36 +7,95 @@ namespace Persistence.Mapping;
 
 public static class ValueObjectsMapping
 {
-    public sealed class DefaultValueConverter : ValueObjectsMapping<DefaultValue, string?>.Converter { }
-    public sealed class DefaultValueComparer : ValueObjectsMapping<DefaultValue, string?>.Comparer { }
-    public sealed class DescriptionConverter : ValueObjectsMapping<Description, string?>.Converter { }
-    public sealed class DescriptionComparer : ValueObjectsMapping<Description, string?>.Comparer { }
-    public sealed class ExampleLinkConverter : ValueObjectsMapping<ExampleLink, string>.Converter { }
-    public sealed class ExampleLinkComparer : ValueObjectsMapping<ExampleLink, string>.Comparer { }
-    public sealed class KeywordConverter : ValueObjectsMapping<Keyword, string>.Converter { }
-    public sealed class KeywordComparer : ValueObjectsMapping<Keyword, string>.Comparer { }
-    public sealed class MaxValueConverter : ValueObjectsMapping<MaxValue, string?>.Converter { }
-    public sealed class MaxValueComparer : ValueObjectsMapping<MaxValue, string?>.Comparer { }
-    public sealed class MinValueConverter : ValueObjectsMapping<MinValue, string?>.Converter { }
-    public sealed class MinValueComparer : ValueObjectsMapping<MinValue, string?>.Comparer { }
-    public sealed class ModelVersionConverter : ValueObjectsMapping<ModelVersion, string>.Converter { }
-    public sealed class ModelVersionComparer : ValueObjectsMapping<ModelVersion, string>.Comparer { }
-    public sealed class ParamConverter : ValueObjectsMapping<Param, string>.Converter { }
-    public sealed class ParamComparer : ValueObjectsMapping<Param, string>.Comparer { }
-    public sealed class ParamListConverter : ValueObjectsMapping<Param, string>.ListConverter { }
-    public sealed class ParamListComparer : ValueObjectsMapping<Param, string>.ListComparer { }
-    public sealed class PromptConverter : ValueObjectsMapping<Prompt, string>.Converter { }
-    public sealed class PromptComparer : ValueObjectsMapping<Prompt, string>.Comparer { }
-    public sealed class PropertyNameConverter : ValueObjectsMapping<PropertyName, string>.Converter { }
-    public sealed class PropertyNameComparer : ValueObjectsMapping<PropertyName, string>.Comparer { }
-    public sealed class StyleNameConverter : ValueObjectsMapping<StyleName, string>.Converter { }
-    public sealed class StyleNameComparer : ValueObjectsMapping<StyleName, string>.Comparer { }
-    public sealed class StyleTypeConverter : ValueObjectsMapping<StyleType, string>.Converter { }
-    public sealed class StyleTypeComparer : ValueObjectsMapping<StyleType, string>.Comparer { }
-    public sealed class TagConverter : ValueObjectsMapping<Tag, string>.Converter { }
-    public sealed class TagComparer : ValueObjectsMapping<Tag, string>.Comparer { }
-    public sealed class TagListConverter : ValueObjectsMapping<Tag, string>.ListConverter { }
-    public sealed class TagListComparer : ValueObjectsMapping<Tag, string>.ListComparer { }
+    public sealed class DefaultValueConverter : ValueObjectsMapping<DefaultValue, string?>.Converter
+    { }
+
+    public sealed class DefaultValueComparer : ValueObjectsMapping<DefaultValue, string?>.Comparer
+    { }
+
+    public sealed class DescriptionConverter : ValueObjectsMapping<Description, string?>.Converter
+    { }
+
+    public sealed class DescriptionComparer : ValueObjectsMapping<Description, string?>.Comparer
+    { }
+
+    public sealed class ExampleLinkConverter : ValueObjectsMapping<ExampleLink, string>.Converter
+    { }
+
+    public sealed class ExampleLinkComparer : ValueObjectsMapping<ExampleLink, string>.Comparer
+    { }
+
+    public sealed class KeywordConverter : ValueObjectsMapping<Keyword, string>.Converter
+    { }
+
+    public sealed class KeywordComparer : ValueObjectsMapping<Keyword, string>.Comparer
+    { }
+
+    public sealed class MaxValueConverter : ValueObjectsMapping<MaxValue, string?>.Converter
+    { }
+
+    public sealed class MaxValueComparer : ValueObjectsMapping<MaxValue, string?>.Comparer
+    { }
+
+    public sealed class MinValueConverter : ValueObjectsMapping<MinValue, string?>.Converter
+    { }
+
+    public sealed class MinValueComparer : ValueObjectsMapping<MinValue, string?>.Comparer
+    { }
+
+    public sealed class ModelVersionConverter : ValueObjectsMapping<ModelVersion, string>.Converter
+    { }
+
+    public sealed class ModelVersionComparer : ValueObjectsMapping<ModelVersion, string>.Comparer
+    { }
+
+    public sealed class ParamConverter : ValueObjectsMapping<Param, string>.Converter
+    { }
+
+    public sealed class ParamComparer : ValueObjectsMapping<Param, string>.Comparer
+    { }
+
+    public sealed class ParamListConverter : ValueObjectsMapping<Param, string>.ListConverter
+    { }
+
+    public sealed class ParamListComparer : ValueObjectsMapping<Param, string>.ListComparer
+    { }
+
+    public sealed class PromptConverter : ValueObjectsMapping<Prompt, string>.Converter
+    { }
+
+    public sealed class PromptComparer : ValueObjectsMapping<Prompt, string>.Comparer
+    { }
+
+    public sealed class PropertyNameConverter : ValueObjectsMapping<PropertyName, string>.Converter
+    { }
+
+    public sealed class PropertyNameComparer : ValueObjectsMapping<PropertyName, string>.Comparer
+    { }
+
+    public sealed class StyleNameConverter : ValueObjectsMapping<StyleName, string>.Converter
+    { }
+
+    public sealed class StyleNameComparer : ValueObjectsMapping<StyleName, string>.Comparer
+    { }
+
+    public sealed class StyleTypeConverter : ValueObjectsMapping<StyleType, string>.Converter
+    { }
+
+    public sealed class StyleTypeComparer : ValueObjectsMapping<StyleType, string>.Comparer
+    { }
+
+    public sealed class TagConverter : ValueObjectsMapping<Tag, string>.Converter
+    { }
+
+    public sealed class TagComparer : ValueObjectsMapping<Tag, string>.Comparer
+    { }
+
+    public sealed class TagListConverter : ValueObjectsMapping<Tag, string>.ListConverter
+    { }
+
+    public sealed class TagListComparer : ValueObjectsMapping<Tag, string>.ListComparer
+    { }
 }
 
 public static class ValueObjectsMapping<TValueObject, TValue>
@@ -87,8 +146,8 @@ public static class ValueObjectsMapping<TValueObject, TValue>
                 list => list == null ? null : list.Select(vo => vo!.Value).ToArray(),
 
                 // From database: convert array of primitive values to List<TValueObject>
-                values => values == null 
-                    ? null 
+                values => values == null
+                    ? null
                     : values
                         .Select(v => v != null ? Factory(v) : null)
                         .Where(vo => vo != null)
@@ -121,4 +180,3 @@ public static class ValueObjectsMapping<TValueObject, TValue>
         { }
     }
 }
-

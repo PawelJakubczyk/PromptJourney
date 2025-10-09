@@ -1,5 +1,4 @@
-﻿using Domain.ValueObjects;
-using FluentAssertions;
+﻿using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
@@ -27,7 +26,7 @@ public class UpdateParameterTests : RepositoryTestsBase
             "Updated description");
 
         // Act
-        var result = await PropertiesRepository.UpdateParameterForVersionAsync(updatedProperty, CancellationToken);
+        var result = await PropertiesRepository.UpdatePropertyAsync(updatedProperty, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -54,7 +53,7 @@ public class UpdateParameterTests : RepositoryTestsBase
             "Test description");
 
         // Act
-        var result = await PropertiesRepository.UpdateParameterForVersionAsync(property, CancellationToken);
+        var result = await PropertiesRepository.UpdatePropertyAsync(property, CancellationToken);
 
         // Assert
         AssertFailureResult(result);

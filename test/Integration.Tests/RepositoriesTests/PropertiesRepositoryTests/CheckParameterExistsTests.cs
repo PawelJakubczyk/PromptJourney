@@ -20,7 +20,7 @@ public class CheckParameterExistsTests : RepositoryTestsBase
         var propertyName = PropertyName.Create(DefaultTestPropertyName1).Value;
 
         // Act
-        var result = await PropertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, CancellationToken);
+        var result = await PropertiesRepository.CheckPropertyExistsInVersionAsync(version, propertyName, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -37,7 +37,7 @@ public class CheckParameterExistsTests : RepositoryTestsBase
         var propertyName = PropertyName.Create("NonExistentProperty").Value;
 
         // Act
-        var result = await PropertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, CancellationToken);
+        var result = await PropertiesRepository.CheckPropertyExistsInVersionAsync(version, propertyName, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -52,7 +52,7 @@ public class CheckParameterExistsTests : RepositoryTestsBase
         var propertyName = PropertyName.Create(DefaultTestPropertyName1).Value;
 
         // Act
-        var result = await PropertiesRepository.CheckParameterExistsInVersionAsync(version, propertyName, CancellationToken);
+        var result = await PropertiesRepository.CheckPropertyExistsInVersionAsync(version, propertyName, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -73,9 +73,9 @@ public class CheckParameterExistsTests : RepositoryTestsBase
         var nonExistentProperty = PropertyName.Create("NonExistent").Value;
 
         // Act
-        var result1 = await PropertiesRepository.CheckParameterExistsInVersionAsync(version, existingProperty, CancellationToken);
-        var result2 = await PropertiesRepository.CheckParameterExistsInVersionAsync(version, anotherExistingProperty, CancellationToken);
-        var result3 = await PropertiesRepository.CheckParameterExistsInVersionAsync(version, nonExistentProperty, CancellationToken);
+        var result1 = await PropertiesRepository.CheckPropertyExistsInVersionAsync(version, existingProperty, CancellationToken);
+        var result2 = await PropertiesRepository.CheckPropertyExistsInVersionAsync(version, anotherExistingProperty, CancellationToken);
+        var result3 = await PropertiesRepository.CheckPropertyExistsInVersionAsync(version, nonExistentProperty, CancellationToken);
 
         // Assert
         result1.Value.Should().BeTrue();

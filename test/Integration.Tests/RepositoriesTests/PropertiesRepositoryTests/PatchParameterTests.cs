@@ -22,7 +22,7 @@ public sealed class PatchParameterTests : RepositoryTestsBase
         var propertyName = PropertyName.Create(DefaultTestPropertyName1).Value;
 
         // Act
-        var result = await PropertiesRepository.PatchParameterForVersionAsync(
+        var result = await PropertiesRepository.PatchPropertyAsync(
             version,
             propertyName,
             "DefaultValue",
@@ -44,7 +44,7 @@ public sealed class PatchParameterTests : RepositoryTestsBase
         var propertyName = PropertyName.Create("NonExistent").Value;
 
         // Act
-        var result = await PropertiesRepository.PatchParameterForVersionAsync(
+        var result = await PropertiesRepository.PatchPropertyAsync(
             version,
             propertyName,
             "DefaultValue",

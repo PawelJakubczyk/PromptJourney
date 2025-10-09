@@ -23,7 +23,7 @@ public class StyleTypeTests
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().NotBeEmpty();
     }
-    
+
     [Theory]
     [InlineData("Custom")]
     [InlineData("StyleReferences")]

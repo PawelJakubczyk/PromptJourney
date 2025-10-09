@@ -1,6 +1,6 @@
 ﻿using Application.Extensions;
-using Utilities.Workflows;
 using FluentAssertions;
+using Utilities.Workflows;
 
 namespace Unit.Application.Tests.Extensions;
 

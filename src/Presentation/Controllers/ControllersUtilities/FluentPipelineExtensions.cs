@@ -29,7 +29,6 @@ public sealed class Pipeline<TResponse>
                 .WithMessage("Unknown error")
                 .WithErrorCode(StatusCodes.Status500InternalServerError));
 
-
         var details = Errors.Select(error => error.GetDetail()).ToList();
 
         Response = bodyFactory != null

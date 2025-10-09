@@ -19,7 +19,7 @@ public record StyleName : ValueObject<string?>, ICreatable<StyleName, string?>
             .IfNullOrWhitespace<DomainLayer, StyleName>(value)
             .IfLengthTooLong<DomainLayer, StyleName>(value, MaxLength)
             .ExecuteIfNoErrors<StyleName>(() => new StyleName(value))
-            .MapResult(s => s);
+            .MapResult<StyleName>();
 
         return result;
     }

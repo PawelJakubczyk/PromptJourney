@@ -2,11 +2,10 @@
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.ExampleLinks.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
-
-
 
 namespace Application.Features.ExampleLinks.Queries;
 
@@ -37,16 +36,11 @@ public static class GetExampleLinksByStyleAndVersion
                     .CollectErrors(version))
                 .Validate(pipeline => pipeline
                     .IfStyleNotExists(styleName?.Value!, _styleRepository, cancellationToken)
-                    .IfVersionNotExists(version?.Value!, _versionRepository, cancellationToken)
-                    .IfVersionNotInSuportedVersions(version?.Value!, _versionRepository, cancellationToken))
-                .ExecuteIfNoErrors(() => _exampleLinksRepository.GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
-                .MapResult
-                (
-                    domainList => domainList
-                    .Select(ExampleLinkResponse.FromDomain)
-                    .ToList()
-                );
-
+                    .IfVersionNotExists(version?.Value!, _versionRepository, cancellationToken))
+                .ExecuteIfNoErrors(() => _exampleLinksRepository
+                    .GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
+                .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>
+                    (linksList => [.. linksList.Select(ExampleLinkResponse.FromDomain)]);
 
             return result;
         }

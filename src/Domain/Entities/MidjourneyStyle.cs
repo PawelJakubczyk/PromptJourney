@@ -70,7 +70,7 @@ public class MidjourneyStyle : IEntitie
             );
             return style;
         })
-        .MapResult(style => style);
+        .MapResult<MidjourneyStyle>();
 
         return result;
     }
@@ -89,7 +89,7 @@ public class MidjourneyStyle : IEntitie
                 Tags.Add(tag.Value);
                 return tag;
             })
-            .MapResult(tags => tags);
+            .MapResult<Tag>();
 
         return result;
     }
@@ -107,7 +107,8 @@ public class MidjourneyStyle : IEntitie
             {
                 Tags!.RemoveAll(t => t.Equals(tag.Value));
                 return tag;
-            });
+            })
+            .MapResult<Tag>();
 
         return result;
     }
@@ -117,18 +118,10 @@ public class MidjourneyStyle : IEntitie
         var result = WorkflowPipeline
             .Empty()
             .CollectErrors(description)
-            .ExecuteIfNoErrors<Description>(() =>
-            {
-                Description = description.Value;
-                return description;
-            });
+            .ExecuteIfNoErrors<Description>(() => description.Value)
+            .MapResult<Description>();
 
         return result;
-    }
-
-    public override int GetHashCode()
-    {
-        return StyleName.GetHashCode();
     }
 }
 

@@ -1,10 +1,10 @@
 ﻿using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.ValueObjects;
+using FluentAssertions;
 using FluentResults;
 using Moq;
 using Utilities.Workflows;
-using FluentAssertions;
 
 namespace Unit.Application.Tests.Extensions;
 

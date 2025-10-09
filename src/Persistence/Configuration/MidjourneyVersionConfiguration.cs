@@ -8,11 +8,11 @@ using Domain.Entities;
 
 namespace Persistence.Configuration;
 
-public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<MidjourneyVersion>
+public class MidjourneyVersionConfiguration : IEntityTypeConfiguration<MidjourneyVersion>
 {
     public void Configure(EntityTypeBuilder<MidjourneyVersion> builder)
     {
-        builder.ToTable("version_master", schema: "public");
+        builder.ToTable("midjourney_versions", schema: "public");
         builder.HasKey(master => master.Version);
 
         builder.Property(master => master.Version)
@@ -40,21 +40,21 @@ public class MidjourneyVersionsMasterConfiguration : IEntityTypeConfiguration<Mi
 
         builder
             .HasMany(master => master.Properties)
-            .WithOne(version => version.VersionMaster)
+            .WithOne(version => version.MidjourneyVersion)
             .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Properties)
-            .WithOne(version => version.VersionMaster)
+            .WithOne(version => version.MidjourneyVersion)
             .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(master => master.Histories)
-            .WithOne(history => history.VersionMaster)
+            .WithOne(history => history.MidjourneyVersion)
             .HasForeignKey(history => history.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Restrict);

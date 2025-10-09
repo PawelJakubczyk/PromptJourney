@@ -23,7 +23,7 @@ public record ModelVersion : ValueObject<string?>, ICreatable<ModelVersion, stri
                 .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
                 .IfVersionFormatInvalid<DomainLayer>(value))
             .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value))
-            .MapResult(v => v);
+            .MapResult<ModelVersion>();
 
         return result;
     }

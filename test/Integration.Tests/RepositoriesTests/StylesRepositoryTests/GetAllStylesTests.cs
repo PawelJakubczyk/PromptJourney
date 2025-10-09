@@ -10,6 +10,7 @@ public sealed class GetAllStylesTests : RepositoryTestsBase
 
     // Test Constants
     private const string TestStyleType1 = "Abstract";
+
     private const string TestStyleType2 = "Realistic";
     private const string TestStyleType3 = "Minimalist";
 

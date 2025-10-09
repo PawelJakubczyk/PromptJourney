@@ -159,7 +159,7 @@ public sealed class AddVersionTests : RepositoryTestsBase
 
         // Act
         var addResult = await VersionsRepository.AddVersionAsync(versionEntity, CancellationToken);
-        var existsResult = await VersionsRepository.CheckVersionExistsInVersionsAsync(version, CancellationToken);
+        var existsResult = await VersionsRepository.CheckVersionExists(version, CancellationToken);
 
         // Assert
         AssertSuccessResult(addResult);

@@ -1,14 +1,15 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
-using Application.Features.VersionsMaster.Responses;
+using Application.Features.Versions.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
-namespace Application.Features.VersionsMaster.Queries;
+namespace Application.Features.Versions.Queries;
 
-public static class GetVersionByVersion
+public static class GetVersion
 {
     public sealed record Query(string Version) : IQuery<VersionResponse>;
 
@@ -24,11 +25,12 @@ public static class GetVersionByVersion
                 .EmptyAsync()
                 .CollectErrors(version)
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _versionRepository.GetMasterVersionByVersionAsync(version.Value, cancellationToken))
-                .MapResult(VersionResponse.FromDomain);
+                .ExecuteIfNoErrors(() => _versionRepository
+                    .GetVersion(version.Value, cancellationToken))
+                .MapResult<MidjourneyVersion, VersionResponse>
+                    (version => VersionResponse.FromDomain(version));
 
             return result;
         }
     }
-
 }

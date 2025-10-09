@@ -19,7 +19,7 @@ public record MinValue : ValueObject<string?>, ICreatable<MinValue, string?>
             .IfWhitespace<DomainLayer, MinValue>(value)
             .IfLengthTooLong<DomainLayer, MinValue>(value, MaxLength)
             .ExecuteIfNoErrors<MinValue>(() => new MinValue(value))
-            .MapResult(v => v);
+            .MapResult<MinValue>();
 
         return result;
     }

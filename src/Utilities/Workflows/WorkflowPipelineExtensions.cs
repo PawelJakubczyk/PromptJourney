@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Utilities.Workflows;
 
@@ -110,41 +110,102 @@ public static class WorkflowPipelineExtensions
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
-}
 
-public static class RepositoryActionExtensions
-{
-    public static Result<T> ExecuteIfNoErrors<T>
+    // --- ExecuteIfNoErrors ---
+    public static WorkflowPipeline ExecuteIfNoErrors<TType>
     (
         this WorkflowPipeline pipeline,
-        Func<Result<T>> action)
+        Func<Result<TType>> action
+    )
     {
-        if (pipeline.Errors.Count != 0)
-            return Result.Fail<T>(pipeline.Errors);
+        if (pipeline.Errors.Count != 0 && pipeline.BreakOnError)
+            return pipeline;
 
-        return action();
+        var result = action();
+
+        if (result.IsFailed)
+        {
+            pipeline.Errors.AddRange(result.Errors.OfType<Error>());
+            return pipeline;
+        }
+
+        pipeline.SetResult(result.Value);
+
+        return pipeline;
     }
 
-    public static async Task<Result<T>> ExecuteIfNoErrors<T>
+    public static async Task<WorkflowPipeline> ExecuteIfNoErrors<TType>
     (
         this Task<WorkflowPipeline> pipelineTask,
-        Func<Task<Result<T>>> action)
+        Func<Task<Result<TType>>> action
+    )
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
-        return pipeline.ExecuteIfNoErrors(() => action().GetAwaiter().GetResult());
+
+        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+            return pipeline;
+
+        var actionResult = await action().ConfigureAwait(false);
+
+        if (actionResult.IsFailed)
+        {
+            pipeline.Errors.AddRange(actionResult.Errors.OfType<Error>());
+            return pipeline;
+        }
+
+        pipeline.SetResult(actionResult.Value);
+        return pipeline;
     }
 
-    public static Result<TResponse> MapResult<TSource, TResponse>(this Result<TSource> result, Func<TSource, TResponse> mapResponse)
+    // --- MapResult ---
+    public static Result<TResponse> MapResult<TResponse>(this WorkflowPipeline pipeline)
     {
-        if (result.IsFailed)
-            return Result.Fail<TResponse>(result.Errors);
+        if (pipeline.Errors.Count != 0)
+            return Result.Fail<TResponse>(pipeline.Errors);
 
-        return Result.Ok(mapResponse(result.Value));
+        return Result.Ok(pipeline.GetResult<TResponse>()!);
     }
 
-    public static async Task<Result<TResponse>> MapResult<TSource, TResponse>(this Task<Result<TSource>> resultTask, Func<TSource, TResponse> mapResponse)
+    public static Result<TResponse> MapResult<TResponse>(
+        this WorkflowPipeline pipeline,
+        Func<TResponse> mapResponse)
     {
-        var result = await resultTask.ConfigureAwait(false);
-        return result.MapResult(mapResponse);
+        if (pipeline.Errors.Count != 0)
+            return Result.Fail<TResponse>(pipeline.Errors);
+
+        return Result.Ok(mapResponse());
+    }
+
+    public static Result<TResponse> MapResult<TSource, TResponse>(
+        this WorkflowPipeline pipeline,
+        Func<TSource, TResponse> mapResponse)
+    {
+        if (pipeline.Errors.Count != 0)
+            return Result.Fail<TResponse>(pipeline.Errors);
+
+        var source = pipeline.GetResult<TSource>();
+        return Result.Ok(mapResponse(source!));
+    }
+
+    public static async Task<Result<TResponse>> MapResult<TResponse>(this Task<WorkflowPipeline> pipelineTask)
+    {
+        var pipeline = await pipelineTask.ConfigureAwait(false);
+        return pipeline.MapResult<TResponse>();
+    }
+
+    public static async Task<Result<TResponse>> MapResult<TResponse>(
+        this Task<WorkflowPipeline> pipelineTask,
+        Func<TResponse> mapResponse)
+    {
+        var pipeline = await pipelineTask.ConfigureAwait(false);
+        return pipeline.MapResult(mapResponse);
+    }
+
+    public static async Task<Result<TResponse>> MapResult<TSource, TResponse>(
+        this Task<WorkflowPipeline> pipelineTask,
+        Func<TSource, TResponse> mapResponse)
+    {
+        var pipeline = await pipelineTask.ConfigureAwait(false);
+        return pipeline.MapResult(mapResponse);
     }
 }

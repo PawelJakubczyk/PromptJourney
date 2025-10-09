@@ -1,9 +1,7 @@
 ﻿using Application.Features.Styles.Responses;
-using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Presentation.Controllers;
 using Utilities.Constants;

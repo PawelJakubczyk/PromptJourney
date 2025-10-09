@@ -1,11 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
-namespace Application.Features.VersionsMaster.Queries;
+namespace Application.Features.Versions.Queries;
 
 public static class CheckVersionExists
 {
@@ -22,12 +21,11 @@ public static class CheckVersionExists
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                .ExecuteIfNoErrors(() => _versionRepository.CheckVersionExistsInVersionsAsync(version.Value, cancellationToken))
-                .MapResult(value => value);
-
+                .ExecuteIfNoErrors(() => _versionRepository
+                    .CheckVersionExists(version.Value, cancellationToken))
+                .MapResult<bool>();
 
             return result;
         }
     }
-
 }

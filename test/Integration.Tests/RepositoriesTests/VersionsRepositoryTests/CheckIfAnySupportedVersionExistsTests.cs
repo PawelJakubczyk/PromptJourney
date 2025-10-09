@@ -15,7 +15,7 @@ public sealed class CheckIfAnySupportedVersionExistsTests : RepositoryTestsBase
         await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
 
         // Act
-        var result = await VersionsRepository.CheckIfAnySupportedVersionExistsAsync(CancellationToken);
+        var result = await VersionsRepository.CheckIfAnyVersionExistsAsync(CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -26,7 +26,7 @@ public sealed class CheckIfAnySupportedVersionExistsTests : RepositoryTestsBase
     public async Task CheckIfAnySupportedVersionExistsAsync_WithEmptyDatabase_ShouldReturnFalse()
     {
         // Act
-        var result = await VersionsRepository.CheckIfAnySupportedVersionExistsAsync(CancellationToken);
+        var result = await VersionsRepository.CheckIfAnyVersionExistsAsync(CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -42,7 +42,7 @@ public sealed class CheckIfAnySupportedVersionExistsTests : RepositoryTestsBase
         await CreateAndSaveTestVersionAsync(DefaultTestVersion3);
 
         // Act
-        var result = await VersionsRepository.CheckIfAnySupportedVersionExistsAsync(CancellationToken);
+        var result = await VersionsRepository.CheckIfAnyVersionExistsAsync(CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -56,7 +56,7 @@ public sealed class CheckIfAnySupportedVersionExistsTests : RepositoryTestsBase
         var version = await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
 
         // Verify it exists first
-        var existsResult = await VersionsRepository.CheckIfAnySupportedVersionExistsAsync(CancellationToken);
+        var existsResult = await VersionsRepository.CheckIfAnyVersionExistsAsync(CancellationToken);
         existsResult.Value.Should().BeTrue();
 
         // Remove the version by clearing the context (simulating deletion)
