@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
+namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
 
 public class PromptHistoryControllerTestsBase : ControllerTestsBase
 {
     protected const string BaseUrl = "/api/prompthistory";
 
-    public PromptHistoryControllerTestsBase(WebApplicationFactory<Program> factory) : base(factory)
+    public PromptHistoryControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

@@ -1,5 +1,6 @@
 ﻿using Application.Features.Properties.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -8,7 +9,7 @@ namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
 public sealed class AddPropertyTests : PropertiesControllerTestsBase
 {
-    public AddPropertyTests(WebApplicationFactory<Program> factory) : base(factory)
+    public AddPropertyTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

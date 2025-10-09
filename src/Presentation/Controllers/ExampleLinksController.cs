@@ -99,6 +99,9 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
     {
+        if (request == null)
+            return BadRequest("Request cannot be null");
+
         var command = new AddExampleLink.Command(
             request.Link,
             request.Style,

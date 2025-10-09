@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Integration.Tests.ControllersTests.VersionsControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -6,7 +7,7 @@ namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
 public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 {
-    public GetSupportedVersionsTests(WebApplicationFactory<Program> factory) : base(factory)
+    public GetSupportedVersionsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

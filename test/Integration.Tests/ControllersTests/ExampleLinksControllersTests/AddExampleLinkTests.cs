@@ -1,5 +1,6 @@
 ﻿using Application.Features.ExampleLinks.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -8,7 +9,7 @@ namespace Integration.Tests.ControllersTests.ExampleLinks;
 
 public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
 {
-    public AddExampleLinkTests(WebApplicationFactory<Program> factory) : base(factory)
+    public AddExampleLinkTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

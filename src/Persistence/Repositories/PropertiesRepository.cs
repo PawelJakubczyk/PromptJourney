@@ -44,7 +44,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }, $"Failed to get Properties for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<List<MidjourneyProperties>>> GetAllProperties(CancellationToken cancellationToken)
+    public async Task<Result<List<MidjourneyProperties>>> GetAllPropertiesAsync(CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () => await GetOrCreateCachedAllPropertiesAsync(cancellationToken),
         $"Failed to get all Properties", StatusCodes.Status500InternalServerError);
@@ -60,7 +60,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
     }
 
     // For Commands
-    public async Task<Result<MidjourneyProperties>> AddProperyAsync(MidjourneyProperties property, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperties>> AddPropertyAsync(MidjourneyProperties property, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {

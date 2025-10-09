@@ -112,12 +112,16 @@ public class MidjourneyStyle : IEntitie
         return result;
     }
 
-    public Result<Description> EditDescription(Result<Description?> description)
+    public Result<Description> EditDescription(Result<Description?>? description)
     {
         var result = WorkflowPipeline
             .Empty()
             .CollectErrors(description)
-            .ExecuteIfNoErrors<Description>(() => description.Value)
+            .ExecuteIfNoErrors<Description>(() =>
+            {
+                Description = description?.Value;
+                return description?.Value;
+            })
             .MapResult<Description>();
 
         return result;

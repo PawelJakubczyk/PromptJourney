@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
+namespace Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
 
 public class PropertiesControllerTestsBase : ControllerTestsBase
 {
     protected const string BaseUrl = "/api/properties";
 
-    public PropertiesControllerTestsBase(WebApplicationFactory<Program> factory) : base(factory)
+    public PropertiesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

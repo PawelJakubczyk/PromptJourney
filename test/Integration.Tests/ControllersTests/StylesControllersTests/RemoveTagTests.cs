@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Integration.Tests.ControllersTests.StylesControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -6,7 +7,7 @@ namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
 public sealed class RemoveTagTests : StylesControllerTestsBase
 {
-    public RemoveTagTests(WebApplicationFactory<Program> factory) : base(factory)
+    public RemoveTagTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

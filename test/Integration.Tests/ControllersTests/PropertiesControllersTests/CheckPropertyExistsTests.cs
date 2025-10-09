@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -6,7 +7,7 @@ namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
 public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
 {
-    public CheckPropertyExistsTests(WebApplicationFactory<Program> factory) : base(factory)
+    public CheckPropertyExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

@@ -338,13 +338,35 @@ public class MidjourneyStyleTests
     }
 
     [Fact]
-    public void EditDescription_WithValidDescription_ShouldReturnSuccess()
+    public void EditNullDescription_WithValidDescription_ShouldReturnSuccess()
     {
         // Arrange
         var style = MidjourneyStyle.Create
         (
             StyleName.Create("Test Style"),
             StyleType.Create("Custom")
+        ).Value;
+
+        var newDescription = Description.Create("New description").Value;
+
+        // Act
+        var result = style.EditDescription(newDescription);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        style.Description?.Value.Should().Be("New description");
+    }
+
+    [Fact]
+    public void EditNotNullDescription_WithValidDescription_ShouldReturnSuccess()
+    {
+        // Arrange
+        var style = MidjourneyStyle.Create
+        (
+            StyleName.Create("Test Style"),
+            StyleType.Create("Custom"),
+            Description.Create("Original description")!
         ).Value;
 
         var newDescription = Description.Create("New description").Value;
@@ -369,7 +391,7 @@ public class MidjourneyStyleTests
             Description.Create("Original description")!
         ).Value;
 
-        var nullDescription = Description.Create(default);
+        var nullDescription = Description.Create(null);
         // Act
         var result = style.EditDescription(nullDescription.Value);
 

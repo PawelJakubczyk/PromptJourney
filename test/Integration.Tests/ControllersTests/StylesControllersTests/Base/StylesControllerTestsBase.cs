@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Integration.Tests.ControllersTests.StylesControllersTests;
+namespace Integration.Tests.ControllersTests.StylesControllersTests.Base;
 
 public class StylesControllerTestsBase : ControllerTestsBase
 {
     protected const string BaseUrl = "/api/styles";
 
-    public StylesControllerTestsBase(WebApplicationFactory<Program> factory) : base(factory)
+    public StylesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 
