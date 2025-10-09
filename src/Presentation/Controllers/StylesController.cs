@@ -1,8 +1,8 @@
-﻿using Application.Features.Styles.Commands.AddStyle;
+﻿using Application.Features.Styles.Commands;
+using Application.Features.Styles.Commands.AddStyle;
 using Application.Features.Styles.Commands.AddTagToStyle;
 using Application.Features.Styles.Commands.RemoveStyle;
 using Application.Features.Styles.Commands.RemoveTagInStyle;
-using Application.Features.Styles.Commands;
 using Application.Features.Styles.Queries;
 using Application.Features.Styles.Responses;
 using MediatR;
