@@ -22,7 +22,7 @@ public static class EntityExistenceValidationExtensions
         return pipelineTask.ValidateExistence
         (
             version,
-            repo.CheckVersionExists,
+            repo.CheckVersionExistsAsync,
             "Version",
             shouldExist: true,
             cancellationToken
@@ -40,7 +40,7 @@ public static class EntityExistenceValidationExtensions
         return pipelineTask.ValidateExistence
         (
             version,
-            repo.CheckVersionExists,
+            repo.CheckVersionExistsAsync,
             "Version",
             shouldExist: false,
             cancellationToken

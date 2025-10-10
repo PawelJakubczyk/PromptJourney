@@ -31,7 +31,7 @@ public sealed class VersionsRepository : IVersionRepository
     }
 
     // For Queries
-    public async Task<Result<bool>> CheckVersionExists(ModelVersion version, CancellationToken cancellationToken)
+    public async Task<Result<bool>> CheckVersionExistsAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {
@@ -49,7 +49,7 @@ public sealed class VersionsRepository : IVersionRepository
         }, "Database error while checking for supported versions", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<MidjourneyVersion>> GetVersion(ModelVersion version, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyVersion>> GetVersionAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {

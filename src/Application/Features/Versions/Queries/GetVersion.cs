@@ -26,7 +26,7 @@ public static class GetVersion
                 .CollectErrors(version)
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository
-                    .GetVersion(version.Value, cancellationToken))
+                    .GetVersionAsync(version.Value, cancellationToken))
                 .MapResult<MidjourneyVersion, VersionResponse>
                     (version => VersionResponse.FromDomain(version));
 

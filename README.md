@@ -24,4 +24,7 @@
 * `Parameters.txt` – configuration file
 * `migration_manual.txt` – instructions for database migration (if applicable)
 
+💡 Note: The domain layer is organized by category (e.g., Entities, Abstractions, Dependencies).
+This structure improves clarity and separation of concerns, which is a good approach for this project.
+
 ---

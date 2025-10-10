@@ -22,7 +22,7 @@ public static class CheckVersionExists
                 .EmptyAsync()
                 .CollectErrors(version)
                 .ExecuteIfNoErrors(() => _versionRepository
-                    .CheckVersionExists(version.Value, cancellationToken))
+                    .CheckVersionExistsAsync(version.Value, cancellationToken))
                 .MapResult<bool>();
 
             return result;

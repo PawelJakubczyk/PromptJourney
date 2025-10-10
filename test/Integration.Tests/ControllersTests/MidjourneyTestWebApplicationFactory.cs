@@ -26,7 +26,8 @@ public class MidjourneyTestWebApplicationFactory : WebApplicationFactory<Program
             // Add core services
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            services.AddMediatR(cfg => {
+            services.AddMediatR(cfg =>
+            {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(Application.Features.ExampleLinks.Commands.AddExampleLink).Assembly);
             });

@@ -17,7 +17,7 @@ public sealed class GetMasterVersionByVersionTests : RepositoryTestsBase
         var version = ModelVersion.Create(DefaultTestVersion1).Value;
 
         // Act
-        var result = await VersionsRepository.GetVersion(version, CancellationToken);
+        var result = await VersionsRepository.GetVersionAsync(version, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -33,7 +33,7 @@ public sealed class GetMasterVersionByVersionTests : RepositoryTestsBase
         var version = ModelVersion.Create("99.0").Value;
 
         // Act
-        var result = await VersionsRepository.GetVersion(version, CancellationToken);
+        var result = await VersionsRepository.GetVersionAsync(version, CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -52,7 +52,7 @@ public sealed class GetMasterVersionByVersionTests : RepositoryTestsBase
         var targetVersion = ModelVersion.Create(DefaultTestVersion2).Value;
 
         // Act
-        var result = await VersionsRepository.GetVersion(targetVersion, CancellationToken);
+        var result = await VersionsRepository.GetVersionAsync(targetVersion, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -68,7 +68,7 @@ public sealed class GetMasterVersionByVersionTests : RepositoryTestsBase
         var version = ModelVersion.Create(DefaultTestVersion1).Value;
 
         // Act
-        var result = await VersionsRepository.GetVersion(version, CancellationToken);
+        var result = await VersionsRepository.GetVersionAsync(version, CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -90,7 +90,7 @@ public sealed class GetMasterVersionByVersionTests : RepositoryTestsBase
         var targetVersion = ModelVersion.Create("niji 5").Value;
 
         // Act
-        var result = await VersionsRepository.GetVersion(targetVersion, CancellationToken);
+        var result = await VersionsRepository.GetVersionAsync(targetVersion, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
