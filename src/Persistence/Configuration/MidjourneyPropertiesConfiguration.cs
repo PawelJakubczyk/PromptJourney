@@ -1,9 +1,9 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.Entities;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Persistence.Mapping.ValueObjectsMapping;
 using static Persistence.Constants.PersistenceConstants;
-using Domain.Entities;
+using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 
@@ -70,8 +70,5 @@ public class MidjourneyPropertiesConfiguration : IEntityTypeConfiguration<Midjou
         builder
             .HasIndex(p => p.PropertyName)
             .HasDatabaseName("IX_midjourney_properties_property_name");
-
     }
 }
-
-

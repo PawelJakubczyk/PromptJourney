@@ -7,45 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Features\PromptHistory\Commands\AddPrompToPromptHistory\**" />
-    <Compile Remove="Features\PromptHistory\Commands\DeletePromptInPromptHistory\**" />
-    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryAll\**" />
-    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryByDate\**" />
-    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryByPromptKeyword\**" />
-    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryByVersion\**" />
-    <Compile Remove="Features\PromptHistory\Queries\GetPromptHistoryRecent\**" />
-    <Compile Remove="Features\Styles\Commands\AddExampleLink\**" />
-    <Compile Remove="Features\Styles\Commands\AddStyle\**" />
-    <Compile Remove="Features\Styles\Commands\AddTagToStyle\**" />
-    <Compile Remove="Features\Styles\Commands\EditDescriptionInStyle\**" />
-    <Compile Remove="Features\Styles\Commands\RemoveTagInStyle\**" />
-    <EmbeddedResource Remove="Features\PromptHistory\Commands\AddPrompToPromptHistory\**" />
-    <EmbeddedResource Remove="Features\PromptHistory\Commands\DeletePromptInPromptHistory\**" />
-    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryAll\**" />
-    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryByDate\**" />
-    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryByPromptKeyword\**" />
-    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryByVersion\**" />
-    <EmbeddedResource Remove="Features\PromptHistory\Queries\GetPromptHistoryRecent\**" />
-    <EmbeddedResource Remove="Features\Styles\Commands\AddExampleLink\**" />
-    <EmbeddedResource Remove="Features\Styles\Commands\AddStyle\**" />
-    <EmbeddedResource Remove="Features\Styles\Commands\AddTagToStyle\**" />
-    <EmbeddedResource Remove="Features\Styles\Commands\EditDescriptionInStyle\**" />
-    <EmbeddedResource Remove="Features\Styles\Commands\RemoveTagInStyle\**" />
-    <None Remove="Features\PromptHistory\Commands\AddPrompToPromptHistory\**" />
-    <None Remove="Features\PromptHistory\Commands\DeletePromptInPromptHistory\**" />
-    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryAll\**" />
-    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryByDate\**" />
-    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryByPromptKeyword\**" />
-    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryByVersion\**" />
-    <None Remove="Features\PromptHistory\Queries\GetPromptHistoryRecent\**" />
-    <None Remove="Features\Styles\Commands\AddExampleLink\**" />
-    <None Remove="Features\Styles\Commands\AddStyle\**" />
-    <None Remove="Features\Styles\Commands\AddTagToStyle\**" />
-    <None Remove="Features\Styles\Commands\EditDescriptionInStyle\**" />
-    <None Remove="Features\Styles\Commands\RemoveTagInStyle\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentResults" Version="4.0.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />

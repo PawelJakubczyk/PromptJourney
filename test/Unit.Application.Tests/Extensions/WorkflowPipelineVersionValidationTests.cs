@@ -18,7 +18,7 @@ public class WorkflowPipelineVersionValidationTests
         var version = ModelVersion.Create("1").Value;
 
         var repo = new Mock<IVersionRepository>();
-        repo.Setup(r => r.CheckVersionExists(version, _cancellationToken)).ReturnsAsync(Result.Ok(true));
+        repo.Setup(r => r.CheckVersionExistsAsync(version, _cancellationToken)).ReturnsAsync(Result.Ok(true));
 
         var result = await pipelineTask.IfVersionAlreadyExists(version, repo.Object, _cancellationToken);
 
@@ -32,7 +32,7 @@ public class WorkflowPipelineVersionValidationTests
         var version = ModelVersion.Create("2").Value;
 
         var repo = new Mock<IVersionRepository>();
-        repo.Setup(r => r.CheckVersionExists(version, _cancellationToken)).ReturnsAsync(Result.Ok(false));
+        repo.Setup(r => r.CheckVersionExistsAsync(version, _cancellationToken)).ReturnsAsync(Result.Ok(false));
 
         var result = await pipelineTask.IfVersionNotExists(version, repo.Object, _cancellationToken);
 

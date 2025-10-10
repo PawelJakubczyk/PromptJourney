@@ -1,5 +1,6 @@
 ﻿using Application.Features.PromptHistory.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -7,7 +8,7 @@ namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
 public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTestsBase
 {
-    public GetByDateRangePromptHistoryTests(WebApplicationFactory<Program> factory) : base(factory)
+    public GetByDateRangePromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

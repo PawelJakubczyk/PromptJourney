@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyPromptHistory: IEntitie
+public class MidjourneyPromptHistory : IEntitie
 {
     // Columns
     public Guid HistoryId { get; }
@@ -46,7 +46,6 @@ public class MidjourneyPromptHistory: IEntitie
         DateTime? createdOn = null
     )
     {
-
         var result = WorkflowPipeline
             .Empty()
             .Validate(pipeline => pipeline
@@ -63,8 +62,3 @@ public class MidjourneyPromptHistory: IEntitie
         return result;
     }
 }
-
-
-
-
-

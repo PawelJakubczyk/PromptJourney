@@ -5,15 +5,19 @@ using System.Text.Json;
 
 namespace Integration.Tests.ControllersTests;
 
-public abstract class ControllerTestsBase : IClassFixture<WebApplicationFactory<Program>>
+[Collection("Integration Tests")]
+public abstract class ControllerTestsBase
 {
-    protected readonly WebApplicationFactory<Program> Factory;
+    protected readonly MidjourneyTestWebApplicationFactory Factory;
     protected readonly HttpClient Client;
 
-    protected ControllerTestsBase(WebApplicationFactory<Program> factory)
+    protected ControllerTestsBase(MidjourneyTestWebApplicationFactory factory)
     {
         Factory = factory;
-        Client = factory.CreateClient();
+        Client = factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false
+        });
     }
 
     // Helper methods for HTTP assertions

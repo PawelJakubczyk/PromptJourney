@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Integration.Tests.ControllersTests.ExampleLinks;
+namespace Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 
 public class ExampleLinksControllerTestsBase : ControllerTestsBase
 {
     protected const string BaseUrl = "/api/examplelinks";
 
-    public ExampleLinksControllerTestsBase(WebApplicationFactory<Program> factory) : base(factory)
+    public ExampleLinksControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

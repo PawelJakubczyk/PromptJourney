@@ -1,5 +1,6 @@
 ﻿using Application.Features.PromptHistory.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -8,7 +9,7 @@ namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
 public sealed class AddPromptTests : PromptHistoryControllerTestsBase
 {
-    public AddPromptTests(WebApplicationFactory<Program> factory) : base(factory)
+    public AddPromptTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

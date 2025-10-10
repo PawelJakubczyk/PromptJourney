@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -6,7 +7,7 @@ namespace Integration.Tests.ControllersTests.ExampleLinks;
 
 public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
 {
-    public DeleteExampleLinkTests(WebApplicationFactory<Program> factory) : base(factory)
+    public DeleteExampleLinkTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

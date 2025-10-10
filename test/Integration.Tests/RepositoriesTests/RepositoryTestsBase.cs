@@ -242,7 +242,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         string? description = null)
     {
         var property = await CreateTestPropertyAsync(version, propertyName, parameters, defaultValue, minValue, maxValue, description);
-        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddPropertyAsync(property, CancellationToken);
 
         AssertSuccessResult(result);
         return result.Value;

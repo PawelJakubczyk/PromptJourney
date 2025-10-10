@@ -2,7 +2,6 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Common.Responses;
-using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -16,7 +15,7 @@ public static class DeleteProperty
 
     public sealed class Handler
     (
-        IVersionRepository versionRepository, 
+        IVersionRepository versionRepository,
         IPropertiesRepository propertiesRepository,
         HybridCache cache
     ) : ICommandHandler<Command, DeleteResponse>

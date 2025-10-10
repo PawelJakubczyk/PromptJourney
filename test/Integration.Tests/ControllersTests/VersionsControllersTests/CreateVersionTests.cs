@@ -1,5 +1,6 @@
 ﻿using Application.Features.Versions.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.VersionsControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -8,7 +9,7 @@ namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
 public sealed class CreateVersionTests : VersionsControllerTestsBase
 {
-    public CreateVersionTests(WebApplicationFactory<Program> factory) : base(factory)
+    public CreateVersionTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

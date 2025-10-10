@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -6,7 +7,7 @@ namespace Integration.Tests.ControllersTests.ExampleLinks;
 
 public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
 {
-    public CheckLinkExistsTests(WebApplicationFactory<Program> factory) : base(factory)
+    public CheckLinkExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

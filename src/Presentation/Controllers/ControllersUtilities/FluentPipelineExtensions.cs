@@ -12,7 +12,7 @@ public sealed class Pipeline<TResponse>
     internal Result<TResponse> Result { get; }
     internal IActionResult Response { get; private set; }
 
-    internal Pipeline(Result<TResponse> result)
+    internal Pipeline(Result<TResponse>? result)
     {
         Result = result ?? throw new ArgumentNullException(nameof(result));
         Response = new StatusCodeResult(StatusCodes.Status500InternalServerError);
@@ -77,6 +77,10 @@ public static class PipelineExtensions
 {
     public static async Task<Pipeline<TResponse>> IfErrors<TResponse>(this Task<Result<TResponse>> sourceTask, Func<Pipeline<TResponse>, Pipeline<TResponse>> branch)
     {
+        //if (sourceTask == null)
+        //    return Task.FromResult(new Pipeline<TResponse>(Result.Fail<TResponse>("Source task cannot be null")));
+
+
         ArgumentNullException.ThrowIfNull(sourceTask);
         ArgumentNullException.ThrowIfNull(branch);
 
@@ -86,8 +90,11 @@ public static class PipelineExtensions
         return pipeline.Result.IsFailed ? branch(pipeline) : pipeline;
     }
 
-    public static async Task<Pipeline<T>> Else<T>(this Task<Pipeline<T>> pipelineTask, Func<Pipeline<T>, Pipeline<T>> branch)
+    public static async Task<Pipeline<TResponse>> Else<TResponse>(this Task<Pipeline<TResponse>> pipelineTask, Func<Pipeline<TResponse>, Pipeline<TResponse>> branch)
     {
+        //if (pipelineTask == null)
+        //    return Task.FromResult(new Pipeline<TResponse>(Result.Fail<TResponse>("Pipeline task cannot be null")));
+
         ArgumentNullException.ThrowIfNull(pipelineTask);
         ArgumentNullException.ThrowIfNull(branch);
 
@@ -97,10 +104,17 @@ public static class PipelineExtensions
 
     public static async Task<IActionResult> ToActionResultAsync<T>(this Task<Pipeline<T>> pipelineTask)
     {
-        ArgumentNullException.ThrowIfNull(pipelineTask);
+        if (pipelineTask == null)
+            return new BadRequestObjectResult("Pipeline task cannot be null");
+
+        var result = await pipelineTask;
+        if (result == null)
+            return new BadRequestObjectResult("Result cannot be null");
+
+        //ArgumentNullException.ThrowIfNull(pipelineTask);
 
         var pipeline = await pipelineTask.ConfigureAwait(false);
-        ArgumentNullException.ThrowIfNull(pipeline);
+        //ArgumentNullException.ThrowIfNull(pipeline);
 
         return pipeline.Response;
     }

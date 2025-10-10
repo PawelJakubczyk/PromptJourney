@@ -17,7 +17,7 @@ public class MidjourneyStyle : IEntitie
     public StyleType Type { get; set; }
     public Description? Description { get; set; }
     public List<Tag>? Tags { get; set; }
-    
+
     // Navigation properties
     public List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
     public List<MidjourneyStyleExampleLink> ExampleLinks { get; set; } = [];
@@ -75,7 +75,6 @@ public class MidjourneyStyle : IEntitie
         return result;
     }
 
-
     public Result<Tag> AddTag(Result<Tag> tag)
     {
         var result = WorkflowPipeline
@@ -113,12 +112,16 @@ public class MidjourneyStyle : IEntitie
         return result;
     }
 
-    public Result<Description> EditDescription(Result<Description?> description)
+    public Result<Description> EditDescription(Result<Description?>? description)
     {
         var result = WorkflowPipeline
             .Empty()
             .CollectErrors(description)
-            .ExecuteIfNoErrors<Description>(() => description.Value)
+            .ExecuteIfNoErrors<Description>(() =>
+            {
+                Description = description?.Value;
+                return description?.Value;
+            })
             .MapResult<Description>();
 
         return result;

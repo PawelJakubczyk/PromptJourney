@@ -5,7 +5,6 @@ using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Options;
 using Persistence.Context;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
@@ -13,8 +12,8 @@ namespace Persistence.Repositories;
 
 public sealed class VersionsRepository : IVersionRepository
 {
-    const string supportedVersionsCacheKey = "supported_versions";
-    const string allVersionsCacheKey = "all_versions";
+    private const string supportedVersionsCacheKey = "supported_versions";
+    private const string allVersionsCacheKey = "all_versions";
 
     private readonly MidjourneyDbContext _dbContext;
     private readonly HybridCache _cache;
@@ -32,7 +31,7 @@ public sealed class VersionsRepository : IVersionRepository
     }
 
     // For Queries
-    public async Task<Result<bool>> CheckVersionExists(ModelVersion version, CancellationToken cancellationToken)
+    public async Task<Result<bool>> CheckVersionExistsAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {
@@ -50,7 +49,7 @@ public sealed class VersionsRepository : IVersionRepository
         }, "Database error while checking for supported versions", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<MidjourneyVersion>> GetVersion(ModelVersion version, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyVersion>> GetVersionAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {

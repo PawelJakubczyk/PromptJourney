@@ -35,10 +35,9 @@ public static class GetStylesByTags
             return result;
         }
     }
-
 }
 
-file static class CollectionValidationExtensions
+internal static class CollectionValidationExtensions
 {
     public static async Task<WorkflowPipeline> IfListIsNullOrEmpty<TValue>(
     this Task<WorkflowPipeline> pipelineTask,

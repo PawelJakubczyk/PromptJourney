@@ -32,7 +32,7 @@ public class AddParameterToVersionTests : RepositoryTestsBase
             TestDescription1);
 
         // Act
-        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddPropertyAsync(property, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -54,7 +54,7 @@ public class AddParameterToVersionTests : RepositoryTestsBase
             [TestParam1]);
 
         // Act
-        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddPropertyAsync(property, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -82,7 +82,7 @@ public class AddParameterToVersionTests : RepositoryTestsBase
             TestDescription1);
 
         // Act
-        var result = await PropertiesRepository.AddProperyAsync(property, CancellationToken);
+        var result = await PropertiesRepository.AddPropertyAsync(property, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);

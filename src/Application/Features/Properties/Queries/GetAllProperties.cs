@@ -23,7 +23,7 @@ public static class GetAllProperties
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .ExecuteIfNoErrors(() => _propertiesRepository
-                    .GetAllProperties(cancellationToken))
+                    .GetAllPropertiesAsync(cancellationToken))
                 .MapResult<List<MidjourneyProperties>, List<PropertyResponse>>
                     (propertiesList => [.. propertiesList.Select(PropertyResponse.FromDomain)]);
 

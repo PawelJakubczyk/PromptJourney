@@ -1,5 +1,6 @@
 ﻿using Application.Features.Properties.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -7,7 +8,7 @@ namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
 public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
 {
-    public GetAllByVersionTests(WebApplicationFactory<Program> factory) : base(factory)
+    public GetAllByVersionTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

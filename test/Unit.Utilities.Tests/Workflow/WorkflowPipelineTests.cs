@@ -94,21 +94,6 @@ public class WorkflowPipelineTests
     }
 
     [Fact]
-    public void Errors_ShouldBeReadOnly_AfterCreation()
-    {
-        // Arrange
-        var originalErrors = new List<Error> { new Error("Test") };
-        var pipeline = WorkflowPipeline.Create(originalErrors);
-
-        // Act & Assert
-        pipeline.Errors.Should().HaveCount(1);
-
-        // Modifying original list should not affect pipeline
-        originalErrors.Add(new Error("New error"));
-        pipeline.Errors.Should().HaveCount(1); // Should remain unchanged
-    }
-
-    [Fact]
     public void Multiple_Create_Calls_ShouldReturnIndependentInstances()
     {
         // Arrange

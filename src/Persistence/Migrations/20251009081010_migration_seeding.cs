@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -49,7 +48,7 @@ namespace Persistence.Migrations
                     { "upscale", "1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "visibility", "1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "performance", "1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 2 properties
                     { "aspectRatio", "2", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "2", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -66,7 +65,7 @@ namespace Persistence.Migrations
                     { "visibility", "2", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "2", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "2", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 3 properties
                     { "aspectRatio", "3", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "3", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -84,7 +83,7 @@ namespace Persistence.Migrations
                     { "visibility", "3", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "3", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "3", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 4 properties
                     { "aspectRatio", "4", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "4", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -104,7 +103,7 @@ namespace Persistence.Migrations
                     { "visibility", "4", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "4", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "4", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 5 properties
                     { "aspectRatio", "5", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "5", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -127,7 +126,7 @@ namespace Persistence.Migrations
                     { "visibility", "5", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "5", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "5", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 5.1 properties
                     { "aspectRatio", "5.1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "5.1", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -150,7 +149,7 @@ namespace Persistence.Migrations
                     { "visibility", "5.1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "5.1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "5.1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 5.2 properties
                     { "aspectRatio", "5.2", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "5.2", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -173,7 +172,7 @@ namespace Persistence.Migrations
                     { "visibility", "5.2", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "5.2", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "5.2", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 6 properties
                     { "aspectRatio", "6", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "6", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
@@ -194,7 +193,7 @@ namespace Persistence.Migrations
                     { "visibility", "6", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "6", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "6", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 6.1 properties
                     { "aspectRatio", "6.1", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "6.1", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },
@@ -215,7 +214,7 @@ namespace Persistence.Migrations
                     { "visibility", "6.1", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "6.1", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "6.1", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Version 7 properties
                     { "aspectRatio", "7", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "7", new string[] { "--q", "--quality" }, "1", "0.5", "4", "Rendering quality/time (0.5, 1, 2, 4*) – *Q4 is experimental, not compatible with oref" },
@@ -248,7 +247,7 @@ namespace Persistence.Migrations
                     { "visibility", "7", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "7", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "7", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Niji 4 properties
                     { "aspectRatio", "niji 4", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "niji 4", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -268,7 +267,7 @@ namespace Persistence.Migrations
                     { "visibility", "niji 4", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "niji 4", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "niji 4", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Niji 5 properties
                     { "aspectRatio", "niji 5", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "niji 5", new string[] { "--q", "--quality" }, "1", "0.25", "2", "Rendering quality/time" },
@@ -291,7 +290,7 @@ namespace Persistence.Migrations
                     { "visibility", "niji 5", new string[] { "--public", "--stealth" }, null, null, null, "Force generation to be public / stealth" },
                     { "upscale", "niji 5", new string[] { "--upbeta", "--uplight" }, null, null, null, "Use the light/beta upscaler" },
                     { "performance", "niji 5", new string[] { "--relax", "--fast", "--turbo" }, null, null, null, "Use relaxed / fast / turbo generation mode" },
-                    
+
                     // Niji 6 properties
                     { "aspectRatio", "niji 6", new string[] { "--ar", "--aspect" }, "1:1", null, null, "Image aspect ratio" },
                     { "quality", "niji 6", new string[] { "--q", "--quality" }, "1", "0.25", "0.5", "Rendering quality/time" },

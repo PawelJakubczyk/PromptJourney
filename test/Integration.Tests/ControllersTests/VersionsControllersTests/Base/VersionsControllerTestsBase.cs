@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Integration.Tests.ControllersTests.VersionsControllersTests;
+namespace Integration.Tests.ControllersTests.VersionsControllersTests.Base;
 
 public class VersionsControllerTestsBase : ControllerTestsBase
 {
     protected const string BaseUrl = "/api/versions";
 
-    public VersionsControllerTestsBase(WebApplicationFactory<Program> factory) : base(factory)
+    public VersionsControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 }

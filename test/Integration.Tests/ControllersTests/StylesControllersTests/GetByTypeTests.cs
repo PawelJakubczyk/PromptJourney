@@ -1,5 +1,6 @@
 ﻿using Application.Features.Styles.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.StylesControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -7,7 +8,7 @@ namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
 public sealed class GetByTypeTests : StylesControllerTestsBase
 {
-    public GetByTypeTests(WebApplicationFactory<Program> factory) : base(factory)
+    public GetByTypeTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

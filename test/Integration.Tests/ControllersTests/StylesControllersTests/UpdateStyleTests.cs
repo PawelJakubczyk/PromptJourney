@@ -1,5 +1,6 @@
 ﻿using Application.Features.Styles.Responses;
 using FluentAssertions;
+using Integration.Tests.ControllersTests.StylesControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -8,7 +9,7 @@ namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
 public sealed class UpdateStyleTests : StylesControllerTestsBase
 {
-    public UpdateStyleTests(WebApplicationFactory<Program> factory) : base(factory)
+    public UpdateStyleTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 

@@ -96,14 +96,13 @@ public sealed class ExampleLinkRepository : IExampleLinksRepository
     {
         return await ExecuteAsync(async () =>
         {
-            var exampleLink =  await _midjourneyDbContext.MidjourneyStyleExampleLinks
+            var exampleLink = await _midjourneyDbContext.MidjourneyStyleExampleLinks
                 .FirstOrDefaultAsync(l => l.Link == link, cancellationToken);
 
             _midjourneyDbContext.MidjourneyStyleExampleLinks.Remove(exampleLink!);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
             return exampleLink!;
         }, "Failed to delete example link", StatusCodes.Status500InternalServerError);
-
     }
 
     public async Task<Result<int>> DeleteAllExampleLinksByStyleAsync(StyleName styleName, CancellationToken cancellationToken)

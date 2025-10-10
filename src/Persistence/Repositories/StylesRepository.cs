@@ -182,5 +182,4 @@ public sealed class StylesRepository : IStyleRepository
             return style;
         }, $"Failed to update description for style '{styleName.Value}'", StatusCodes.Status500InternalServerError);
     }
-
 }

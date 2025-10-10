@@ -24,7 +24,7 @@ public static class AddProperty
     ) : ICommand<PropertyResponse>;
 
     public sealed class Handler(
-        IVersionRepository versionRepository, 
+        IVersionRepository versionRepository,
         IPropertiesRepository propertiesRepository,
         HybridCache cache
         )
@@ -62,12 +62,11 @@ public static class AddProperty
                     .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
                     .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
-                    .AddProperyAsync(property.Value, cancellationToken))
+                    .AddPropertyAsync(property.Value, cancellationToken))
                 .MapResult<MidjourneyProperties, PropertyResponse>
                     (property => PropertyResponse.FromDomain(property));
 
             return result;
         }
-
     }
 }

@@ -1,9 +1,9 @@
+using Domain.Entities;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Persistence.Mapping.ValueObjectsMapping;
 using static Persistence.Constants.PersistenceConstants;
-using Domain.Entities;
+using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 
@@ -12,35 +12,35 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
     public void Configure(EntityTypeBuilder<MidjourneyStyleExampleLink> builder)
     {
         builder.ToTable("midjourney_style_example_links", schema: "public");
-        
+
         // Composite primary key
         builder.HasKey(link => new { link.Link, link.StyleName, link.Version });
-        
+
         builder.Property(link => link.Link)
             .HasConversion<ExampleLinkConverter, ExampleLinkComparer>()
             .HasColumnName("link")
             .HasColumnType(ColumnType.VarChar(ExampleLink.MaxLength))
             .IsRequired();
-            
+
         builder.Property(link => link.StyleName)
             .HasConversion<StyleNameConverter, StyleNameComparer>()
             .HasColumnName("style_name")
             .HasColumnType(ColumnType.VarChar(StyleName.MaxLength))
             .IsRequired();
-            
+
         builder.Property(link => link.Version)
             .HasConversion<ModelVersionConverter, ModelVersionComparer>()
             .HasColumnName("version")
             .HasColumnType(ColumnType.VarChar(ModelVersion.MaxLength))
             .IsRequired();
-            
+
         // Configure relationships
         builder.HasOne(link => link.Style)
             .WithMany(style => style.ExampleLinks)
             .HasForeignKey(link => link.StyleName)
             .HasPrincipalKey(style => style.StyleName)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         builder.HasOne(link => link.VersionMaster)
             .WithMany()
             .HasForeignKey(link => link.Version)

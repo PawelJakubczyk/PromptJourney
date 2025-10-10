@@ -14,8 +14,8 @@ namespace Persistence.Repositories;
 
 public sealed class PropertiesRepository : IPropertiesRepository
 {
-    const string allPropertiesCacheKey = "all_properties";
-    const string allSuportedPropertiesCacheKey = "all_suported_properties";
+    private const string allPropertiesCacheKey = "all_properties";
+    private const string allSuportedPropertiesCacheKey = "all_suported_properties";
 
     private readonly MidjourneyDbContext _midjourneyDbContext;
     private readonly HybridCache _cache;
@@ -44,7 +44,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
         }, $"Failed to get Properties for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<List<MidjourneyProperties>>> GetAllProperties(CancellationToken cancellationToken)
+    public async Task<Result<List<MidjourneyProperties>>> GetAllPropertiesAsync(CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () => await GetOrCreateCachedAllPropertiesAsync(cancellationToken),
         $"Failed to get all Properties", StatusCodes.Status500InternalServerError);
@@ -60,7 +60,7 @@ public sealed class PropertiesRepository : IPropertiesRepository
     }
 
     // For Commands
-    public async Task<Result<MidjourneyProperties>> AddProperyAsync(MidjourneyProperties property, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperties>> AddPropertyAsync(MidjourneyProperties property, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {
@@ -195,19 +195,24 @@ public sealed class PropertiesRepository : IPropertiesRepository
             case "defaultvalue":
                 parameter.DefaultValue = newValue != null ? DefaultValue.Create(newValue).Value : null;
                 break;
+
             case "minvalue":
                 parameter.MinValue = newValue != null ? MinValue.Create(newValue).Value : null;
                 break;
+
             case "maxvalue":
                 parameter.MaxValue = newValue != null ? MaxValue.Create(newValue).Value : null;
                 break;
+
             case "description":
                 parameter.Description = newValue != null ? Description.Create(newValue).Value : null;
                 break;
+
             case "parameters":
                 parameter.Parameters = newValue?.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(p => Param.Create(p.Trim()).Value).ToList();
                 break;
+
             default:
                 // ignore unknown properties
                 break;

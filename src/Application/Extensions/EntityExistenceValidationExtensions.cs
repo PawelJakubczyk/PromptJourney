@@ -22,7 +22,7 @@ public static class EntityExistenceValidationExtensions
         return pipelineTask.ValidateExistence
         (
             version,
-            repo.CheckVersionExists,
+            repo.CheckVersionExistsAsync,
             "Version",
             shouldExist: true,
             cancellationToken
@@ -40,7 +40,7 @@ public static class EntityExistenceValidationExtensions
         return pipelineTask.ValidateExistence
         (
             version,
-            repo.CheckVersionExists,
+            repo.CheckVersionExistsAsync,
             "Version",
             shouldExist: false,
             cancellationToken
@@ -117,6 +117,7 @@ public static class EntityExistenceValidationExtensions
             cancellationToken
         );
     }
+
     public static Task<WorkflowPipeline> IfPropertyNotExists
     (
         this Task<WorkflowPipeline> pipelineTask,
@@ -169,7 +170,6 @@ public static class EntityExistenceValidationExtensions
             cancellationToken
         );
     }
-
 
     public static Task<WorkflowPipeline> IfTagNotExist
     (

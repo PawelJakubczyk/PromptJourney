@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Integration.Tests.ControllersTests.VersionsControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
@@ -6,7 +7,7 @@ namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
 public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
 {
-    public CheckVersionExistsTests(WebApplicationFactory<Program> factory) : base(factory)
+    public CheckVersionExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
     {
     }
 
