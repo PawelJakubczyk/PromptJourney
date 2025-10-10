@@ -3,12 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class GetStylesByDescriptionKeywordTests : RepositoryTestsBase
+public sealed class GetStylesByDescriptionKeywordTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetStylesByDescriptionKeywordTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task GetStylesByDescriptionKeywordAsync_WithMatchingKeyword_ShouldReturnMatchingStyles()
     {

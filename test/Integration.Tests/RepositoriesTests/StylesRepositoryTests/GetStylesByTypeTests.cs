@@ -3,11 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class GetStylesByTypeTests : RepositoryTestsBase
+public sealed class GetStylesByTypeTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetStylesByTypeTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // Test Constants
     private const string TestStyleType1 = "Abstract";

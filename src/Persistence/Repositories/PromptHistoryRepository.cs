@@ -7,14 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
-public sealed class PromptHistoryRepository : IPromptHistoryRepository
+public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbContext) : IPromptHistoryRepository
 {
-    private readonly MidjourneyDbContext _midjourneyDbContext;
-
-    public PromptHistoryRepository(MidjourneyDbContext midjourneyDbContext)
-    {
-        _midjourneyDbContext = midjourneyDbContext;
-    }
+    private readonly MidjourneyDbContext _midjourneyDbContext = midjourneyDbContext;
 
     // For Queries
     public Task<Result<List<MidjourneyPromptHistory>>> GetAllHistoryRecordsAsync(CancellationToken cancellationToken)

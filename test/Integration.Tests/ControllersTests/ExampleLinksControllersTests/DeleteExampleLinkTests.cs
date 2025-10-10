@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;
 
-public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
+public sealed class DeleteExampleLinkTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {
-    public DeleteExampleLinkTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("https://example.com/image.jpg")]
     [InlineData("https://test.com/picture.png")]

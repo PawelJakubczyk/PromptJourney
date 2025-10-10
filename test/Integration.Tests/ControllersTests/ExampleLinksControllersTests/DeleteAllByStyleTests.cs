@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;
 
-public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
+public sealed class DeleteAllByStyleTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {
-    public DeleteAllByStyleTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("ModernArt")]
     [InlineData("ClassicStyle")]

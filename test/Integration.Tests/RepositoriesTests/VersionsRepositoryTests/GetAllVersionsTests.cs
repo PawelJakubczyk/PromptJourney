@@ -2,12 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.VersionsRepositoryTests;
 
-public sealed class GetAllVersionsTests : RepositoryTestsBase
+public sealed class GetAllVersionsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetAllVersionsTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task GetAllVersionsAsync_WithMultipleVersions_ShouldReturnAllVersions()
     {

@@ -2,12 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.VersionsRepositoryTests;
 
-public sealed class CheckIfAnySupportedVersionExistsTests : RepositoryTestsBase
+public sealed class CheckIfAnySupportedVersionExistsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public CheckIfAnySupportedVersionExistsTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task CheckIfAnySupportedVersionExistsAsync_WithExistingVersions_ShouldReturnTrue()
     {
@@ -53,7 +49,7 @@ public sealed class CheckIfAnySupportedVersionExistsTests : RepositoryTestsBase
     public async Task CheckIfAnySupportedVersionExistsAsync_AfterAddingAndRemovingAllVersions_ShouldReturnFalse()
     {
         // Arrange
-        var version = await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
+        _ = await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
 
         // Verify it exists first
         var existsResult = await VersionsRepository.CheckIfAnyVersionExistsAsync(CancellationToken);

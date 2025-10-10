@@ -3,12 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
-public class GetParametersByVersionTests : RepositoryTestsBase
+public class GetParametersByVersionTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetParametersByVersionTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task GetAllParametersByVersionAsync_WithExistingVersion_ShouldReturnParameters()
     {

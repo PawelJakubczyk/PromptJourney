@@ -3,11 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
 
-public class GetExampleLinksByStyleTests : RepositoryTestsBase
+public class GetExampleLinksByStyleTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetExampleLinksByStyleTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // GetExampleLinksByStyleAsync Tests
     [Fact]

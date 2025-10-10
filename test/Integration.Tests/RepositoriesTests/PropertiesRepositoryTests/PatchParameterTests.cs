@@ -3,11 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
-public sealed class PatchParameterTests : RepositoryTestsBase
+public sealed class PatchParameterTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public PatchParameterTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // PatchParameterForVersionAsync Tests
 

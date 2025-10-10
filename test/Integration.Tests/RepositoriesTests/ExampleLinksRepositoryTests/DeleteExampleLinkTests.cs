@@ -3,11 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
 
-public class DeleteExampleLinkTests : RepositoryTestsBase
+public class DeleteExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public DeleteExampleLinkTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // DeleteExampleLinkAsync Tests
     [Fact]

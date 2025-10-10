@@ -67,7 +67,7 @@ public abstract class ControllerTestsBase
     public class ErrorResponseModel
     {
         public MainErrorModel MainError { get; set; } = new();
-        public List<DetailModel> Details { get; set; } = new();
+        public List<DetailModel> Details { get; set; } = [];
     }
 
     public class MainErrorModel

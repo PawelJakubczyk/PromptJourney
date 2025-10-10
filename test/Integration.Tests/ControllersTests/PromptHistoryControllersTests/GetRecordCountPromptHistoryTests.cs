@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
-public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTestsBase
+public sealed class GetRecordCountPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : PromptHistoryControllerTestsBase(factory)
 {
-    public GetRecordCountPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task GetRecordCount_ReturnsOk_WithValidResponse()
     {

@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
-public sealed class GetAllStylesTests : StylesControllerTestsBase
+public sealed class GetAllStylesTests(MidjourneyTestWebApplicationFactory factory) : StylesControllerTestsBase(factory)
 {
-    public GetAllStylesTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task GetAll_ReturnsOk_WithValidResponse()
     {

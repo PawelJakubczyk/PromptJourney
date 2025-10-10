@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
-public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTestsBase
+public sealed class GetByKeywordPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : PromptHistoryControllerTestsBase(factory)
 {
-    public GetByKeywordPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("landscape")]
     [InlineData("portrait")]

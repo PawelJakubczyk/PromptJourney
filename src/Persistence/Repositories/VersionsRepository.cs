@@ -10,25 +10,19 @@ using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
 
-public sealed class VersionsRepository : IVersionRepository
+public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCache cache) : IVersionRepository
 {
     private const string supportedVersionsCacheKey = "supported_versions";
     private const string allVersionsCacheKey = "all_versions";
 
-    private readonly MidjourneyDbContext _dbContext;
-    private readonly HybridCache _cache;
+    private readonly MidjourneyDbContext _dbContext = dbContext;
+    private readonly HybridCache _cache = cache;
 
     private readonly HybridCacheEntryOptions cacheOptions = new()
     {
         Expiration = TimeSpan.FromDays(365),
         LocalCacheExpiration = TimeSpan.FromDays(365)
     };
-
-    public VersionsRepository(MidjourneyDbContext dbContext, HybridCache cache)
-    {
-        _dbContext = dbContext;
-        _cache = cache;
-    }
 
     // For Queries
     public async Task<Result<bool>> CheckVersionExistsAsync(ModelVersion version, CancellationToken cancellationToken)
@@ -54,15 +48,8 @@ public sealed class VersionsRepository : IVersionRepository
         return await ExecuteAsync(async () =>
         {
             var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
-            var foundVersion = allVersions.FirstOrDefault(v => v.Version.Value == version.Value);
-
-            if (foundVersion == null)
-            {
-                // If not found in cache, try database as fallback
-                foundVersion = await _dbContext.MidjourneyVersions
+            var foundVersion = allVersions.FirstOrDefault(v => v.Version.Value == version.Value) ?? await _dbContext.MidjourneyVersions
                     .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
-            }
-
             return foundVersion!;
         }, $"Database error while retrieving version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }

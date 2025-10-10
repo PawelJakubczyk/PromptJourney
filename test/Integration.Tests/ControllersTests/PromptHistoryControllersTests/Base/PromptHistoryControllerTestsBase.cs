@@ -2,13 +2,9 @@
 
 namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
 
-public class PromptHistoryControllerTestsBase : ControllerTestsBase
+public class PromptHistoryControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {
     protected const string BaseUrl = "/api/prompthistory";
-
-    public PromptHistoryControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
 
     // Helper method to generate unique prompt text
     protected static string GenerateTestPrompt() => $"Test prompt {Guid.NewGuid().ToString("N")[..8]} with beautiful landscape";

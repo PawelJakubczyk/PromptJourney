@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
-public sealed class AddTagTests : StylesControllerTestsBase
+public sealed class AddTagTests(MidjourneyTestWebApplicationFactory factory) : StylesControllerTestsBase(factory)
 {
-    public AddTagTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task AddTag_ReturnsValidResponse_WithValidRequest()
     {

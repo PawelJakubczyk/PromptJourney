@@ -5,12 +5,8 @@ using FluentResults;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class AddStyleTests : RepositoryTestsBase
+public sealed class AddStyleTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public AddStyleTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task AddStyleAsync_WithValidStyle_ShouldReturnSuccess()
     {

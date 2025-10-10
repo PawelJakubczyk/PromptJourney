@@ -3,18 +3,15 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
 
-public class DeleteAllExampleLinksByStyleTests : RepositoryTestsBase
+public class DeleteAllExampleLinksByStyleTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public DeleteAllExampleLinksByStyleTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // DeleteAllExampleLinksByStyleAsync Tests
     [Fact]
     public async Task DeleteAllExampleLinksByStyleAsync_WithExistingStyle_ShouldDeleteAllMatchingLinks()
     {
         // Arrange
-        var (versions, styles) = await CreateMultipleTestDataAsync();
+        var (_, _) = await CreateMultipleTestDataAsync();
 
         var linkData = new[]
         {

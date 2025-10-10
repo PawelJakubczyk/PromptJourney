@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
-public sealed class CheckExistsTests : StylesControllerTestsBase
+public sealed class CheckExistsTests(MidjourneyTestWebApplicationFactory factory) : StylesControllerTestsBase(factory)
 {
-    public CheckExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("ModernArt")]
     [InlineData("ClassicStyle")]
@@ -26,8 +22,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         if (response.StatusCode == HttpStatusCode.OK)
         {
             response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
-
-            var exists = await GetExistsFromResponse(response);
+            _ = await GetExistsFromResponse(response);
             //exists.Should().BeOneOf(true, false);
         }
     }

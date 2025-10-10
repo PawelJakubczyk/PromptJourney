@@ -4,12 +4,8 @@ using FluentResults;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class UpdateStyleTests : RepositoryTestsBase
+public sealed class UpdateStyleTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public UpdateStyleTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task UpdateStyleAsync_WithExistingStyle_ShouldReturnSuccess()
     {

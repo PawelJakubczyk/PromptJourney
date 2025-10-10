@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.PromptHistoryRepositoryTests;
 
-public class DeletePromptFromHistoryTests : RepositoryTestsBase
+public class DeletePromptFromHistoryTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public DeletePromptFromHistoryTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // Test Constants
     private const string TestVersion1 = "1.0";

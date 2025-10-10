@@ -3,12 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class CheckStyleExistsTests : RepositoryTestsBase
+public sealed class CheckStyleExistsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public CheckStyleExistsTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task CheckStyleExistsAsync_WithExistingStyle_ShouldReturnTrue()
     {

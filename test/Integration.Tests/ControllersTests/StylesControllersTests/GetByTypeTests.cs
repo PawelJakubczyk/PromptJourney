@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
-public sealed class GetByTypeTests : StylesControllerTestsBase
+public sealed class GetByTypeTests(MidjourneyTestWebApplicationFactory factory) : StylesControllerTestsBase(factory)
 {
-    public GetByTypeTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("Custom")]
     [InlineData("Abstract")]

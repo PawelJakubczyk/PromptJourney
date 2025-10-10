@@ -2,13 +2,9 @@
 
 namespace Integration.Tests.ControllersTests.StylesControllersTests.Base;
 
-public class StylesControllerTestsBase : ControllerTestsBase
+public class StylesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {
     protected const string BaseUrl = "/api/styles";
-
-    public StylesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
 
     // Helper method to generate unique style names
     protected static string GenerateTestStyleName() => $"TestStyle_{Guid.NewGuid().ToString("N")[..8]}";

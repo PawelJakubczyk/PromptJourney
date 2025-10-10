@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
-public class AddParameterToVersionTests : RepositoryTestsBase
+public class AddParameterToVersionTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public AddParameterToVersionTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // Test Constants
     private const string TestPropertyName1 = "aspect";

@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.PromptHistoryRepositoryTests;
 
-public class CalculateHistoricalRecordCountTests : RepositoryTestsBase
+public class CalculateHistoricalRecordCountTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public CalculateHistoricalRecordCountTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // CalculateHistoricalRecordCountAsync Tests
     [Fact]

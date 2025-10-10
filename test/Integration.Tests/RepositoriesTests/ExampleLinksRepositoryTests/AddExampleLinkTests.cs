@@ -4,11 +4,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
 
-public class AddExampleLinkTests : RepositoryTestsBase
+public class AddExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public AddExampleLinkTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // AddExampleLinkAsync Tests
     [Fact]

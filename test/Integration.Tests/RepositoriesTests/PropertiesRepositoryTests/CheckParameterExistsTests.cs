@@ -3,12 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
-public class CheckParameterExistsTests : RepositoryTestsBase
+public class CheckParameterExistsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public CheckParameterExistsTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task CheckParameterExistsInVersionAsync_WithExistingParameter_ShouldReturnTrue()
     {

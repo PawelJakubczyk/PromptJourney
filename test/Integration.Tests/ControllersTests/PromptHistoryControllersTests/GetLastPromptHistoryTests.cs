@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
-public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
+public sealed class GetLastPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : PromptHistoryControllerTestsBase(factory)
 {
-    public GetLastPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData(1)]
     [InlineData(5)]

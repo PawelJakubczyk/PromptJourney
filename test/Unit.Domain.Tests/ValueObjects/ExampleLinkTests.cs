@@ -77,7 +77,7 @@ public class ExampleLinkTests
     {
         // Arrange - Create a valid URL exactly at 200 characters
         var domainPart = new string('a', 180);
-        var maxLengthUrl = $"https://{domainPart}.com"; // Should be exactly 200 chars or close
+        _ = $"https://{domainPart}.com"; // Should be exactly 200 chars or close
 
         // Adjust to exactly 200 characters
         var adjustedUrl = "https://" + new string('a', 185) + ".com"; // 193 chars - close to limit

@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
 
-public class CheckAnyExampleLinksExistTests : RepositoryTestsBase
+public class CheckAnyExampleLinksExistTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public CheckAnyExampleLinksExistTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // CheckAnyExampleLinksExistAsync Tests
     [Fact]
@@ -39,7 +36,7 @@ public class CheckAnyExampleLinksExistTests : RepositoryTestsBase
     public async Task CheckAnyExampleLinksExistAsync_WithMultipleLinks_ShouldReturnTrue()
     {
         // Arrange
-        var (versions, styles) = await CreateMultipleTestDataAsync();
+        var (_, _) = await CreateMultipleTestDataAsync();
 
         var linkData = new[]
         {

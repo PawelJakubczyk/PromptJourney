@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
-public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
+public sealed class GetAllPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : PromptHistoryControllerTestsBase(factory)
 {
-    public GetAllPromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task GetAll_ReturnsOk_WithValidResponse()
     {

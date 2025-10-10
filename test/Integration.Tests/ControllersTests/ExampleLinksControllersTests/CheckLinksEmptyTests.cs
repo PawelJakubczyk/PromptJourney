@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;
 
-public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
+public sealed class CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {
-    public CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task CheckLinksEmpty_ReturnsOk_WithValidResponse()
     {

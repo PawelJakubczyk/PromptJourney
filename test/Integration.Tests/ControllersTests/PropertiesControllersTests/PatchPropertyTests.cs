@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
-public sealed class PatchPropertyTests : PropertiesControllerTestsBase
+public sealed class PatchPropertyTests(MidjourneyTestWebApplicationFactory factory) : PropertiesControllerTestsBase(factory)
 {
-    public PatchPropertyTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("DefaultValue", "new-default")]
     [InlineData("MinValue", "new-min")]

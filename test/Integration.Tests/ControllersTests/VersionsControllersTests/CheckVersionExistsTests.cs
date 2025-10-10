@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
-public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
+public sealed class CheckVersionExistsTests(MidjourneyTestWebApplicationFactory factory) : VersionsControllerTestsBase(factory)
 {
-    public CheckVersionExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("1")]
     [InlineData("2")]
@@ -24,8 +20,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
-
-        var exists = await GetExistsFromResponse(response);
+        _ = await GetExistsFromResponse(response);
         // We don't assert true/false because it depends on database state
         // but we verify the endpoint works correctly
     }

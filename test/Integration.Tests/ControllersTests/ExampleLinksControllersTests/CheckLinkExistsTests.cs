@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;
 
-public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
+public sealed class CheckLinkExistsTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {
-    public CheckLinkExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("https://example.com/image.jpg")]
     [InlineData("https://test.com/picture.png")]
@@ -26,8 +22,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         if (response.StatusCode == HttpStatusCode.OK)
         {
             response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
-
-            var exists = await GetExistsFromResponse(response);
+            _ = await GetExistsFromResponse(response);
             //exists.Should().BeOneOf(true, false); // Either true or false is valid
         }
     }
@@ -101,7 +96,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var exists = await GetExistsFromResponse(response);
+            _ = await GetExistsFromResponse(response);
             //exists.Should().BeOneOf(true, false);
         }
     }

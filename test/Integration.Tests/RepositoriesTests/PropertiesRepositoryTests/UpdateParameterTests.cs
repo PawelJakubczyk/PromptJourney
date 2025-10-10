@@ -2,18 +2,14 @@
 
 namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
-public class UpdateParameterTests : RepositoryTestsBase
+public class UpdateParameterTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public UpdateParameterTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task UpdateParameterForVersionAsync_WithValidData_ShouldSucceed()
     {
         // Arrange
         await CreateAndSaveTestVersionAsync(DefaultTestVersion1);
-        var originalProperty = await CreateAndSaveTestPropertyAsync(DefaultTestVersion1, DefaultTestPropertyName1, [DefaultTestParam1]);
+        _ = await CreateAndSaveTestPropertyAsync(DefaultTestVersion1, DefaultTestPropertyName1, [DefaultTestParam1]);
 
         // Modify the property
         var updatedProperty = await CreateTestPropertyAsync(

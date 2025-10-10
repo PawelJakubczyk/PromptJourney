@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.PromptHistoryRepositoryTests;
 
-public sealed class GetLastHistoryRecordsTests : RepositoryTestsBase
+public sealed class GetLastHistoryRecordsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetLastHistoryRecordsTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // GetLastHistoryRecordsAsync Tests
     [Fact]

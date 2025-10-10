@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;
 
-public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsBase
+public sealed class CheckLinkWithStyleExistsTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {
-    public CheckLinkWithStyleExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("ModernArt")]
     [InlineData("ClassicStyle")]
@@ -27,7 +23,6 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         if (response.StatusCode == HttpStatusCode.OK)
         {
             response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
-
             var exists = await GetExistsFromResponse(response);
             //exists.Should().BeOneOf(true, false);
         }
@@ -107,7 +102,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var exists = await GetExistsFromResponse(response);
+            _ = await GetExistsFromResponse(response);
             //exists.Should().BeOneOf(true, false);
         }
     }

@@ -13,14 +13,9 @@ public static class TestCacheExtensions
     }
 }
 
-public class HybridCache
+public class HybridCache(IMemoryCache memoryCache)
 {
-    private readonly IMemoryCache _memoryCache;
-
-    public HybridCache(IMemoryCache memoryCache)
-    {
-        _memoryCache = memoryCache;
-    }
+    private readonly IMemoryCache _memoryCache = memoryCache;
 
     public T? Get<T>(string key) where T : class
     {

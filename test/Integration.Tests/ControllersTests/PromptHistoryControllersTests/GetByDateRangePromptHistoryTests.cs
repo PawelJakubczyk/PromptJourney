@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
-public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTestsBase
+public sealed class GetByDateRangePromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : PromptHistoryControllerTestsBase(factory)
 {
-    public GetByDateRangePromptHistoryTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task GetByDateRange_ReturnsOk_ForValidDateRange()
     {

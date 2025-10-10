@@ -5,12 +5,8 @@ using FluentResults;
 
 namespace Integration.Tests.RepositoriesTests.VersionsRepositoryTests;
 
-public sealed class AddVersionTests : RepositoryTestsBase
+public sealed class AddVersionTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public AddVersionTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task AddVersionAsync_WithValidVersion_ShouldReturnSuccess()
     {

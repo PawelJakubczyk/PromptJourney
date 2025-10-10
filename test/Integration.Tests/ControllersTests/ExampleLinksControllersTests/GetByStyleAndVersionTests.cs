@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;
 
-public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
+public sealed class GetByStyleAndVersionTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {
-    public GetByStyleAndVersionTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("ModernArt", "1.0")]
     [InlineData("ClassicStyle", "2.0")]
