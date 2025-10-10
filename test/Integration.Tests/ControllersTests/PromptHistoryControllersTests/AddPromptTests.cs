@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests;
 
-public sealed class AddPromptTests : PromptHistoryControllerTestsBase
+public sealed class AddPromptTests(MidjourneyTestWebApplicationFactory factory) : PromptHistoryControllerTestsBase(factory)
 {
-    public AddPromptTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task AddPrompt_ReturnsValidResponse_WithValidRequest()
     {

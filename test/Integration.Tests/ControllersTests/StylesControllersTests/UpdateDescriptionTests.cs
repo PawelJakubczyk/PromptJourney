@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
-public sealed class UpdateDescriptionTests : StylesControllerTestsBase
+public sealed class UpdateDescriptionTests(MidjourneyTestWebApplicationFactory factory) : StylesControllerTestsBase(factory)
 {
-    public UpdateDescriptionTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task UpdateDescription_ReturnsValidResponse_WithValidRequest()
     {

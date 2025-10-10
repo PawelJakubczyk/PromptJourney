@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.PromptHistoryRepositoryTests;
 
-public sealed class GetHistoryByDateRangeTests : RepositoryTestsBase
+public sealed class GetHistoryByDateRangeTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetHistoryByDateRangeTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // GetHistoryByDateRangeAsync Tests
     [Fact]

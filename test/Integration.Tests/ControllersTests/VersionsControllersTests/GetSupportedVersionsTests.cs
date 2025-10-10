@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
-public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
+public sealed class GetSupportedVersionsTests(MidjourneyTestWebApplicationFactory factory) : VersionsControllerTestsBase(factory)
 {
-    public GetSupportedVersionsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task GetSupported_ReturnsOk_WithValidResponse()
     {

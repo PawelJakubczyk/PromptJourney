@@ -3,12 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.VersionsRepositoryTests;
 
-public sealed class CheckVersionExistsInVersionsTests : RepositoryTestsBase
+public sealed class CheckVersionExistsInVersionsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public CheckVersionExistsInVersionsTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task CheckVersionExistsInVersionsAsync_WithExistingVersion_ShouldReturnTrue()
     {

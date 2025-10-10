@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.PromptHistoryRepositoryTests;
 
-public class GetAllHistoryRecordsTests : RepositoryTestsBase
+public class GetAllHistoryRecordsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetAllHistoryRecordsTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // GetAllHistoryRecordsAsync Tests
     [Fact]

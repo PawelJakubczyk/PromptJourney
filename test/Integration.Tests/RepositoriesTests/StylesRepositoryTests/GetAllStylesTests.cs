@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class GetAllStylesTests : RepositoryTestsBase
+public sealed class GetAllStylesTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetAllStylesTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // Test Constants
     private const string TestStyleType1 = "Abstract";

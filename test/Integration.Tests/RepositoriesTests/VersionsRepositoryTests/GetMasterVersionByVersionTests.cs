@@ -3,12 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.VersionsRepositoryTests;
 
-public sealed class GetMasterVersionByVersionTests : RepositoryTestsBase
+public sealed class GetMasterVersionByVersionTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetMasterVersionByVersionTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task GetMasterVersionByVersionAsync_WithExistingVersion_ShouldReturnVersion()
     {

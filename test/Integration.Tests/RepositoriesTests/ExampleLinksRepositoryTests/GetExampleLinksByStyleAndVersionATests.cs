@@ -3,18 +3,15 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
 
-public class GetExampleLinksByStyleAndVersionTests : RepositoryTestsBase
+public class GetExampleLinksByStyleAndVersionTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetExampleLinksByStyleAndVersionTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // GetExampleLinksByStyleAndVersionAsync Tests
     [Fact]
     public async Task GetExampleLinksByStyleAndVersionAsync_WithExistingStyleAndVersion_ShouldReturnMatchingLinks()
     {
         // Arrange
-        var (versions, styles) = await CreateMultipleTestDataAsync();
+        var (_, _) = await CreateMultipleTestDataAsync();
 
         var linkData = new[]
         {

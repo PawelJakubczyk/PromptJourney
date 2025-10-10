@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
-public sealed class CreateVersionTests : VersionsControllerTestsBase
+public sealed class CreateVersionTests(MidjourneyTestWebApplicationFactory factory) : VersionsControllerTestsBase(factory)
 {
-    public CreateVersionTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task Create_ReturnsCreatedOrBadRequest_WithValidRequest()
     {

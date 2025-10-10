@@ -2,11 +2,8 @@
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
 
-public class GetAllExampleLinksTests : RepositoryTestsBase
+public class GetAllExampleLinksTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetAllExampleLinksTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // GetAllExampleLinksAsync Tests
     [Fact]

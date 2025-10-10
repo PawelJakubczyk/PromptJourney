@@ -2,13 +2,9 @@
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
 
-public class PropertiesControllerTestsBase : ControllerTestsBase
+public class PropertiesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {
     protected const string BaseUrl = "/api/properties";
-
-    public PropertiesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
 
     // Helper method to generate unique property names
     protected static string GenerateTestPropertyName() => $"TestProperty_{Guid.NewGuid().ToString("N")[..8]}";

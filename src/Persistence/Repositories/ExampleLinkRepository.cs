@@ -9,14 +9,9 @@ using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
 
-public sealed class ExampleLinkRepository : IExampleLinksRepository
+public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContext) : IExampleLinksRepository
 {
-    private readonly MidjourneyDbContext _midjourneyDbContext;
-
-    public ExampleLinkRepository(MidjourneyDbContext midjourneyDbContext)
-    {
-        _midjourneyDbContext = midjourneyDbContext;
-    }
+    private readonly MidjourneyDbContext _midjourneyDbContext = midjourneyDbContext;
 
     public Task<Result<List<MidjourneyStyleExampleLink>>> GetAllExampleLinksAsync(CancellationToken cancellationToken)
     {

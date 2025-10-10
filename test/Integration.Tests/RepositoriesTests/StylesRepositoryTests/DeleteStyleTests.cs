@@ -3,12 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class DeleteStyleTests : RepositoryTestsBase
+public sealed class DeleteStyleTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public DeleteStyleTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task DeleteStyleAsync_WithExistingStyle_ShouldReturnSuccess()
     {

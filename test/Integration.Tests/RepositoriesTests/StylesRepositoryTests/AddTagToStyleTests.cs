@@ -3,11 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class AddTagToStyleTests : RepositoryTestsBase
+public sealed class AddTagToStyleTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public AddTagToStyleTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // Test Constants
     private const string TestTag1 = "modern";

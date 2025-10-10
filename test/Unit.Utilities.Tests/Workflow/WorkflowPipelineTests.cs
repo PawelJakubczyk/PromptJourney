@@ -27,8 +27,8 @@ public class WorkflowPipelineTests
         // Arrange
         var errors = new List<Error>
         {
-            new Error("Error 1"),
-            new Error("Error 2")
+            new("Error 1"),
+            new("Error 2")
         };
 
         // Act
@@ -97,8 +97,8 @@ public class WorkflowPipelineTests
     public void Multiple_Create_Calls_ShouldReturnIndependentInstances()
     {
         // Arrange
-        var errors1 = new List<Error> { new Error("Error 1") };
-        var errors2 = new List<Error> { new Error("Error 2") };
+        var errors1 = new List<Error> { new("Error 1") };
+        var errors2 = new List<Error> { new("Error 2") };
 
         // Act
         var pipeline1 = WorkflowPipeline.Create(errors1);
@@ -130,9 +130,9 @@ public class WorkflowPipelineTests
         // Arrange
         var errors = new List<Error>
         {
-            new Error("First error"),
-            new Error("Second error"),
-            new Error("Third error")
+            new("First error"),
+            new("Second error"),
+            new("Third error")
         };
 
         // Act

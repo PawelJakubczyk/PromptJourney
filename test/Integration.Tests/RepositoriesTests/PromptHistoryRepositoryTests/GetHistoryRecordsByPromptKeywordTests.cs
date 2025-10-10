@@ -3,11 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.PromptHistoryRepositoryTests;
 
-public sealed class GetHistoryRecordsByPromptKeywordTests : RepositoryTestsBase
+public sealed class GetHistoryRecordsByPromptKeywordTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public GetHistoryRecordsByPromptKeywordTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // GetHistoryRecordsByPromptKeywordAsync Tests
     [Fact]

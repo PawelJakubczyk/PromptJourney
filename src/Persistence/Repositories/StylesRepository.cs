@@ -7,14 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
-public sealed class StylesRepository : IStyleRepository
+public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepository
 {
-    private readonly MidjourneyDbContext _midjourneyDbContext;
-
-    public StylesRepository(MidjourneyDbContext dbContext)
-    {
-        _midjourneyDbContext = dbContext;
-    }
+    private readonly MidjourneyDbContext _midjourneyDbContext = dbContext;
 
     // Query Methods
     public async Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync(CancellationToken cancellationToken)

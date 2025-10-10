@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
-public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
+public sealed class UpdatePropertyTests(MidjourneyTestWebApplicationFactory factory) : PropertiesControllerTestsBase(factory)
 {
-    public UpdatePropertyTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task UpdateProperty_ReturnsValidResponse_WithValidRequest()
     {

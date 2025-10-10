@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
-public sealed class DeletePropertyTests : PropertiesControllerTestsBase
+public sealed class DeletePropertyTests(MidjourneyTestWebApplicationFactory factory) : PropertiesControllerTestsBase(factory)
 {
-    public DeletePropertyTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("1.0", "aspect")]
     [InlineData("2.0", "quality")]

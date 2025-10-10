@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;
 
-public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
+public sealed class AddExampleLinkTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {
-    public AddExampleLinkTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task AddExampleLink_ReturnsValidResponse_WithValidRequest()
     {

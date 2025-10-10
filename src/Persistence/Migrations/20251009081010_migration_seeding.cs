@@ -317,7 +317,7 @@ namespace Persistence.Migrations
             migrationBuilder.InsertData(
                 schema: "public",
                 table: "midjourney_styles",
-                columns: new[] { "name", "type", "description", "tags" },
+                columns: ["name", "type", "description", "tags"],
                 values: new object[,]
                 {
                     { "Anime Style", "Custom", "Classic anime inspired visuals", new[] { "anime", "2D", "manga" } },
@@ -389,8 +389,8 @@ namespace Persistence.Migrations
                 schema: "public",
                 table: "midjourney_styles",
                 keyColumn: "name",
-                keyValues: new object[]
-                {
+                keyValues:
+                [
                     "Anime Style", "Realistic Portrait", "Cyberpunk", "Minimalist", "Fantasy Landscape",
                     "Cartoon", "Pixel Art", "Watercolor", "Oil Painting", "Low Poly", "Surreal", "Gothic",
                     "Steampunk", "Fantasy Portrait", "3D Realistic", "Comic Book", "Chibi", "Flat Design",
@@ -401,7 +401,7 @@ namespace Persistence.Migrations
                     "Street Art", "Vector Art", "Neoclassicism", "3D Low Poly", "Ghibli Inspired", "Horror",
                     "Surrealism", "Neo-Noir", "Pixel Fantasy", "Anime Realism", "Digital Painting", "Concept Sci-Fi",
                     "Futurism", "Surreal Landscape", "Cute Mascot", "Retro Futuristic"
-                });
+                ]);
 
             // Remove all properties data
             migrationBuilder.Sql("DELETE FROM public.midjourney_properties");
@@ -411,7 +411,7 @@ namespace Persistence.Migrations
                 schema: "public",
                 table: "midjourney_versions",
                 keyColumn: "version",
-                keyValues: new object[] { "1", "2", "3", "4", "5", "5.1", "5.2", "6", "6.1", "7", "niji 4", "niji 5", "niji 6" });
+                keyValues: ["1", "2", "3", "4", "5", "5.1", "5.2", "6", "6.1", "7", "niji 4", "niji 5", "niji 6"]);
         }
     }
 }

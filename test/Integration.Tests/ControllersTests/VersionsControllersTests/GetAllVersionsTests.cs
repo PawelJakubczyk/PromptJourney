@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
-public sealed class GetAllVersionsTests : VersionsControllerTestsBase
+public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory factory) : VersionsControllerTestsBase(factory)
 {
-    public GetAllVersionsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task GetAll_ReturnsOk_WhenVersionsExist()
     {

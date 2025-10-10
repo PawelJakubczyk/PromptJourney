@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
-public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
+public sealed class CheckPropertyExistsTests(MidjourneyTestWebApplicationFactory factory) : PropertiesControllerTestsBase(factory)
 {
-    public CheckPropertyExistsTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("1.0", "aspect")]
     [InlineData("2.0", "quality")]
@@ -27,8 +23,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         if (response.StatusCode == HttpStatusCode.OK)
         {
             response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
-
-            var exists = await GetExistsFromResponse(response);
+            _ = await GetExistsFromResponse(response);
             //exists.Should().BeOneOf(true, false);
         }
     }
@@ -103,7 +98,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var exists = await GetExistsFromResponse(response);
+            _ = await GetExistsFromResponse(response);
             //exists.Should().BeOneOf(true, false);
         }
     }

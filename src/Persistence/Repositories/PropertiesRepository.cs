@@ -12,25 +12,19 @@ using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
 
-public sealed class PropertiesRepository : IPropertiesRepository
+public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext, HybridCache cache) : IPropertiesRepository
 {
     private const string allPropertiesCacheKey = "all_properties";
     private const string allSuportedPropertiesCacheKey = "all_suported_properties";
 
-    private readonly MidjourneyDbContext _midjourneyDbContext;
-    private readonly HybridCache _cache;
+    private readonly MidjourneyDbContext _midjourneyDbContext = midjourneyDbContext;
+    private readonly HybridCache _cache = cache;
 
     private readonly HybridCacheEntryOptions cacheOptions = new()
     {
         Expiration = TimeSpan.FromHours(24),
         LocalCacheExpiration = TimeSpan.FromHours(12)
     };
-
-    public PropertiesRepository(MidjourneyDbContext midjourneyDbContext, HybridCache cache)
-    {
-        _midjourneyDbContext = midjourneyDbContext;
-        _cache = cache;
-    }
 
     // For Queries
     public async Task<Result<List<MidjourneyProperties>>> GetAllPropertiesByVersionAsync(ModelVersion version, CancellationToken cancellationToken)

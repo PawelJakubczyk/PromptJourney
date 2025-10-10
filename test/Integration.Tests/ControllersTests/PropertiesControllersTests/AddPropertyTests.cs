@@ -7,12 +7,8 @@ using System.Net.Http.Json;
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
 
-public sealed class AddPropertyTests : PropertiesControllerTestsBase
+public sealed class AddPropertyTests(MidjourneyTestWebApplicationFactory factory) : PropertiesControllerTestsBase(factory)
 {
-    public AddPropertyTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     public async Task AddProperty_ReturnsValidResponse_WithValidRequest()
     {

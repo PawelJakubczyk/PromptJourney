@@ -3,11 +3,8 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.PropertiesRepositoryTests;
 
-public class DeleteParameterTests : RepositoryTestsBase
+public class DeleteParameterTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
-    public DeleteParameterTests(MidjourneyDbFixture fixture) : base(fixture)
-    {
-    }
 
     // DeleteParameterInVersionAsync Tests
     [Fact]

@@ -6,12 +6,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.VersionsControllersTests;
 
-public sealed class GetByVersionTests : VersionsControllerTestsBase
+public sealed class GetByVersionTests(MidjourneyTestWebApplicationFactory factory) : VersionsControllerTestsBase(factory)
 {
-    public GetByVersionTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("1")]
     [InlineData("2")]

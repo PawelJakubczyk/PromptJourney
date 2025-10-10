@@ -2,13 +2,9 @@
 
 namespace Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 
-public class ExampleLinksControllerTestsBase : ControllerTestsBase
+public class ExampleLinksControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {
     protected const string BaseUrl = "/api/examplelinks";
-
-    public ExampleLinksControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
 
     // Helper method to generate unique test URLs
     protected static string GenerateTestUrl() => $"https://test.example.com/{Guid.NewGuid()}.jpg";

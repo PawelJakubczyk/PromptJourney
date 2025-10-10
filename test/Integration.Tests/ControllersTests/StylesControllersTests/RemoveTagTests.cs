@@ -5,12 +5,8 @@ using System.Net;
 
 namespace Integration.Tests.ControllersTests.StylesControllersTests;
 
-public sealed class RemoveTagTests : StylesControllerTestsBase
+public sealed class RemoveTagTests(MidjourneyTestWebApplicationFactory factory) : StylesControllerTestsBase(factory)
 {
-    public RemoveTagTests(MidjourneyTestWebApplicationFactory factory) : base(factory)
-    {
-    }
-
     [Theory]
     [InlineData("TestStyle", "tagtoremove")]
     [InlineData("AnotherStyle", "anothertag")]
