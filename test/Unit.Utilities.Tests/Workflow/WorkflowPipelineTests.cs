@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using Utilities.Workflows;
 
@@ -46,7 +46,7 @@ public class WorkflowPipelineTests
     public void Create_WithNullErrors_ShouldReturnPipelineWithEmptyErrors()
     {
         // Act
-        var pipeline = WorkflowPipeline.Create(null, breakOnError: true);
+        var pipeline = WorkflowPipeline.Create(null!, breakOnError: true);
 
         // Assert
         pipeline.Should().NotBeNull();

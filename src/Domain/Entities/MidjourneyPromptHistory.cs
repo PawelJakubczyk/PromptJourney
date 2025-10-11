@@ -50,7 +50,7 @@ public class MidjourneyPromptHistory : IEntity
             .Empty()
             .Validate(pipeline => pipeline
                 .CollectErrors(prompt)
-                .CollectErrors<ModelVersion>(version))
+                .CollectErrors(version))
             .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
             (
                 prompt.Value,

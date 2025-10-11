@@ -6,10 +6,14 @@ using System.Text.Json;
 namespace Integration.Tests.ControllersTests;
 
 [Collection("Integration Tests")]
-public abstract class ControllerTestsBase
-{
+public abstract class ControllerTestsBase {
     protected readonly MidjourneyTestWebApplicationFactory Factory;
     protected readonly HttpClient Client;
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     protected ControllerTestsBase(MidjourneyTestWebApplicationFactory factory)
     {
@@ -30,10 +34,7 @@ public abstract class ControllerTestsBase
         if (expectedCount >= 0)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var items = JsonSerializer.Deserialize<List<T>>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var items = JsonSerializer.Deserialize<List<T>>(content, JsonOptions);
             items.Should().HaveCount(expectedCount);
         }
     }
@@ -80,20 +81,14 @@ public abstract class ControllerTestsBase
     protected static async Task<T?> DeserializeResponse<T>(HttpResponseMessage response)
     {
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        return JsonSerializer.Deserialize<T>(content, JsonOptions);
     }
 
     // Helper method to check if object exists in response
     protected static async Task<bool> GetExistsFromResponse(HttpResponseMessage response)
     {
         var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<ExistsResponse>(content, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        var result = JsonSerializer.Deserialize<ExistsResponse>(content, JsonOptions);
         return result?.Exists ?? false;
     }
 
@@ -101,10 +96,7 @@ public abstract class ControllerTestsBase
     protected static async Task<int> GetCountFromResponse(HttpResponseMessage response)
     {
         var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<CountResponse>(content, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        var result = JsonSerializer.Deserialize<CountResponse>(content, JsonOptions);
         return result?.Count ?? 0;
     }
 
