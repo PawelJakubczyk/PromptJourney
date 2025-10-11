@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -73,10 +73,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
             "Custom"
         );
 
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style not found",
-            typeof(ApplicationLayer));
+            "Style not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -102,10 +101,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
             "" // Invalid empty type
         );
 
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid style data",
-            typeof(DomainLayer));
+            "Invalid style data");
 
         var senderMock = new Mock<ISender>();
         senderMock

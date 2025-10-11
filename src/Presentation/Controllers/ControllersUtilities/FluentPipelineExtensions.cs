@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Utilities.Constants;
@@ -25,7 +25,7 @@ public sealed class Pipeline<TResponse>
         var mainError = Errors.Count != 0
             ? PickHighestPriorityErrorInternal(Errors)
             : (ErrorFactory.Create()
-                .Withlayer(typeof(PresentationLayer))
+                .WithLayer<PresentationLayer>()
                 .WithMessage("Unknown error")
                 .WithErrorCode(StatusCodes.Status500InternalServerError));
 

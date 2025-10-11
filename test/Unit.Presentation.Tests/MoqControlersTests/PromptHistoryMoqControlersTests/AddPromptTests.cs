@@ -1,4 +1,4 @@
-﻿using Application.Features.PromptHistory.Responses;
+using Application.Features.PromptHistory.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -71,10 +71,9 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
             ""
         );
 
-        var failureResult = CreateFailureResult<PromptHistoryResponse>(
+        var failureResult = CreateFailureResult<PromptHistoryResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Prompt and version cannot be empty",
-            typeof(DomainLayer));
+            "Prompt and version cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -99,10 +98,9 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
             "99.0"
         );
 
-        var failureResult = CreateFailureResult<PromptHistoryResponse>(
+        var failureResult = CreateFailureResult<PromptHistoryResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Version not found",
-            typeof(ApplicationLayer));
+            "Version not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -127,10 +125,9 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
             "1.0"
         );
 
-        var failureResult = CreateFailureResult<PromptHistoryResponse>(
+        var failureResult = CreateFailureResult<PromptHistoryResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Prompt exceeds maximum length",
-            typeof(DomainLayer));
+            "Prompt exceeds maximum length");
 
         var senderMock = new Mock<ISender>();
         senderMock

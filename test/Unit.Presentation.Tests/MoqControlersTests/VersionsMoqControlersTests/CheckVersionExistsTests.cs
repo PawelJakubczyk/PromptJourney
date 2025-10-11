@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -65,10 +65,9 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var invalidVersion = "";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid version format",
-            typeof(DomainLayer));
+            "Invalid version format");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -89,10 +88,9 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock

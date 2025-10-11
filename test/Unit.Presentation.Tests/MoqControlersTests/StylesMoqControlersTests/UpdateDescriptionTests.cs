@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -47,10 +47,9 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var styleName = "NonExistentStyle";
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style not found",
-            typeof(ApplicationLayer));
+            "Style not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -72,10 +71,9 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var invalidStyleName = "";
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Style name cannot be empty",
-            typeof(DomainLayer));
+            "Style name cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

@@ -1,4 +1,4 @@
-﻿using Application.Features.PromptHistory.Responses;
+using Application.Features.PromptHistory.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -61,10 +61,9 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var invalidKeyword = "";
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Keyword cannot be empty",
-            typeof(DomainLayer));
+            "Keyword cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -85,10 +84,9 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var shortKeyword = "a"; // Too short
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Keyword must be at least 2 characters long",
-            typeof(DomainLayer));
+            "Keyword must be at least 2 characters long");
 
         var senderMock = new Mock<ISender>();
         senderMock

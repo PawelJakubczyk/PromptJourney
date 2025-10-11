@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -35,10 +35,9 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "NonExistentStyle";
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style not found",
-            typeof(ApplicationLayer));
+            "Style not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -59,10 +58,9 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidName = "";
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Style name cannot be empty",
-            typeof(DomainLayer));
+            "Style name cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

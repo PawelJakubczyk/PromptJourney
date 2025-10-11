@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -70,10 +70,9 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var invalidLink = "invalid-link";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid link format",
-            typeof(DomainLayer));
+            "Invalid link format");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -94,10 +93,9 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var link = "http://example.com/image.jpg";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock

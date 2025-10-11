@@ -1,4 +1,4 @@
-﻿using Application.Features.ExampleLinks.Responses;
+using Application.Features.ExampleLinks.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -61,10 +61,9 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var invalidStyleName = "";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>>(
+        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Style name cannot be empty",
-            typeof(DomainLayer));
+            "Style name cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -85,10 +84,9 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var styleName = "NonExistentStyle";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>>(
+        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style not found",
-            typeof(ApplicationLayer));
+            "Style not found");
 
         var senderMock = new Mock<ISender>();
         senderMock

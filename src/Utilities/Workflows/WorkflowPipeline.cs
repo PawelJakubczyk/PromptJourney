@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 
 namespace Utilities.Workflows;
 
@@ -6,12 +6,13 @@ public class WorkflowPipeline
 {
     private readonly Dictionary<string, object> _results = [];
     public List<Error> Errors { get; }
-    public bool BreakOnError { get; }
+    public bool _breakOnError;
+    public bool BreakOnError => _breakOnError && Errors.Count is not 0;
 
     private WorkflowPipeline(List<Error> errors, bool breakOnError)
     {
         Errors = errors ?? [];
-        BreakOnError = breakOnError;
+        _breakOnError = breakOnError;
     }
 
     public T? GetResult<T>(string? key = null)

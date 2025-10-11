@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
@@ -35,7 +35,7 @@ internal static class ModelVersionErrorsExtensions
         this WorkflowPipeline pipeline, string? value)
         where TLayer : ILayer
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (value is null) return pipeline;
@@ -45,7 +45,7 @@ internal static class ModelVersionErrorsExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );

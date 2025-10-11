@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -61,10 +61,9 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidType = "InvalidType";
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style type not found",
-            typeof(ApplicationLayer));
+            "Style type not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -85,10 +84,9 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidType = "";
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Style type cannot be empty",
-            typeof(DomainLayer));
+            "Style type cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

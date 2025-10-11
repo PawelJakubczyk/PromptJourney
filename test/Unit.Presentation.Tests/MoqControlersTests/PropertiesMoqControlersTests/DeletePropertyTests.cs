@@ -1,4 +1,4 @@
-﻿using Application.Features.Properties.Responses;
+using Application.Features.Properties.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -37,10 +37,9 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "nonexistent";
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Property not found",
-            typeof(ApplicationLayer));
+            "Property not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -62,10 +61,9 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var invalidVersion = "";
         var invalidPropertyName = "";
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Version and property name cannot be empty",
-            typeof(DomainLayer));
+            "Version and property name cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -87,10 +85,9 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "99.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Version not found",
-            typeof(ApplicationLayer));
+            "Version not found");
 
         var senderMock = new Mock<ISender>();
         senderMock

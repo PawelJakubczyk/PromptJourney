@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.IRepository;
+using Application.Abstractions.IRepository;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
@@ -119,7 +119,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
             return Result.Fail<MidjourneyProperties>
                 (
                     ErrorFactory.Create()
-                    .Withlayer(typeof(PersistenceLayer))
+                    .WithLayer<PersistenceLayer>()
                     .WithMessage($"Property '{propertyName.Value}' not found in version '{version.Value}'")
                     .WithErrorCode(StatusCodes.Status404NotFound)
                 );

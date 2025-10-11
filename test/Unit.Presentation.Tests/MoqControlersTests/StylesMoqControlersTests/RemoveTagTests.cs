@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -37,10 +37,9 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "NonExistentStyle";
         var tag = "anytag";
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style not found",
-            typeof(ApplicationLayer));
+            "Style not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -62,10 +61,9 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "nonexistenttag";
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Tag not found in style",
-            typeof(DomainLayer));
+            "Tag not found in style");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -87,10 +85,9 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "";
         var tag = "";
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Style name and tag cannot be empty",
-            typeof(DomainLayer));
+            "Style name and tag cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

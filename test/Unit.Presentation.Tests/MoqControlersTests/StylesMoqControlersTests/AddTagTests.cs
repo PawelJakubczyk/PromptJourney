@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -44,10 +44,9 @@ public sealed class AddTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "NonExistentStyle";
         var request = new AddTagRequest("newtag");
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style not found",
-            typeof(ApplicationLayer));
+            "Style not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -69,10 +68,9 @@ public sealed class AddTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var request = new AddTagRequest(""); // Invalid empty tag
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Tag cannot be empty",
-            typeof(DomainLayer));
+            "Tag cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -94,10 +92,9 @@ public sealed class AddTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var request = new AddTagRequest("existingtag");
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Tag already exists in style",
-            typeof(DomainLayer));
+            "Tag already exists in style");
 
         var senderMock = new Mock<ISender>();
         senderMock

@@ -1,4 +1,4 @@
-﻿using Application.Features.Versions.Responses;
+using Application.Features.Versions.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -44,10 +44,9 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "99.0";
-        var failureResult = CreateFailureResult<VersionResponse>(
+        var failureResult = CreateFailureResult<VersionResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Version not found",
-            typeof(ApplicationLayer));
+            "Version not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -68,10 +67,9 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
     {
         // Arrange
         var invalidVersion = "";
-        var failureResult = CreateFailureResult<VersionResponse>(
+        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid version format",
-            typeof(DomainLayer));
+            "Invalid version format");
 
         var senderMock = new Mock<ISender>();
         senderMock

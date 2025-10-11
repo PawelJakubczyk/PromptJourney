@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -61,10 +61,9 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidTags = new List<string> { "" };
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "No styles found with specified tags",
-            typeof(ApplicationLayer));
+            "No styles found with specified tags");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -85,10 +84,9 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var emptyTags = new List<string>();
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Tags list cannot be empty",
-            typeof(DomainLayer));
+            "Tags list cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

@@ -1,4 +1,4 @@
-﻿using Application.Features.Properties.Responses;
+using Application.Features.Properties.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -82,10 +82,9 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ne"]
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Property not found",
-            typeof(ApplicationLayer));
+            "Property not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -113,10 +112,9 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             [] // Empty parameters invalid
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Parameters cannot be empty",
-            typeof(DomainLayer));
+            "Parameters cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

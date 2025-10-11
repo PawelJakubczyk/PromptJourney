@@ -1,4 +1,4 @@
-﻿using Application.Features.Versions.Responses;
+using Application.Features.Versions.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -58,10 +58,9 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsInternalServerError_WhenHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<VersionResponse>>(
+        var failureResult = CreateFailureResult<List<VersionResponse>, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock
