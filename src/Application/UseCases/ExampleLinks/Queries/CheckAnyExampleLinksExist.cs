@@ -7,7 +7,7 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class CheckAnyExampleLinksExist
 {
-    public sealed record Query() : IQuery<bool>;
+    public sealed record Query : IQuery<bool>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
         : IQueryHandler<Query, bool>

@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.IRepository;
+using Application.Abstractions.IRepository;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using static Persistence.Repositories.Helper.RepositoryHelper;
+
+namespace Persistence.Repositories;
 
 public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepository
 {

@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
@@ -7,7 +7,7 @@ using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyProperties : IEntitie
+public class MidjourneyProperties : IEntity
 {
     // Columns
     public PropertyName PropertyName { get; set; }
@@ -90,7 +90,7 @@ public class MidjourneyProperties : IEntitie
         return result;
     }
 
-    public Result<Description> EditDescription(Result<Description?> description)
+    public static Result<Description> EditDescription(Result<Description?> description)
     {
         var result = WorkflowPipeline
             .Empty()

@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
 using FluentResults;
@@ -179,7 +179,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         return result.Value;
     }
 
-    protected async Task<MidjourneyPromptHistory> CreateTestPromptHistoryAsync(
+    protected static async Task<MidjourneyPromptHistory> CreateTestPromptHistoryAsync(
         string promptText,
         MidjourneyVersion version,
         List<MidjourneyStyle> styles)
@@ -200,7 +200,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
     }
 
     // Properties Helper Methods - POPRAWKA BŁĘDU KONWERSJI
-    protected async Task<MidjourneyProperties> CreateTestPropertyAsync(
+    protected static async Task<MidjourneyProperties> CreateTestPropertyAsync(
         string version,
         string propertyName,
         List<string> parameters,

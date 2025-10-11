@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyStyleExampleLink : IEntitie
+public class MidjourneyStyleExampleLink : IEntity
 {
     // Primary key
     public ExampleLink Link { get; private set; }

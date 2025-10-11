@@ -29,7 +29,7 @@ public sealed class GetByDateRangePromptHistoryTests(MidjourneyTestWebApplicatio
             historyRecords.Should().NotBeNull();
 
             // All records should be within the specified date range
-            if (historyRecords!.Any())
+            if (historyRecords.Count != 0)
             {
                 historyRecords.Should().AllSatisfy(record =>
                 {
@@ -109,7 +109,7 @@ public sealed class GetByDateRangePromptHistoryTests(MidjourneyTestWebApplicatio
             var historyRecords = await DeserializeResponse<List<PromptHistoryResponse>>(response);
             historyRecords.Should().NotBeNull();
 
-            if (historyRecords!.Any())
+            if (historyRecords.Count != 0)
             {
                 var firstRecord = historyRecords.First();
                 firstRecord.Prompt.Should().NotBeNullOrEmpty();

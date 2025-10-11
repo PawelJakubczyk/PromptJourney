@@ -190,6 +190,45 @@ public static class EntityExistenceValidationExtensions
     }
 
 
+    public static async Task<WorkflowPipeline> IfAlreadyExist<TType>
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        TType item,
+        Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
+        string entityName,
+        CancellationToken cancellationToken
+    )
+        where TType : ValueObject<string> {
+        return await ValidateExistence(
+            pipelineTask,
+            item,
+            existsFunc,
+            entityName,
+            shouldExist: false,
+            cancellationToken
+        ).ConfigureAwait(false);
+    }
+
+    public static async Task<WorkflowPipeline> IfNotExist<TType>
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        TType item,
+        Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
+        string entityName,
+        CancellationToken cancellationToken
+    )
+        where TType : ValueObject<string>
+    {
+        return await ValidateExistence(
+            pipelineTask,
+            item,
+            existsFunc,
+            entityName,
+            shouldExist: true,
+            cancellationToken
+        ).ConfigureAwait(false);
+    }
+
     public static async Task<WorkflowPipeline> ValidateExistence<TType>
     (
         this Task<WorkflowPipeline> pipelineTask,

@@ -33,21 +33,23 @@ public class MidjourneyDbFixture : IDisposable
 
         // PostgreSQL-specific cleanup that truncates all tables but keeps schema
         context.Database.ExecuteSqlRaw
-        (@"
-            DO $$ DECLARE
-                r RECORD;
-            BEGIN
-                -- Disable triggers to avoid constraint issues during truncation
-                SET session_replication_role = replica;
+        (
+            @"
+                DO $$ DECLARE
+                    r RECORD;
+                BEGIN
+                    -- Disable triggers to avoid constraint issues during truncation
+                    SET session_replication_role = replica;
 
-                FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
-                    EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE;';
-                END LOOP;
+                    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
+                        EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE;';
+                    END LOOP;
 
-                -- Re-enable triggers
-                SET session_replication_role = DEFAULT;
-            END $$;
-        ");
+                    -- Re-enable triggers
+                    SET session_replication_role = DEFAULT;
+                END $$;
+            "
+        );
     }
 
     public void Dispose()
@@ -55,11 +57,13 @@ public class MidjourneyDbFixture : IDisposable
         if (!_disposed)
         {
             _disposed = true;
+
+            // Prevent the finalizer from running if one is added later
+            GC.SuppressFinalize(this);
         }
     }
 }
 
 [CollectionDefinition("Database collection")]
 public class DatabaseCollection : ICollectionFixture<MidjourneyDbFixture>
-{
-}
+{}
