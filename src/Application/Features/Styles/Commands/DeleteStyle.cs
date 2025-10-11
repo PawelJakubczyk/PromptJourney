@@ -1,4 +1,4 @@
-﻿using Application.Abstractions;
+using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.Features.Common.Responses;
@@ -38,9 +38,4 @@ public static class DeleteStyle
             return result;
         }
     }
-}
-
-internal static class DeleteStyleExtensions
-{
-    internal record DeleteResults(int? DeletedCount = null, MidjourneyStyle? Style = null);
 }

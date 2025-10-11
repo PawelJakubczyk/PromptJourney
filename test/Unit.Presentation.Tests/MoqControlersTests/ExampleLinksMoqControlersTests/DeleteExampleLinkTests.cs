@@ -1,4 +1,4 @@
-﻿using Application.Features.ExampleLinks.Responses;
+using Application.Features.ExampleLinks.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -35,10 +35,9 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var link = "http://nonexistent.com/image.jpg";
-        var failureResult = CreateFailureResult<ExampleLinkResponse>(
+        var failureResult = CreateFailureResult<ExampleLinkResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Link not found",
-            typeof(ApplicationLayer));
+            "Link not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -59,10 +58,9 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var invalidLink = "invalid-link";
-        var failureResult = CreateFailureResult<ExampleLinkResponse>(
+        var failureResult = CreateFailureResult<ExampleLinkResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid link format",
-            typeof(DomainLayer));
+            "Invalid link format");
 
         var senderMock = new Mock<ISender>();
         senderMock

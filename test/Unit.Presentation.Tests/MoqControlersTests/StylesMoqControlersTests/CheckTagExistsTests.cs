@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -68,10 +68,9 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var invalidStyleName = "";
         var invalidTag = "";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Style name and tag cannot be empty",
-            typeof(DomainLayer));
+            "Style name and tag cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -93,10 +92,9 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "testtag";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock

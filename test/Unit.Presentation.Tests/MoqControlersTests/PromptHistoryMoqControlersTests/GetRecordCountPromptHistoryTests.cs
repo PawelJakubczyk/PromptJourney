@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -69,10 +69,9 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
     public async Task GetRecordCount_ReturnsInternalServerError_WhenHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<int>(
+        var failureResult = CreateFailureResult<int, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock

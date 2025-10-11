@@ -1,4 +1,4 @@
-﻿using Application.Features.PromptHistory.Responses;
+using Application.Features.PromptHistory.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -64,10 +64,9 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var invalidCount = -1;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Count must be positive",
-            typeof(DomainLayer));
+            "Count must be positive");
 
         var senderMock = new Mock<ISender>();
         senderMock

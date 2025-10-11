@@ -1,4 +1,4 @@
-﻿using Application.Features.Properties.Responses;
+using Application.Features.Properties.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -61,10 +61,9 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var invalidVersion = "";
-        var failureResult = CreateFailureResult<List<PropertyResponse>>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Version cannot be empty",
-            typeof(DomainLayer));
+            "Version cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -85,10 +84,9 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "99.0";
-        var failureResult = CreateFailureResult<List<PropertyResponse>>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Version not found",
-            typeof(ApplicationLayer));
+            "Version not found");
 
         var senderMock = new Mock<ISender>();
         senderMock

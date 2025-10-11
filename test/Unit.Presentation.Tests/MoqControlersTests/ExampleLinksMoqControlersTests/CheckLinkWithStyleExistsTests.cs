@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -65,10 +65,9 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     {
         // Arrange
         var invalidStyleName = "";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Style name cannot be empty",
-            typeof(DomainLayer));
+            "Style name cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

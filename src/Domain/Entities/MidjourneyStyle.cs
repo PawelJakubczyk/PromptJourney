@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
@@ -141,7 +141,7 @@ internal static class MidjourneyStylePipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"List of {typeof(TValue).Name}: cannot be null.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -160,7 +160,7 @@ internal static class MidjourneyStylePipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: cannot be an empty collection.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -180,7 +180,7 @@ internal static class MidjourneyStylePipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: collection does not contain the required element.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -200,7 +200,7 @@ internal static class MidjourneyStylePipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: collection already contains the element.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );

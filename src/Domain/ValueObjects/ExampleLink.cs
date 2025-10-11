@@ -8,11 +8,11 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record ExampleLink : ValueObject<string?>, ICreatable<ExampleLink, string?>
+public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string>
 {
     public const int MaxLength = 200;
 
-    private ExampleLink(string? value) : base(value) { }
+    private ExampleLink(string value) : base(value) { }
 
     public static Result<ExampleLink> Create(string? value)
     {
@@ -29,12 +29,12 @@ public record ExampleLink : ValueObject<string?>, ICreatable<ExampleLink, string
     }
 }
 
-internal static class ExampleLinkErrorsExtensions
+file static class ExampleLinkErrorsExtensions
 {
     internal static WorkflowPipeline IfLinkFormatInvalid<TLayer>(this WorkflowPipeline pipeline, string? value)
         where TLayer : ILayer
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (string.IsNullOrWhiteSpace(value))
@@ -50,7 +50,7 @@ internal static class ExampleLinkErrorsExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"Invalid URL format: {value}")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );

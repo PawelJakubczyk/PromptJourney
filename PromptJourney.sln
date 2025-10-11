@@ -61,6 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit.Utilities.Tests", "tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{866EA296-4D13-4025-B3DC-1372EC041571}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		MIGRATION_GUIDE.md = MIGRATION_GUIDE.md
 		migration_manual.txt = migration_manual.txt
 		Paramiters.txt = Paramiters.txt

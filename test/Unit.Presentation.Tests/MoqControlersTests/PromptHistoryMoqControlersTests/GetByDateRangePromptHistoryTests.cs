@@ -1,4 +1,4 @@
-﻿using Application.Features.PromptHistory.Responses;
+using Application.Features.PromptHistory.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -64,10 +64,9 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = new DateTime(2024, 12, 31);
         var to = new DateTime(2024, 1, 1); // 'from' date after 'to' date
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "From date must be before to date",
-            typeof(DomainLayer));
+            "From date must be before to date");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -89,10 +88,9 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = new DateTime(2000, 1, 1);
         var to = new DateTime(2030, 12, 31); // Very large range
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
-            "Date range is too large",
-            typeof(ApplicationLayer));
+            "Date range is too large");
 
         var senderMock = new Mock<ISender>();
         senderMock

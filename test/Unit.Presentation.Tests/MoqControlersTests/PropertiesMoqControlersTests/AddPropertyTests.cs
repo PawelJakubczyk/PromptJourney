@@ -1,4 +1,4 @@
-﻿using Application.Features.Properties.Responses;
+using Application.Features.Properties.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -77,10 +77,9 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             []
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid property data",
-            typeof(DomainLayer));
+            "Invalid property data");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -106,10 +105,9 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             ["--s"]
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Version not found",
-            typeof(ApplicationLayer));
+            "Version not found");
 
         var senderMock = new Mock<ISender>();
         senderMock

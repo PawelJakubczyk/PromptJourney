@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Extensions;
@@ -14,7 +14,7 @@ public static class WorkflowPipelineExtensions
         where TLayer : ILayer
         where TValue : ValueObject<string?>?
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (string.IsNullOrWhiteSpace(value))
@@ -22,7 +22,7 @@ public static class WorkflowPipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: value cannot be null or whitespace.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -36,7 +36,7 @@ public static class WorkflowPipelineExtensions
         where TLayer : ILayer
         where TValue : ValueObject<string?>?
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (value != null && string.IsNullOrWhiteSpace(value))
@@ -44,7 +44,7 @@ public static class WorkflowPipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: cannot be whitespace.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -59,7 +59,7 @@ public static class WorkflowPipelineExtensions
         where TLayer : ILayer
         where TValue : ValueObject<string?>?
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (value?.Length > maxLength)
@@ -67,7 +67,7 @@ public static class WorkflowPipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: '{value}' cannot be longer than {maxLength} characters.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -81,13 +81,13 @@ public static class WorkflowPipelineExtensions
         where TLayer : ILayer
         where TValue : ValueObject<string?>?
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var duplicates = values?
-            .GroupBy(v => v)
-            .Where(g => g.Count() > 1)
-            .Select(g => g.Key)
+            .GroupBy(value => value)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
             .ToList();
 
         if (duplicates?.Count != 0 && duplicates is not null)
@@ -96,7 +96,7 @@ public static class WorkflowPipelineExtensions
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: contains duplicates -> {duplicateNames}.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );

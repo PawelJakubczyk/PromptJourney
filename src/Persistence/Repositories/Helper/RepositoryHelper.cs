@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Extensions;
@@ -17,7 +17,7 @@ public static class RepositoryHelper
         catch (Exception ex)
         {
             var error = ErrorFactory.Create()
-                .Withlayer(typeof(PersistenceLayer))
+                .WithLayer<PersistenceLayer>()
                 .WithMessage($"{errorMessage}: {ex.Message}")
                 .WithErrorCode(statusCode);
 

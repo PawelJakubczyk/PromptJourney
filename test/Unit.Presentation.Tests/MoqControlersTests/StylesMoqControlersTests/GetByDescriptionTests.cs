@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -61,10 +61,9 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidKeyword = "";
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Keyword cannot be empty",
-            typeof(DomainLayer));
+            "Keyword cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -85,10 +84,9 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var keyword = "test";
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock

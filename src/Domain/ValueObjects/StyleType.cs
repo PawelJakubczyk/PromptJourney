@@ -34,12 +34,15 @@ internal static class StyleTypeErrorsExtensions
     internal static WorkflowPipeline IfStyleTypeNotInclude<TLayer>(this WorkflowPipeline pipeline, string? value)
         where TLayer : ILayer
     {
+        if (pipeline.BreakOnError)
+            return pipeline;
+
         if (!Enum.TryParse<StyleTypeEnum>(value, true, out var _))
         {
             pipeline.Errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(TLayer))
+                .WithLayer<TLayer>()
                 .WithMessage($"Invalid style type: {value}. Expected values are: {string.Join(", ", Enum.GetNames<StyleTypeEnum>())}")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );

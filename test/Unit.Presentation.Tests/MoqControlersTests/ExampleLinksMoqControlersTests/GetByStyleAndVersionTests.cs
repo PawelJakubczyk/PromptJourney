@@ -1,4 +1,4 @@
-﻿using Application.Features.ExampleLinks.Responses;
+using Application.Features.ExampleLinks.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -64,10 +64,9 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         // Arrange
         var invalidStyleName = "";
         var invalidVersion = "";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>>(
+        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid parameters",
-            typeof(DomainLayer));
+            "Invalid parameters");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -89,10 +88,9 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         // Arrange
         var styleName = "NonExistentStyle";
         var version = "1.0";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>>(
+        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style or version not found",
-            typeof(ApplicationLayer));
+            "Style or version not found");
 
         var senderMock = new Mock<ISender>();
         senderMock

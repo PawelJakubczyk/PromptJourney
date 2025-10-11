@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -62,10 +62,9 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
     public async Task CheckLinksEmpty_ReturnsInternalServerError_WhenHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock

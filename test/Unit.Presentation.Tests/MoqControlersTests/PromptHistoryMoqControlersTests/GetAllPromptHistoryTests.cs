@@ -1,4 +1,4 @@
-﻿using Application.Features.PromptHistory.Responses;
+using Application.Features.PromptHistory.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -58,10 +58,9 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
     public async Task GetAll_ReturnsInternalServerError_WhenHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database error",
-            typeof(PersistenceLayer));
+            "Database error");
 
         var senderMock = new Mock<ISender>();
         senderMock

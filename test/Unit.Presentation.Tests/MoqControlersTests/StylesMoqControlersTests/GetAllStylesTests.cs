@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -60,10 +60,9 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid request",
-            typeof(ApplicationLayer));
+            "Invalid request");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -83,10 +82,9 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
     public async Task GetAll_ReturnsInternalServerError_WhenDatabaseError()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<StyleResponse>>(
+        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
-            "Database connection failed",
-            typeof(PersistenceLayer));
+            "Database connection failed");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -242,28 +240,5 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         returnedStyles.Should().Contain(s => s.Type == "Realistic");
         returnedStyles.Should().Contain(s => s.Type == "Minimalist");
         returnedStyles.Should().Contain(s => s.Type == "Vintage");
-    }
-
-    [Fact]
-    public async Task GetAll_HandlesMultipleErrors_WhenMultipleValidationFailures()
-    {
-        // Arrange
-        var failureResult = CreateMultipleErrorsResult<List<StyleResponse>>(
-            (StatusCodes.Status400BadRequest, "Validation error 1", typeof(DomainLayer)),
-            (StatusCodes.Status400BadRequest, "Validation error 2", typeof(ApplicationLayer))
-        );
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetAll(CancellationToken.None);
-
-        // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
     }
 }

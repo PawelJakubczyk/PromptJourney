@@ -1,4 +1,4 @@
-﻿using Application.Features.ExampleLinks.Responses;
+using Application.Features.ExampleLinks.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -72,10 +72,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
             ""
         );
 
-        var failureResult = CreateFailureResult<ExampleLinkResponse>(
-            StatusCodes.Status400BadRequest,
-            "Invalid request data",
-            typeof(DomainLayer));
+        var failureResult = CreateFailureResult<ExampleLinkResponse, DomainLayer>(StatusCodes.Status400BadRequest, "Invalid request data");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -101,10 +98,9 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
             "99.0"
         );
 
-        var failureResult = CreateFailureResult<ExampleLinkResponse>(
+        var failureResult = CreateFailureResult<ExampleLinkResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Style or version not found",
-            typeof(ApplicationLayer));
+            "Style or version not found");
 
         var senderMock = new Mock<ISender>();
         senderMock

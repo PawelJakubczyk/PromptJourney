@@ -1,5 +1,6 @@
-﻿using FluentResults;
+using FluentResults;
 using Microsoft.AspNetCore.Http;
+using Utilities.Constants;
 
 namespace Utilities.Extensions;
 
@@ -10,9 +11,10 @@ public static class ErrorFactory
         return new Error("An error occurred");
     }
 
-    public static Error Withlayer(this Error error, Type layer)
+    public static Error WithLayer<TLayer>(this Error error)
+        where TLayer : ILayer
     {
-        error.Metadata.TryAdd("Layer", layer.Name.ToString());
+        error.Metadata.TryAdd("Layer", typeof(TLayer).Name);
         return error;
     }
 

@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -52,10 +52,9 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
     public async Task GetSupported_ReturnsNotFound_WhenNoVersionsConfigured()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<string>>(
+        var failureResult = CreateFailureResult<List<string>, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "No supported versions found",
-            typeof(ApplicationLayer));
+            "No supported versions found");
 
         var senderMock = new Mock<ISender>();
         senderMock

@@ -1,4 +1,4 @@
-﻿using Application.Features.Styles.Responses;
+using Application.Features.Styles.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -71,10 +71,9 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
             ""
         );
 
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid style data",
-            typeof(DomainLayer));
+            "Invalid style data");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -99,10 +98,9 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
             "Custom"
         );
 
-        var failureResult = CreateFailureResult<StyleResponse>(
+        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
-            "Style already exists",
-            typeof(ApplicationLayer));
+            "Style already exists");
 
         var senderMock = new Mock<ISender>();
         senderMock

@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.IRepository;
+using Application.Abstractions.IRepository;
 using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
@@ -12,17 +12,17 @@ namespace Application.Extensions;
 public static class EntityExistenceValidationExtensions
 {
     public static Task<WorkflowPipeline> IfVersionNotExists
-(
-    this Task<WorkflowPipeline> pipelineTask,
-    ModelVersion version,
-    IVersionRepository repo,
-    CancellationToken cancellationToken
-)
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        ModelVersion version,
+        IVersionRepository repository,
+        CancellationToken cancellationToken
+    )
     {
         return pipelineTask.ValidateExistence
         (
             version,
-            repo.CheckVersionExistsAsync,
+            repository.CheckVersionExistsAsync,
             "Version",
             shouldExist: true,
             cancellationToken
@@ -33,14 +33,14 @@ public static class EntityExistenceValidationExtensions
     (
         this Task<WorkflowPipeline> pipelineTask,
         ModelVersion version,
-        IVersionRepository repo,
+        IVersionRepository repository,
         CancellationToken cancellationToken
     )
     {
         return pipelineTask.ValidateExistence
         (
             version,
-            repo.CheckVersionExistsAsync,
+            repository.CheckVersionExistsAsync,
             "Version",
             shouldExist: false,
             cancellationToken
@@ -51,14 +51,14 @@ public static class EntityExistenceValidationExtensions
     (
         this Task<WorkflowPipeline> pipelineTask,
         StyleName style,
-        IStyleRepository repo,
+        IStyleRepository repository,
         CancellationToken cancellationToken
     )
     {
         return pipelineTask.ValidateExistence
         (
             style,
-            repo.CheckStyleExistsAsync,
+            repository.CheckStyleExistsAsync,
             "Style",
             shouldExist: true,
             cancellationToken
@@ -69,14 +69,14 @@ public static class EntityExistenceValidationExtensions
     (
         this Task<WorkflowPipeline> pipelineTask,
         StyleName style,
-        IStyleRepository repo,
+        IStyleRepository repository,
         CancellationToken cancellationToken
     )
     {
         return pipelineTask.ValidateExistence
         (
             style,
-            repo.CheckStyleExistsAsync,
+            repository.CheckStyleExistsAsync,
             "Style",
             shouldExist: false,
             cancellationToken
@@ -87,13 +87,13 @@ public static class EntityExistenceValidationExtensions
     (
         this Task<WorkflowPipeline> pipelineTask,
         ExampleLink link,
-        IExampleLinksRepository repo,
+        IExampleLinksRepository repository,
         CancellationToken cancellationToken
     )
     {
         return pipelineTask.ValidateExistence(
             link,
-            repo.CheckExampleLinkExistsAsync,
+            repository.CheckExampleLinkExistsAsync,
             "Link",
             shouldExist: true,
             cancellationToken
@@ -105,13 +105,13 @@ public static class EntityExistenceValidationExtensions
         this Task<WorkflowPipeline> pipelineTask,
         PropertyName property,
         ModelVersion version,
-        IPropertiesRepository repo,
+        IPropertiesRepository repository,
         CancellationToken cancellationToken
     )
     {
         return pipelineTask.ValidateExistence(
             property,
-            (property, ct) => repo.CheckPropertyExistsInVersionAsync(version, property, ct),
+            (property, cancellationToken) => repository.CheckPropertyExistsInVersionAsync(version, property, cancellationToken),
             "Property",
             shouldExist: false,
             cancellationToken
@@ -123,13 +123,13 @@ public static class EntityExistenceValidationExtensions
         this Task<WorkflowPipeline> pipelineTask,
         PropertyName property,
         ModelVersion version,
-        IPropertiesRepository repo,
+        IPropertiesRepository repository,
         CancellationToken cancellationToken
     )
     {
         return pipelineTask.ValidateExistence(
             property,
-            (property, ct) => repo.CheckPropertyExistsInVersionAsync(version, property, ct),
+            (property, cancellationToken) => repository.CheckPropertyExistsInVersionAsync(version, property, cancellationToken),
             "Property",
             shouldExist: true,
             cancellationToken
@@ -140,13 +140,13 @@ public static class EntityExistenceValidationExtensions
     (
         this Task<WorkflowPipeline> pipelineTask,
         ExampleLink link,
-        IExampleLinksRepository repo,
+        IExampleLinksRepository repository,
         CancellationToken cancellationToken
     )
     {
         return pipelineTask.ValidateExistence(
             link,
-            repo.CheckExampleLinkExistsAsync,
+            repository.CheckExampleLinkExistsAsync,
             "Link",
             shouldExist: false,
             cancellationToken
@@ -164,7 +164,7 @@ public static class EntityExistenceValidationExtensions
     {
         return pipelineTask.ValidateExistence(
             tag,
-            (t, ct) => repository.CheckTagExistsInStyleAsync(styleName, t, ct),
+            (tag, cancellationToken) => repository.CheckTagExistsInStyleAsync(styleName, tag, cancellationToken),
             $"Tag in style '{styleName}'",
             shouldExist: false,
             cancellationToken
@@ -182,12 +182,13 @@ public static class EntityExistenceValidationExtensions
     {
         return pipelineTask.ValidateExistence(
             tag,
-            (t, ct) => repository.CheckTagExistsInStyleAsync(styleName, t, ct),
+            (tag, cancellationToken) => repository.CheckTagExistsInStyleAsync(styleName, tag, cancellationToken),
             $"Tag in style '{styleName}'",
             shouldExist: true,
             cancellationToken
         );
     }
+
 
     public static async Task<WorkflowPipeline> ValidateExistence<TType>
     (
@@ -203,7 +204,7 @@ public static class EntityExistenceValidationExtensions
         var pipeline = await pipelineTask.ConfigureAwait(false);
         var errors = pipeline.Errors;
 
-        if (pipeline.BreakOnError && errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var result = await existsFunc(item, cancellationToken).ConfigureAwait(false);
@@ -213,7 +214,7 @@ public static class EntityExistenceValidationExtensions
             errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(PersistenceLayer))
+                .WithLayer<PersistenceLayer>()
                 .WithMessage($"Failed to check if {entityName} exists")
                 .WithErrorCode(StatusCodes.Status404NotFound)
             );
@@ -224,7 +225,7 @@ public static class EntityExistenceValidationExtensions
             errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(ApplicationLayer))
+                .WithLayer<ApplicationLayer>()
                 .WithMessage($"{entityName} '{item}' {(shouldExist ? "not found" : "already exists")}")
                 .WithErrorCode(StatusCodes.Status409Conflict)
             );

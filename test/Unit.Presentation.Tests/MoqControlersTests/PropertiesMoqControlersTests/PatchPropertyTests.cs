@@ -1,4 +1,4 @@
-﻿using Application.Features.Properties.Responses;
+using Application.Features.Properties.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -54,10 +54,9 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "newvalue"
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
-            "Property not found",
-            typeof(ApplicationLayer));
+            "Property not found");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -84,10 +83,9 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid characteristic to update",
-            typeof(DomainLayer));
+            "Invalid characteristic to update");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -114,10 +112,9 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
-            "Characteristic not supported for patching",
-            typeof(ApplicationLayer));
+            "Characteristic not supported for patching");
 
         var senderMock = new Mock<ISender>();
         senderMock

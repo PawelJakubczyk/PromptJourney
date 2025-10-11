@@ -1,4 +1,4 @@
-﻿using Application.Features.Versions.Responses;
+using Application.Features.Versions.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -71,10 +71,9 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             ""
         );
 
-        var failureResult = CreateFailureResult<VersionResponse>(
+        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Invalid version data",
-            typeof(DomainLayer));
+            "Invalid version data");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -99,10 +98,9 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 1.0"
         );
 
-        var failureResult = CreateFailureResult<VersionResponse>(
+        var failureResult = CreateFailureResult<VersionResponse, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
-            "Version already exists",
-            typeof(ApplicationLayer));
+            "Version already exists");
 
         var senderMock = new Mock<ISender>();
         senderMock

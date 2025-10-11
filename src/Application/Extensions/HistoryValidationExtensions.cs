@@ -1,4 +1,4 @@
-﻿using Application.Abstractions.IRepository;
+using Application.Abstractions.IRepository;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
@@ -17,7 +17,7 @@ public static class HistoryValidationExtensions
         var pipeline = await pipelineTask;
         var errors = pipeline.Errors;
 
-        if (pipeline.BreakOnError && errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (date > DateTime.UtcNow)
@@ -25,7 +25,7 @@ public static class HistoryValidationExtensions
             errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(DomainLayer))
+                .WithLayer<DomainLayer>()
                 .WithMessage($"Date '{date:yyyy-MM-dd}' cannot be in the future.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -44,7 +44,7 @@ public static class HistoryValidationExtensions
         var pipeline = await pipelineTask;
         var errors = pipeline.Errors;
 
-        if (pipeline.BreakOnError && errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (from > to)
@@ -52,7 +52,7 @@ public static class HistoryValidationExtensions
             errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(DomainLayer))
+                .WithLayer<DomainLayer>()
                 .WithMessage($"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -70,7 +70,7 @@ public static class HistoryValidationExtensions
         var pipeline = await pipelineTask;
         var errors = pipeline.Errors;
 
-        if (pipeline.BreakOnError && errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (count <= 0)
@@ -78,7 +78,7 @@ public static class HistoryValidationExtensions
             errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(ApplicationLayer))
+                .WithLayer<ApplicationLayer>()
                 .WithMessage($"History count must be greater than zero. Provided: {count}.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
@@ -98,7 +98,7 @@ public static class HistoryValidationExtensions
         var pipeline = await pipelineTask;
         var errors = pipeline.Errors;
 
-        if (pipeline.BreakOnError && errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var availableCountResult = await repository.CalculateHistoricalRecordCountAsync(cancellationToken);
@@ -114,7 +114,7 @@ public static class HistoryValidationExtensions
             errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(ApplicationLayer))
+                .WithLayer<ApplicationLayer>()
                 .WithMessage($"Requested {requestedCount} records, but only {availableCountResult.Value} are available.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );

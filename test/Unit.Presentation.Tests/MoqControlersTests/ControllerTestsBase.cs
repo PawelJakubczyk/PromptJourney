@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
+using Utilities.Constants;
 using Utilities.Extensions;
 
 namespace Unit.Presentation.Tests.MoqControlersTests;
@@ -82,24 +83,14 @@ public abstract class ControllerTestsBase
     }
 
     // Helper method to create error results
-    protected static Result<T> CreateFailureResult<T>(int statusCode, string message, Type layerType)
+    protected static Result<TResult> CreateFailureResult<TResult, TLayer>(int statusCode, string message)
+        where TLayer : ILayer
     {
         var error = ErrorFactory.Create()
-            .Withlayer(layerType)
+            .WithLayer<TLayer>()
             .WithMessage(message)
             .WithErrorCode(statusCode);
 
-        return Result.Fail<T>(error);
-    }
-
-    // Helper method to create multiple errors
-    protected static Result<T> CreateMultipleErrorsResult<T>(params (int statusCode, string message, Type layerType)[] errors)
-    {
-        var errorList = errors.Select(e => ErrorFactory.Create()
-            .Withlayer(e.layerType)
-            .WithMessage(e.message)
-            .WithErrorCode(e.statusCode)).ToList();
-
-        return Result.Fail<T>(errorList);
+        return Result.Fail<TResult>(error);
     }
 }

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -68,10 +68,9 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var invalidVersion = "";
         var invalidPropertyName = "";
-        var failureResult = CreateFailureResult<bool>(
+        var failureResult = CreateFailureResult<bool, DomainLayer>(
             StatusCodes.Status400BadRequest,
-            "Version and property name cannot be empty",
-            typeof(DomainLayer));
+            "Version and property name cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock

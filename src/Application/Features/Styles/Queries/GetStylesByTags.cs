@@ -55,7 +55,7 @@ internal static class CollectionValidationExtensions
             errors.Add
             (
             ErrorFactory.Create()
-                .Withlayer(typeof(ApplicationLayer))
+                .WithLayer<ApplicationLayer>()
                 .WithMessage($"List of '{name}' must not be empty.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
             );
