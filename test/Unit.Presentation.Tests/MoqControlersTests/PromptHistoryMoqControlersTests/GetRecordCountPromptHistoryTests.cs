@@ -131,7 +131,7 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.IsAny<Application.Features.PromptHistory.Queries.CalculateHistoricalRecordCount.Query>(),
+            It.IsAny<Application.UseCases.PromptHistory.Queries.CalculateHistoricalRecordCount.Query>(),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }

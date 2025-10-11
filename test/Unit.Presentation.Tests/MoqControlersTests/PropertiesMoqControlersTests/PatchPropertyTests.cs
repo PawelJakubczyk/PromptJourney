@@ -1,4 +1,4 @@
-using Application.Features.Properties.Responses;
+using Application.UseCases.Properties.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;

@@ -1,10 +1,10 @@
-﻿using Application.Features.Styles.Commands;
-using Application.Features.Styles.Commands.AddStyle;
-using Application.Features.Styles.Commands.AddTagToStyle;
-using Application.Features.Styles.Commands.RemoveStyle;
-using Application.Features.Styles.Commands.RemoveTagInStyle;
-using Application.Features.Styles.Queries;
-using Application.Features.Styles.Responses;
+using Application.UseCases.Styles.Commands;
+using Application.UseCases.Styles.Commands.AddStyle;
+using Application.UseCases.Styles.Commands.AddTagToStyle;
+using Application.UseCases.Styles.Commands.RemoveStyle;
+using Application.UseCases.Styles.Commands.RemoveTagInStyle;
+using Application.UseCases.Styles.Queries;
+using Application.UseCases.Styles.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

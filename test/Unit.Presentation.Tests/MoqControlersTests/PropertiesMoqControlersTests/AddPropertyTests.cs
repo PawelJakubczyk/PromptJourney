@@ -1,4 +1,4 @@
-using Application.Features.Properties.Responses;
+using Application.UseCases.Properties.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;

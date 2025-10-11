@@ -1,4 +1,4 @@
-﻿using Application.Features.PromptHistory.Responses;
+using Application.UseCases.PromptHistory.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;

@@ -1,4 +1,4 @@
-﻿using Application.Features.ExampleLinks.Responses;
+using Application.UseCases.ExampleLinks.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
