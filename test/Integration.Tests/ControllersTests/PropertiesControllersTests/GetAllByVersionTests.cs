@@ -1,4 +1,4 @@
-﻿using Application.Features.Properties.Responses;
+using Application.UseCases.Properties.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;

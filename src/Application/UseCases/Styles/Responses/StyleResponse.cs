@@ -1,0 +1,20 @@
+using Domain.Entities;
+
+namespace Application.UseCases.Styles.Responses;
+
+public sealed record StyleResponse
+(
+    string Name,
+    string Type,
+    string? Description,
+    List<string>? Tags
+)
+{
+    public static StyleResponse FromDomain(MidjourneyStyle style) =>
+    new(
+        style.StyleName.Value,
+        style.Type.Value,
+        style.Description?.Value,
+        style.Tags?.Select(t => t.Value).ToList()
+    );
+}

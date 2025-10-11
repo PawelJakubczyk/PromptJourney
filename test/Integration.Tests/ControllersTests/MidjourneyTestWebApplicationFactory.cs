@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MediatR;
 using Persistence.Context;
-using Application.Features;
+using Application.UseCases;
 using Application.Abstractions.IRepository;
 using Persistence.Repositories;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -29,7 +29,7 @@ public class MidjourneyTestWebApplicationFactory : WebApplicationFactory<Program
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-                cfg.RegisterServicesFromAssembly(typeof(Application.Features.ExampleLinks.Commands.AddExampleLink).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Application.UseCases.ExampleLinks.Commands.AddExampleLink).Assembly);
             });
         });
 

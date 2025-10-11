@@ -1,4 +1,4 @@
-using Application.Features.PromptHistory.Responses;
+using Application.UseCases.PromptHistory.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -126,7 +126,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.Is<Application.Features.PromptHistory.Queries.GetHistoryByDateRange.Query>(
+            It.Is<Application.UseCases.PromptHistory.Queries.GetHistoryByDateRange.Query>(
                 q => q.From == from && q.To == to),
             It.IsAny<CancellationToken>()),
             Times.Once);
@@ -153,7 +153,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Assert
         AssertOkResult<PromptHistoryResponse>(actionResult, 0);
         senderMock.Verify(s => s.Send(
-            It.Is<Application.Features.PromptHistory.Queries.GetHistoryByDateRange.Query>(
+            It.Is<Application.UseCases.PromptHistory.Queries.GetHistoryByDateRange.Query>(
                 q => q.From == from && q.To == to),
             It.IsAny<CancellationToken>()),
             Times.Once);

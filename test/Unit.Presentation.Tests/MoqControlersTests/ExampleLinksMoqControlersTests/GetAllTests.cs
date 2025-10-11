@@ -1,4 +1,4 @@
-﻿using Application.Features.ExampleLinks.Responses;
+using Application.UseCases.ExampleLinks.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;

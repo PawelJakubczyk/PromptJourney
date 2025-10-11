@@ -1,4 +1,4 @@
-using Application.Features.PromptHistory.Responses;
+using Application.UseCases.PromptHistory.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -121,7 +121,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.Is<Application.Features.PromptHistory.Queries.GetHistoryRecordsByPromptKeyword.Query>(
+            It.Is<Application.UseCases.PromptHistory.Queries.GetHistoryRecordsByPromptKeyword.Query>(
                 q => q.Keyword == keyword),
             It.IsAny<CancellationToken>()),
             Times.Once);
@@ -149,7 +149,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.Is<Application.Features.PromptHistory.Queries.GetHistoryRecordsByPromptKeyword.Query>(
+            It.Is<Application.UseCases.PromptHistory.Queries.GetHistoryRecordsByPromptKeyword.Query>(
                 q => q.Keyword == keyword),
             It.IsAny<CancellationToken>()),
             Times.Once);

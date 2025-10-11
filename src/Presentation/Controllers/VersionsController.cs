@@ -1,6 +1,6 @@
-﻿using Application.Features.Versions.Commands;
-using Application.Features.Versions.Queries;
-using Application.Features.Versions.Responses;
+using Application.UseCases.Versions.Commands;
+using Application.UseCases.Versions.Queries;
+using Application.UseCases.Versions.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

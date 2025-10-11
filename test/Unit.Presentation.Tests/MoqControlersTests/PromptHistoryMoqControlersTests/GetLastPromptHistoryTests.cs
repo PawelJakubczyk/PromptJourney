@@ -1,4 +1,4 @@
-using Application.Features.PromptHistory.Responses;
+using Application.UseCases.PromptHistory.Responses;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -127,7 +127,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.Is<Application.Features.PromptHistory.Queries.GetLastHistoryRecords.Query>(
+            It.Is<Application.UseCases.PromptHistory.Queries.GetLastHistoryRecords.Query>(
                 q => q.Count == count),
             It.IsAny<CancellationToken>()),
             Times.Once);
@@ -155,7 +155,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.Is<Application.Features.PromptHistory.Queries.GetLastHistoryRecords.Query>(
+            It.Is<Application.UseCases.PromptHistory.Queries.GetLastHistoryRecords.Query>(
                 q => q.Count == count),
             It.IsAny<CancellationToken>()),
             Times.Once);

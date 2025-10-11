@@ -1,6 +1,6 @@
-﻿using Application.Features.ExampleLinks.Commands;
-using Application.Features.ExampleLinks.Queries;
-using Application.Features.ExampleLinks.Responses;
+using Application.UseCases.ExampleLinks.Commands;
+using Application.UseCases.ExampleLinks.Queries;
+using Application.UseCases.ExampleLinks.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

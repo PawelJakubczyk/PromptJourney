@@ -1,6 +1,6 @@
-﻿using Application.Features.Properties.Commands;
-using Application.Features.Properties.Queries;
-using Application.Features.Properties.Responses;
+using Application.UseCases.Properties.Commands;
+using Application.UseCases.Properties.Queries;
+using Application.UseCases.Properties.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

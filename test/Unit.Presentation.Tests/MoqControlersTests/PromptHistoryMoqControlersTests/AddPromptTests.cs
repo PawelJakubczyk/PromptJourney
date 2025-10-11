@@ -1,4 +1,4 @@
-using Application.Features.PromptHistory.Responses;
+using Application.UseCases.PromptHistory.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -162,7 +162,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.Is<Application.Features.PromptHistory.Commands.AddPromptToHistory.Command>(
+            It.Is<Application.UseCases.PromptHistory.Commands.AddPromptToHistory.Command>(
                 c => c.Prompt == request.Prompt && c.Version == request.Version),
             It.IsAny<CancellationToken>()),
             Times.Once);

@@ -1,4 +1,4 @@
-using Application.Features.Styles.Responses;
+using Application.UseCases.Styles.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -118,7 +118,7 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
 
         // Assert
         senderMock.Verify(s => s.Send(
-            It.IsAny<Application.Features.Styles.Queries.GetAllStyles.Query>(),
+            It.IsAny<Application.UseCases.Styles.Queries.GetAllStyles.Query>(),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
