@@ -3,6 +3,7 @@ using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
+using System.Xml.Linq;
 using Utilities.Constants;
 using Utilities.Extensions;
 using Utilities.Workflows;
@@ -19,12 +20,10 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence
+        return pipelineTask.IfNotExist
         (
             version,
             repository.CheckVersionExistsAsync,
-            "Version",
-            shouldExist: true,
             cancellationToken
         );
     }
@@ -37,12 +36,10 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence
+        return pipelineTask.IfAlreadyExist
         (
             version,
             repository.CheckVersionExistsAsync,
-            "Version",
-            shouldExist: false,
             cancellationToken
         );
     }
@@ -55,12 +52,10 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence
+        return pipelineTask.IfNotExist
         (
             style,
             repository.CheckStyleExistsAsync,
-            "Style",
-            shouldExist: true,
             cancellationToken
         );
     }
@@ -73,12 +68,10 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence
+        return pipelineTask.IfAlreadyExist
         (
             style,
             repository.CheckStyleExistsAsync,
-            "Style",
-            shouldExist: false,
             cancellationToken
         );
     }
@@ -91,11 +84,9 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence(
+        return pipelineTask.IfNotExist(
             link,
             repository.CheckExampleLinkExistsAsync,
-            "Link",
-            shouldExist: true,
             cancellationToken
         );
     }
@@ -109,11 +100,9 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence(
+        return pipelineTask.IfAlreadyExist(
             property,
             (property, cancellationToken) => repository.CheckPropertyExistsInVersionAsync(version, property, cancellationToken),
-            "Property",
-            shouldExist: false,
             cancellationToken
         );
     }
@@ -127,11 +116,9 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence(
+        return pipelineTask.IfNotExist(
             property,
             (property, cancellationToken) => repository.CheckPropertyExistsInVersionAsync(version, property, cancellationToken),
-            "Property",
-            shouldExist: true,
             cancellationToken
         );
     }
@@ -144,11 +131,9 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence(
+        return pipelineTask.IfAlreadyExist(
             link,
             repository.CheckExampleLinkExistsAsync,
-            "Link",
-            shouldExist: false,
             cancellationToken
         );
     }
@@ -195,7 +180,6 @@ public static class EntityExistenceValidationExtensions
         this Task<WorkflowPipeline> pipelineTask,
         TType item,
         Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
-        string entityName,
         CancellationToken cancellationToken
     )
         where TType : ValueObject<string> {
@@ -203,7 +187,7 @@ public static class EntityExistenceValidationExtensions
             pipelineTask,
             item,
             existsFunc,
-            entityName,
+            nameof(TType),
             shouldExist: false,
             cancellationToken
         ).ConfigureAwait(false);
@@ -214,7 +198,6 @@ public static class EntityExistenceValidationExtensions
         this Task<WorkflowPipeline> pipelineTask,
         TType item,
         Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
-        string entityName,
         CancellationToken cancellationToken
     )
         where TType : ValueObject<string>
@@ -223,7 +206,7 @@ public static class EntityExistenceValidationExtensions
             pipelineTask,
             item,
             existsFunc,
-            entityName,
+            nameof(TType),
             shouldExist: true,
             cancellationToken
         ).ConfigureAwait(false);
@@ -234,7 +217,7 @@ public static class EntityExistenceValidationExtensions
         this Task<WorkflowPipeline> pipelineTask,
         TType item,
         Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
-        string entityName,
+        string Name,
         bool shouldExist,
         CancellationToken cancellationToken
     )
@@ -254,10 +237,12 @@ public static class EntityExistenceValidationExtensions
             (
             ErrorFactory.Create()
                 .WithLayer<PersistenceLayer>()
-                .WithMessage($"Failed to check if {entityName} exists")
+                .WithMessage($"Failed to check if {Name} exists")
                 .WithErrorCode(StatusCodes.Status404NotFound)
             );
         }
+
+        var state = shouldExist ? "not found" : "already exists";
 
         if (result.IsSuccess && result.Value != shouldExist)
         {
@@ -265,7 +250,7 @@ public static class EntityExistenceValidationExtensions
             (
             ErrorFactory.Create()
                 .WithLayer<ApplicationLayer>()
-                .WithMessage($"{entityName} '{item}' {(shouldExist ? "not found" : "already exists")}")
+                .WithMessage($"{Name} '{item}' {state}")
                 .WithErrorCode(StatusCodes.Status409Conflict)
             );
         }

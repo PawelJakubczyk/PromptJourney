@@ -25,7 +25,7 @@ public sealed class GetByStyleTests(MidjourneyTestWebApplicationFactory factory)
             var links = await DeserializeResponse<List<ExampleLinkResponse>>(response);
             links.Should().NotBeNull();
 
-            if (links!.Any())
+            if (links!.Count != 0)
             {
                 links.Should().AllSatisfy(link => link.Style.Should().Be(styleName));
             }

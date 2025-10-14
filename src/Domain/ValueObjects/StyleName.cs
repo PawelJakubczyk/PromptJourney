@@ -6,11 +6,11 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record StyleName : ValueObject<string?>, ICreatable<StyleName, string?>
+public record StyleName : ValueObject<string>, ICreatable<StyleName, string?>
 {
     public const int MaxLength = 150;
 
-    private StyleName(string? value) : base(value) { }
+    private StyleName(string value) : base(value) { }
 
     public static Result<StyleName> Create(string? value)
     {
@@ -18,7 +18,7 @@ public record StyleName : ValueObject<string?>, ICreatable<StyleName, string?>
             .Empty()
             .IfNullOrWhitespace<DomainLayer, StyleName>(value)
             .IfLengthTooLong<DomainLayer, StyleName>(value, MaxLength)
-            .ExecuteIfNoErrors<StyleName>(() => new StyleName(value))
+            .ExecuteIfNoErrors<StyleName>(() => new StyleName(value!))
             .MapResult<StyleName>();
 
         return result;

@@ -8,11 +8,11 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record StyleType : ValueObject<string?>, ICreatable<StyleType, string?>
+public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
 {
     public const int MaxLength = 30;
 
-    private StyleType(string? value) : base(value) { }
+    private StyleType(string value) : base(value) { }
 
     public static Result<StyleType> Create(string? value)
     {
@@ -22,7 +22,7 @@ public record StyleType : ValueObject<string?>, ICreatable<StyleType, string?>
             .Validate(pipeline => pipeline
                 .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
                 .IfStyleTypeNotInclude<DomainLayer>(value))
-            .ExecuteIfNoErrors<StyleType>(() => new StyleType(value))
+            .ExecuteIfNoErrors<StyleType>(() => new StyleType(value!))
             .MapResult<StyleType>();
 
         return result;

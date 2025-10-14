@@ -35,7 +35,7 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         var versions = await DeserializeResponse<List<VersionResponse>>(response);
         versions.Should().NotBeNull();
 
-        if (versions!.Any())
+        if (versions.Count != 0)
         {
             var firstVersion = versions.First();
             firstVersion.Version.Should().NotBeNullOrEmpty();

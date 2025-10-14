@@ -51,7 +51,7 @@ public sealed class GetAllTests(MidjourneyTestWebApplicationFactory factory) : E
         var links = await DeserializeResponse<List<ExampleLinkResponse>>(response);
         links.Should().NotBeNull();
 
-        if (links!.Any())
+        if (links!.Count != 0)
         {
             var firstLink = links.First();
             firstLink.Link.Should().NotBeNullOrEmpty();

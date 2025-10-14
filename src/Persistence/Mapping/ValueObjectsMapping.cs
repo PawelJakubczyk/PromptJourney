@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -11,8 +11,8 @@ public static class ValueObjectsMapping
     public sealed class DefaultValueComparer : ValueObjectsMapping<DefaultValue, string?>.Comparer { }
     public sealed class DescriptionConverter : ValueObjectsMapping<Description, string?>.Converter { }
     public sealed class DescriptionComparer : ValueObjectsMapping<Description, string?>.Comparer { }
-    public sealed class ExampleLinkConverter : ValueObjectsMapping<ExampleLink, string>.Converter { }
-    public sealed class ExampleLinkComparer : ValueObjectsMapping<ExampleLink, string>.Comparer { }
+    public sealed class LinkConverter : ValueObjectsMapping<ExampleLink, string>.Converter { }
+    public sealed class LinkComparer : ValueObjectsMapping<ExampleLink, string>.Comparer { }
     public sealed class KeywordConverter : ValueObjectsMapping<Keyword, string>.Converter { }
     public sealed class KeywordComparer : ValueObjectsMapping<Keyword, string>.Comparer { }
     public sealed class MaxValueConverter : ValueObjectsMapping<MaxValue, string?>.Converter { }

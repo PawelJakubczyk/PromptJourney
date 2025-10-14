@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
@@ -6,7 +6,7 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record Keyword : ValueObject<string?>, ICreatable<Keyword, string?>
+public record Keyword : ValueObject<string>, ICreatable<Keyword, string?>
 {
     public const int MaxLength = 50;
 

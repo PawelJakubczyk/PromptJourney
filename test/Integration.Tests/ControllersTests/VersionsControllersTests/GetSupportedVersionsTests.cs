@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Integration.Tests.ControllersTests.VersionsControllersTests.Base;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -56,7 +56,7 @@ public sealed class GetSupportedVersionsTests(MidjourneyTestWebApplicationFactor
             var supportedVersions = await DeserializeResponse<List<string>>(response);
             supportedVersions.Should().NotBeNull();
 
-            if (supportedVersions!.Any())
+            if (supportedVersions!.Count != 0)
             {
                 supportedVersions.Should().AllSatisfy(version =>
                 {
@@ -126,7 +126,7 @@ public sealed class GetSupportedVersionsTests(MidjourneyTestWebApplicationFactor
             var supportedVersions = await DeserializeResponse<List<string>>(response);
             supportedVersions.Should().NotBeNull();
 
-            if (supportedVersions!.Any())
+            if (supportedVersions!.Count != 0)
             {
                 // Verify that returned versions have expected formats
                 foreach (var version in supportedVersions)
@@ -202,7 +202,7 @@ public sealed class GetSupportedVersionsTests(MidjourneyTestWebApplicationFactor
             var supportedVersions = await DeserializeResponse<List<string>>(response);
             supportedVersions.Should().NotBeNull();
 
-            if (supportedVersions!.Any())
+            if (supportedVersions.Count != 0)
             {
                 // Verify no duplicates
                 var distinctVersions = supportedVersions.Distinct().ToList();

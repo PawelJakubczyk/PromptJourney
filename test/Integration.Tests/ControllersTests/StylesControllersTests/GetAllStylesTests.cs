@@ -34,7 +34,7 @@ public sealed class GetAllStylesTests(MidjourneyTestWebApplicationFactory factor
         var styles = await DeserializeResponse<List<StyleResponse>>(response);
         styles.Should().NotBeNull();
 
-        if (styles!.Any())
+        if (styles!.Count != 0)
         {
             var firstStyle = styles.First();
             firstStyle.Name.Should().NotBeNullOrEmpty();
