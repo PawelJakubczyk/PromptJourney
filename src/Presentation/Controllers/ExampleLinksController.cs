@@ -61,7 +61,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     public async Task<IActionResult> CheckLinkExists(string link, CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(new CheckExampleLinkExist.Query(link), cancellationToken)
+            .Send(new CheckExampleLinkWithIdExists.Query(link), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
             .ToActionResultAsync();

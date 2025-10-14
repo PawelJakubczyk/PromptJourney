@@ -84,9 +84,41 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.IfNotExist(
+        return pipelineTask.IfNotExist
+        (
             link,
-            repository.CheckExampleLinkExistsAsync,
+            repository.CheckExampleLinkWithLinkExistsAsync,
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfLinkNotExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Guid Id,
+        IExampleLinksRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfNotExist
+        (
+            Id,
+            repository.CheckExampleLinkWithIdExistsAsync,
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfLinkAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        ExampleLink link,
+        IExampleLinksRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfAlreadyExist(
+            link,
+            repository.CheckExampleLinkWithLinkExistsAsync,
             cancellationToken
         );
     }
@@ -119,21 +151,6 @@ public static class EntityExistenceValidationExtensions
         return pipelineTask.IfNotExist(
             property,
             (property, cancellationToken) => repository.CheckPropertyExistsInVersionAsync(version, property, cancellationToken),
-            cancellationToken
-        );
-    }
-
-    public static Task<WorkflowPipeline> IfLinkAlreadyExists
-    (
-        this Task<WorkflowPipeline> pipelineTask,
-        ExampleLink link,
-        IExampleLinksRepository repository,
-        CancellationToken cancellationToken
-    )
-    {
-        return pipelineTask.IfAlreadyExist(
-            link,
-            repository.CheckExampleLinkExistsAsync,
             cancellationToken
         );
     }
@@ -174,7 +191,6 @@ public static class EntityExistenceValidationExtensions
         );
     }
 
-
     public static async Task<WorkflowPipeline> IfAlreadyExist<TType>
     (
         this Task<WorkflowPipeline> pipelineTask,
@@ -182,15 +198,17 @@ public static class EntityExistenceValidationExtensions
         Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
         CancellationToken cancellationToken
     )
-        where TType : ValueObject<string> {
-        return await ValidateExistence(
+    {
+        return await ValidateExistence
+        (
             pipelineTask,
             item,
             existsFunc,
             nameof(TType),
             shouldExist: false,
             cancellationToken
-        ).ConfigureAwait(false);
+        )
+        .ConfigureAwait(false);
     }
 
     public static async Task<WorkflowPipeline> IfNotExist<TType>
@@ -200,16 +218,17 @@ public static class EntityExistenceValidationExtensions
         Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
         CancellationToken cancellationToken
     )
-        where TType : ValueObject<string>
     {
-        return await ValidateExistence(
+        return await ValidateExistence
+        (
             pipelineTask,
             item,
             existsFunc,
             nameof(TType),
             shouldExist: true,
             cancellationToken
-        ).ConfigureAwait(false);
+        )
+        .ConfigureAwait(false);
     }
 
     public static async Task<WorkflowPipeline> ValidateExistence<TType>
@@ -221,7 +240,6 @@ public static class EntityExistenceValidationExtensions
         bool shouldExist,
         CancellationToken cancellationToken
     )
-    where TType : ValueObject<string>
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
         var errors = pipeline.Errors;
