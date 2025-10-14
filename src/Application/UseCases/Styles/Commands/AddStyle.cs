@@ -17,13 +17,13 @@ public static class AddStyle
         string Type,
         string? Description = null,
         List<string>? Tags = null
-    ) : ICommand<StyleResponse>;
+    ) : ICommand<string>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, StyleResponse>
+    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, string>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<StyleResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
         {
             var styleName = StyleName.Create(command.Name);
             var styleType = StyleType.Create(command.Type);
@@ -44,8 +44,7 @@ public static class AddStyle
                 .IfStyleAlreadyExists(styleName.Value, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository
                     .AddStyleAsync(style.Value, cancellationToken))
-                .MapResult<MidjourneyStyle, StyleResponse>
-                    (style => StyleResponse.FromDomain(style));
+                .MapResult(() => command.Name);
 
             return result;
         }

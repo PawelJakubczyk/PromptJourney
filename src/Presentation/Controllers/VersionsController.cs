@@ -69,7 +69,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // POST api/versions
     [HttpPost]
-    [ProducesResponseType<VersionResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
     {
@@ -83,11 +83,9 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
         return await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
-            {
-                if (payload is not null)
-                {
-                    return CreatedAtAction(nameof(GetByVersion), new { version = ((VersionResponse)payload).Version }, payload);
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => {
+                if (!string.IsNullOrEmpty(payload)) {
+                    return CreatedAtAction(nameof(GetByVersion), new { version = payload }, new { version = payload });
                 }
 
                 return NoContent();

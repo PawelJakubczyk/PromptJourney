@@ -1,3 +1,4 @@
+using Application.UseCases.Common.Responses;
 using Application.UseCases.ExampleLinks.Commands;
 using Application.UseCases.ExampleLinks.Queries;
 using Application.UseCases.ExampleLinks.Responses;
@@ -94,7 +95,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
     // POST api/examplelinks
     [HttpPost]
-    [ProducesResponseType<ExampleLinkResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
@@ -111,11 +112,9 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
         return await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
-            {
-                if (payload is not null)
-                {
-                    return CreatedAtAction(nameof(CheckLinkExists), new { link = ((dynamic)payload).Link }, payload);
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => {
+                if (!string.IsNullOrEmpty(payload)) {
+                    return CreatedAtAction(nameof(CheckLinkExists), new { link = payload }, new { linkId = payload });
                 }
 
                 return NoContent();
@@ -125,7 +124,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
     // DELETE api/examplelinks/{link}
     [HttpDelete("{link}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteExampleLink(string link, CancellationToken cancellationToken)
@@ -133,13 +132,13 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
         return await Sender
             .Send(new DeleteExampleLink.Command(link), cancellationToken)
             .IfErrors(p => p.PrepareErrorResponse())
-            .Else(p => p.PrepareOKResponse(_ => NoContent()))
+            .Else(p => p.PrepareOKResponse())
             .ToActionResultAsync();
     }
 
     // DELETE api/examplelinks/style/{styleName}
     [HttpDelete("style/{styleName}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<BulkDeleteResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteAllByStyle(string styleName, CancellationToken cancellationToken)
@@ -147,7 +146,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
         return await Sender
             .Send(new DeleteAllExampleLinksByStyle.Command(styleName), cancellationToken)
             .IfErrors(p => p.PrepareErrorResponse())
-            .Else(p => p.PrepareOKResponse(_ => NoContent()))
+            .Else(p => p.PrepareOKResponse())
             .ToActionResultAsync();
     }
 }

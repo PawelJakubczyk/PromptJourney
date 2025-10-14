@@ -18,14 +18,14 @@ public static class AddVersion
         string Parameter,
         DateTime? ReleaseDate = null,
         string? Description = null
-    ) : ICommand<VersionResponse>;
+    ) : ICommand<string>;
 
-    public sealed class Handler(IVersionRepository versionRepository, HybridCache cache) : ICommandHandler<Command, VersionResponse>
+    public sealed class Handler(IVersionRepository versionRepository, HybridCache cache) : ICommandHandler<Command, string>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly HybridCache _cache = cache;
 
-        public async Task<Result<VersionResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
         {
             var version = ModelVersion.Create(command.Version);
             var parameter = Param.Create(command.Parameter);
@@ -45,8 +45,8 @@ public static class AddVersion
                 .IfVersionAlreadyExists(version.Value, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository
                     .AddVersionAsync(midjourneyVersion.Value, cancellationToken))
-                .MapResult<MidjourneyVersion, VersionResponse>
-                    (version => VersionResponse.FromDomain(version));
+                .MapResult
+                    (() => command.Version);
 
             return result;
         }

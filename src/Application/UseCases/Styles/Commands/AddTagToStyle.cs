@@ -11,13 +11,13 @@ namespace Application.UseCases.Styles.Commands.AddTagToStyle;
 
 public static class AddTagToStyle
 {
-    public sealed record Command(string StyleName, string Tag) : ICommand<StyleResponse>;
+    public sealed record Command(string StyleName, string Tag) : ICommand<string>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, StyleResponse>
+    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, string>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<StyleResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
         {
             var styleName = StyleName.Create(command.StyleName);
             var tag = Tag.Create(command.Tag);
@@ -32,8 +32,7 @@ public static class AddTagToStyle
                     .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository
                     .AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
-                .MapResult<MidjourneyStyle, StyleResponse>
-                    (style => StyleResponse.FromDomain(style));
+                .MapResult(() => command.Tag);
 
             return result;
         }

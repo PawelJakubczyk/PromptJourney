@@ -80,7 +80,7 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
 
     // POST api/prompthistory
     [HttpPost]
-    [ProducesResponseType<PromptHistoryResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddPrompt([FromBody] AddPromptRequest request, CancellationToken cancellationToken)
@@ -93,11 +93,9 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
         return await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
-            {
-                if (payload is not null)
-                {
-                    return CreatedAtAction(nameof(GetRecordCount), null, payload);
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => {
+                if (!string.IsNullOrEmpty(payload)) {
+                    return CreatedAtAction(nameof(GetRecordCount), null, new { historyId = payload });
                 }
 
                 return NoContent();

@@ -11,20 +11,20 @@ namespace Application.UseCases.ExampleLinks.Commands;
 
 public static class AddExampleLink
 {
-    public sealed record Command(string Link, string StyleName, string Version) : ICommand<ExampleLinkResponse>;
+    public sealed record Command(string Link, string StyleName, string Version) : ICommand<string>;
 
     public sealed class Handler
     (
         IExampleLinksRepository exampleLinkRepository,
         IStyleRepository styleRepository,
         IVersionRepository versionRepository
-    ) : ICommandHandler<Command, ExampleLinkResponse>
+    ) : ICommandHandler<Command, string>
     {
         private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
         private readonly IStyleRepository _styleRepository = styleRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<ExampleLinkResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
         {
             var link = ExampleLink.Create(command.Link);
             var styleName = StyleName.Create(command.StyleName);
@@ -46,7 +46,7 @@ public static class AddExampleLink
                         .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _exampleLinkRepository
                         .AddExampleLinkAsync(linkResult.Value, cancellationToken))
-                    .MapResult(() => new ExampleLinkResponse(command.Link, command.StyleName, command.Version));
+                    .MapResult(() => linkResult.Value.Id.ToString());
 
             return result;
         }

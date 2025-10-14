@@ -11,13 +11,13 @@ namespace Application.UseCases.Styles.Commands;
 
 public static class UpdateDescriptionInStyle
 {
-    public sealed record Command(string StyleName, string NewDescription) : ICommand<StyleResponse>;
+    public sealed record Command(string StyleName, string NewDescription) : ICommand<string>;
 
-    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, StyleResponse>
+    public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, string>
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<StyleResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
         {
             var styleName = StyleName.Create(command.StyleName);
             var description = Description.Create(command.NewDescription);
@@ -30,8 +30,7 @@ public static class UpdateDescriptionInStyle
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository
                     .UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
-                .MapResult<MidjourneyStyle, StyleResponse>
-                    (style => StyleResponse.FromDomain(style));
+                .MapResult(() => command.NewDescription);
 
             return result;
         }

@@ -1,3 +1,4 @@
+using Application.UseCases.Common.Responses;
 using Application.UseCases.Properties.Commands;
 using Application.UseCases.Properties.Queries;
 using Application.UseCases.Properties.Responses;
@@ -11,11 +12,10 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class PropertiesController(ISender sender) : ApiController(sender)
-{
+public sealed class PropertiesController(ISender sender) : ApiController(sender) {
     // GET api/properties/version/{version}
     [HttpGet("version/{version}")]
-    [ProducesResponseType<List<PropertyResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<PropertyQueryResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllPropertiesByVersion(string version, CancellationToken cancellationToken)
@@ -26,9 +26,10 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();
     }
+
     // GET api/properties/version/
     [HttpGet("version/")]
-    [ProducesResponseType<List<PropertyResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<PropertyQueryResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
@@ -55,7 +56,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // POST api/properties/version/{version}
     [HttpPost("version/{version}")]
-    [ProducesResponseType<PropertyResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<PropertyCommandResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddProperty(string version, [FromBody] AddPropertyRequest request, CancellationToken cancellationToken)
@@ -79,7 +80,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
                 {
                     return CreatedAtAction(
                         nameof(CheckPropertyExists),
-                        new { version = ((PropertyResponse)payload).Version, propertyName = ((PropertyResponse)payload).PropertyName },
+                        new { version = payload.Version, propertyName = payload.PropertyName },
                         payload
                     );
                 }
@@ -91,7 +92,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // PUT api/properties/version/{version}/{propertyName}
     [HttpPut("version/{version}/{propertyName}")]
-    [ProducesResponseType<PropertyResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PropertyCommandResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateProperty(string version, string propertyName, [FromBody] UpdatePropertyRequest request, CancellationToken cancellationToken)
@@ -118,7 +119,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // PATCH api/properties/version/{version}/{propertyName}
     [HttpPatch("version/{version}/{propertyName}")]
-    [ProducesResponseType<PropertyResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PropertyCommandResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PatchProperty(string version, string propertyName, [FromBody] PatchPropertyRequest request, CancellationToken cancellationToken)
@@ -140,7 +141,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // DELETE api/properties/version/{version}/{propertyName}
     [HttpDelete("version/{version}/{propertyName}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteProperty(string version, string propertyName, CancellationToken cancellationToken)
@@ -148,7 +149,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
         return await Sender
             .Send(new DeleteProperty.Command(version, propertyName), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(_ => NoContent()))
+            .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();
     }
 }
