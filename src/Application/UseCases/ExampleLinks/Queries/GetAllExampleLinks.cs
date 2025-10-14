@@ -9,7 +9,10 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class GetAllExampleLinks
 {
-    public sealed record Query : IQuery<List<ExampleLinkResponse>>;
+    public sealed record Query : IQuery<List<ExampleLinkResponse>>
+    {
+        public static readonly Query Simgletone = new();
+    };
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
         : IQueryHandler<Query, List<ExampleLinkResponse>>

@@ -19,11 +19,8 @@ public static class CheckAnyExampleLinksExist
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await WorkflowPipeline
-                .EmptyAsync()
-                .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .CheckAnyExampleLinksExistAsync(cancellationToken))
-                .MapResult(() => true);
+            var result = await _exampleLinksRepository
+                    .CheckAnyExampleLinksExistAsync(cancellationToken);
 
             return result;
         }

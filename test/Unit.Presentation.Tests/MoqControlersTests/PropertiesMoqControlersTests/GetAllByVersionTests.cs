@@ -29,7 +29,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetAllByVersion(version, CancellationToken.None);
+        var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
         AssertOkResult<PropertyResponse>(actionResult, 2);
@@ -50,7 +50,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetAllByVersion(version, CancellationToken.None);
+        var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
         AssertOkResult<PropertyResponse>(actionResult, 0);
@@ -73,7 +73,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetAllByVersion(invalidVersion, CancellationToken.None);
+        var actionResult = await controller.GetAllPropertiesByVersion(invalidVersion, CancellationToken.None);
 
         // Assert
         AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
@@ -96,7 +96,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetAllByVersion(version, CancellationToken.None);
+        var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
         AssertErrorResult(actionResult, StatusCodes.Status404NotFound);

@@ -9,7 +9,10 @@ namespace Application.UseCases.Styles.Queries;
 
 public static class GetAllStyles
 {
-    public sealed record Query : IQuery<List<StyleResponse>>;
+    public sealed record Query : IQuery<List<StyleResponse>>
+    {
+        public static readonly Query Simgletone = new();
+    };
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<StyleResponse>>
     {
