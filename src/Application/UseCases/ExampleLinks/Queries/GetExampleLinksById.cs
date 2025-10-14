@@ -18,7 +18,6 @@ public static class GetExampleLinksById
     ) : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
-        private readonly IStyleRepository _styleRepository = styleRepository;
 
         public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {

@@ -21,20 +21,19 @@ public static class AddProperty
         string? MinValue,
         string? MaxValue,
         string? Description
-    ) : ICommand<PropertyResponse>;
+    ) : ICommand<PropertyCommandResponse>;
 
-    public sealed class Handler(
+    public sealed class Handler
+    (
         IVersionRepository versionRepository,
         IPropertiesRepository propertiesRepository,
         HybridCache cache
-        )
-        : ICommandHandler<Command, PropertyResponse>
+    ) : ICommandHandler<Command, PropertyCommandResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
-        private readonly HybridCache _cache = cache;
 
-        public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<PropertyCommandResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
@@ -63,8 +62,8 @@ public static class AddProperty
                     .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .AddPropertyAsync(property.Value, cancellationToken))
-                .MapResult<MidjourneyProperties, PropertyResponse>
-                    (property => PropertyResponse.FromDomain(property));
+                .MapResult<MidjourneyProperties, PropertyCommandResponse>
+                    (property => PropertyCommandResponse.FromDomain(property));
 
             return result;
         }

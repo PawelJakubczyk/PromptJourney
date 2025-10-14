@@ -1,3 +1,4 @@
+using Application.UseCases.Common.Responses;
 using Application.UseCases.Styles.Commands;
 using Application.UseCases.Styles.Commands.AddStyle;
 using Application.UseCases.Styles.Commands.AddTagToStyle;
@@ -116,7 +117,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // POST api/styles
     [HttpPost]
-    [ProducesResponseType<StyleResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<string>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateStyleRequest request, CancellationToken cancellationToken)
     {
@@ -132,9 +133,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload =>
             {
-                if (payload is not null)
+                if (!string.IsNullOrEmpty(payload))
                 {
-                    return CreatedAtAction(nameof(GetByName), new { name = ((StyleResponse)payload).Name }, payload);
+                    return CreatedAtAction(nameof(GetByName), new { name = payload }, new { styleName = payload });
                 }
 
                 return NoContent();
@@ -144,7 +145,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // PUT api/styles/{name}
     [HttpPut("{name}")]
-    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(string name, [FromBody] UpdateStyleRequest request, CancellationToken cancellationToken)
@@ -162,13 +163,13 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
         return await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { styleName = payload })))
             .ToActionResultAsync();
     }
 
     // DELETE api/styles/{name}
     [HttpDelete("{name}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete(string name, CancellationToken cancellationToken)
@@ -176,7 +177,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
         return await Sender
             .Send(new DeleteStyle.Command(name), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(_ => NoContent()))
+            .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();
     }
 
@@ -196,7 +197,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // DELETE api/styles/{name}/tags/{tag}
     [HttpDelete("{name}/tags/{tag}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveTag(string name, string tag, CancellationToken cancellationToken)
@@ -204,13 +205,13 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
         return await Sender
             .Send(new DeleteTagFromStyle.Command(name, tag), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(_ => NoContent()))
+            .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();
     }
 
     // PUT api/styles/{name}/description
     [HttpPut("{name}/description")]
-    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateDescription(string name, [FromBody] UpdateDescriptionRequest request, CancellationToken cancellationToken)
@@ -220,7 +221,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
         return await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { description = payload })))
             .ToActionResultAsync();
     }
 }
