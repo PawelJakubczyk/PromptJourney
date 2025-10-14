@@ -20,7 +20,7 @@ public interface IExampleLinksRepository
 
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinkByLinkAsync(ExampleLink link, CancellationToken cancellationToken);
 
-    Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByIdAsync(Guid Id, CancellationToken cancellationToken);
+    Task<Result<MidjourneyStyleExampleLink>> GetExampleLinkByIdAsync(Guid Id, CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(StyleName styleName, CancellationToken cancellationToken);
 

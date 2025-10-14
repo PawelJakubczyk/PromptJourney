@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -38,8 +38,8 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
 
         // Navigation properties
         builder
-            .HasMany(style => style.ExampleLinks)
-            .WithOne(link => link.Style)
+            .HasMany(style => style.MidjourneyExampleLinks)
+            .WithOne(link => link.MidjuorneyStyle)
             .HasForeignKey(link => link.StyleName)
             .HasPrincipalKey(style => style.StyleName)
             .OnDelete(DeleteBehavior.Cascade);

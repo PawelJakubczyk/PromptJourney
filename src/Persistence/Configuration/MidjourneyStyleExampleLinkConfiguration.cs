@@ -38,13 +38,13 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
             .IsRequired();
 
         // Configure relationships
-        builder.HasOne(link => link.Style)
-            .WithMany(style => style.ExampleLinks)
+        builder.HasOne(link => link.MidjuorneyStyle)
+            .WithMany(style => style.MidjourneyExampleLinks)
             .HasForeignKey(link => link.StyleName)
             .HasPrincipalKey(style => style.StyleName)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(link => link.VersionMaster)
+        builder.HasOne(link => link.MidjourneyMaster)
             .WithMany()
             .HasForeignKey(link => link.Version)
             .HasPrincipalKey(version => version.Version)

@@ -19,8 +19,8 @@ public class MidjourneyStyleExampleLink : IEntity
     public ModelVersion Version { get; private set; }
 
     // Navigation
-    public MidjourneyStyle Style { get; private set; } = null!;
-    public MidjourneyVersion VersionMaster { get; private set; } = null!;
+    public MidjourneyStyle MidjuorneyStyle { get; private set; } = null!;
+    public MidjourneyVersion MidjourneyMaster { get; private set; } = null!;
 
     // Constructors
     private MidjourneyStyleExampleLink()

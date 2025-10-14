@@ -20,7 +20,7 @@ public class MidjourneyStyle : IEntity
 
     // Navigation properties
     public List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
-    public List<MidjourneyStyleExampleLink> ExampleLinks { get; set; } = [];
+    public List<MidjourneyStyleExampleLink> MidjourneyExampleLinks { get; set; } = [];
 
     // Constructors
     private MidjourneyStyle()

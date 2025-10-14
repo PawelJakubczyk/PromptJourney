@@ -14,7 +14,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyResponse>
+        var properties = new List<PropertyQueryResponse>
         {
             new("1.0", "aspect", ["--ar", "--aspect"], "16:9", "1:1", "32:1", "Aspect ratio parameter"),
             new("1.0", "quality", ["--q", "--quality"], "1", "0.25", "2", "Quality parameter")
@@ -32,7 +32,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        AssertOkResult<PropertyResponse>(actionResult, 2);
+        AssertOkResult<PropertyQueryResponse>(actionResult, 2);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var emptyList = new List<PropertyResponse>();
+        var emptyList = new List<PropertyQueryResponse>();
         var result = Result.Ok(emptyList);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -53,7 +53,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        AssertOkResult<PropertyResponse>(actionResult, 0);
+        AssertOkResult<PropertyQueryResponse>(actionResult, 0);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var invalidVersion = "";
-        var failureResult = CreateFailureResult<List<PropertyResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -84,7 +84,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "99.0";
-        var failureResult = CreateFailureResult<List<PropertyResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, ApplicationLayer>(
             StatusCodes.Status404NotFound,
             "Version not found");
 

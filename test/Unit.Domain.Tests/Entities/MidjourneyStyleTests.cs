@@ -414,7 +414,7 @@ public class MidjourneyStyleTests
         // Assert
         result.Value.MidjourneyPromptHistories.Should().NotBeNull();
         result.Value.MidjourneyPromptHistories.Should().BeEmpty();
-        result.Value.ExampleLinks.Should().NotBeNull();
-        result.Value.ExampleLinks.Should().BeEmpty();
+        result.Value.MidjourneyExampleLinks.Should().NotBeNull();
+        result.Value.MidjourneyExampleLinks.Should().BeEmpty();
     }
 }

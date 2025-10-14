@@ -23,7 +23,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "2:1"
         );
 
-        var response = new PropertyResponse(version, propertyName, ["--ar"], "2:1", "1:4", "4:1", "Aspect ratio");
+        var response = new PropertyQueryResponse(version, propertyName, ["--ar"], "2:1", "1:4", "4:1", "Aspect ratio");
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -40,7 +40,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
         actionResult.Should().BeOfType<OkObjectResult>();
 
         var okResult = actionResult as OkObjectResult;
-        okResult!.Value.Should().BeOfType<PropertyResponse>();
+        okResult!.Value.Should().BeOfType<PropertyQueryResponse>();
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "newvalue"
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
             "Property not found");
 
@@ -83,7 +83,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Invalid characteristic to update");
 
@@ -112,7 +112,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
             "Characteristic not supported for patching");
 

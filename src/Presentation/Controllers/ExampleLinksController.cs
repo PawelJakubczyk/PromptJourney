@@ -112,8 +112,10 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
         return await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => {
-                if (!string.IsNullOrEmpty(payload)) {
+            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
+            {
+                if (!string.IsNullOrEmpty(payload))
+                {
                     return CreatedAtAction(nameof(CheckLinkExists), new { link = payload }, new { linkId = payload });
                 }
 

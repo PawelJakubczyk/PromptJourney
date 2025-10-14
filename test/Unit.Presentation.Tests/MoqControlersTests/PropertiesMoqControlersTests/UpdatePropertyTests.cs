@@ -28,7 +28,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             "Updated aspect ratio parameter"
         );
 
-        var response = new PropertyResponse(request.Version, request.PropertyName, request.Parameters,
+        var response = new PropertyQueryResponse(request.Version, request.PropertyName, request.Parameters,
             request.DefaultValue, request.MinValue, request.MaxValue, request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
@@ -46,7 +46,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         actionResult.Should().BeOfType<OkObjectResult>();
 
         var okResult = actionResult as OkObjectResult;
-        okResult!.Value.Should().BeOfType<PropertyResponse>();
+        okResult!.Value.Should().BeOfType<PropertyQueryResponse>();
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ne"]
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
             "Property not found");
 
@@ -112,7 +112,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             [] // Empty parameters invalid
         );
 
-        var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Parameters cannot be empty");
 

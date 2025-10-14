@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -38,21 +38,21 @@ public class MidjourneyVersionConfiguration : IEntityTypeConfiguration<Midjourne
             .HasColumnType(ColumnType.Text);
 
         builder
-            .HasMany(master => master.Properties)
+            .HasMany(master => master.MidjourneyProperties)
             .WithOne(version => version.MidjourneyVersion)
             .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasMany(master => master.Properties)
+            .HasMany(master => master.MidjourneyProperties)
             .WithOne(version => version.MidjourneyVersion)
             .HasForeignKey(version => version.Version)
             .HasPrincipalKey(master => master.Version)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasMany(master => master.Histories)
+            .HasMany(master => master.MidjourneyHistories)
             .WithOne(history => history.MidjourneyVersion)
             .HasForeignKey(history => history.Version)
             .HasPrincipalKey(master => master.Version)

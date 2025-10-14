@@ -10,5 +10,5 @@ public sealed record ExampleLinkResponse
 )
 {
     public static ExampleLinkResponse FromDomain(MidjourneyStyleExampleLink exampleLink) =>
-        new(exampleLink.Link.Value, exampleLink.Style.StyleName.Value, exampleLink.Version.Value);
+        new(exampleLink.Link.Value, exampleLink.MidjuorneyStyle.StyleName.Value, exampleLink.Version.Value);
 }

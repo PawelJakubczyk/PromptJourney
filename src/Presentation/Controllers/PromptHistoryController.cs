@@ -94,7 +94,8 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => {
-                if (!string.IsNullOrEmpty(payload)) {
+                if (!string.IsNullOrEmpty(payload))
+                {
                     return CreatedAtAction(nameof(GetRecordCount), null, new { historyId = payload });
                 }
 

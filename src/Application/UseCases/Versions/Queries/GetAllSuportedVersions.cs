@@ -19,7 +19,7 @@ public static class GetAllSuportedVersions
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .ExecuteIfNoErrors(() => _versionRepository
-                    .GetAllSuportedVersionsAsync(cancellationToken))
+                    .GetAllSupportedVersionsAsync(cancellationToken))
                 .MapResult<List<ModelVersion>, List<string>>
                     (versionsList => [.. versionsList.Select(v => v.Value)]);
 
