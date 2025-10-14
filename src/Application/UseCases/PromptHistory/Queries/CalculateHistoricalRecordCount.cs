@@ -7,9 +7,12 @@ namespace Application.UseCases.PromptHistory.Queries;
 
 public static class CalculateHistoricalRecordCount
 {
-    public sealed record Query : IQuery<int>;
+    public sealed record Query : IQuery<int>
+    {
+        public static readonly Query Simgletone = new();
+    };
 
-    public sealed class Handler
+public sealed class Handler
     (
         IPromptHistoryRepository promptHistoryRepository
     ) : IQueryHandler<Query, int>
@@ -18,11 +21,8 @@ public static class CalculateHistoricalRecordCount
 
         public async Task<Result<int>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var result = await WorkflowPipeline
-                .EmptyAsync()
-                .ExecuteIfNoErrors(() => _promptHistoryRepository
-                    .CalculateHistoricalRecordCountAsync(cancellationToken))
-                .MapResult<int>();
+            var result = await _promptHistoryRepository
+                    .CalculateHistoricalRecordCountAsync(cancellationToken);
 
             return result;
         }

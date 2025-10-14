@@ -2,6 +2,7 @@ using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Domain.Entities;
 
@@ -64,5 +65,15 @@ public class MidjourneyStyleExampleLink : IEntity
             .MapResult<MidjourneyStyleExampleLink>();
 
         return result;
+    }
+
+    public static Result<Guid> ParseLinkId(string Id)
+    {
+        if (!Guid.TryParse(Id, out var linkId))
+        {
+            return Result.Fail<Guid>("Invalid ID format");
+        }
+
+        return Result.Ok(linkId);
     }
 }

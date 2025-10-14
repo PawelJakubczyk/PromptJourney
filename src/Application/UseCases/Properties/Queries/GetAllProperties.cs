@@ -9,7 +9,10 @@ namespace Application.UseCases.Properties.Queries;
 
 public static class GetAllProperties
 {
-    public sealed record Query : IQuery<List<PropertyResponse>>;
+    public sealed record Query : IQuery<List<PropertyResponse>>
+    {
+        public static readonly Query Simgletone = new();
+    };
 
     public sealed class Handler
     (

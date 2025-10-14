@@ -9,7 +9,10 @@ namespace Application.UseCases.PromptHistory.Queries;
 
 public static class GetAllHistoryRecords
 {
-    public sealed record Query : IQuery<List<PromptHistoryResponse>>;
+    public sealed record Query : IQuery<List<PromptHistoryResponse>>
+    {
+        public static readonly Query Simgletone = new();
+    };
 
     public sealed class Handler
     (

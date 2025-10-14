@@ -18,10 +18,23 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     [ProducesResponseType<List<PropertyResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllByVersion(string version, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllPropertiesByVersion(string version, CancellationToken cancellationToken)
     {
         return await Sender
             .Send(new GetPropertiesByVersion.Query(version), cancellationToken)
+            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
+            .Else(pipeline => pipeline.PrepareOKResponse())
+            .ToActionResultAsync();
+    }
+    // GET api/properties/version/
+    [HttpGet("version/")]
+    [ProducesResponseType<List<PropertyResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        return await Sender
+            .Send(GetAllProperties.Query.Simgletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();

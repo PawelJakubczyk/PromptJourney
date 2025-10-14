@@ -2,6 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.Common.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
@@ -19,15 +20,14 @@ public static class DeleteExampleLink
 
         public async Task<Result<DeleteResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            if (!Guid.TryParse(command.Id, out var linkId)) {
-                return Result.Fail("Invalid ID format");
-            }
+            var linkId = MidjourneyStyleExampleLink.ParseLinkId(command.Id);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .IfLinkNotExists(linkId, _exampleLinkRepository, cancellationToken)
+                .CollectErrors(linkId)
+                .IfLinkNotExists(linkId.Value, _exampleLinkRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _exampleLinkRepository
-                    .DeleteExampleLinkAsync(linkId, cancellationToken))
+                    .DeleteExampleLinkAsync(linkId.Value, cancellationToken))
                 .MapResult(() => DeleteResponse.Success($"Example link with ID '{linkId}' was successfully deleted."));
 
             return result;
