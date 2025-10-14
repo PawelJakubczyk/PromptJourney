@@ -11,6 +11,8 @@ rm -r Migrations
 Add-Migration migration_init -Project Persistence -StartupProject App
 Add-Migration migration_seeding -Project Persistence -StartupProject App
 
+Add-Migration migration_update -Project Persistence -StartupProject App
+
 # Cofniêcie migracji
 remove-migration -Project Persistence -StartupProject App
 remove-migration -Project Persistence -StartupProject App -Force

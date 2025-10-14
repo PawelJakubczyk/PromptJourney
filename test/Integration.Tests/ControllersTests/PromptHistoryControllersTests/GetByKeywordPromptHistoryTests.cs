@@ -28,7 +28,7 @@ public sealed class GetByKeywordPromptHistoryTests(MidjourneyTestWebApplicationF
             historyRecords.Should().NotBeNull();
 
             // All returned records should contain the keyword in prompt
-            if (historyRecords!.Any())
+            if (historyRecords!.Count != 0)
             {
                 historyRecords.Should().AllSatisfy(record =>
                 {
@@ -125,7 +125,7 @@ public sealed class GetByKeywordPromptHistoryTests(MidjourneyTestWebApplicationF
             var historyRecords = await DeserializeResponse<List<PromptHistoryResponse>>(response);
             historyRecords.Should().NotBeNull();
 
-            if (historyRecords!.Any())
+            if (historyRecords!.Count != 0)
             {
                 var firstRecord = historyRecords.First();
                 firstRecord.Prompt.Should().NotBeNullOrEmpty();

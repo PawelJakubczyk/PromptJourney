@@ -26,7 +26,7 @@ public sealed class GetByTypeTests(MidjourneyTestWebApplicationFactory factory) 
             var styles = await DeserializeResponse<List<StyleResponse>>(response);
             styles.Should().NotBeNull();
 
-            if (styles!.Any())
+            if (styles.Count != 0)
             {
                 styles.Should().AllSatisfy(style => style.Type.Should().Be(styleType));
             }

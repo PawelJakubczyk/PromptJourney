@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
@@ -6,11 +6,11 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record PropertyName : ValueObject<string?>, ICreatable<PropertyName, string?>
+public record PropertyName : ValueObject<string>, ICreatable<PropertyName, string?>
 {
     public const int MaxLength = 25;
 
-    private PropertyName(string? value) : base(value) { }
+    private PropertyName(string value) : base(value) { }
 
     public static Result<PropertyName> Create(string? value)
     {
@@ -18,7 +18,7 @@ public record PropertyName : ValueObject<string?>, ICreatable<PropertyName, stri
             .Empty()
             .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
             .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength)
-            .ExecuteIfNoErrors<PropertyName>(() => new PropertyName(value))
+            .ExecuteIfNoErrors<PropertyName>(() => new PropertyName(value!))
             .MapResult<PropertyName>();
 
         return result;

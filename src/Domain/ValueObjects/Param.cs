@@ -6,11 +6,11 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record Param : ValueObject<string?>, ICreatable<Param, string?>
+public record Param : ValueObject<string>, ICreatable<Param, string?>
 {
     public const int MaxLength = 100;
 
-    private Param(string? value) : base(value) { }
+    private Param(string value) : base(value) { }
 
     public static Result<Param> Create(string? value)
     {

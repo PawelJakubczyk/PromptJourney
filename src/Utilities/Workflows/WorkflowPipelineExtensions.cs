@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 
 namespace Utilities.Workflows;
 
@@ -7,7 +7,7 @@ public static class WorkflowPipelineExtensions
     // --- Validate ---
     public static WorkflowPipeline Validate(this WorkflowPipeline pipeline, Func<WorkflowPipeline, WorkflowPipeline> validationBlock)
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var tempPipeline = WorkflowPipeline.Create([.. pipeline.Errors], breakOnError: false);
@@ -23,7 +23,7 @@ public static class WorkflowPipelineExtensions
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var tempPipelineTask = Task.FromResult(WorkflowPipeline.Create([.. pipeline.Errors], breakOnError: false));
@@ -38,10 +38,10 @@ public static class WorkflowPipelineExtensions
     public static WorkflowPipeline CollectErrors<TValue>
     (
         this WorkflowPipeline pipeline,
-        Result<TValue?>? result
+        Result<TValue> result
     )
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var errorsCopy = new List<Error>(pipeline.Errors);
@@ -58,8 +58,8 @@ public static class WorkflowPipelineExtensions
     public static async Task<WorkflowPipeline> CollectErrors<TValue>
     (
         this Task<WorkflowPipeline> pipelineTask,
-        Result<TValue?>? result
-    )
+        Result<TValue> result
+    )   
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
         return pipeline.CollectErrors(result);
@@ -68,10 +68,10 @@ public static class WorkflowPipelineExtensions
     public static WorkflowPipeline CollectErrors<TValue>
     (
         this WorkflowPipeline pipeline,
-        List<Result<TValue?>?>? results
+        List<Result<TValue>>? results
     )
     {
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var errorsCopy = new List<Error>(pipeline.Errors); ;
@@ -96,7 +96,7 @@ public static class WorkflowPipelineExtensions
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var errors = pipeline.Errors;
@@ -117,7 +117,7 @@ public static class WorkflowPipelineExtensions
         Func<Result<TType>> action
     )
     {
-        if (pipeline.Errors.Count != 0 && pipeline.BreakOnError)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var result = action();
@@ -141,7 +141,7 @@ public static class WorkflowPipelineExtensions
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 
-        if (pipeline.BreakOnError && pipeline.Errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         var actionResult = await action().ConfigureAwait(false);

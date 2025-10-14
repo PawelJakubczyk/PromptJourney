@@ -9,9 +9,10 @@ namespace Application.UseCases.Properties.Queries;
 
 public static class GetAllProperties
 {
-    public sealed record Query() : IQuery<List<PropertyResponse>>;
+    public sealed record Query : IQuery<List<PropertyResponse>>;
 
-    public sealed class Handler(
+    public sealed class Handler
+    (
         IPropertiesRepository propertiesRepository,
         IVersionRepository versionRepository
     ) : IQueryHandler<Query, List<PropertyResponse>>

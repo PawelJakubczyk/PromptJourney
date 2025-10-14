@@ -8,7 +8,7 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string>
+public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?>
 {
     public const int MaxLength = 200;
 

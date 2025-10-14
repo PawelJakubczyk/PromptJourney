@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
+namespace Persistence.Repositories;
+
 public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbContext) : IPromptHistoryRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext = midjourneyDbContext;

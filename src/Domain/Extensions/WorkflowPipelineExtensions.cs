@@ -12,7 +12,7 @@ public static class WorkflowPipelineExtensions
         this WorkflowPipeline pipeline,
         string? value)
         where TLayer : ILayer
-        where TValue : ValueObject<string?>?
+        where TValue : ValueObject<string?>
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -57,7 +57,7 @@ public static class WorkflowPipelineExtensions
         string? value,
         int maxLength)
         where TLayer : ILayer
-        where TValue : ValueObject<string?>?
+        where TValue : ValueObject<string?>
     {
         if (pipeline.BreakOnError)
             return pipeline;

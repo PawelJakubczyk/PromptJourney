@@ -10,7 +10,7 @@ using static Utilities.Extensions.ErrorFactory;
 
 namespace Domain.Entities;
 
-public class MidjourneyStyle : IEntitie
+public class MidjourneyStyle : IEntity
 {
     // Columns
     public StyleName StyleName { get; set; }

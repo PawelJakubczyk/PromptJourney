@@ -7,17 +7,20 @@ using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 
-public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<MidjourneyStyleExampleLink>
-{
-    public void Configure(EntityTypeBuilder<MidjourneyStyleExampleLink> builder)
-    {
+public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<MidjourneyStyleExampleLink> {
+    public void Configure(EntityTypeBuilder<MidjourneyStyleExampleLink> builder) {
         builder.ToTable("midjourney_style_example_links", schema: "public");
 
-        // Composite primary key
-        builder.HasKey(link => new { link.Link, link.StyleName, link.Version });
+        // Primary key - now using Guid Id
+        builder.HasKey(link => link.Id);
+
+        builder.Property(link => link.Id)
+            .HasColumnName("id")
+            .HasColumnType(ColumnType.Uuid)
+            .IsRequired();
 
         builder.Property(link => link.Link)
-            .HasConversion<ExampleLinkConverter, ExampleLinkComparer>()
+            .HasConversion<LinkConverter, LinkComparer>()
             .HasColumnName("link")
             .HasColumnType(ColumnType.VarChar(ExampleLink.MaxLength))
             .IsRequired();
@@ -51,5 +54,9 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
         builder
             .HasIndex(link => link.StyleName)
             .HasDatabaseName("IX_midjourney_style_example_links_style_name");
+
+        builder
+            .HasIndex(link => link.Version)
+            .HasDatabaseName("IX_midjourney_style_example_links_version");
     }
 }

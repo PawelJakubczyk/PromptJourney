@@ -5,9 +5,12 @@ using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyStyleExampleLink : IEntitie
+public class MidjourneyStyleExampleLink : IEntity
 {
     // Primary key
+    public Guid Id { get; private set; }
+
+    // Value
     public ExampleLink Link { get; private set; }
 
     // Foreign keys
@@ -24,11 +27,14 @@ public class MidjourneyStyleExampleLink : IEntitie
         // Parameterless constructor for EF Core
     }
 
-    private MidjourneyStyleExampleLink(
+    private MidjourneyStyleExampleLink
+    (
         ExampleLink link,
         StyleName styleName,
-        ModelVersion version)
+        ModelVersion version
+    )
     {
+        Id = Guid.NewGuid();
         Link = link;
         StyleName = styleName;
         Version = version;

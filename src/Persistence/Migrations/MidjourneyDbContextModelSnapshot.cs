@@ -17,7 +17,7 @@ namespace Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -129,24 +129,33 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.MidjourneyStyleExampleLink", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Uuid")
+                        .HasColumnName("id");
+
                     b.Property<string>("Link")
+                        .IsRequired()
                         .HasColumnType("varchar(200)")
                         .HasColumnName("link");
 
                     b.Property<string>("StyleName")
+                        .IsRequired()
                         .HasColumnType("varchar(150)")
                         .HasColumnName("style_name");
 
                     b.Property<string>("Version")
+                        .IsRequired()
                         .HasColumnType("varchar(10)")
                         .HasColumnName("version");
 
-                    b.HasKey("Link", "StyleName", "Version");
+                    b.HasKey("Id");
 
                     b.HasIndex("StyleName")
                         .HasDatabaseName("IX_midjourney_style_example_links_style_name");
 
-                    b.HasIndex("Version");
+                    b.HasIndex("Version")
+                        .HasDatabaseName("IX_midjourney_style_example_links_version");
 
                     b.ToTable("midjourney_style_example_links", "public");
                 });

@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
 using Utilities.Constants;
@@ -6,11 +6,11 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record Prompt : ValueObject<string?>, ICreatable<Prompt, string?>
+public record Prompt : ValueObject<string>, ICreatable<Prompt, string?>
 {
     public const int MaxLength = 1000;
 
-    private Prompt(string? value) : base(value) { }
+    private Prompt(string value) : base(value) { }
 
     public static Result<Prompt> Create(string? value)
     {

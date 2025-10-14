@@ -7,7 +7,7 @@ namespace Application.UseCases.PromptHistory.Queries;
 
 public static class CalculateHistoricalRecordCount
 {
-    public sealed record Query() : IQuery<int>;
+    public sealed record Query : IQuery<int>;
 
     public sealed class Handler
     (

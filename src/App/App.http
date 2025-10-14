@@ -1,13 +1,153 @@
 @App_HostAddress = http://localhost:5294
 @version = "6.1"
 
-GET {{App_HostAddress}}/api/versions/add-parameter/{{version}}
+### Versions API ###
+
+# Get all versions
+GET {{App_HostAddress}}/api/versions
 Accept: application/json
 
-{ 
-   PropertyName", "7", 
-   Parameters,
-    "Content reference image" 
-},
+### Get supported versions
+GET {{App_HostAddress}}/api/versions/supported
+Accept: application/json
 
-###
+### Get version by ID
+GET {{App_HostAddress}}/api/versions/{{version}}
+Accept: application/json
+
+### Check if version exists
+GET {{App_HostAddress}}/api/versions/{{version}}/exists
+Accept: application/json
+
+### Properties API ###
+
+### Get all properties by version
+GET {{App_HostAddress}}/api/properties/version/{{version}}
+Accept: application/json
+
+### Check if property exists
+GET {{App_HostAddress}}/api/properties/version/{{version}}/propertyName/exists
+Accept: application/json
+
+### Add new property
+POST {{App_HostAddress}}/api/properties/version/{{version}}
+Content-Type: application/json
+
+{
+    "propertyName": "TestProperty",
+    "parameters": ["param1", "param2"],
+    "defaultValue": "default",
+    "minValue": "0",
+    "maxValue": "100",
+    "description": "Test property description"
+}
+
+### Styles API ###
+
+### Get all styles
+GET {{App_HostAddress}}/api/styles
+Accept: application/json
+
+### Get style by name
+GET {{App_HostAddress}}/api/styles/by-name/styleName
+Accept: application/json
+
+### Get styles by type
+GET {{App_HostAddress}}/api/styles/by-type/Custom
+Accept: application/json
+
+### Get styles by description
+GET {{App_HostAddress}}/api/styles/by-description?keyword=modern
+Accept: application/json
+
+### Create new style
+POST {{App_HostAddress}}/api/styles
+Content-Type: application/json
+
+{
+    "name": "NewStyle",
+    "type": "Custom",
+    "description": "A new custom style",
+    "tags": ["modern", "creative"]
+}
+
+### Add tag to style
+POST {{App_HostAddress}}/api/styles/styleName/tags
+Content-Type: application/json
+
+{
+    "tag": "newTag"
+}
+
+### Remove tag from style
+DELETE {{App_HostAddress}}/api/styles/styleName/tags/tagName
+
+### Update style description
+PATCH {{App_HostAddress}}/api/styles/styleName/description
+Content-Type: application/json
+
+{
+    "description": "Updated description"
+}
+
+### Example Links API ###
+
+### Get all example links
+GET {{App_HostAddress}}/api/example-links
+Accept: application/json
+
+### Get links by style
+GET {{App_HostAddress}}/api/example-links/by-style/styleName
+Accept: application/json
+
+### Get links by style and version
+GET {{App_HostAddress}}/api/example-links/by-style/styleName/version/{{version}}
+Accept: application/json
+
+### Add example link
+POST {{App_HostAddress}}/api/example-links
+Content-Type: application/json
+
+{
+    "styleName": "ExampleStyle",
+    "link": "https://example.com/image.jpg",
+    "version": "{{version}}"
+}
+
+### Delete example link
+DELETE {{App_HostAddress}}/api/example-links/linkId
+
+### Check if links exist
+GET {{App_HostAddress}}/api/example-links/exists
+Accept: application/json
+
+### Prompt History API ###
+
+### Get all prompt history
+GET {{App_HostAddress}}/api/prompt-history
+Accept: application/json
+
+### Get prompt history by date range
+GET {{App_HostAddress}}/api/prompt-history/by-date?startDate=2025-01-01&endDate=2025-12-31
+Accept: application/json
+
+### Get prompt history by keyword
+GET {{App_HostAddress}}/api/prompt-history/by-keyword?keyword=searchTerm
+Accept: application/json
+
+### Get last prompt
+GET {{App_HostAddress}}/api/prompt-history/last
+Accept: application/json
+
+### Add new prompt
+POST {{App_HostAddress}}/api/prompt-history
+Content-Type: application/json
+
+{
+    "prompt": "Example prompt text",
+    "timestamp": "2025-10-11T12:00:00Z"
+}
+
+### Get prompt history record count
+GET {{App_HostAddress}}/api/prompt-history/record-count
+Accept: application/json

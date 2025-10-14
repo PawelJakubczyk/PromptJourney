@@ -8,7 +8,7 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class CheckExampleLinkExist
 {
-    public sealed record Query(string Link) : IQuery<bool>;
+    public sealed record Query(string Id) : IQuery<bool>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
         : IQueryHandler<Query, bool>
@@ -17,13 +17,16 @@ public static class CheckExampleLinkExist
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var link = ExampleLink.Create(query.Link);
+
+            if (!Guid.TryParse(query.Id, out var id)) {
+                return Result.Fail("Invalid GUID format.");
+            }
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CollectErrors(link)
+
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .CheckExampleLinkExistsAsync(link.Value, cancellationToken))
+                    .CheckExampleLinkExistsAsync(id, cancellationToken))
                 .MapResult(() => true);
 
             return result;

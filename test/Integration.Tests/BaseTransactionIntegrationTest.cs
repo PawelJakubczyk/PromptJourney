@@ -20,30 +20,31 @@ public abstract class BaseTransactionIntegrationTest : IDisposable
         _transaction = DbContext.Database.BeginTransaction();
     }
 
-    public virtual void Dispose()
+public virtual void Dispose()
+{
+    if (!_disposed)
     {
-        if (!_disposed)
+        try
         {
-            try
-            {
-                // Rollback transaction instead of cleaning database
-                _transaction.Rollback();
-                _transaction.Dispose();
+            // Rollback transaction instead of cleaning database
+            _transaction.Rollback();
+            _transaction.Dispose();
 
-                // Clear change tracker
-                DbContext.ChangeTracker.Clear();
+            // Clear change tracker
+            DbContext.ChangeTracker.Clear();
 
-                // Dispose the context
-                DbContext.Dispose();
-            }
-            catch (Exception)
-            {
-                // Ignore cleanup errors during disposal
-            }
-            finally
-            {
-                _disposed = true;
-            }
+            // Dispose the context
+            DbContext.Dispose();
+        }
+        catch (Exception)
+        {
+            // Ignore cleanup errors during disposal
+        }
+        finally
+        {
+            _disposed = true;
+            GC.SuppressFinalize(this); // <-- zapobiega wywołaniu finalizatora
         }
     }
+}
 }

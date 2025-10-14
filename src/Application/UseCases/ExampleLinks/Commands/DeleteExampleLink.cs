@@ -10,7 +10,7 @@ namespace Application.UseCases.ExampleLinks.Commands;
 
 public static class DeleteExampleLink
 {
-    public sealed record Command(string Link) : ICommand<DeleteResponse>;
+    public sealed record Command(string Id) : ICommand<DeleteResponse>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinkRepository)
         : ICommandHandler<Command, DeleteResponse>
@@ -19,15 +19,16 @@ public static class DeleteExampleLink
 
         public async Task<Result<DeleteResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var link = ExampleLink.Create(command.Link);
+            if (!Guid.TryParse(command.Id, out var linkId)) {
+                return Result.Fail("Invalid ID format");
+            }
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CollectErrors<ExampleLink>(link)
-                .IfLinkNotExists(link.Value, _exampleLinkRepository, cancellationToken)
+                .IfLinkNotExists(linkId, _exampleLinkRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _exampleLinkRepository
-                    .DeleteExampleLinkAsync(link.Value, cancellationToken))
-                .MapResult(() => DeleteResponse.Success($"Example link '{link.Value.Value}' was successfully deleted."));
+                    .DeleteExampleLinkAsync(linkId, cancellationToken))
+                .MapResult(() => DeleteResponse.Success($"Example link with ID '{linkId}' was successfully deleted."));
 
             return result;
         }

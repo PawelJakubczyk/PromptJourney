@@ -26,7 +26,7 @@ public sealed class GetAllByVersionTests(MidjourneyTestWebApplicationFactory fac
             var properties = await DeserializeResponse<List<PropertyResponse>>(response);
             properties.Should().NotBeNull();
 
-            if (properties!.Any())
+            if (properties!.Count != 0)
             {
                 properties.Should().AllSatisfy(prop => prop.Version.Should().Be(version));
             }
@@ -61,7 +61,7 @@ public sealed class GetAllByVersionTests(MidjourneyTestWebApplicationFactory fac
             var properties = await DeserializeResponse<List<PropertyResponse>>(response);
             properties.Should().NotBeNull();
 
-            if (properties!.Any())
+            if (properties!.Count != 0)
             {
                 var firstProperty = properties.First();
                 firstProperty.Version.Should().NotBeNullOrEmpty();

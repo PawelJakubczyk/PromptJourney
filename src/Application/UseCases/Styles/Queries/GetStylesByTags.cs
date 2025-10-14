@@ -39,14 +39,16 @@ public static class GetStylesByTags
 
 internal static class CollectionValidationExtensions
 {
-    public static async Task<WorkflowPipeline> IfListIsNullOrEmpty<TValue>(
-    this Task<WorkflowPipeline> pipelineTask,
-    List<TValue>? items)
+    public static async Task<WorkflowPipeline> IfListIsNullOrEmpty<TValue>
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        List<TValue>? items
+    )
     {
         var pipeline = await pipelineTask;
         var errors = pipeline.Errors;
 
-        if (pipeline.BreakOnError && errors.Count != 0)
+        if (pipeline.BreakOnError)
             return pipeline;
 
         if (items is null || items.Count == 0)

@@ -1,11 +1,11 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyVersion : IEntitie
+public class MidjourneyVersion : IEntity
 {
     // Columns
     public ModelVersion Version { get; set; }

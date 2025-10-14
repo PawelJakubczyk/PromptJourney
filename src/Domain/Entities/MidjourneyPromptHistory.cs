@@ -1,11 +1,11 @@
-﻿using Domain.Abstractions;
+using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyPromptHistory : IEntitie
+public class MidjourneyPromptHistory : IEntity
 {
     // Columns
     public Guid HistoryId { get; }
@@ -49,8 +49,8 @@ public class MidjourneyPromptHistory : IEntitie
         var result = WorkflowPipeline
             .Empty()
             .Validate(pipeline => pipeline
-                .CollectErrors<Prompt>(prompt)
-                .CollectErrors<ModelVersion>(version))
+                .CollectErrors(prompt)
+                .CollectErrors(version))
             .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
             (
                 prompt.Value,
