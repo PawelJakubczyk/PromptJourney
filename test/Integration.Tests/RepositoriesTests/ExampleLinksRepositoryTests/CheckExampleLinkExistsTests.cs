@@ -17,7 +17,7 @@ public class CheckExampleLinkExistsTests(MidjourneyDbFixture fixture) : Reposito
         var link = ExampleLink.Create(DefaultTestLink1).Value;
 
         // Act
-        var result = await ExampleLinkRepository.CheckExampleLinkWithLinkExistsAsync(link, CancellationToken);
+        var result = await ExampleLinkRepository.CheckExampleLinkExistsByLinkAsync(link, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -31,7 +31,7 @@ public class CheckExampleLinkExistsTests(MidjourneyDbFixture fixture) : Reposito
         var link = ExampleLink.Create("https://nonexistent.com/test.jpg").Value;
 
         // Act
-        var result = await ExampleLinkRepository.CheckExampleLinkWithLinkExistsAsync(link, CancellationToken);
+        var result = await ExampleLinkRepository.CheckExampleLinkExistsByLinkAsync(link, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -55,7 +55,7 @@ public class CheckExampleLinkExistsTests(MidjourneyDbFixture fixture) : Reposito
         var searchLink = ExampleLink.Create(DefaultTestLink2).Value;
 
         // Act
-        var result = await ExampleLinkRepository.CheckExampleLinkWithLinkExistsAsync(searchLink, CancellationToken);
+        var result = await ExampleLinkRepository.CheckExampleLinkExistsByLinkAsync(searchLink, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);

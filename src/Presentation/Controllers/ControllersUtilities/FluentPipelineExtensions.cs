@@ -24,10 +24,11 @@ public sealed class Pipeline<TResponse>
 
         var mainError = Errors.Count != 0
             ? PickHighestPriorityErrorInternal(Errors)
-            : (ErrorFactory.Create()
+            : ErrorBuilder.New()
                 .WithLayer<PresentationLayer>()
                 .WithMessage("Unknown error")
-                .WithErrorCode(StatusCodes.Status500InternalServerError));
+                .WithErrorCode(StatusCodes.Status500InternalServerError)
+                .Build();
 
         var details = Errors.Select(error => error.GetDetail()).ToList();
 

@@ -23,7 +23,7 @@ public static class CheckExampleLinkWithStyleExists
                 .EmptyAsync()
                 .CollectErrors(styleName)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .CheckExampleLinkWithStyleExistsAsync(styleName.Value, cancellationToken))
+                    .CheckExampleLinkExistsByStyleAsync(styleName.Value, cancellationToken))
                 .MapResult(() => true);
 
             return result;

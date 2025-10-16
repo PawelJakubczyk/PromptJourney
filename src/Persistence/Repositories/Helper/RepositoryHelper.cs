@@ -16,10 +16,11 @@ public static class RepositoryHelper
         }
         catch (Exception ex)
         {
-            var error = ErrorFactory.Create()
+            var error = ErrorBuilder.New()
                 .WithLayer<PersistenceLayer>()
                 .WithMessage($"{errorMessage}: {ex.Message}")
-                .WithErrorCode(statusCode);
+                .WithErrorCode(statusCode)
+                .Build();
 
             return Result.Fail<TType>(error);
         }

@@ -26,17 +26,13 @@ public class MidjourneyPromptHistory : IEntity
     private MidjourneyPromptHistory
     (
         Prompt prompt,
-        ModelVersion version,
-        DateTime? createdOn = null
+        ModelVersion version
     )
     {
-        var historyId = Guid.NewGuid();
-        var creationTime = createdOn ?? DateTime.UtcNow;
-
-        HistoryId = historyId;
+        HistoryId = Guid.NewGuid();
         Prompt = prompt;
         Version = version;
-        CreatedOn = creationTime;
+        CreatedOn = DateTime.UtcNow;
     }
 
     public static Result<MidjourneyPromptHistory> Create
@@ -54,8 +50,7 @@ public class MidjourneyPromptHistory : IEntity
             .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
             (
                 prompt.Value,
-                version.Value,
-                createdOn
+                version.Value
             ))
             .MapResult<MidjourneyPromptHistory, MidjourneyPromptHistory>(history => history);
 

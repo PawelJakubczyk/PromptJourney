@@ -11,7 +11,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class PromptHistoryController(ISender sender) : ApiController(sender)
+public sealed class PromptHistoriesController(ISender sender) : ApiController(sender)
 {
     // GET api/prompthistory
     [HttpGet]
@@ -27,7 +27,7 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
     }
 
     // GET api/prompthistory/last/{count}
-    [HttpGet("last/{count:int}")]
+    [HttpGet("last/{count}")]
     [ProducesResponseType<List<PromptHistoryResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetLast(int count, CancellationToken cancellationToken)
@@ -40,7 +40,7 @@ public sealed class PromptHistoryController(ISender sender) : ApiController(send
     }
 
     // GET api/prompthistory/daterange?from=2024-01-01&to=2024-12-31
-    [HttpGet("daterange")]
+    [HttpGet("date-range")]
     [ProducesResponseType<List<PromptHistoryResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to, CancellationToken cancellationToken)

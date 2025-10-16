@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Extensions;
 using Utilities.Workflows;
-using static Utilities.Extensions.ErrorFactory;
 
 namespace Domain.Entities;
 
@@ -140,10 +139,11 @@ internal static class MidjourneyStylePipelineExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"List of {typeof(TValue).Name}: cannot be null.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;
@@ -159,10 +159,11 @@ internal static class MidjourneyStylePipelineExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: cannot be an empty collection.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;
@@ -179,10 +180,11 @@ internal static class MidjourneyStylePipelineExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: collection does not contain the required element.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;
@@ -199,10 +201,11 @@ internal static class MidjourneyStylePipelineExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: collection already contains the element.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;

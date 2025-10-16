@@ -19,7 +19,7 @@ public class WorkflowPipelineLinkValidationTests
         var link = ExampleLink.Create("http://example.com").Value;
 
         var repo = new Mock<IExampleLinksRepository>();
-        repo.Setup(r => r.CheckExampleLinkWithLinkExistsAsync(link, _cancellationToken)).ReturnsAsync(Result.Ok(true));
+        repo.Setup(r => r.CheckExampleLinkExistsByLinkAsync(link, _cancellationToken)).ReturnsAsync(Result.Ok(true));
 
         var result = await pipelineTask.IfLinkAlreadyExists(link, repo.Object, _cancellationToken);
 
@@ -34,7 +34,7 @@ public class WorkflowPipelineLinkValidationTests
         var link = ExampleLink.Create("http://missing.com").Value;
 
         var repo = new Mock<IExampleLinksRepository>();
-        repo.Setup(r => r.CheckExampleLinkWithLinkExistsAsync(link, _cancellationToken)).ReturnsAsync(Result.Ok(false));
+        repo.Setup(r => r.CheckExampleLinkExistsByLinkAsync(link, _cancellationToken)).ReturnsAsync(Result.Ok(false));
 
         var result = await pipelineTask.IfLinkNotExists(link, repo.Object, _cancellationToken);
 

@@ -41,10 +41,11 @@ internal static class StyleTypeErrorsExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"Invalid style type: {value}. Expected values are: {string.Join(", ", Enum.GetNames<StyleTypeEnum>())}")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 

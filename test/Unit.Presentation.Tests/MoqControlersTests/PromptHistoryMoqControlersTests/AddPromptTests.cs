@@ -34,7 +34,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        AssertCreatedResult<PromptHistoryResponse>(actionResult, nameof(PromptHistoryController.GetRecordCount));
+        AssertCreatedResult<PromptHistoryResponse>(actionResult, nameof(PromptHistoriesController.GetRecordCount));
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         // Assert
         actionResult.Should().BeOfType<CreatedAtActionResult>();
         var createdResult = actionResult as CreatedAtActionResult;
-        createdResult!.ActionName.Should().Be(nameof(PromptHistoryController.GetRecordCount));
+        createdResult!.ActionName.Should().Be(nameof(PromptHistoriesController.GetRecordCount));
         createdResult.Value.Should().Be(response);
     }
 }

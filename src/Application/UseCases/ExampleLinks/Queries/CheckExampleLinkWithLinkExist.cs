@@ -23,7 +23,7 @@ public static class CheckExampleLinkWithLinkExist
                 .EmptyAsync()
                 .CollectErrors(link)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .CheckExampleLinkWithLinkExistsAsync(link.Value, cancellationToken))
+                    .CheckExampleLinkExistsByLinkAsync(link.Value, cancellationToken))
                 .MapResult(() => true);
 
             return result;

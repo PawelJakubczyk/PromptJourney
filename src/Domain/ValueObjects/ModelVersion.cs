@@ -44,10 +44,11 @@ internal static partial class ModelVersionErrorsExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 

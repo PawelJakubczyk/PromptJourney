@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using Utilities.Constants;
@@ -86,10 +86,11 @@ public abstract class ControllerTestsBase
     protected static Result<TResult> CreateFailureResult<TResult, TLayer>(int statusCode, string message)
         where TLayer : ILayer
     {
-        var error = ErrorFactory.Create()
+        var error = ErrorBuilder.New()
             .WithLayer<TLayer>()
             .WithMessage(message)
-            .WithErrorCode(statusCode);
+            .WithErrorCode(statusCode)
+            .Build();
 
         return Result.Fail<TResult>(error);
     }
