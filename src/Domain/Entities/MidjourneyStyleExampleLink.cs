@@ -2,7 +2,6 @@ using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Domain.Entities;
 

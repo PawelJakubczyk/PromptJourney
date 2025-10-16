@@ -21,30 +21,36 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         }, "Failed to check if example links exist", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<bool>> CheckExampleLinkWithLinkExistsAsync(ExampleLink link, CancellationToken cancellationToken)
+    public Task<Result<bool>> CheckExampleLinkExistsByLinkAsync(ExampleLink link, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
-            return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .AnyAsync(l => l.Link == link, cancellationToken);
+            var exist = await _midjourneyDbContext.MidjourneyStyleExampleLinks
+                .AnyAsync(exampleLink => exampleLink.Link == link, cancellationToken);
+
+            return exist;
         }, "Failed to check if example link exists", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<bool>> CheckExampleLinkWithIdExistsAsync(Guid Id, CancellationToken cancellationToken)
+    public Task<Result<bool>> CheckExampleLinkExistsByIdAsync(Guid Id, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
-            return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .AnyAsync(l => l.Id == Id, cancellationToken);
+            var exist = await _midjourneyDbContext.MidjourneyStyleExampleLinks
+                .AnyAsync(exampleLink => exampleLink.Id == Id, cancellationToken);
+
+            return exist;
         }, "Failed to check if example link exists", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(StyleName styleName, CancellationToken cancellationToken)
+    public Task<Result<bool>> CheckExampleLinkExistsByStyleAsync(StyleName styleName, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
-            return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .AnyAsync(l => l.StyleName == styleName, cancellationToken);
+            var exist = await _midjourneyDbContext.MidjourneyStyleExampleLinks
+                .AnyAsync(exampleLink => exampleLink.StyleName == styleName, cancellationToken);
+
+            return exist;
         }, "Failed to check if example link with style exists", StatusCodes.Status500InternalServerError);
     }
 
@@ -53,8 +59,8 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .Include(l => l.MidjuorneyStyle)
-                .Include(l => l.MidjourneyMaster)
+                .Include(exampleLink => exampleLink.MidjuorneyStyle)
+                .Include(exampleLink => exampleLink.MidjourneyMaster)
                 .ToListAsync(cancellationToken);
         }, "Failed to get all example links", StatusCodes.Status500InternalServerError);
     }
@@ -64,9 +70,9 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .Include(l => l.MidjuorneyStyle)
-                .Include(l => l.MidjourneyMaster)
-                .FirstOrDefaultAsync(l => l.Id == id, cancellationToken)
+                .Include(exampleLink => exampleLink.MidjuorneyStyle)
+                .Include(exampleLink => exampleLink.MidjourneyMaster)
+                .FirstOrDefaultAsync(exampleLink => exampleLink.Id == id, cancellationToken)
                 ?? throw new KeyNotFoundException($"Example link with ID {id} not found");
         }, "Failed to get example link by ID", StatusCodes.Status500InternalServerError);
     }
@@ -76,9 +82,9 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .Include(l => l.MidjuorneyStyle)
-                .Include(l => l.MidjourneyMaster)
-                .Where(l => l.StyleName == styleName)
+                .Include(exampleLink => exampleLink.MidjuorneyStyle)
+                .Include(exampleLink => exampleLink.MidjourneyMaster)
+                .Where(exampleLink => exampleLink.StyleName == styleName)
                 .ToListAsync(cancellationToken);
         }, "Failed to get example links by style", StatusCodes.Status500InternalServerError);
     }
@@ -88,9 +94,9 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .Include(l => l.MidjuorneyStyle)
-                .Include(l => l.MidjourneyMaster)
-                .Where(l => l.Link == link)
+                .Include(exampleLink => exampleLink.MidjuorneyStyle)
+                .Include(exampleLink => exampleLink.MidjourneyMaster)
+                .Where(exampleLink => exampleLink.Link == link)
                 .ToListAsync(cancellationToken);
         }, "Failed to get example links by link", StatusCodes.Status500InternalServerError);
     }
@@ -105,9 +111,9 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .Include(l => l.MidjuorneyStyle)
-                .Include(l => l.MidjourneyMaster)
-                .Where(l => l.StyleName == styleName && l.Version == version)
+                .Include(exampleLink => exampleLink.MidjuorneyStyle)
+                .Include(exampleLink => exampleLink.MidjourneyMaster)
+                .Where(exampleLink => exampleLink.StyleName == styleName && exampleLink.Version == version)
                 .ToListAsync(cancellationToken);
         }, "Failed to get example links by style and version", StatusCodes.Status500InternalServerError);
     }
@@ -127,7 +133,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return ExecuteAsync(async () =>
         {
             var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
-                .Where(l => l.StyleName == styleName)
+                .Where(exampleLink => exampleLink.StyleName == styleName)
                 .ToListAsync(cancellationToken);
 
             _midjourneyDbContext.MidjourneyStyleExampleLinks.RemoveRange(exampleLinks);

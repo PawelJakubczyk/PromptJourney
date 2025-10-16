@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-
-namespace Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
+﻿namespace Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
 
 public class PropertiesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {

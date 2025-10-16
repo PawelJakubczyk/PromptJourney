@@ -9,24 +9,24 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class GetAllExampleLinks
 {
-    public sealed record Query : IQuery<ExampleLinkResponse>
+    public sealed record Query : IQuery<List<ExampleLinkResponse>>
     {
         public static readonly Query Singletone = new();
     };
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
-        : IQueryHandler<Query, ExampleLinkResponse>
+        : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
 
-        public async Task<Result<ExampleLinkResponse>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .GetAllExampleLinksAsync(cancellationToken))
-                .MapResult<MidjourneyStyleExampleLink, ExampleLinkResponse>
-                    (link => ExampleLinkResponse.FromDomain(link));
+                .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>
+                    (links => [.. links.Select(ExampleLinkResponse.FromDomain)]);
 
             return result;
         }

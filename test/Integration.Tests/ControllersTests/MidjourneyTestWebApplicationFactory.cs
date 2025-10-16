@@ -3,12 +3,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MediatR;
 using Persistence.Context;
-using Application.UseCases;
 using Application.Abstractions.IRepository;
 using Persistence.Repositories;
-using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Integration.Tests;
 

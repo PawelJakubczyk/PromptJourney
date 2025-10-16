@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Constants;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.Versions;

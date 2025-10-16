@@ -7,7 +7,7 @@ using Application.UseCases.Styles.Commands.RemoveTagInStyle;
 using Application.UseCases.Styles.Queries;
 using Application.UseCases.Styles.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.ControllersUtilities;
@@ -18,117 +18,157 @@ namespace Presentation.Controllers;
 [Route("api/[controller]")]
 public sealed class StylesController(ISender sender) : ApiController(sender)
 {
+    // Queries //
+
     // GET api/styles
     [HttpGet]
-    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken) 
     {
-        return await Sender
-            .Send(GetAllStyles.Query.Singletone, cancellationToken)
+        var query = GetAllStyles.Query.Singletone;
+
+        var styles = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return styles;
     }
 
     // GET api/styles/{name}
     [HttpGet("{name}")]
-    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByName(string name, CancellationToken cancellationToken)
+    public async Task<Results<Ok<StyleResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByName
+    (
+        string name, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new GetStyleByName.Query(name), cancellationToken)
+        var query = new GetStyleByName.Query(name);
+
+        var style = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return style;
     }
 
     // GET api/styles/by-type/{type}
     [HttpGet("by-type/{type}")]
-    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByType(string type, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByType
+    (
+        string type, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new GetStylesByType.Query(type), cancellationToken)
+        var query = new GetStylesByType.Query(type);
+
+        var styles = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return styles;
     }
 
     // GET api/styles/by-tags?tags=tag1&tags=tag2
     [HttpGet("by-tags")]
-    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByTags([FromQuery] List<string> tags, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByTags
+    (
+        [FromQuery] List<string> tags, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new GetStylesByTags.Query(tags), cancellationToken)
+        var query = new GetStylesByTags.Query(tags);
+
+        var styles = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return styles;
     }
 
     // GET api/styles/by-description?keyword=forest
     [HttpGet("by-description")]
-    [ProducesResponseType<List<StyleResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByDescription([FromQuery] string keyword, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByDescription
+    (
+        [FromQuery] string keyword, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new GetStylesByDescriptionKeyword.Query(keyword), cancellationToken)
+        var query = new GetStylesByDescriptionKeyword.Query(keyword);
+
+        var styles = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return styles;
     }
 
     // GET api/styles/{name}/exists
     [HttpGet("{name}/exists")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckExists(string name, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckExists
+    (
+        string name, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new CheckStyleExist.Query(name), cancellationToken)
+        var query = new CheckStyleExist.Query(name);
+
+        var exist = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return exist;
     }
 
     // GET api/styles/{styleName}/tags/{tag}/exists
     [HttpGet("{styleName}/tags/{tag}/exists")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckTagExists(string styleName, string tag, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckTagExists
+    (
+        string styleName, 
+        string tag, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new CheckTagExistInStyle.Query(styleName, tag), cancellationToken)
+        var query = new CheckTagExistInStyle.Query(styleName, tag);
+
+        var exist = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return exist;
     }
+
+    // Commands //
 
     // POST api/styles
     [HttpPost]
-    [ProducesResponseType<string>(StatusCodes.Status201Created)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateStyleRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Create
+    (
+        [FromBody] CreateStyleRequest request,
+        CancellationToken cancellationToken
+    ) 
     {
-        var command = new AddStyle.Command(
+        var command = new AddStyle.Command
+        (
             request.Name,
             request.Type,
             request.Description,
             request.Tags
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload =>
@@ -140,89 +180,113 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
                 return NoContent();
             }))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
-    // PUT api/styles/{name}
-    [HttpPut("{name}")]
-    [ProducesResponseType<string>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(string name, [FromBody] UpdateStyleRequest request, CancellationToken cancellationToken)
+    // PUT api/styles/
+    [HttpPut]
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Update
+    (
+        [FromBody] UpdateStyleRequest request,
+        CancellationToken cancellationToken
+    ) 
     {
-        if (name != request.Name)
-            return BadRequest("Route name and payload name must match");
-
-        var command = new UpdateStyle.Command(
+        var command = new UpdateStyle.Command
+        (
             request.Name,
             request.Type,
             request.Description,
             request.Tags
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { styleName = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
     // DELETE api/styles/{name}
     [HttpDelete("{name}")]
-    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Delete(string name, CancellationToken cancellationToken)
+    public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Delete
+    (
+        string name, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new DeleteStyle.Command(name), cancellationToken)
+        var command = new DeleteStyle.Command(name);
+
+        var result = await Sender
+            .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
-    // POST api/styles/{name}/tags
-    [HttpPost("{name}/tags")]
-    [ProducesResponseType<StyleResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddTag(string name, [FromBody] AddTagRequest request, CancellationToken cancellationToken)
+    // POST api/styles/{name}/tags/{tag}
+    [HttpPost("{name}/tags/{tag}")]
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddTag
+    (
+        string name, 
+        string tag, 
+        CancellationToken cancellationToken
+    ) 
     {
-        return await Sender
-            .Send(new AddTagToStyle.Command(name, request.Tag), cancellationToken)
+        var command = new AddTagToStyle.Command(name, tag);
+
+        var result = await Sender
+            .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
     // DELETE api/styles/{name}/tags/{tag}
     [HttpDelete("{name}/tags/{tag}")]
-    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RemoveTag(string name, string tag, CancellationToken cancellationToken)
+    public async Task<Results<Ok<StyleResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> RemoveTag
+    (
+        string name, 
+        string tag, 
+        CancellationToken cancellationToken
+    )
     {
-        return await Sender
-            .Send(new DeleteTagFromStyle.Command(name, tag), cancellationToken)
+        var command = new DeleteTagFromStyle.Command(name, tag);
+
+        var result = await Sender
+            .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
     // PUT api/styles/{name}/description
     [HttpPut("{name}/description")]
-    [ProducesResponseType<string>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateDescription(string name, [FromBody] UpdateDescriptionRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateDescription
+    (
+        string name, 
+        [FromBody] UpdateDescriptionRequest request, 
+        CancellationToken cancellationToken
+    )
     {
         var command = new UpdateDescriptionInStyle.Command(name, request.Description);
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { description = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 }
 

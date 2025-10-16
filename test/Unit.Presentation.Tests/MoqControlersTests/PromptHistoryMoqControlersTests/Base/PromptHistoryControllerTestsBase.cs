@@ -2,7 +2,7 @@ using MediatR;
 using Moq;
 using Presentation.Controllers;
 
-namespace Unit.Presentation.Tests.MoqControlersTests;
+namespace Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests.Base;
 
 public class PromptHistoryControllerTestsBase : ControllerTestsBase
 {

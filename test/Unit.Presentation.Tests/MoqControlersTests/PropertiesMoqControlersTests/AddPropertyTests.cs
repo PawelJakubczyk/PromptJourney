@@ -1,10 +1,4 @@
-using Application.UseCases.Properties.Responses;
-using FluentResults;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Moq;
-using Presentation.Controllers;
-using Utilities.Constants;
+using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.Properties;
 

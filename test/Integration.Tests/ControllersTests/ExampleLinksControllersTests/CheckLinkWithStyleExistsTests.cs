@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
 namespace Integration.Tests.ControllersTests.ExampleLinks;

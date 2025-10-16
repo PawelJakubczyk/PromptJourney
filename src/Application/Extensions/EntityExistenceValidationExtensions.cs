@@ -1,9 +1,7 @@
 using Application.Abstractions.IRepository;
-using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
-using System.Xml.Linq;
 using Utilities.Constants;
 using Utilities.Extensions;
 using Utilities.Workflows;

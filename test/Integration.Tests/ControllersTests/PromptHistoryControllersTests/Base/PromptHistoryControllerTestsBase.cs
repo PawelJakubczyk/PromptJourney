@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-
-namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
+﻿namespace Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
 
 public class PromptHistoryControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {

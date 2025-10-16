@@ -2,7 +2,7 @@ using Application.UseCases.PromptHistory.Commands;
 using Application.UseCases.PromptHistory.Queries;
 using Application.UseCases.PromptHistory.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.ControllersUtilities;
@@ -13,84 +13,107 @@ namespace Presentation.Controllers;
 [Route("api/[controller]")]
 public sealed class PromptHistoriesController(ISender sender) : ApiController(sender)
 {
+    // Queries //
+
     // GET api/prompthistory
     [HttpGet]
-    [ProducesResponseType<List<PromptHistoryResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
-        return await Sender
+        var histories = await Sender
             .Send(GetAllHistoryRecords.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return histories;
     }
 
     // GET api/prompthistory/last/{count}
     [HttpGet("last/{count}")]
-    [ProducesResponseType<List<PromptHistoryResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetLast(int count, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetLast
+    (
+        int count, 
+        CancellationToken cancellationToken
+    )
     {
-        return await Sender
-            .Send(new GetLastHistoryRecords.Query(count), cancellationToken)
+        var query = new GetLastHistoryRecords.Query(count);
+
+        var histories = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return histories;
     }
 
     // GET api/prompthistory/daterange?from=2024-01-01&to=2024-12-31
     [HttpGet("date-range")]
-    [ProducesResponseType<List<PromptHistoryResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByDateRange
+    (
+        [FromQuery] DateTime from, 
+        [FromQuery] DateTime to, 
+        CancellationToken cancellationToken
+    )
     {
-        return await Sender
-            .Send(new GetHistoryByDateRange.Query(from, to), cancellationToken)
+        var query = new GetHistoryByDateRange.Query(from, to);
+
+        var histories = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return histories;
     }
 
     // GET api/prompthistory/keyword/{keyword}
     [HttpGet("keyword/{keyword}")]
-    [ProducesResponseType<List<PromptHistoryResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByKeyword(string keyword, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByKeyword
+    (
+        string keyword, 
+        CancellationToken cancellationToken
+    )
     {
-        return await Sender
+        var query = new GetHistoryRecordsByPromptKeyword.Query(keyword);
+
+        var histories = await Sender
             .Send(new GetHistoryRecordsByPromptKeyword.Query(keyword), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return histories;
     }
 
     // GET api/prompthistory/count
     [HttpGet("count")]
-    [ProducesResponseType<int>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetRecordCount(CancellationToken cancellationToken)
+    public async Task<Results<Ok<int>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetRecordCount(CancellationToken cancellationToken)
     {
-        return await Sender
+        var hsitories =  await Sender
             .Send(CalculateHistoricalRecordCount.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { count = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return hsitories;
     }
 
     // POST api/prompthistory
     [HttpPost]
-    [ProducesResponseType<string>(StatusCodes.Status201Created)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddPrompt([FromBody] AddPromptRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddPrompt
+    (
+        [FromBody] AddPromptRequest request, 
+        CancellationToken cancellationToken
+    )
     {
-        var command = new AddPromptToHistory.Command(
+        var command = new AddPromptToHistory.Command
+        (
             request.Prompt,
             request.Version
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => {
@@ -101,7 +124,9 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
                 return NoContent();
             }))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 }
 

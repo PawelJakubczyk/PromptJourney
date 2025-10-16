@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
-using Utilities.Constants;
-using Utilities.Extensions;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
@@ -15,7 +13,7 @@ namespace Persistence.Repositories;
 public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext, HybridCache cache) : IPropertiesRepository
 {
     private const string allPropertiesCacheKey = "all_properties";
-    private const string allSuportedPropertiesCacheKey = "all_suported_properties";
+    private const string allSupportedPropertiesCacheKey = "all_supported_properties";
 
     private readonly MidjourneyDbContext _midjourneyDbContext = midjourneyDbContext;
     private readonly HybridCache _cache = cache;
@@ -35,22 +33,50 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
             return properties
                 .Where(property => property.Version == version)
                 .ToList();
-        }, $"Failed to get Properties for version '{version.Value}'", StatusCodes.Status500InternalServerError);
+        }, $"Failed to get properties for version '{version.Value}'", StatusCodes.Status500InternalServerError);
+    }
+
+    public async Task<Result<MidjourneyProperties>> GetPropertyByNameAndVersionAsync(PropertyName propertyName, ModelVersion version, CancellationToken cancellationToken)
+    {
+        return await ExecuteAsync(async () =>
+        {
+            var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
+            var property = properties
+                .FirstOrDefault(p => p.PropertyName == propertyName && p.Version == version);
+
+            return property ?? throw new KeyNotFoundException($"Property '{propertyName.Value}' not found for version '{version.Value}'");
+        }, $"Failed to get property '{propertyName.Value}' for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     public async Task<Result<List<MidjourneyProperties>>> GetAllPropertiesAsync(CancellationToken cancellationToken)
     {
-        return await ExecuteAsync(async () => await GetOrCreateCachedAllPropertiesAsync(cancellationToken),
-        $"Failed to get all Properties", StatusCodes.Status500InternalServerError);
+        return await ExecuteAsync(
+            async () => await GetOrCreateCachedAllPropertiesAsync(cancellationToken),
+            "Failed to get all properties",
+            StatusCodes.Status500InternalServerError
+        );
     }
 
     public async Task<Result<bool>> CheckPropertyExistsInVersionAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(async () =>
         {
-            var properties = await GetOrCreateCachedSuportedPropertiesAsync(cancellationToken);
-            return properties.Contains(propertyName.Value);
-        }, $"Failed to check Properties existence for version '{version.Value}'", StatusCodes.Status500InternalServerError);
+            var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
+            return properties.Any(p => p.PropertyName == propertyName && p.Version == version);
+        }, $"Failed to check property existence for version '{version.Value}'", StatusCodes.Status500InternalServerError);
+    }
+
+    public async Task<Result<List<string>>> GetSupportedPropertyNamesAsync(ModelVersion version, CancellationToken cancellationToken)
+    {
+        return await ExecuteAsync(async () =>
+        {
+            var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
+            return properties
+                .Where(p => p.Version == version)
+                .Select(p => p.PropertyName.Value ?? string.Empty)
+                .Where(n => !string.IsNullOrEmpty(n))
+                .ToList();
+        }, $"Failed to get supported property names for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     // For Commands
@@ -58,13 +84,13 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     {
         return await ExecuteAsync(async () =>
         {
-            _midjourneyDbContext.Add(property);
+            await _midjourneyDbContext.AddAsync(property, cancellationToken);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
-            await UpdateCachedPropertyAsync(cancellationToken);
+            await InvalidateCacheAsync(cancellationToken);
 
             return property;
-        }, $"Failed to add Properties for version '{property.Version.Value}'", StatusCodes.Status500InternalServerError);
+        }, $"Failed to add property '{property.PropertyName.Value}' for version '{property.Version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     public async Task<Result<MidjourneyProperties>> UpdatePropertyAsync(MidjourneyProperties property, CancellationToken cancellationToken)
@@ -76,18 +102,26 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
                 _midjourneyDbContext.Attach(property).State = EntityState.Modified;
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
-            await UpdateCachedPropertyAsync(cancellationToken);
+            await InvalidateCacheAsync(cancellationToken);
 
             return property;
-        }, $"Failed to update Property", StatusCodes.Status500InternalServerError);
+        }, $"Failed to update property '{property.PropertyName.Value}' for version '{property.Version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<Result<MidjourneyProperties>> PatchPropertyAsync(ModelVersion version, PropertyName propertyName, string characteristicToUpdate, string? newValue, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperties>> PatchPropertyAsync
+    (
+        ModelVersion version,
+        PropertyName propertyName,
+        string characteristicToUpdate,
+        string? newValue,
+        CancellationToken cancellationToken
+    )
     {
         return await ExecuteAsync(async () =>
         {
-            var query = _midjourneyDbContext.MidjourneyProperties;
-            var parameter = await query.FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
+            var parameter = await _midjourneyDbContext.MidjourneyProperties
+                .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken)
+                ?? throw new KeyNotFoundException($"Property '{propertyName.Value}' not found for version '{version.Value}'");
 
             UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
 
@@ -97,44 +131,47 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
 
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
-            await UpdateCachedPropertyAsync(cancellationToken);
+            await InvalidateCacheAsync(cancellationToken);
 
             return parameter;
-        }, $"Failed to patch Property'{version.Value}'", StatusCodes.Status500InternalServerError);
+        }, $"Failed to patch property '{propertyName.Value}' for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     public async Task<Result<MidjourneyProperties>> DeletePropertyAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken)
     {
-        var findResult = await ExecuteAsync(async () =>
+        return await ExecuteAsync(async () =>
         {
-            var query = _midjourneyDbContext.MidjourneyProperties;
-            return await query.FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
-        }, $"Failed to fetch Property '{propertyName.Value}' for deletion in version '{version.Value}'", StatusCodes.Status500InternalServerError);
+            var parameter = await _midjourneyDbContext.MidjourneyProperties
+                .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken)
+                ?? throw new KeyNotFoundException($"Property '{propertyName.Value}' not found for version '{version.Value}'");
 
-        if (findResult.IsFailed)
-            return Result.Fail<MidjourneyProperties>(findResult.Errors);
-
-        var parameter = findResult.Value;
-        if (parameter == null)
-            return Result.Fail<MidjourneyProperties>
-                (
-                    ErrorFactory.Create()
-                    .WithLayer<PersistenceLayer>()
-                    .WithMessage($"Property '{propertyName.Value}' not found in version '{version.Value}'")
-                    .WithErrorCode(StatusCodes.Status404NotFound)
-                );
-
-        var deleteResult = await ExecuteAsync(async () =>
-        {
             _midjourneyDbContext.Remove(parameter);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
-            await UpdateCachedPropertyAsync(cancellationToken);
+            await InvalidateCacheAsync(cancellationToken);
 
             return parameter;
-        }, $"Failed to delete Property '{propertyName.Value}' for version '{version.Value}'", StatusCodes.Status500InternalServerError);
+        }, $"Failed to delete property '{propertyName.Value}' for version '{version.Value}'", StatusCodes.Status500InternalServerError);
+    }
 
-        return deleteResult;
+    public async Task<Result<int>> DeleteAllPropertiesByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
+    {
+        return await ExecuteAsync(async () =>
+        {
+            var properties = await _midjourneyDbContext.MidjourneyProperties
+                .Where(p => p.Version.Value == version.Value)
+                .ToListAsync(cancellationToken);
+
+            if (properties.Count == 0)
+                return 0;
+
+            _midjourneyDbContext.RemoveRange(properties);
+            var count = await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
+
+            await InvalidateCacheAsync(cancellationToken);
+
+            return count;
+        }, $"Failed to delete all properties for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     // Helper methods for caching
@@ -142,50 +179,35 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     {
         return await _cache.GetOrCreateAsync(
             allPropertiesCacheKey,
-            async (ct) =>
-            {
-                return await _midjourneyDbContext.MidjourneyProperties.ToListAsync(ct);
-            },
+            async (ct) => await _midjourneyDbContext.MidjourneyProperties.ToListAsync(ct),
             cacheOptions,
             cancellationToken: cancellationToken
         );
     }
 
-    private async Task<List<string?>> GetOrCreateCachedSuportedPropertiesAsync(CancellationToken cancellationToken)
-    {
+    private async Task<List<string>> GetOrCreateCachedSupportedPropertiesAsync(CancellationToken cancellationToken) {
         return await _cache.GetOrCreateAsync(
-            allSuportedPropertiesCacheKey,
-            async (ct) =>
-            {
-                return await _midjourneyDbContext.MidjourneyProperties
-                    .Select(x => x.PropertyName.Value)
-                    .ToListAsync(ct);
-            },
+            allSupportedPropertiesCacheKey,
+            async (ct) => await _midjourneyDbContext.MidjourneyProperties
+                .Select(x => x.PropertyName.Value)
+                .Where(x => x != null)
+                .Cast<string>()
+                .ToListAsync(ct),
             cacheOptions,
             cancellationToken: cancellationToken
         );
     }
 
-    private async Task UpdateCachedPropertyAsync(CancellationToken cancellationToken)
+    private async Task InvalidateCacheAsync(CancellationToken cancellationToken)
     {
-        await _cache.SetAsync(
-            allPropertiesCacheKey,
-            GetOrCreateCachedAllPropertiesAsync(cancellationToken),
-            cacheOptions,
-            cancellationToken: cancellationToken);
-
-        await _cache.SetAsync(
-            allSuportedPropertiesCacheKey,
-            GetOrCreateCachedSuportedPropertiesAsync(cancellationToken),
-            cacheOptions,
-            cancellationToken: cancellationToken);
+        await _cache.RemoveAsync(allPropertiesCacheKey, cancellationToken);
+        await _cache.RemoveAsync(allSupportedPropertiesCacheKey, cancellationToken);
     }
 
     // Helpers
     private static void UpdateParameterProperty(MidjourneyProperties parameter, string propertyToUpdate, string? newValue)
     {
-        switch (propertyToUpdate.ToLowerInvariant())
-        {
+        switch (propertyToUpdate.ToLowerInvariant()) {
             case "defaultvalue":
                 parameter.DefaultValue = newValue != null ? DefaultValue.Create(newValue).Value : null;
                 break;
@@ -204,12 +226,13 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
 
             case "parameters":
                 parameter.Parameters = newValue?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(p => Param.Create(p.Trim()).Value).ToList();
+                    .Select(p => Param.Create(p.Trim()).Value)
+                    .Where(p => p != null)
+                    .ToList();
                 break;
 
             default:
-                // ignore unknown properties
-                break;
+                throw new ArgumentException($"Unknown property to update: '{propertyToUpdate}'");
         }
     }
 }

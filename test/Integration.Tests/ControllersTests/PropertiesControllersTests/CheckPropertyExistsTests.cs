@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests;

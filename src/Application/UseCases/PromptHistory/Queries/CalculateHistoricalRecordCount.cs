@@ -1,7 +1,6 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using FluentResults;
-using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Queries;
 

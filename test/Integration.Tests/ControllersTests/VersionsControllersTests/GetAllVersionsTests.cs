@@ -1,7 +1,6 @@
 using Application.UseCases.Versions.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.VersionsControllersTests.Base;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
 namespace Integration.Tests.ControllersTests.VersionsControllersTests;
