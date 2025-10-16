@@ -28,7 +28,7 @@ public class DeleteExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTes
         result.Value.Link.Value.Should().Be(DefaultTestLink1);
 
         // Verify it's been deleted
-        var checkResult = await ExampleLinkRepository.CheckExampleLinkWithLinkExistsAsync(link, CancellationToken);
+        var checkResult = await ExampleLinkRepository.CheckExampleLinkExistsByLinkAsync(link, CancellationToken);
         checkResult.Value.Should().BeFalse();
     }
 

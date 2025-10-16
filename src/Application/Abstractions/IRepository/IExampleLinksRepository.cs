@@ -10,17 +10,17 @@ public interface IExampleLinksRepository
 
     Task<Result<bool>> CheckAnyExampleLinksExistAsync(CancellationToken cancellationToken);
 
-    Task<Result<bool>> CheckExampleLinkWithLinkExistsAsync(ExampleLink link, CancellationToken cancellationToken);
+    Task<Result<bool>> CheckExampleLinkExistsByLinkAsync(ExampleLink link, CancellationToken cancellationToken);
 
-    Task<Result<bool>> CheckExampleLinkWithIdExistsAsync(Guid Id, CancellationToken cancellationToken);
+    Task<Result<bool>> CheckExampleLinkExistsByIdAsync(Guid Id, CancellationToken cancellationToken);
 
-    Task<Result<bool>> CheckExampleLinkWithStyleExistsAsync(StyleName style, CancellationToken cancellationToken);
+    Task<Result<bool>> CheckExampleLinkExistsByStyleAsync(StyleName style, CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyleExampleLink>>> GetAllExampleLinksAsync(CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinkByLinkAsync(ExampleLink link, CancellationToken cancellationToken);
 
-    Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByIdAsync(Guid Id, CancellationToken cancellationToken);
+    Task<Result<MidjourneyStyleExampleLink>> GetExampleLinkByIdAsync(Guid Id, CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinksByStyleAsync(StyleName styleName, CancellationToken cancellationToken);
 

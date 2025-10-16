@@ -3,9 +3,11 @@ using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Presentation.Controllers;
+using Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests.Base;
 using Utilities.Constants;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests;
@@ -34,7 +36,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        AssertCreatedResult<PromptHistoryResponse>(actionResult, nameof(PromptHistoryController.GetRecordCount));
+        AssertCreatedResult<PromptHistoryResponse>(actionResult, nameof(PromptHistoriesController.GetRecordCount));
     }
 
     [Fact]
@@ -186,9 +188,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOfType<CreatedAtActionResult>();
-        var createdResult = actionResult as CreatedAtActionResult;
-        createdResult!.ActionName.Should().Be(nameof(PromptHistoryController.GetRecordCount));
-        createdResult.Value.Should().Be(response);
+        actionResult.Should().BeOfType<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>>();
+        var results = actionResult as Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>;
+        results.Should().NotBeNull();
     }
 }

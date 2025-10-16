@@ -15,7 +15,7 @@ public interface IVersionRepository
 
     Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync(CancellationToken cancellationToken);
 
-    Task<Result<List<string>>> GetAllSuportedVersionsAsync(CancellationToken cancellationToken);
+    Task<Result<List<string>>> GetAllSupportedVersionsAsync(CancellationToken cancellationToken);
 
 
 

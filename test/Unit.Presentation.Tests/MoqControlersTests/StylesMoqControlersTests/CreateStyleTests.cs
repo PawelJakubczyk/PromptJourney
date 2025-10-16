@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
+using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
 using Utilities.Constants;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.Styles;

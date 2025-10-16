@@ -1,7 +1,6 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using FluentResults;
-using Utilities.Workflows;
 
 namespace Application.UseCases.ExampleLinks.Queries;
 
@@ -9,7 +8,7 @@ public static class CheckAnyExampleLinksExist
 {
     public sealed record Query : IQuery<bool>
     {
-        public static readonly Query Simgletone = new();
+        public static readonly Query Singletone = new();
     };
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)

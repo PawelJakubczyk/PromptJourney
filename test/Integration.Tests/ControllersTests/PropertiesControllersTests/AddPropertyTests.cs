@@ -1,7 +1,6 @@
 using Application.UseCases.Properties.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -36,9 +35,9 @@ public sealed class AddPropertyTests(MidjourneyTestWebApplicationFactory factory
 
         if (response.StatusCode == HttpStatusCode.Created)
         {
-            AssertCreatedResponse<PropertyResponse>(response);
+            AssertCreatedResponse<PropertyQueryResponse>(response);
 
-            var createdProperty = await DeserializeResponse<PropertyResponse>(response);
+            var createdProperty = await DeserializeResponse<PropertyQueryResponse>(response);
             createdProperty.Should().NotBeNull();
             createdProperty!.PropertyName.Should().Be(request.PropertyName);
             createdProperty.Version.Should().Be(version);

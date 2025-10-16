@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-
-namespace Integration.Tests.ControllersTests.StylesControllersTests.Base;
+﻿namespace Integration.Tests.ControllersTests.StylesControllersTests.Base;
 
 public class StylesControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {

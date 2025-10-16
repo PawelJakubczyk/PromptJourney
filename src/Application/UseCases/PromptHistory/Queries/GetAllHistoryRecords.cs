@@ -11,7 +11,7 @@ public static class GetAllHistoryRecords
 {
     public sealed record Query : IQuery<List<PromptHistoryResponse>>
     {
-        public static readonly Query Simgletone = new();
+        public static readonly Query Singletone = new();
     };
 
     public sealed class Handler

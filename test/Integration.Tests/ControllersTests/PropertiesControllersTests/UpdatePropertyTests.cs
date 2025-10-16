@@ -1,7 +1,6 @@
 using Application.UseCases.Properties.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -37,7 +36,7 @@ public sealed class UpdatePropertyTests(MidjourneyTestWebApplicationFactory fact
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var updatedProperty = await DeserializeResponse<PropertyResponse>(response);
+            var updatedProperty = await DeserializeResponse<PropertyQueryResponse>(response);
             updatedProperty.Should().NotBeNull();
             updatedProperty!.PropertyName.Should().Be(propertyName);
             updatedProperty.Version.Should().Be(version);

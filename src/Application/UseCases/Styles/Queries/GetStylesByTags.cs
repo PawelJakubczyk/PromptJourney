@@ -56,10 +56,11 @@ internal static class CollectionValidationExtensions
             var name = typeof(TValue).Name;
             errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<ApplicationLayer>()
                 .WithMessage($"List of '{name}' must not be empty.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 

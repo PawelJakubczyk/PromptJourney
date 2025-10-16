@@ -21,10 +21,11 @@ public static class WorkflowPipelineExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: value cannot be null or whitespace.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;
@@ -43,10 +44,11 @@ public static class WorkflowPipelineExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: cannot be whitespace.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;
@@ -66,10 +68,11 @@ public static class WorkflowPipelineExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: '{value}' cannot be longer than {maxLength} characters.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;
@@ -95,10 +98,11 @@ public static class WorkflowPipelineExtensions
             var duplicateNames = string.Join(", ", duplicates.Select(d => d.ToString()));
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"{typeof(TValue).Name}: contains duplicates -> {duplicateNames}.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 

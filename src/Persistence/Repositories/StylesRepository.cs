@@ -14,23 +14,27 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
     private readonly MidjourneyDbContext _midjourneyDbContext = dbContext;
 
     // Query Methods
-    public async Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync(CancellationToken cancellationToken)
-    {
-        return await ExecuteAsync(async () =>
-        {
-            return await _midjourneyDbContext.MidjourneyStyle
-                .Include(s => s.ExampleLinks)
-                .ToListAsync(cancellationToken);
-        }, "Failed to get all styles", StatusCodes.Status500InternalServerError);
-    }
-
-    public Task<Result<MidjourneyStyle?>> GetStyleByNameAsync(StyleName name, CancellationToken cancellationToken)
+    public Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync(CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyle
-                .Include(s => s.ExampleLinks)
+                .Include(s => s.MidjourneyExampleLinks)
+                .Include(s => s.Tags)
+                .ToListAsync(cancellationToken);
+        }, "Failed to get all styles", StatusCodes.Status500InternalServerError);
+    }
+
+    public Task<Result<MidjourneyStyle>> GetStyleByNameAsync(StyleName name, CancellationToken cancellationToken)
+    {
+        return ExecuteAsync(async () =>
+        {
+            var style = await _midjourneyDbContext.MidjourneyStyle
+                .Include(s => s.MidjourneyExampleLinks)
+                .Include(s => s.Tags)
                 .FirstOrDefaultAsync(s => s.StyleName == name, cancellationToken);
+
+            return style ?? throw new KeyNotFoundException($"Style with name '{name.Value}' not found");
         }, $"Failed to get style '{name.Value}'", StatusCodes.Status500InternalServerError);
     }
 
@@ -39,7 +43,8 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyle
-                .Include(s => s.ExampleLinks)
+                .Include(s => s.MidjourneyExampleLinks)
+                .Include(s => s.Tags)
                 .Where(s => s.Type == type)
                 .ToListAsync(cancellationToken);
         }, $"Failed to get styles by type '{type.Value}'", StatusCodes.Status500InternalServerError);
@@ -47,15 +52,40 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
 
     public Task<Result<List<MidjourneyStyle>>> GetStylesByTagsAsync(List<Tag> tags, CancellationToken cancellationToken)
     {
+        if (tags == null || !tags.Any())
+        {
+            return Task.FromResult(Result.Ok(new List<MidjourneyStyle>()));
+        }
+
         var tagValues = tags.Select(t => t.Value).ToList();
 
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyle
-                .Include(s => s.ExampleLinks)
-                .Where(s => s.Tags != null && tagValues.All(tv => s.Tags.Any(t => t.Value == tv)))
+                .Include(s => s.MidjourneyExampleLinks)
+                .Include(s => s.Tags)
+                .Where(s => s.Tags != null && s.Tags.Any(t => tagValues.Contains(t.Value)))
                 .ToListAsync(cancellationToken);
         }, "Failed to get styles by tags", StatusCodes.Status500InternalServerError);
+    }
+
+    public Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAllAsync(List<Tag> tags, CancellationToken cancellationToken)
+    {
+        if (tags == null || !tags.Any())
+        {
+            return Task.FromResult(Result.Ok(new List<MidjourneyStyle>()));
+        }
+
+        var tagValues = tags.Select(t => t.Value).ToList();
+
+        return ExecuteAsync(async () =>
+        {
+            return await _midjourneyDbContext.MidjourneyStyle
+                .Include(s => s.MidjourneyExampleLinks)
+                .Include(s => s.Tags)
+                .Where(s => s.Tags != null && tagValues.All(tv => s.Tags.Any(t => t.Value == tv)))
+                .ToListAsync(cancellationToken);
+        }, "Failed to get styles by tags (match all)", StatusCodes.Status500InternalServerError);
     }
 
     public Task<Result<List<MidjourneyStyle>>> GetStylesByDescriptionKeywordAsync(Keyword keyword, CancellationToken cancellationToken)
@@ -63,46 +93,76 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
         return ExecuteAsync(async () =>
         {
             return await _midjourneyDbContext.MidjourneyStyle
-                .Include(s => s.ExampleLinks)
+                .Include(s => s.MidjourneyExampleLinks)
+                .Include(s => s.Tags)
                 .Where(s => s.Description != null && EF.Functions.Like(s.Description.Value, $"%{keyword.Value}%"))
                 .ToListAsync(cancellationToken);
         }, $"Failed to get styles by description keyword '{keyword.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<bool>> CheckStyleExistsAsync(StyleName name, CancellationToken cancellationToken)
+    public Task<Result<List<MidjourneyStyle>>> GetStylesWithExampleLinksAsync(CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
+            return await _midjourneyDbContext.MidjourneyStyle
+                .Include(s => s.MidjourneyExampleLinks)
+                .Include(s => s.Tags)
+                .Where(s => s.MidjourneyExampleLinks != null && s.MidjourneyExampleLinks.Any())
+                .ToListAsync(cancellationToken);
+        }, "Failed to get styles with example links", StatusCodes.Status500InternalServerError);
+    }
+
+    public Task<Result<List<string>>> GetAllStyleTagsAsync(CancellationToken cancellationToken)
+    {
+        return ExecuteAsync(async () =>
+        {
+            var styles = await _midjourneyDbContext.MidjourneyStyle
+                .Include(s => s.Tags)
+                .Where(s => s.Tags != null && s.Tags.Any())
+                .ToListAsync(cancellationToken);
+
+            return styles
+                .SelectMany(s => s.Tags ?? new List<Tag>())
+                .Select(t => t.Value ?? string.Empty)
+                .Where(t => !string.IsNullOrEmpty(t))
+                .Distinct()
+                .ToList();
+        }, "Failed to get all style tags", StatusCodes.Status500InternalServerError);
+    }
+
+    public Task<Result<bool>> CheckStyleExistsAsync(StyleName name, CancellationToken cancellationToken)
+    {
+        return ExecuteAsync(async () => {
             return await _midjourneyDbContext.MidjourneyStyle.AnyAsync(s => s.StyleName == name, cancellationToken);
         }, $"Failed to check if style '{name.Value}' exists", StatusCodes.Status500InternalServerError);
     }
 
     public Task<Result<bool>> CheckTagExistsInStyleAsync(StyleName styleName, Tag tag, CancellationToken cancellationToken)
     {
-        return ExecuteAsync(async () =>
-        {
+        return ExecuteAsync(async () => {
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.Tags)
                 .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
+            if (style == null) {
+                throw new KeyNotFoundException($"Style with name '{styleName.Value}' not found");
+            }
+
             return style.Tags?.Any(t => t.Value == tag.Value) ?? false;
-        }, $"Failed to check if tag exists in style '{styleName.Value}'", StatusCodes.Status500InternalServerError);
+        }, $"Failed to check if tag '{tag.Value}' exists in style '{styleName.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<bool>> CheckTagExistsInStyleAsync(string tag, CancellationToken cancellationToken)
-    {
-        return ExecuteAsync(async () =>
-        {
+    public Task<Result<bool>> CheckTagExistsInAnyStyleAsync(string tag, CancellationToken cancellationToken) {
+        return ExecuteAsync(async () => {
             return await _midjourneyDbContext.MidjourneyStyle
                 .AnyAsync(s => s.Tags != null && s.Tags.Any(t => t.Value == tag), cancellationToken);
-        }, $"Failed to check if tag '{tag}' exists", StatusCodes.Status500InternalServerError);
+        }, $"Failed to check if tag '{tag}' exists in any style", StatusCodes.Status500InternalServerError);
     }
 
     // Command Methods
     public Task<Result<MidjourneyStyle>> AddStyleAsync(MidjourneyStyle style, CancellationToken cancellationToken)
     {
-        return ExecuteAsync(async () =>
-        {
+        return ExecuteAsync(async () => {
             await _midjourneyDbContext.MidjourneyStyle.AddAsync(style, cancellationToken);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
@@ -114,7 +174,15 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
     {
         return ExecuteAsync(async () =>
         {
-            _midjourneyDbContext.MidjourneyStyle.Update(style);
+            var existingStyle = await _midjourneyDbContext.MidjourneyStyle
+                .FirstOrDefaultAsync(s => s.StyleName == style.StyleName, cancellationToken);
+
+            if (existingStyle == null)
+            {
+                throw new KeyNotFoundException($"Style with name '{style.StyleName.Value}' not found");
+            }
+
+            _midjourneyDbContext.Entry(existingStyle).CurrentValues.SetValues(style);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
             return style;
@@ -126,8 +194,13 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
         return ExecuteAsync(async () =>
         {
             var style = await _midjourneyDbContext.MidjourneyStyle
-                .Include(s => s.ExampleLinks)
+                .Include(s => s.MidjourneyExampleLinks)
                 .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
+
+            if (style == null)
+            {
+                throw new KeyNotFoundException($"Style with name '{styleName.Value}' not found");
+            }
 
             _midjourneyDbContext.MidjourneyStyle.Remove(style);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -140,11 +213,21 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
     {
         return ExecuteAsync(async () =>
         {
+            if (tagResult.IsFailed)
+            {
+                throw new ArgumentException("Invalid tag provided", nameof(tagResult));
+            }
+
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.Tags)
                 .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-            style!.AddTag(tagResult);
+            if (style == null)
+            {
+                throw new KeyNotFoundException($"Style with name '{styleName.Value}' not found");
+            }
+
+            style.AddTag(tagResult);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
             return style;
@@ -152,14 +235,24 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
     }
 
     public Task<Result<MidjourneyStyle>> DeleteTagFromStyleAsync(StyleName styleName, Result<Tag> tagResult, CancellationToken cancellationToken)
-    {
+        {
         return ExecuteAsync(async () =>
         {
+            if (tagResult.IsFailed)
+            {
+                throw new ArgumentException("Invalid tag provided", nameof(tagResult));
+            }
+
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .Include(s => s.Tags)
                 .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-            style!.RemoveTag(tagResult);
+            if (style == null)
+            {
+                throw new KeyNotFoundException($"Style with name '{styleName.Value}' not found");
+            }
+
+            style.RemoveTag(tagResult);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
             return style;
@@ -173,7 +266,12 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext) : IStyleRepo
             var style = await _midjourneyDbContext.MidjourneyStyle
                 .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-            style!.EditDescription(description);
+            if (style == null)
+            {
+                throw new KeyNotFoundException($"Style with name '{styleName.Value}' not found");
+            }
+
+            style.EditDescription(description);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
             return style;

@@ -24,10 +24,11 @@ public static class HistoryValidationExtensions
         {
             errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<DomainLayer>()
                 .WithMessage($"Date '{date:yyyy-MM-dd}' cannot be in the future.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 
@@ -51,10 +52,11 @@ public static class HistoryValidationExtensions
         {
             errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<DomainLayer>()
                 .WithMessage($"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 
@@ -77,10 +79,11 @@ public static class HistoryValidationExtensions
         {
             errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<ApplicationLayer>()
                 .WithMessage($"History count must be greater than zero. Provided: {count}.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 
@@ -113,10 +116,11 @@ public static class HistoryValidationExtensions
         {
             errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<ApplicationLayer>()
                 .WithMessage($"Requested {requestedCount} records, but only {availableCountResult.Value} are available.")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
 

@@ -1,9 +1,7 @@
 using Application.Abstractions.IRepository;
-using Domain.Abstractions;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
-using System.Xml.Linq;
 using Utilities.Constants;
 using Utilities.Extensions;
 using Utilities.Workflows;
@@ -87,7 +85,7 @@ public static class EntityExistenceValidationExtensions
         return pipelineTask.IfNotExist
         (
             link,
-            repository.CheckExampleLinkWithLinkExistsAsync,
+            repository.CheckExampleLinkExistsByLinkAsync,
             cancellationToken
         );
     }
@@ -103,7 +101,7 @@ public static class EntityExistenceValidationExtensions
         return pipelineTask.IfNotExist
         (
             Id,
-            repository.CheckExampleLinkWithIdExistsAsync,
+            repository.CheckExampleLinkExistsByIdAsync,
             cancellationToken
         );
     }
@@ -118,7 +116,7 @@ public static class EntityExistenceValidationExtensions
     {
         return pipelineTask.IfAlreadyExist(
             link,
-            repository.CheckExampleLinkWithLinkExistsAsync,
+            repository.CheckExampleLinkExistsByLinkAsync,
             cancellationToken
         );
     }
@@ -253,10 +251,11 @@ public static class EntityExistenceValidationExtensions
         {
             errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<PersistenceLayer>()
                 .WithMessage($"Failed to check if {Name} exists")
                 .WithErrorCode(StatusCodes.Status404NotFound)
+                .Build()
             );
         }
 
@@ -266,10 +265,11 @@ public static class EntityExistenceValidationExtensions
         {
             errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<ApplicationLayer>()
                 .WithMessage($"{Name} '{item}' {state}")
                 .WithErrorCode(StatusCodes.Status409Conflict)
+                .Build()
             );
         }
 

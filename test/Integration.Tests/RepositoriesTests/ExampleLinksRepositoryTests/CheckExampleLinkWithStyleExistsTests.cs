@@ -1,4 +1,4 @@
-﻿using Domain.ValueObjects;
+using Domain.ValueObjects;
 using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.ExampleLinksRepositoryTests;
@@ -17,7 +17,7 @@ public class CheckExampleLinkWithStyleExistsTests(MidjourneyDbFixture fixture) :
         var styleName = StyleName.Create(DefaultTestStyleName1).Value;
 
         // Act
-        var result = await ExampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleName, CancellationToken);
+        var result = await ExampleLinkRepository.CheckExampleLinkExistsByStyleAsync(styleName, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -31,7 +31,7 @@ public class CheckExampleLinkWithStyleExistsTests(MidjourneyDbFixture fixture) :
         var styleName = StyleName.Create("NonExistentStyle").Value;
 
         // Act
-        var result = await ExampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleName, CancellationToken);
+        var result = await ExampleLinkRepository.CheckExampleLinkExistsByStyleAsync(styleName, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -46,7 +46,7 @@ public class CheckExampleLinkWithStyleExistsTests(MidjourneyDbFixture fixture) :
         var styleName = StyleName.Create(DefaultTestStyleName1).Value;
 
         // Act
-        var result = await ExampleLinkRepository.CheckExampleLinkWithStyleExistsAsync(styleName, CancellationToken);
+        var result = await ExampleLinkRepository.CheckExampleLinkExistsByStyleAsync(styleName, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);

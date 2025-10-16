@@ -2,7 +2,7 @@
 using Moq;
 using Presentation.Controllers;
 
-namespace Unit.Presentation.Tests.MoqControlersTests;
+namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
 
 public class ExampleLinksControllerTestsBase : ControllerTestsBase
 {

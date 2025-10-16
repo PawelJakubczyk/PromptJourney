@@ -2,7 +2,7 @@ using Application.UseCases.Versions.Commands;
 using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.ControllersUtilities;
@@ -15,72 +15,77 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 {
     // GET api/versions
     [HttpGet]
-    [ProducesResponseType<List<VersionResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<VersionResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new GetAllVersions.Query(), cancellationToken)
+        var query = new GetAllVersions.Query();
+
+        var versions = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return versions;
     }
 
     // GET api/versions/supported
     [HttpGet("supported")]
-    [ProducesResponseType<List<string>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetSupported(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<string>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetSupported(CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new GetAllSuportedVersions.Query(), cancellationToken)
+        var query = new GetAllSuportedVersions.Query();
+
+        var versions = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return versions;
     }
 
     // GET api/versions/{version}
     [HttpGet("{version}")]
-    [ProducesResponseType<VersionResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByVersion(string version, CancellationToken cancellationToken)
+    public async Task<Results<Ok<VersionResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByVersion(string version, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new GetVersion.Query(version), cancellationToken)
+        var query = new GetVersion.Query(version);
+
+        var versionInfo = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return versionInfo;
     }
 
     // GET api/versions/{version}/exists
     [HttpGet("{version}/exists")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckExists(string version, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckExists(string version, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new CheckVersionExists.Query(version), cancellationToken)
+        var query = new CheckVersionExists.Query(version);
+
+        var exist = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return exist;
     }
 
     // POST api/versions
     [HttpPost]
-    [ProducesResponseType<string>(StatusCodes.Status201Created)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
     {
-        var command = new AddVersion.Command(
+        var command = new AddVersion.Command
+        (
             request.Version,
             request.Parameter,
             request.ReleaseDate,
             request.Description
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => {
@@ -90,7 +95,9 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
                 return NoContent();
             }))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 }
 

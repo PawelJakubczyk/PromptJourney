@@ -24,7 +24,7 @@ public static class CheckExampleLinkWithIdExists
                 .EmptyAsync()
                 .CollectErrors(linkId)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .CheckExampleLinkWithIdExistsAsync(linkId.Value, cancellationToken))
+                    .CheckExampleLinkExistsByIdAsync(linkId.Value, cancellationToken))
                 .MapResult(() => true);
 
             return result;

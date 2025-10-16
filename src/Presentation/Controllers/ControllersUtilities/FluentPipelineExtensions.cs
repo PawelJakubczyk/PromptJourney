@@ -1,6 +1,7 @@
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Utilities.Constants;
 using Utilities.Extensions;
 using static Presentation.Constants.StatusPriority;
@@ -24,10 +25,11 @@ public sealed class Pipeline<TResponse>
 
         var mainError = Errors.Count != 0
             ? PickHighestPriorityErrorInternal(Errors)
-            : (ErrorFactory.Create()
+            : ErrorBuilder.New()
                 .WithLayer<PresentationLayer>()
                 .WithMessage("Unknown error")
-                .WithErrorCode(StatusCodes.Status500InternalServerError));
+                .WithErrorCode(StatusCodes.Status500InternalServerError)
+                .Build();
 
         var details = Errors.Select(error => error.GetDetail()).ToList();
 
@@ -102,20 +104,55 @@ public static class PipelineExtensions
         return pipeline.Result.IsFailed ? pipeline : branch(pipeline);
     }
 
-    public static async Task<IActionResult> ToActionResultAsync<T>(this Task<Pipeline<T>> pipelineTask)
-    {
-        if (pipelineTask == null)
-            return new BadRequestObjectResult("Pipeline task cannot be null");
-
-        var result = await pipelineTask;
-        if (result == null)
-            return new BadRequestObjectResult("Result cannot be null");
-
-        //ArgumentNullException.ThrowIfNull(pipelineTask);
+    public static async Task<Results<Ok<T>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> ToResultsAsync<T>(this Task<Pipeline<T>> pipelineTask) {
+        if (pipelineTask == null) {
+            var pd = new ProblemDetails {
+                Title = "Pipeline task cannot be null",
+                Status = StatusCodes.Status400BadRequest
+            };
+            return TypedResults.BadRequest(pd);
+        }
 
         var pipeline = await pipelineTask.ConfigureAwait(false);
-        //ArgumentNullException.ThrowIfNull(pipeline);
+        if (pipeline == null) {
+            var pd = new ProblemDetails {
+                Title = "Result cannot be null",
+                Status = StatusCodes.Status400BadRequest
+            };
+            return TypedResults.BadRequest(pd);
+        }
 
-        return pipeline.Response;
+        var result = pipeline.Result;
+
+        if (result.IsSuccess) {
+            // Success -> return Ok<T>
+            var payload = result.Value;
+            return TypedResults.Ok(payload);
+        }
+
+        // Build ProblemDetails from pipeline errors
+        var errors = result.Errors.OfType<Error>().ToList();
+        var mainError = errors.Count != 0
+            ? Pipeline<T>.PickHighestPriorityErrorInternal(errors)
+            : ErrorBuilder.New()
+                .WithLayer<PresentationLayer>()
+                .WithMessage("Unknown error")
+                .WithErrorCode(StatusCodes.Status500InternalServerError)
+                .Build();
+
+        var detailMessages = errors.Select(e => e.GetDetail()).ToList();
+        var pdMain = new ProblemDetails {
+            Title = mainError.Message,
+            Detail = string.Join(" | ", detailMessages),
+            Status = mainError.GetErrorCode()
+        };
+
+        var status = mainError.GetErrorCode() ?? StatusCodes.Status500InternalServerError;
+
+        return status switch {
+            StatusCodes.Status404NotFound => TypedResults.NotFound(pdMain),
+            StatusCodes.Status400BadRequest => TypedResults.BadRequest(pdMain),
+            _ => TypedResults.BadRequest(pdMain)
+        };
     }
 }

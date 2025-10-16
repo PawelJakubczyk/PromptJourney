@@ -7,8 +7,10 @@ using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 
-public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<MidjourneyStyleExampleLink> {
-    public void Configure(EntityTypeBuilder<MidjourneyStyleExampleLink> builder) {
+public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<MidjourneyStyleExampleLink>
+{
+    public void Configure(EntityTypeBuilder<MidjourneyStyleExampleLink> builder)
+    {
         builder.ToTable("midjourney_style_example_links", schema: "public");
 
         // Primary key - now using Guid Id
@@ -38,13 +40,13 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
             .IsRequired();
 
         // Configure relationships
-        builder.HasOne(link => link.Style)
-            .WithMany(style => style.ExampleLinks)
+        builder.HasOne(link => link.MidjuorneyStyle)
+            .WithMany(style => style.MidjourneyExampleLinks)
             .HasForeignKey(link => link.StyleName)
             .HasPrincipalKey(style => style.StyleName)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(link => link.VersionMaster)
+        builder.HasOne(link => link.MidjourneyMaster)
             .WithMany()
             .HasForeignKey(link => link.Version)
             .HasPrincipalKey(version => version.Version)

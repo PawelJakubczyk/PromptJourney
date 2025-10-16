@@ -11,7 +11,7 @@ public static class GetAllStyles
 {
     public sealed record Query : IQuery<List<StyleResponse>>
     {
-        public static readonly Query Simgletone = new();
+        public static readonly Query Singletone = new();
     };
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<StyleResponse>>

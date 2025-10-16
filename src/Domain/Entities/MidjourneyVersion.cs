@@ -14,9 +14,9 @@ public class MidjourneyVersion : IEntity
     public Description? Description { get; set; }
 
     // Navigation
-    public List<MidjourneyPromptHistory> Histories { get; set; }
+    public List<MidjourneyPromptHistory> MidjourneyHistories { get; set; }
 
-    public List<MidjourneyProperties> Properties { get; set; }
+    public List<MidjourneyProperties> MidjourneyProperties { get; set; }
 
     // Constructors
     private MidjourneyVersion()
@@ -36,11 +36,13 @@ public class MidjourneyVersion : IEntity
         Description = description;
     }
 
-    public static Result<MidjourneyVersion> Create(
+    public static Result<MidjourneyVersion> Create
+    (
         Result<ModelVersion> versionResult,
         Result<Param> parameterResult,
         DateTime? releaseDate = null,
-        Result<Description?>? descriptionResult = null)
+        Result<Description?>? descriptionResult = null
+    )
     {
         var result = WorkflowPipeline
             .Empty()

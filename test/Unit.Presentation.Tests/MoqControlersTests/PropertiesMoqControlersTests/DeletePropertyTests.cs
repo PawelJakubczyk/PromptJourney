@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
 using Utilities.Constants;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.Properties;
@@ -15,7 +16,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "aspect";
-        var response = new PropertyResponse(version, propertyName, ["--ar"], "16:9", "1:4", "4:1", "Aspect ratio");
+        var response = new PropertyQueryResponse(version, propertyName, ["--ar"], "16:9", "1:4", "4:1", "Aspect ratio");
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -37,7 +38,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "nonexistent";
-        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
             "Property not found");
 
@@ -61,7 +62,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var invalidVersion = "";
         var invalidPropertyName = "";
-        var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Version and property name cannot be empty");
 
@@ -85,7 +86,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "99.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyQueryResponse, ApplicationLayer>(
             StatusCodes.Status404NotFound,
             "Version not found");
 

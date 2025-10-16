@@ -1,7 +1,6 @@
 using Application.UseCases.PromptHistory.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
 

@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -42,7 +42,7 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
 
         builder
             .HasOne(history => history.MidjourneyVersion)
-            .WithMany(version => version.Histories)
+            .WithMany(version => version.MidjourneyHistories)
             .HasForeignKey(history => history.Version)
             .HasPrincipalKey(version => version.Version)
             .OnDelete(DeleteBehavior.Restrict);

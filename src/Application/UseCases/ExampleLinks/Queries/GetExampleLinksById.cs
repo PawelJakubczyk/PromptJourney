@@ -9,17 +9,17 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class GetExampleLinksById
 {
-    public sealed record Query(string Id) : IQuery<List<ExampleLinkResponse>>;
+    public sealed record Query(string Id) : IQuery<ExampleLinkResponse>;
 
     public sealed class Handler
     (
         IExampleLinksRepository exampleLinkRepository,
         IStyleRepository styleRepository
-    ) : IQueryHandler<Query, List<ExampleLinkResponse>>
+    ) : IQueryHandler<Query, ExampleLinkResponse>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
 
-        public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<ExampleLinkResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
             var LinkId = MidjourneyStyleExampleLink.ParseLinkId(query.Id);
 
@@ -27,9 +27,9 @@ public static class GetExampleLinksById
                 .EmptyAsync()
                 .CollectErrors(LinkId)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .GetExampleLinksByIdAsync(LinkId.Value, cancellationToken))
-                .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>
-                    (linksList => [.. linksList.Select(ExampleLinkResponse.FromDomain)]);
+                    .GetExampleLinkByIdAsync(LinkId.Value, cancellationToken))
+                .MapResult<MidjourneyStyleExampleLink, ExampleLinkResponse>
+                    (link => ExampleLinkResponse.FromDomain(link));
 
             return result;
         }

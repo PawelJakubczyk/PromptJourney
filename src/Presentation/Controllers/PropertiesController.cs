@@ -3,7 +3,7 @@ using Application.UseCases.Properties.Commands;
 using Application.UseCases.Properties.Queries;
 using Application.UseCases.Properties.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.ControllersUtilities;
@@ -12,57 +12,74 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class PropertiesController(ISender sender) : ApiController(sender) {
-    // GET api/properties/version/{version}
-    [HttpGet("version/{version}")]
-    [ProducesResponseType<List<PropertyQueryResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllPropertiesByVersion(string version, CancellationToken cancellationToken)
+public sealed class PropertiesController(ISender sender) : ApiController(sender)
+{
+    // Queries //
+
+    // GET api/properties/{version}
+    [HttpGet("{version}")]
+    public async Task<Results<Ok<List<PropertyQueryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAllPropertiesByVersion
+    (
+        string version,
+        CancellationToken cancellationToken
+    )
     {
-        return await Sender
-            .Send(new GetPropertiesByVersion.Query(version), cancellationToken)
+        var query = new GetPropertiesByVersion.Query(version);
+
+        var properties = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return properties;
     }
 
-    // GET api/properties/version/
-    [HttpGet("version/")]
-    [ProducesResponseType<List<PropertyQueryResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    // GET api/properties//
+    [HttpGet]
+    public async Task<Results<Ok<List<PropertyQueryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll
+        (CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(GetAllProperties.Query.Simgletone, cancellationToken)
+        var properties = await Sender
+            .Send(GetAllProperties.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return properties;
     }
 
-    // GET api/properties/version/{version}/{propertyName}/exists
-    [HttpGet("version/{version}/{propertyName}/exists")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckPropertyExists(string version, string propertyName, CancellationToken cancellationToken)
+    // GET api/properties/{propertyName}/exists
+    [HttpGet("{version}/{propertyName}/exists")]
+    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckPropertyExists
+    (
+        string version,
+        string propertyName,
+        CancellationToken cancellationToken
+    )
     {
-        return await Sender
-            .Send(new CheckPropertyExists.Query(version, propertyName), cancellationToken)
+        var query = new CheckPropertyExists.Query(version, propertyName);
+
+        var exist = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return exist;
     }
 
-    // POST api/properties/version/{version}
-    [HttpPost("version/{version}")]
-    [ProducesResponseType<PropertyCommandResponse>(StatusCodes.Status201Created)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddProperty(string version, [FromBody] AddPropertyRequest request, CancellationToken cancellationToken)
+    // POST api/properties/
+    [HttpPost]
+    public async Task<Results<Ok<PropertyCommandResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
+    (
+        [FromBody] PropertyRequest request,
+        CancellationToken cancellationToken
+    )
     {
-        var command = new AddProperty.Command(
-            version,
+        var command = new AddProperty.Command
+        (
+            request.Version,
             request.PropertyName,
             request.Parameters,
             request.DefaultValue,
@@ -71,7 +88,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             request.Description
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload =>
@@ -87,20 +104,21 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
                 return NoContent();
             }))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
-    // PUT api/properties/version/{version}/{propertyName}
-    [HttpPut("version/{version}/{propertyName}")]
-    [ProducesResponseType<PropertyCommandResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateProperty(string version, string propertyName, [FromBody] UpdatePropertyRequest request, CancellationToken cancellationToken)
+    // PUT api/properties/
+    [HttpPut]
+    public async Task<Results<Ok<PropertyCommandResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateProperty
+    (
+        [FromBody] PropertyRequest request,
+        CancellationToken cancellationToken
+    )
     {
-        if (version != request.Version || propertyName != request.PropertyName)
-            return BadRequest("Route parameters must match payload values");
-
-        var command = new UpdateProperty.Command(
+        var command = new UpdateProperty.Command
+        (
             request.Version,
             request.PropertyName,
             request.Parameters,
@@ -110,63 +128,59 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             request.Description
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
-    // PATCH api/properties/version/{version}/{propertyName}
-    [HttpPatch("version/{version}/{propertyName}")]
-    [ProducesResponseType<PropertyCommandResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> PatchProperty(string version, string propertyName, [FromBody] PatchPropertyRequest request, CancellationToken cancellationToken)
+    // PATCH api/properties
+    [HttpPatch]
+    public async Task<Results<Ok<PropertyCommandResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> PatchProperty
+    (
+        [FromBody] PatchPropertyRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var command = new PatchProperty.Command
         (
-            version,
-            propertyName,
+            request.PropertyName,
+            request.Version,
             request.CharacteristicToUpdate,
             request.NewValue
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
     // DELETE api/properties/version/{version}/{propertyName}
     [HttpDelete("version/{version}/{propertyName}")]
-    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> DeleteProperty(string version, string propertyName, CancellationToken cancellationToken)
+    public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> DeleteProperty(string version, string propertyName, CancellationToken cancellationToken)
     {
-        return await Sender
+        var result = await Sender
             .Send(new DeleteProperty.Command(version, propertyName), cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 }
 
 // Request DTOs
-public sealed record AddPropertyRequest(
+public sealed record PropertyRequest
+(
     string PropertyName,
-    List<string> Parameters,
-    string? DefaultValue = null,
-    string? MinValue = null,
-    string? MaxValue = null,
-    string? Description = null
-);
-
-public sealed record UpdatePropertyRequest(
     string Version,
-    string PropertyName,
     List<string> Parameters,
     string? DefaultValue = null,
     string? MinValue = null,
@@ -174,7 +188,10 @@ public sealed record UpdatePropertyRequest(
     string? Description = null
 );
 
-public sealed record PatchPropertyRequest(
+public sealed record PatchPropertyRequest
+(
+    string PropertyName,
+    string Version,
     string CharacteristicToUpdate,
     string? NewValue
 );

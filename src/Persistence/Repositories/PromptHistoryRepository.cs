@@ -26,6 +26,19 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         }, "Failed to get all history records", StatusCodes.Status500InternalServerError);
     }
 
+    public Task<Result<MidjourneyPromptHistory>> GetHistoryRecordByIdAsync(Guid historyId, CancellationToken cancellationToken)
+    {
+        return ExecuteAsync(async () =>
+        {
+            var record = await _midjourneyDbContext.MidjourneyPromptHistory
+                .Include(history => history.MidjourneyVersion)
+                .Include(history => history.MidjourneyStyles)
+                .FirstOrDefaultAsync(history => history.HistoryId == historyId, cancellationToken);
+
+            return record ?? throw new KeyNotFoundException($"History record with ID {historyId} not found");
+        }, "Failed to get history record by ID", StatusCodes.Status500InternalServerError);
+    }
+
     public Task<Result<List<MidjourneyPromptHistory>>> GetHistoryByDateRangeAsync(DateTime dateFrom, DateTime dateTo, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
@@ -54,10 +67,27 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         }, "Failed to get history records by prompt keyword", StatusCodes.Status500InternalServerError);
     }
 
+    public Task<Result<List<MidjourneyPromptHistory>>> GetHistoryRecordsByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
+    {
+        return ExecuteAsync(async () =>
+        {
+            return await _midjourneyDbContext.MidjourneyPromptHistory
+                .Include(history => history.MidjourneyVersion)
+                .Include(history => history.MidjourneyStyles)
+                .Where(history => history.Version == version)
+                .OrderByDescending(history => history.CreatedOn)
+                .ToListAsync(cancellationToken);
+        }, "Failed to get history records by version", StatusCodes.Status500InternalServerError);
+    }
+
     public Task<Result<List<MidjourneyPromptHistory>>> GetLastHistoryRecordsAsync(int records, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
+            if (records <= 0) {
+                throw new ArgumentException("Number of records must be greater than zero", nameof(records));
+            }
+
             return await _midjourneyDbContext.MidjourneyPromptHistory
                 .Include(history => history.MidjourneyVersion)
                 .Include(history => history.MidjourneyStyles)
@@ -65,6 +95,25 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
                 .Take(records)
                 .ToListAsync(cancellationToken);
         }, "Failed to get last history records", StatusCodes.Status500InternalServerError);
+    }
+
+    public Task<Result<List<MidjourneyPromptHistory>>> GetPaginatedHistoryRecordsAsync(int pageSize, int pageNumber, CancellationToken cancellationToken)
+    {
+        return ExecuteAsync(async () =>
+        {
+            if (pageSize <= 0)
+                throw new ArgumentException("Page size must be greater than zero", nameof(pageSize));
+            if (pageNumber <= 0)
+                throw new ArgumentException("Page number must be greater than zero", nameof(pageNumber));
+
+            return await _midjourneyDbContext.MidjourneyPromptHistory
+                .Include(history => history.MidjourneyVersion)
+                .Include(history => history.MidjourneyStyles)
+                .OrderByDescending(history => history.CreatedOn)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+        }, "Failed to get paginated history records", StatusCodes.Status500InternalServerError);
     }
 
     public Task<Result<int>> CalculateHistoricalRecordCountAsync(CancellationToken cancellationToken)
@@ -84,5 +133,23 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
             return history;
         }, "Failed to add prompt to history", StatusCodes.Status500InternalServerError);
+    }
+
+    public Task<Result<MidjourneyPromptHistory>> DeleteHistoryRecordAsync(Guid historyId, CancellationToken cancellationToken)
+    {
+        return ExecuteAsync(async () =>
+        {
+            var historyRecord = await _midjourneyDbContext.MidjourneyPromptHistory
+                .FirstOrDefaultAsync(history => history.HistoryId == historyId, cancellationToken);
+
+            if (historyRecord == null)
+            {
+                throw new KeyNotFoundException($"History record with ID {historyId} not found");
+            }
+
+            _midjourneyDbContext.MidjourneyPromptHistory.Remove(historyRecord);
+            await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
+            return historyRecord;
+        }, "Failed to delete history record", StatusCodes.Status500InternalServerError);
     }
 }

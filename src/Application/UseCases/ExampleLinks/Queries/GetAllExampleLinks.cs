@@ -11,7 +11,7 @@ public static class GetAllExampleLinks
 {
     public sealed record Query : IQuery<List<ExampleLinkResponse>>
     {
-        public static readonly Query Simgletone = new();
+        public static readonly Query Singletone = new();
     };
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
@@ -26,7 +26,7 @@ public static class GetAllExampleLinks
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .GetAllExampleLinksAsync(cancellationToken))
                 .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>
-                    (linksList => [.. linksList.Select(ExampleLinkResponse.FromDomain)]);
+                    (links => [.. links.Select(ExampleLinkResponse.FromDomain)]);
 
             return result;
         }

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-
-namespace Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
+﻿namespace Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 
 public class ExampleLinksControllerTestsBase(MidjourneyTestWebApplicationFactory factory) : ControllerTestsBase(factory)
 {

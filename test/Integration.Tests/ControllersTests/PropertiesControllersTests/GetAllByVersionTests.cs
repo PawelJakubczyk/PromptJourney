@@ -1,7 +1,6 @@
 using Application.UseCases.Properties.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.PropertiesControllersTests.Base;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 
 namespace Integration.Tests.ControllersTests.PropertiesControllersTests;
@@ -23,7 +22,7 @@ public sealed class GetAllByVersionTests(MidjourneyTestWebApplicationFactory fac
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var properties = await DeserializeResponse<List<PropertyResponse>>(response);
+            var properties = await DeserializeResponse<List<PropertyQueryResponse>>(response);
             properties.Should().NotBeNull();
 
             if (properties!.Count != 0)
@@ -56,9 +55,9 @@ public sealed class GetAllByVersionTests(MidjourneyTestWebApplicationFactory fac
         // Assert
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            AssertOkResponse<PropertyResponse>(response);
+            AssertOkResponse<PropertyQueryResponse>(response);
 
-            var properties = await DeserializeResponse<List<PropertyResponse>>(response);
+            var properties = await DeserializeResponse<List<PropertyQueryResponse>>(response);
             properties.Should().NotBeNull();
 
             if (properties!.Count != 0)
@@ -87,8 +86,8 @@ public sealed class GetAllByVersionTests(MidjourneyTestWebApplicationFactory fac
 
         if (response1.StatusCode == HttpStatusCode.OK && response2.StatusCode == HttpStatusCode.OK)
         {
-            var properties1 = await DeserializeResponse<List<PropertyResponse>>(response1);
-            var properties2 = await DeserializeResponse<List<PropertyResponse>>(response2);
+            var properties1 = await DeserializeResponse<List<PropertyQueryResponse>>(response1);
+            var properties2 = await DeserializeResponse<List<PropertyQueryResponse>>(response2);
 
             properties1.Should().BeEquivalentTo(properties2);
         }
@@ -108,7 +107,7 @@ public sealed class GetAllByVersionTests(MidjourneyTestWebApplicationFactory fac
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var properties = await DeserializeResponse<List<PropertyResponse>>(response);
+            var properties = await DeserializeResponse<List<PropertyQueryResponse>>(response);
             properties.Should().NotBeNull();
         }
     }

@@ -49,10 +49,11 @@ file static class ExampleLinkErrorsExtensions
         {
             pipeline.Errors.Add
             (
-            ErrorFactory.Create()
+            ErrorBuilder.New()
                 .WithLayer<TLayer>()
                 .WithMessage($"Invalid URL format: {value}")
                 .WithErrorCode(StatusCodes.Status400BadRequest)
+                .Build()
             );
         }
         return pipeline;

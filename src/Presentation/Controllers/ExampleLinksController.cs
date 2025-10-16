@@ -3,7 +3,7 @@ using Application.UseCases.ExampleLinks.Commands;
 using Application.UseCases.ExampleLinks.Queries;
 using Application.UseCases.ExampleLinks.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.ControllersUtilities;
@@ -16,138 +16,146 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 {
     // GET api/examplelinks
     [HttpGet]
-    [ProducesResponseType<List<ExampleLinkResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<ExampleLinkResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(GetAllExampleLinks.Query.Simgletone, cancellationToken)
+        var styles = await Sender
+            .Send(GetAllExampleLinks.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return styles;
     }
 
     // GET api/examplelinks/style/{styleName}
     [HttpGet("style/{styleName}")]
-    [ProducesResponseType<List<ExampleLinkResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByStyle(string styleName, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<ExampleLinkResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByStyle(string styleName, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new GetExampleLinksByStyle.Query(styleName), cancellationToken)
+        var query = new GetExampleLinksByStyle.Query(styleName);
+
+        var styles = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return styles;
     }
 
     // GET api/examplelinks/style/{styleName}/version/{version}
     [HttpGet("style/{styleName}/version/{version}")]
-    [ProducesResponseType<List<ExampleLinkResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByStyleAndVersion(string styleName, string version, CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<ExampleLinkResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByStyleAndVersion(string styleName, string version, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new GetExampleLinksByStyleAndVersion.Query(styleName, version), cancellationToken)
+        var query = new GetExampleLinksByStyleAndVersion.Query(styleName, version);
+
+        var styles = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return styles;
     }
 
     // GET api/examplelinks/{link}/exists
     [HttpGet("{link}/exists")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckLinkExists(string link, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinkExists(string link, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new CheckExampleLinkWithIdExists.Query(link), cancellationToken)
+        var query = new CheckExampleLinkWithIdExists.Query(link);
+
+        var exist = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return exist;
     }
 
     // GET api/examplelinks/style/{styleName}/exists
     [HttpGet("style/{styleName}/exists")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CheckLinkWithStyleExists(string styleName, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinkWithStyleExists(string styleName, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new CheckExampleLinkWithStyleExists.Query(styleName), cancellationToken)
+        var query = new CheckExampleLinkWithStyleExists.Query(styleName);
+
+        var exist = await Sender
+            .Send(query, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return exist;
     }
 
     // GET api/examplelinks/noempty
-    [HttpGet("noempty")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> CheckLinksEmpty(CancellationToken cancellationToken)
+    [HttpGet("no-empty")]
+    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinksEmpty(CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(CheckAnyExampleLinksExist.Query.Simgletone, cancellationToken)
+        var exist = await Sender
+            .Send(CheckAnyExampleLinksExist.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { isEmpty = payload })))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return exist;
     }
 
     // POST api/examplelinks
     [HttpPost]
-    [ProducesResponseType<string>(StatusCodes.Status201Created)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
     {
-        if (request == null)
-            return BadRequest("Request cannot be null");
-
-        var command = new AddExampleLink.Command(
+        var command = new AddExampleLink.Command
+        (
             request.Link,
             request.Style,
             request.Version
         );
 
-        return await Sender
+        var result = await Sender
             .Send(command, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => {
-                if (!string.IsNullOrEmpty(payload)) {
+            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
+            {
+                if (!string.IsNullOrEmpty(payload))
+                {
                     return CreatedAtAction(nameof(CheckLinkExists), new { link = payload }, new { linkId = payload });
                 }
 
                 return NoContent();
             }))
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
     // DELETE api/examplelinks/{link}
     [HttpDelete("{link}")]
-    [ProducesResponseType<DeleteResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> DeleteExampleLink(string link, CancellationToken cancellationToken)
+    public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> DeleteExampleLink(string link, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new DeleteExampleLink.Command(link), cancellationToken)
+        var command = new DeleteExampleLink.Command(link);
+
+        var result = await Sender
+            .Send(command, cancellationToken)
             .IfErrors(p => p.PrepareErrorResponse())
             .Else(p => p.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 
     // DELETE api/examplelinks/style/{styleName}
     [HttpDelete("style/{styleName}")]
-    [ProducesResponseType<BulkDeleteResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> DeleteAllByStyle(string styleName, CancellationToken cancellationToken)
+    public async Task<Results<Ok<BulkDeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> DeleteAllByStyle(string styleName, CancellationToken cancellationToken)
     {
-        return await Sender
-            .Send(new DeleteAllExampleLinksByStyle.Command(styleName), cancellationToken)
+        var command = new DeleteAllExampleLinksByStyle.Command(styleName);
+
+        var result = await Sender
+            .Send(command, cancellationToken)
             .IfErrors(p => p.PrepareErrorResponse())
             .Else(p => p.PrepareOKResponse())
-            .ToActionResultAsync();
+            .ToResultsAsync();
+
+        return result;
     }
 }
 
