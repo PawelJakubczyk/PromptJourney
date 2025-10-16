@@ -11,7 +11,7 @@ public static class GetAllExampleLinks
 {
     public sealed record Query : IQuery<ExampleLinkResponse>
     {
-        public static readonly Query Simgletone = new();
+        public static readonly Query Singletone = new();
     };
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)

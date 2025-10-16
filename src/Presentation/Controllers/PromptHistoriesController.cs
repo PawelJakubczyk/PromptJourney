@@ -20,7 +20,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(GetAllHistoryRecords.Query.Simgletone, cancellationToken)
+            .Send(GetAllHistoryRecords.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();
@@ -72,7 +72,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
     public async Task<IActionResult> GetRecordCount(CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(CalculateHistoricalRecordCount.Query.Simgletone, cancellationToken)
+            .Send(CalculateHistoricalRecordCount.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { count = payload })))
             .ToActionResultAsync();

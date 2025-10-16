@@ -25,7 +25,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(GetAllStyles.Query.Simgletone, cancellationToken)
+            .Send(GetAllStyles.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();

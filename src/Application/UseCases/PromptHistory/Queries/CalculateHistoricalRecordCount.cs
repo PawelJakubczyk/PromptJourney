@@ -9,7 +9,7 @@ public static class CalculateHistoricalRecordCount
 {
     public sealed record Query : IQuery<int>
     {
-        public static readonly Query Simgletone = new();
+        public static readonly Query Singletone = new();
     };
 
 public sealed class Handler

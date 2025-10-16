@@ -35,7 +35,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(GetAllProperties.Query.Simgletone, cancellationToken)
+            .Send(GetAllProperties.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();

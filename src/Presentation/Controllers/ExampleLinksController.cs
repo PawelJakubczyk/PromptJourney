@@ -21,7 +21,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(GetAllExampleLinks.Query.Simgletone, cancellationToken)
+            .Send(GetAllExampleLinks.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse())
             .ToActionResultAsync();
@@ -87,7 +87,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     public async Task<IActionResult> CheckLinksEmpty(CancellationToken cancellationToken)
     {
         return await Sender
-            .Send(CheckAnyExampleLinksExist.Query.Simgletone, cancellationToken)
+            .Send(CheckAnyExampleLinksExist.Query.Singletone, cancellationToken)
             .IfErrors(pipeline => pipeline.PrepareErrorResponse())
             .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { isEmpty = payload })))
             .ToActionResultAsync();
