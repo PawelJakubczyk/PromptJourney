@@ -8,13 +8,16 @@ namespace Application.UseCases.Versions.Queries;
 
 public static class GetAllSuportedVersions
 {
-    public sealed record Query : IQuery<List<string>>;
+    public sealed record Query : IQuery<List<string>>
+    {
+        public static readonly Query Singletone = new();
+    };
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, List<string>>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<List<string>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<string>>> Handle(Query _, CancellationToken cancellationToken)
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()

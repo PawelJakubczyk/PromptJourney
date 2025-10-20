@@ -1,5 +1,9 @@
 using Application.Registrations;
 using Persistence.Registrations;
+using App.Middleware;
+
+var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var logger = loggerFactory.CreateLogger<Program>();
 
 try
 {
@@ -30,6 +34,9 @@ try
 
     //Configure HTTP request pipeline
 
+    // register global exception handler early in the pipeline
+    webApplication.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
     webApplication
         //.UseHttpsRedirection()
         //.UseApplicationLayer()
@@ -43,12 +50,13 @@ try
 }
 catch (Exception exception)
 {
-    Console.Error.WriteLine($"Host terminated unexpectedly. Exception: {exception}");
+    logger.LogCritical(exception, "Host terminated unexpectedly.");
+
     if (exception is AggregateException aggregateException)
     {
         foreach (var innerException in aggregateException.Flatten().InnerExceptions)
         {
-            Console.Error.WriteLine($"  Inner Exception: {innerException}");
+            logger.LogCritical(innerException, "Inner exception");
         }
     }
     return 1;
@@ -56,6 +64,7 @@ catch (Exception exception)
 finally
 {
     Console.WriteLine("Ending the web host");
+    loggerFactory.Dispose();
 }
 
 return 0;

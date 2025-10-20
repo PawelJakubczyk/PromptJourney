@@ -1,14 +1,14 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.ValueObjects;
+using Domain.Entities;
 using FluentResults;
 using Utilities.Workflows;
 
 namespace Application.UseCases.ExampleLinks.Queries;
 
-public static class CheckExampleLinkWithStyleExists
+public static class CheckExampleLinkExistsById
 {
-    public sealed record Query(string StyleName) : IQuery<bool>;
+    public sealed record Query(string Id) : IQuery<bool>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
         : IQueryHandler<Query, bool>
@@ -17,13 +17,14 @@ public static class CheckExampleLinkWithStyleExists
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var styleName = StyleName.Create(query.StyleName);
+
+            var linkId = MidjourneyStyleExampleLink.ParseLinkId(query.Id);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CollectErrors(styleName)
+                .CollectErrors(linkId)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .CheckExampleLinkExistsByStyleAsync(styleName.Value, cancellationToken))
+                    .CheckExampleLinkExistsByIdAsync(linkId.Value, cancellationToken))
                 .MapResult(() => true);
 
             return result;

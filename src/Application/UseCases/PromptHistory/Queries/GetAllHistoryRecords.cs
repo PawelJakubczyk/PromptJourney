@@ -21,7 +21,7 @@ public static class GetAllHistoryRecords
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
 
-        public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<PromptHistoryResponse>>> Handle(Query _, CancellationToken cancellationToken)
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()

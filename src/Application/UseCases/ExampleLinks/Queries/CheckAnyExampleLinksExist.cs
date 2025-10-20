@@ -16,7 +16,7 @@ public static class CheckAnyExampleLinksExist
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
 
-        public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<bool>> Handle(Query _, CancellationToken cancellationToken)
         {
             var result = await _exampleLinksRepository
                     .CheckAnyExampleLinksExistAsync(cancellationToken);

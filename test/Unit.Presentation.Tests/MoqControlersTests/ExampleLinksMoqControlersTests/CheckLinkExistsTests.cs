@@ -20,7 +20,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var result = Result.Ok(true);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkWithIdExists.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);

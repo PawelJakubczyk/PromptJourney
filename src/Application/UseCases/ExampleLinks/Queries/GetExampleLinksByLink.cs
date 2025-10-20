@@ -1,21 +1,23 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Application.UseCases.ExampleLinks.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
 namespace Application.UseCases.ExampleLinks.Queries;
 
-public static class CheckExampleLinkWithLinkExist
+public static class GetExampleLinksByLink
 {
-    public sealed record Query(string Link) : IQuery<bool>;
+    public sealed record Query(string Link) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
-        : IQueryHandler<Query, bool>
+        : IQueryHandler<Query, List<ExampleLinkResponse>>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinksRepository;
 
-        public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<ExampleLinkResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
             var link = ExampleLink.Create(query.Link);
 
@@ -23,8 +25,9 @@ public static class CheckExampleLinkWithLinkExist
                 .EmptyAsync()
                 .CollectErrors(link)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .CheckExampleLinkExistsByLinkAsync(link.Value, cancellationToken))
-                .MapResult(() => true);
+                    .GetExampleLinkByLinkAsync(link.Value, cancellationToken))
+                .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>
+                    (links => [.. links.Select(ExampleLinkResponse.FromDomain)]);
 
             return result;
         }

@@ -18,7 +18,7 @@ public sealed class Handler
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
 
-        public async Task<Result<int>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<int>> Handle(Query _, CancellationToken cancellationToken)
         {
             var result = await _promptHistoryRepository
                     .CalculateHistoricalRecordCountAsync(cancellationToken);

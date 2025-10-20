@@ -61,7 +61,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [HttpGet("{link}/exists")]
     public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinkExists(string link, CancellationToken cancellationToken)
     {
-        var query = new CheckExampleLinkWithIdExists.Query(link);
+        var query = new CheckExampleLinkExistsById.Query(link);
 
         var exist = await Sender
             .Send(query, cancellationToken)
@@ -76,7 +76,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [HttpGet("style/{styleName}/exists")]
     public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinkWithStyleExists(string styleName, CancellationToken cancellationToken)
     {
-        var query = new CheckExampleLinkWithStyleExists.Query(styleName);
+        var query = new CheckExampleLinkExistsByStyle.Query(styleName);
 
         var exist = await Sender
             .Send(query, cancellationToken)

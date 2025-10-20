@@ -8,6 +8,21 @@ namespace Domain.Errors;
 
 public static class DomainErrors
 {
+    public static Error ExamleLinkNotFound(Guid id) =>
+        ErrorBuilder.New()
+            .WithLayer<DomainLayer>()
+            .WithMessage($"Example link with ID {id} not found")
+            .WithErrorCode(StatusCodes.Status404NotFound)
+            .Build();
+
+    public static Error HistoryNotFoundError(Guid historyId) => 
+        ErrorBuilder.New()
+            .WithLayer<DomainLayer>()
+            .WithMessage($"History record with ID {historyId} not found")
+            .WithErrorCode(StatusCodes.Status404NotFound)
+            .Build();
+
+
     public static Error VersionNotFound(ModelVersion modelVersion) =>
         ErrorBuilder.New()
             .WithLayer<DomainLayer>()
@@ -42,4 +57,5 @@ public static class DomainErrors
             .WithMessage($"Parameter '{parameter.Value}' is invalid")
             .WithErrorCode(StatusCodes.Status400BadRequest)
             .Build();
+
 }

@@ -3,176 +3,101 @@ using Domain.Entities;
 using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
-using Utilities.Constants;
-using Utilities.Extensions;
-using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
 
 public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCache cache) : IVersionRepository
 {
-    private const string supportedVersionsCacheKey = "supported_versions";
-    private const string allVersionsCacheKey = "all_versions";
+    private const string _supportedVersionsCacheKey = "supported_versions";
+    private const string _allVersionsCacheKey = "all_versions";
 
     private readonly MidjourneyDbContext _dbContext = dbContext;
     private readonly HybridCache _cache = cache;
 
-    private readonly HybridCacheEntryOptions cacheOptions = new()
+    private readonly HybridCacheEntryOptions _cacheOptions = new()
     {
         Expiration = TimeSpan.FromDays(365),
         LocalCacheExpiration = TimeSpan.FromDays(365)
     };
 
-    // For Queries
-    public Task<Result<bool>> CheckVersionExistsAsync(ModelVersion modelVersion, CancellationToken cancellationToken)
+    public async Task<Result<bool>> CheckVersionExistsAsync(ModelVersion modelVersion, CancellationToken cancellationToken)
     {
-        return ExecuteAsync(async () =>
-        {
-            var supportedVersions = await GetOrCreateCachedSupportedVersionsAsync(cancellationToken);
-            return supportedVersions.Contains(modelVersion.Value);
-        }, $"Failed to check if version '{modelVersion.Value}' exists", StatusCodes.Status500InternalServerError);
+        var supportedVersions = await GetOrCreateCachedSupportedVersionsAsync(cancellationToken);
+        var exists = supportedVersions.Contains(modelVersion.Value);
+        return Result.Ok(exists);
     }
 
-    public Task<Result<bool>> CheckIfAnyVersionExistsAsync(CancellationToken cancellationToken)
+    public async Task<Result<bool>> CheckIfAnyVersionExistsAsync(CancellationToken cancellationToken)
     {
-        return ExecuteAsync(async () =>
-        {
-            var supportedVersions = await GetOrCreateCachedSupportedVersionsAsync(cancellationToken);
-            return supportedVersions.Count > 0;
-        }, "Failed to check if any versions exist", StatusCodes.Status500InternalServerError);
+        var supportedVersions = await GetOrCreateCachedSupportedVersionsAsync(cancellationToken);
+        return Result.Ok(supportedVersions.Count > 0);
     }
 
-    public Task<Result<MidjourneyVersion>> GetVersionAsync(ModelVersion modelVersion, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyVersion>> GetVersionAsync(ModelVersion modelVersion, CancellationToken cancellationToken)
     {
-        return ExecuteAsync(async () =>
-        {
-            var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
-            var foundVersion = allVersions.FirstOrDefault(version => version.Version.Value == modelVersion.Value);
+        var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
+        var foundVersion = allVersions.FirstOrDefault(version => version.Version.Value == modelVersion.Value);
 
-            if (foundVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(modelVersion));
-            
-            return foundVersion;
-        }, $"Failed to retrieve version '{modelVersion.Value}'", StatusCodes.Status500InternalServerError);
+        if (foundVersion is null) 
+            return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(modelVersion));
+
+        return Result.Ok(foundVersion);
     }
 
-    public Task<Result<MidjourneyVersion>> GetLatestVersionAsync(CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyVersion>> GetLatestVersionAsync(CancellationToken cancellationToken)
     {
-        return ExecuteAsync(async () =>
-        {
-            var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
+        var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
 
-            if (allVersions.Count == 0) return Result.Fail<MidjourneyVersion>(DomainErrors.NoVersionFound());
+        if (allVersions.Count is 0) 
+            return Result.Fail<MidjourneyVersion>(DomainErrors.NoVersionFound());
 
-            return allVersions
-                .OrderByDescending(v => v.ReleaseDate ?? DateTime.MinValue)
-                .First();
-        }, "Failed to retrieve latest version", StatusCodes.Status500InternalServerError);
+        var latest = allVersions
+            .OrderByDescending(version => version.ReleaseDate ?? DateTime.MinValue)
+            .First();
+
+        return Result.Ok(latest);
     }
 
-    public Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<MidjourneyVersion>>> GetAllVersionsAsync(CancellationToken cancellationToken)
     {
-        return ExecuteAsync(
-            async () => await GetOrCreateCachedVersionsAsync(cancellationToken),
-            "Failed to retrieve all versions",
-            StatusCodes.Status500InternalServerError
-        );
+        var versions = await GetOrCreateCachedVersionsAsync(cancellationToken);
+        return Result.Ok(versions);
     }
 
-    public Task<Result<List<string>>> GetAllSupportedVersionsAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<string>>> GetAllSupportedVersionsAsync(CancellationToken cancellationToken)
     {
-        return ExecuteAsync(
-            async () => await GetOrCreateCachedSupportedVersionsAsync(cancellationToken),
-            "Failed to retrieve supported versions",
-            StatusCodes.Status500InternalServerError
-        );
+        var supported = await GetOrCreateCachedSupportedVersionsAsync(cancellationToken);
+        return Result.Ok(supported);
     }
 
     // For Commands
-    public Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion newVersion, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion newVersion, CancellationToken cancellationToken)
     {
-        return ExecuteAsync(async () => {
-            await _dbContext.MidjourneyVersions.AddAsync(newVersion, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.MidjourneyVersions.AddAsync(newVersion, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-            await InvalidateCacheAsync(cancellationToken);
-            return newVersion;
-        }, $"Failed to add version '{newVersion.Version.Value}'", StatusCodes.Status500InternalServerError);
-    }
-
-    public Task<Result<MidjourneyVersion>> UpdateVersionAsync(MidjourneyVersion midjourneyVersion, CancellationToken cancellationToken)
-    {
-        return ExecuteAsync(async () =>
-        {
-            var existingVersion = await _dbContext.MidjourneyVersions
-                .FirstOrDefaultAsync(v => v.Version == midjourneyVersion.Version, cancellationToken);
-
-            if (existingVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(midjourneyVersion.Version));
-
-            _dbContext.Entry(existingVersion).CurrentValues.SetValues(midjourneyVersion);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            await InvalidateCacheAsync(cancellationToken);
-            return midjourneyVersion;
-        }, $"Failed to update version '{midjourneyVersion.Version.Value}'", StatusCodes.Status500InternalServerError);
-    }
-
-    public Task<Result<MidjourneyVersion>> DeleteVersionAsync(ModelVersion version, CancellationToken cancellationToken)
-        {
-        return ExecuteAsync(async () =>
-        {
-            var existingVersion = await _dbContext.MidjourneyVersions
-                .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
-
-            if (existingVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(version));
-
-            _dbContext.MidjourneyVersions.Remove(existingVersion);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            await InvalidateCacheAsync(cancellationToken);
-            return existingVersion;
-        }, $"Failed to delete version '{version.Value}'", StatusCodes.Status500InternalServerError);
-    }
-
-    public Task<Result<MidjourneyVersion>> UpdateVersionDescriptionAsync
-    (
-        ModelVersion version,
-        Description description,
-        CancellationToken cancellationToken
-    )
-    {
-        return ExecuteAsync(async () =>
-        {
-            var existingVersion = await _dbContext.MidjourneyVersions
-                .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
-
-            if (existingVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(version));
-
-            existingVersion.Description = description;
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            await InvalidateCacheAsync(cancellationToken);
-            return existingVersion;
-        }, $"Failed to update description for version '{version.Value}'", StatusCodes.Status500InternalServerError);
+        await InvalidateCacheAsync(cancellationToken);
+        return Result.Ok(newVersion);
     }
 
     // Helper methods
-    private async Task<List<string>> GetOrCreateCachedSupportedVersionsAsync(CancellationToken cancellationToken)
+    private async Task<List<string?>> GetOrCreateCachedSupportedVersionsAsync(CancellationToken cancellationToken)
     {
-        return await _cache.GetOrCreateAsync(
-            supportedVersionsCacheKey,
+        return await _cache.GetOrCreateAsync
+        (
+            _supportedVersionsCacheKey,
             async (ct) =>
             {
                 var versions = await _dbContext.MidjourneyVersions
                     .Select(Version => Version.Version.Value)
-                    .ToListAsync(ct);
+                    .ToListAsync(ct) ?? [];
 
-                return versions.Where(v => v != null).Cast<string>().ToList();
+                return versions;
             },
-            cacheOptions,
+            _cacheOptions,
             cancellationToken: cancellationToken
         );
     }
@@ -181,20 +106,22 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
     {
         return await _cache.GetOrCreateAsync
         (
-            allVersionsCacheKey,
+            _allVersionsCacheKey,
             async (ct) =>
             {
-                return await _dbContext.MidjourneyVersions
+                var versions = await _dbContext.MidjourneyVersions
                     .ToListAsync(ct);
+
+                return versions;
             },
-            cacheOptions,
+            _cacheOptions,
             cancellationToken: cancellationToken
         );
     }
 
     private async Task InvalidateCacheAsync(CancellationToken cancellationToken)
     {
-        await _cache.RemoveAsync(allVersionsCacheKey, cancellationToken);
-        await _cache.RemoveAsync(supportedVersionsCacheKey, cancellationToken);
+        await _cache.RemoveAsync(_allVersionsCacheKey, cancellationToken);
+        await _cache.RemoveAsync(_supportedVersionsCacheKey, cancellationToken);
     }
 }

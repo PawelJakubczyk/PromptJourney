@@ -15,6 +15,9 @@ public sealed class InfrastructureLayer : ILayer
 public sealed class PresentationLayer : ILayer
 { }
 
+public sealed class AppLayer : ILayer
+{ }
+
 public sealed class UtilitiesLayer : ILayer
 { }
 

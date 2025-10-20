@@ -1,4 +1,4 @@
-using Application.Abstractions;
+﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.Styles.Responses;
@@ -9,7 +9,7 @@ using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Queries;
 
-public static class GetStylesByTags
+public static class GetStylesByTagsMatchAll
 {
     public sealed record Query(List<string>? Tags) : IQuery<List<StyleResponse>>;
 
@@ -26,7 +26,7 @@ public static class GetStylesByTags
                 .IfListIsNullOrEmpty(query.Tags)
                 .CollectErrors(tags!)
                 .ExecuteIfNoErrors(() => _styleRepository
-                    .GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
+                    .GetStylesByTagsMatchAllAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
                 .MapResult<List<MidjourneyStyle>, List<StyleResponse>>
                     (styleList => [.. styleList.Select(StyleResponse.FromDomain)]);
 

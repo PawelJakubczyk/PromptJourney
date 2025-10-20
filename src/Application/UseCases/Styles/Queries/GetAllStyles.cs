@@ -18,7 +18,7 @@ public static class GetAllStyles
     {
         private readonly IStyleRepository _styleRepository = styleRepository;
 
-        public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<StyleResponse>>> Handle(Query _, CancellationToken cancellationToken)
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()

@@ -16,13 +16,12 @@ public static class GetAllProperties
 
     public sealed class Handler
     (
-        IPropertiesRepository propertiesRepository,
-        IVersionRepository versionRepository
+        IPropertiesRepository propertiesRepository
     ) : IQueryHandler<Query, List<PropertyQueryResponse>>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
-        public async Task<Result<List<PropertyQueryResponse>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<PropertyQueryResponse>>> Handle(Query _, CancellationToken cancellationToken)
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
