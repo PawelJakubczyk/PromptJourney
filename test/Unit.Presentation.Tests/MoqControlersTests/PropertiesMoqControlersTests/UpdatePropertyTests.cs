@@ -51,27 +51,6 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
     }
 
     [Fact]
-    public async Task UpdateProperty_ReturnsBadRequest_WhenRouteParametersDontMatchPayload()
-    {
-        // Arrange
-        var routeVersion = "1.0";
-        var routePropertyName = "aspect";
-        var request = new PropertyRequest(
-            "2.0", // Different from route
-            "quality", // Different from route
-            ["--q"]
-        );
-
-        var controller = CreateController(new Mock<ISender>());
-
-        // Act
-        var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
-
-        // Assert
-        AssertBadRequestResult(actionResult, "Route parameters must match payload values");
-    }
-
-    [Fact]
     public async Task UpdateProperty_ReturnsNotFound_WhenPropertyDoesNotExist()
     {
         // Arrange

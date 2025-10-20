@@ -36,10 +36,7 @@ public abstract class ControllerTestsBase
         {
             // value can be null (allowed)
             var value = typedOk.Value;
-            if (value is not null)
-            {
-                value.Should().BeOfType<T>();
-            }
+            value?.Should().BeOfType<T>();
             if (expectedCount >= 0)
             {
                 if (value is IEnumerable<object> coll)
@@ -87,10 +84,7 @@ public abstract class ControllerTestsBase
         // Typed Created<T> (Minimal API) - no ActionName available, just validate payload
         if (actionResult is Created<T> typedCreated)
         {
-            if (typedCreated.Value is not null)
-            {
-                typedCreated.Value.Should().BeOfType<T>();
-            }
+            typedCreated.Value?.Should().BeOfType<T>();
             return;
         }
 
@@ -205,7 +199,7 @@ public abstract class ControllerTestsBase
     public class ErrorResponseModel
     {
         public MainErrorModel MainError { get; set; } = new();
-        public List<DetailModel> Details { get; set; } = new();
+        public List<DetailModel> Details { get; set; } = [];
     }
 
     public class MainErrorModel

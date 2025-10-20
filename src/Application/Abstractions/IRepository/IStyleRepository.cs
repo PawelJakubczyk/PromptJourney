@@ -28,7 +28,7 @@ public interface IStyleRepository
 
     Task<Result<MidjourneyStyle>> DeleteStyleAsync(StyleName styleName, CancellationToken cancellationToken);
 
-    Task<Result<MidjourneyStyle>> AddTagToStyleAsync(StyleName styleName, Result<Tag> tag, CancellationToken cancellationToken);
+    Task<Result<MidjourneyStyle>> AddTagToStyleAsync(StyleName styleName, Tag tag, CancellationToken cancellationToken);
 
     Task<Result<MidjourneyStyle>> DeleteTagFromStyleAsync(StyleName styleName, Result<Tag> tag, CancellationToken cancellationToken);
 

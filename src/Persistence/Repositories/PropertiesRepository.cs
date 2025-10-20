@@ -1,11 +1,15 @@
 using Application.Abstractions.IRepository;
+using Application.UseCases.Versions.Queries;
 using Domain.Entities;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
+using Utilities.Constants;
+using Utilities.Extensions;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
@@ -30,9 +34,11 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         return await ExecuteAsync(async () =>
         {
             var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
-            return properties
+            var propertiesByVersion = properties
                 .Where(property => property.Version == version)
                 .ToList();
+
+            return propertiesByVersion;
         }, $"Failed to get properties for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
@@ -44,7 +50,9 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
             var property = properties
                 .FirstOrDefault(p => p.PropertyName == propertyName && p.Version == version);
 
-            return property ?? throw new KeyNotFoundException($"Property '{propertyName.Value}' not found for version '{version.Value}'");
+            if (property is null) return Result.Fail<MidjourneyProperties>(DomainErrors.PropertyNotFound(propertyName));
+
+            return Result.Ok(property);
         }, $"Failed to get property '{propertyName.Value}' for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
@@ -61,22 +69,10 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     {
         return await ExecuteAsync(async () =>
         {
-            var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
-            return properties.Any(p => p.PropertyName == propertyName && p.Version == version);
+            var properties = await GetOrCreateCachedSupportedPropertiesAsync(cancellationToken);
+            var exist = properties.Any(property => property == $"{propertyName.Value}:{version.Value}");
+            return Result.Ok(exist);
         }, $"Failed to check property existence for version '{version.Value}'", StatusCodes.Status500InternalServerError);
-    }
-
-    public async Task<Result<List<string>>> GetSupportedPropertyNamesAsync(ModelVersion version, CancellationToken cancellationToken)
-    {
-        return await ExecuteAsync(async () =>
-        {
-            var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
-            return properties
-                .Where(p => p.Version == version)
-                .Select(p => p.PropertyName.Value ?? string.Empty)
-                .Where(n => !string.IsNullOrEmpty(n))
-                .ToList();
-        }, $"Failed to get supported property names for version '{version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     // For Commands
@@ -120,8 +116,18 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         return await ExecuteAsync(async () =>
         {
             var parameter = await _midjourneyDbContext.MidjourneyProperties
-                .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken)
-                ?? throw new KeyNotFoundException($"Property '{propertyName.Value}' not found for version '{version.Value}'");
+                .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
+
+            if (parameter == null)
+            {
+                var notFoundError = ErrorBuilder.New()
+                    .WithLayer<DomainLayer>()
+                    .WithMessage($"Property '{propertyName.Value}' not found for version '{version.Value}'")
+                    .WithErrorCode(StatusCodes.Status404NotFound)
+                    .Build();
+
+                return Result.Fail<MidjourneyProperties>(notFoundError);
+            }
 
             UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
 
@@ -142,8 +148,18 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         return await ExecuteAsync(async () =>
         {
             var parameter = await _midjourneyDbContext.MidjourneyProperties
-                .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken)
-                ?? throw new KeyNotFoundException($"Property '{propertyName.Value}' not found for version '{version.Value}'");
+                .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
+
+            if (parameter == null)
+            {
+                var notFoundError = ErrorBuilder.New()
+                    .WithLayer<DomainLayer>()
+                    .WithMessage($"Property '{propertyName.Value}' not found for version '{version.Value}'")
+                    .WithErrorCode(StatusCodes.Status404NotFound)
+                    .Build();
+
+                return Result.Fail<MidjourneyProperties>(notFoundError);
+            }
 
             _midjourneyDbContext.Remove(parameter);
             await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -185,14 +201,17 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         );
     }
 
-    private async Task<List<string>> GetOrCreateCachedSupportedPropertiesAsync(CancellationToken cancellationToken) {
+    private async Task<List<string>> GetOrCreateCachedSupportedPropertiesAsync(CancellationToken cancellationToken)
+    {
         return await _cache.GetOrCreateAsync(
             allSupportedPropertiesCacheKey,
-            async (ct) => await _midjourneyDbContext.MidjourneyProperties
-                .Select(x => x.PropertyName.Value)
-                .Where(x => x != null)
-                .Cast<string>()
-                .ToListAsync(ct),
+            async ct =>
+            {
+                return await _midjourneyDbContext.MidjourneyProperties
+                    .Where(p => p.PropertyName != null && p.Version != null)
+                    .Select(p => $"{p.PropertyName.Value}:{p.Version.Value}")
+                    .ToListAsync(ct);
+            },
             cacheOptions,
             cancellationToken: cancellationToken
         );
