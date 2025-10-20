@@ -1,10 +1,11 @@
 using Application.Abstractions.IRepository;
+using Application.UseCases.Common.Responses;
 using Domain.Entities;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
-using Domain.Errors;
 
 namespace Persistence.Repositories;
 
@@ -34,11 +35,11 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return Result.Ok(exampleLink);
     }
 
-    public async Task<Result<int>> DeleteAllExampleLinksByStyleAsync(StyleName styleName, CancellationToken cancellationToken)
+    public async Task<Result<BulkDeleteResponse>> DeleteAllExampleLinksByStyleAsync(StyleName styleName, CancellationToken cancellationToken)
     {
         var styleExists = await _stylesRepository.CheckStyleExistsAsync(styleName, cancellationToken);
         if (styleExists.Value is false)
-            return Result.Fail<int>(DomainErrors.StyleNotFound(styleName));
+            return Result.Fail<BulkDeleteResponse>(DomainErrors.StyleNotFound(styleName));
 
 
         var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
@@ -47,7 +48,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
 
         _midjourneyDbContext.MidjourneyStyleExampleLinks.RemoveRange(exampleLinks);
         var deletedCount = await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
-        return Result.Ok(deletedCount);
+        return Result.Ok(BulkDeleteResponse.Success(deletedCount, $"Exaple links: '{exampleLinks}' was successfully deleted"));
     }
 
     public async Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(Guid id, CancellationToken cancellationToken)
