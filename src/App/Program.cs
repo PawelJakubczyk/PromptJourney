@@ -43,7 +43,14 @@ try
 }
 catch (Exception exception)
 {
-    Console.Error.WriteLine($"Host terminated unexpectedly. Exception: {exception.Message}");
+    Console.Error.WriteLine($"Host terminated unexpectedly. Exception: {exception}");
+    if (exception is AggregateException aggregateException)
+    {
+        foreach (var innerException in aggregateException.Flatten().InnerExceptions)
+        {
+            Console.Error.WriteLine($"  Inner Exception: {innerException}");
+        }
+    }
     return 1;
 }
 finally

@@ -1,11 +1,14 @@
 using Application.Abstractions.IRepository;
 using Domain.Entities;
+using Domain.Errors;
 using Domain.ValueObjects;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
+using Utilities.Constants;
+using Utilities.Extensions;
 using static Persistence.Repositories.Helper.RepositoryHelper;
 
 namespace Persistence.Repositories;
@@ -25,13 +28,13 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
     };
 
     // For Queries
-    public Task<Result<bool>> CheckVersionExistsAsync(ModelVersion version, CancellationToken cancellationToken)
+    public Task<Result<bool>> CheckVersionExistsAsync(ModelVersion modelVersion, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
             var supportedVersions = await GetOrCreateCachedSupportedVersionsAsync(cancellationToken);
-            return supportedVersions.Contains(version.Value);
-        }, $"Failed to check if version '{version.Value}' exists", StatusCodes.Status500InternalServerError);
+            return supportedVersions.Contains(modelVersion.Value);
+        }, $"Failed to check if version '{modelVersion.Value}' exists", StatusCodes.Status500InternalServerError);
     }
 
     public Task<Result<bool>> CheckIfAnyVersionExistsAsync(CancellationToken cancellationToken)
@@ -43,29 +46,17 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         }, "Failed to check if any versions exist", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<MidjourneyVersion>> GetVersionAsync(ModelVersion version, CancellationToken cancellationToken)
+    public Task<Result<MidjourneyVersion>> GetVersionAsync(ModelVersion modelVersion, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
             var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
-            var foundVersion = allVersions.FirstOrDefault(v => v.Version.Value == version.Value);
+            var foundVersion = allVersions.FirstOrDefault(version => version.Version.Value == modelVersion.Value);
 
-            if (foundVersion == null)
-            {
-                foundVersion = await _dbContext.MidjourneyVersions
-                    .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
-
-                if (foundVersion == null)
-                {
-                    throw new KeyNotFoundException($"Version '{version.Value}' not found");
-                }
-
-                // Update the cache with the newly found version
-                await InvalidateCacheAsync(cancellationToken);
-            }
-
+            if (foundVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(modelVersion));
+            
             return foundVersion;
-        }, $"Failed to retrieve version '{version.Value}'", StatusCodes.Status500InternalServerError);
+        }, $"Failed to retrieve version '{modelVersion.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     public Task<Result<MidjourneyVersion>> GetLatestVersionAsync(CancellationToken cancellationToken)
@@ -74,12 +65,8 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         {
             var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
 
-            if (allVersions.Count == 0)
-            {
-                throw new InvalidOperationException("No versions found in the database");
-            }
+            if (allVersions.Count == 0) return Result.Fail<MidjourneyVersion>(DomainErrors.NoVersionFound());
 
-            // Get version with most recent release date or first in list if dates are null
             return allVersions
                 .OrderByDescending(v => v.ReleaseDate ?? DateTime.MinValue)
                 .First();
@@ -116,24 +103,21 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         }, $"Failed to add version '{newVersion.Version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
-    public Task<Result<MidjourneyVersion>> UpdateVersionAsync(MidjourneyVersion version, CancellationToken cancellationToken)
+    public Task<Result<MidjourneyVersion>> UpdateVersionAsync(MidjourneyVersion midjourneyVersion, CancellationToken cancellationToken)
     {
         return ExecuteAsync(async () =>
         {
             var existingVersion = await _dbContext.MidjourneyVersions
-                .FirstOrDefaultAsync(v => v.Version == version.Version, cancellationToken);
+                .FirstOrDefaultAsync(v => v.Version == midjourneyVersion.Version, cancellationToken);
 
-            if (existingVersion == null)
-            {
-                throw new KeyNotFoundException($"Version '{version.Version.Value}' not found");
-            }
+            if (existingVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(midjourneyVersion.Version));
 
-            _dbContext.Entry(existingVersion).CurrentValues.SetValues(version);
+            _dbContext.Entry(existingVersion).CurrentValues.SetValues(midjourneyVersion);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             await InvalidateCacheAsync(cancellationToken);
-            return version;
-        }, $"Failed to update version '{version.Version.Value}'", StatusCodes.Status500InternalServerError);
+            return midjourneyVersion;
+        }, $"Failed to update version '{midjourneyVersion.Version.Value}'", StatusCodes.Status500InternalServerError);
     }
 
     public Task<Result<MidjourneyVersion>> DeleteVersionAsync(ModelVersion version, CancellationToken cancellationToken)
@@ -143,10 +127,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
             var existingVersion = await _dbContext.MidjourneyVersions
                 .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
 
-            if (existingVersion == null)
-            {
-                throw new KeyNotFoundException($"Version '{version.Value}' not found");
-            }
+            if (existingVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(version));
 
             _dbContext.MidjourneyVersions.Remove(existingVersion);
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -168,10 +149,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
             var existingVersion = await _dbContext.MidjourneyVersions
                 .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
 
-            if (existingVersion == null)
-            {
-                throw new KeyNotFoundException($"Version '{version.Value}' not found");
-            }
+            if (existingVersion == null) return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(version));
 
             existingVersion.Description = description;
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -201,7 +179,8 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
 
     private async Task<List<MidjourneyVersion>> GetOrCreateCachedVersionsAsync(CancellationToken cancellationToken)
     {
-        return await _cache.GetOrCreateAsync(
+        return await _cache.GetOrCreateAsync
+        (
             allVersionsCacheKey,
             async (ct) =>
             {

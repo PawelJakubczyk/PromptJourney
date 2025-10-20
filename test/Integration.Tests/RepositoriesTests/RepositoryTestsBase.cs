@@ -2,8 +2,8 @@ using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
 using FluentResults;
-using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Repositories;
+using Persistence.Repositories.Helper;
 
 namespace Integration.Tests.RepositoriesTests;
 
@@ -16,7 +16,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
     protected readonly PromptHistoryRepository PromptHistoryRepository;
     protected readonly PropertiesRepository PropertiesRepository;
     protected readonly CancellationToken CancellationToken = CancellationToken.None;
-    protected readonly HybridCache Cache;
+    protected readonly DefaultHybridCache Cache;
 
     // Constructor
     protected RepositoryTestsBase(MidjourneyDbFixture fixture) : base(fixture)

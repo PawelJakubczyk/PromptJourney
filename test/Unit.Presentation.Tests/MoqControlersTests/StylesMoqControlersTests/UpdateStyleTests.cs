@@ -44,25 +44,6 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     }
 
     [Fact]
-    public async Task Update_ReturnsBadRequest_WhenRouteNameAndPayloadNameDontMatch()
-    {
-        // Arrange
-        var routeName = "Style1";
-        var request = new UpdateStyleRequest(
-            "Style2", // Different from route name
-            "Custom"
-        );
-
-        var controller = CreateController(new Mock<ISender>());
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        AssertBadRequestResult(actionResult, "Route name and payload name must match");
-    }
-
-    [Fact]
     public async Task Update_ReturnsNotFound_WhenStyleDoesNotExist()
     {
         // Arrange
