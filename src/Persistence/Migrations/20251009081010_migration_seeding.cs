@@ -17,19 +17,19 @@ namespace Persistence.Migrations
                 columns: ["version", "parameter", "release_date", "description"],
                 values: new object[,]
                 {
-                    { "1", "--v 1", new DateTime(2022, 2, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Initial Midjourney version" },
-                    { "2", "--v 2", new DateTime(2022, 4, 15, 0, 0, 0, 0, DateTimeKind.Utc), "Improved quality and coherence" },
-                    { "3", "--v 3", new DateTime(2022, 7, 25, 0, 0, 0, 0, DateTimeKind.Utc), "Better composition and aesthetics" },
-                    { "4", "--v 4", new DateTime(2022, 11, 5, 0, 0, 0, 0, DateTimeKind.Utc), "Significantly improved image quality and coherence" },
-                    { "5", "--v 5", new DateTime(2023, 3, 15, 0, 0, 0, 0, DateTimeKind.Utc), "New aesthetic direction with enhanced details" },
-                    { "5.1", "--v 5.1", new DateTime(2023, 5, 4, 0, 0, 0, 0, DateTimeKind.Utc), "Improved handling of text and faces" },
-                    { "5.2", "--v 5.2", new DateTime(2023, 6, 22, 0, 0, 0, 0, DateTimeKind.Utc), "Enhanced prompt following with better composition" },
-                    { "6", "--v 6", new DateTime(2023, 11, 15, 0, 0, 0, 0, DateTimeKind.Utc), "Major improvement in artistic quality and coherence" },
-                    { "6.1", "--v 6.1", new DateTime(2024, 2, 20, 0, 0, 0, 0, DateTimeKind.Utc), "Further enhancements in detail and realism" },
-                    { "7", "--v 7", new DateTime(2025, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc), "Latest generation with advanced detail handling" },
-                    { "niji 4", "--niji 4", new DateTime(2022, 12, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Anime-focused model with detailed styles" },
-                    { "niji 5", "--niji 5", new DateTime(2023, 7, 18, 0, 0, 0, 0, DateTimeKind.Utc), "Improved anime rendering with better colors" },
-                    { "niji 6", "--niji 6", new DateTime(2024, 4, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Enhanced anime styling with better character design" }
+                    { "1", "--v 1", new DateTime(2022, 2, 1, 0, 0, 0, DateTimeKind.Utc), "Initial Midjourney version" },
+                    { "2", "--v 2", new DateTime(2022, 4, 15, 0, 0, 0, DateTimeKind.Utc), "Improved quality and coherence" },
+                    { "3", "--v 3", new DateTime(2022, 7, 25, 0, 0, 0, DateTimeKind.Utc), "Better composition and aesthetics" },
+                    { "4", "--v 4", new DateTime(2022, 11, 5, 0, 0, 0, DateTimeKind.Utc), "Significantly improved image quality and coherence" },
+                    { "5", "--v 5", new DateTime(2023, 3, 15, 0, 0, 0, DateTimeKind.Utc), "New aesthetic direction with enhanced details" },
+                    { "5.1", "--v 5.1", new DateTime(2023, 5, 4, 0, 0, 0, DateTimeKind.Utc), "Improved handling of text and faces" },
+                    { "5.2", "--v 5.2", new DateTime(2023, 6, 22, 0, 0, 0, DateTimeKind.Utc), "Enhanced prompt following with better composition" },
+                    { "6", "--v 6", new DateTime(2023, 11, 15, 0, 0, 0, DateTimeKind.Utc), "Major improvement in artistic quality and coherence" },
+                    { "6.1", "--v 6.1", new DateTime(2024, 2, 20, 0, 0, 0, DateTimeKind.Utc), "Further enhancements in detail and realism" },
+                    { "7", "--v 7", new DateTime(2025, 5, 15, 0, 0, 0, DateTimeKind.Utc), "Latest generation with advanced detail handling" },
+                    { "niji 4", "--niji 4", new DateTime(2022, 12, 10, 0, 0, 0, DateTimeKind.Utc), "Anime-focused model with detailed styles" },
+                    { "niji 5", "--niji 5", new DateTime(2023, 7, 18, 0, 0, 0, DateTimeKind.Utc), "Improved anime rendering with better colors" },
+                    { "niji 6", "--niji 6", new DateTime(2024, 4, 1, 0, 0, 0, DateTimeKind.Utc), "Enhanced anime styling with better character design" }
                 });
 
             // Properties seeding

@@ -1,4 +1,5 @@
 using Application.Abstractions.IRepository;
+using Application.UseCases.Common.Responses;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.ValueObjects;
@@ -27,7 +28,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         return Result.Ok(history);
     }
 
-    public async Task<Result<MidjourneyPromptHistory>> DeleteHistoryRecordAsync
+    public async Task<Result<DeleteResponse>> DeleteHistoryRecordByIdAsync
     (
         Guid historyId,
         CancellationToken cancellationToken
@@ -36,11 +37,11 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         var historyRecord = await _midjourneyDbContext.MidjourneyPromptHistory
             .FirstOrDefaultAsync(history => history.HistoryId == historyId, cancellationToken);
 
-        if (historyRecord is null) return Result.Fail<MidjourneyPromptHistory>(DomainErrors.HistoryNotFoundError(historyId));
+        if (historyRecord is null) return Result.Fail<DeleteResponse>(DomainErrors.HistoryNotFoundError(historyId));
 
         _midjourneyDbContext.MidjourneyPromptHistory.Remove(historyRecord);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
-        return Result.Ok(historyRecord);
+        return Result.Ok(DeleteResponse.Success($"History record with Id: '{historyId}' deleted successfully."));
     }
 
     // For Queries

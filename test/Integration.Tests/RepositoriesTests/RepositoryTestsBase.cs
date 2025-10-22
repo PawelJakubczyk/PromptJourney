@@ -22,8 +22,8 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
     protected RepositoryTestsBase(MidjourneyDbFixture fixture) : base(fixture)
     {
         VersionsRepository = new VersionsRepository(DbContext, Cache);
-        StylesRepository = new StylesRepository(DbContext);
-        ExampleLinkRepository = new ExampleLinkRepository(DbContext);
+        StylesRepository = new StylesRepository(DbContext, Cache);
+        ExampleLinkRepository = new ExampleLinkRepository(DbContext, VersionsRepository, StylesRepository);
         PromptHistoryRepository = new PromptHistoryRepository(DbContext);
         PropertiesRepository = new PropertiesRepository(DbContext, Cache);
     }
@@ -118,7 +118,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         foreach (var tagName in tagNames)
         {
             var tag = Tag.Create(tagName).Value;
-            await StylesRepository.AddTagToStyleAsync(style.StyleName, Result.Ok(tag), CancellationToken);
+            await StylesRepository.AddTagToStyleAsync(style.StyleName, tag, CancellationToken);
         }
 
         return style;

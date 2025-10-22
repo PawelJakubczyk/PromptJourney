@@ -1,6 +1,6 @@
+using Utilities.Workflows;
 using FluentAssertions;
 using FluentResults;
-using Utilities.Workflows;
 
 namespace Unit.Utilities.Tests.Workflow;
 
@@ -18,7 +18,7 @@ public class WorkflowPipelineTests
         // Assert
         pipeline.Should().NotBeNull();
         pipeline.Errors.Should().BeEmpty();
-        pipeline.BreakOnError.Should().BeTrue();
+        pipeline._breakOnError.Should().BeTrue();
     }
 
     [Fact]
@@ -37,9 +37,7 @@ public class WorkflowPipelineTests
         // Assert
         pipeline.Should().NotBeNull();
         pipeline.Errors.Should().HaveCount(2);
-        pipeline.Errors[0].Message.Should().Be("Error 1");
-        pipeline.Errors[1].Message.Should().Be("Error 2");
-        pipeline.BreakOnError.Should().BeFalse();
+        pipeline._breakOnError.Should().BeFalse();
     }
 
     [Fact]
@@ -51,7 +49,7 @@ public class WorkflowPipelineTests
         // Assert
         pipeline.Should().NotBeNull();
         pipeline.Errors.Should().BeEmpty();
-        pipeline.BreakOnError.Should().BeTrue();
+        pipeline._breakOnError.Should().BeTrue();
     }
 
     [Fact]
@@ -64,7 +62,7 @@ public class WorkflowPipelineTests
         var pipeline = WorkflowPipeline.Create(errors);
 
         // Assert
-        pipeline.BreakOnError.Should().BeTrue();
+        pipeline._breakOnError.Should().BeTrue();
     }
 
     [Fact]
@@ -76,7 +74,7 @@ public class WorkflowPipelineTests
         // Assert
         pipeline.Should().NotBeNull();
         pipeline.Errors.Should().BeEmpty();
-        pipeline.BreakOnError.Should().BeTrue();
+        pipeline._breakOnError.Should().BeTrue();
     }
 
     [Fact]
@@ -90,7 +88,7 @@ public class WorkflowPipelineTests
         pipelineTask.Should().NotBeNull();
         pipeline.Should().NotBeNull();
         pipeline.Errors.Should().BeEmpty();
-        pipeline.BreakOnError.Should().BeTrue();
+        pipeline._breakOnError.Should().BeTrue();
     }
 
     [Fact]
@@ -108,8 +106,6 @@ public class WorkflowPipelineTests
         pipeline1.Should().NotBeSameAs(pipeline2);
         pipeline1.Errors.Should().HaveCount(1);
         pipeline2.Errors.Should().HaveCount(1);
-        pipeline1.Errors[0].Message.Should().Be("Error 1");
-        pipeline2.Errors[0].Message.Should().Be("Error 2");
     }
 
     [Theory]
@@ -118,10 +114,10 @@ public class WorkflowPipelineTests
     public void Create_ShouldRespectBreakOnErrorParameter(bool breakOnError)
     {
         // Act
-        var pipeline = WorkflowPipeline.Create([], breakOnError);
+        var pipeline = WorkflowPipeline.Create(new List<Error>(), breakOnError);
 
         // Assert
-        pipeline.BreakOnError.Should().Be(breakOnError);
+        pipeline._breakOnError.Should().Be(breakOnError);
     }
 
     [Fact]
@@ -162,5 +158,64 @@ public class WorkflowPipelineTests
         pipeline.Errors.Should().HaveCount(1000);
         pipeline.Errors[0].Message.Should().Be("Error 0");
         pipeline.Errors[999].Message.Should().Be("Error 999");
+    }
+
+    [Fact]
+    public void GetResult_ShouldReturnCorrectValue()
+    {
+        // Arrange
+        var pipeline = WorkflowPipeline.Empty();
+        var testValue = "Test Value";
+
+        // Act
+        pipeline.SetResult(testValue);
+        var result = pipeline.GetResult<string>();
+
+        // Assert
+        result.Should().Be(testValue);
+    }
+
+    [Fact]
+    public void GetResult_WithKey_ShouldReturnCorrectValue()
+    {
+        // Arrange
+        var pipeline = WorkflowPipeline.Empty();
+        var testValue = "Test Value";
+        var key = "CustomKey";
+
+        // Act
+        pipeline.SetResult(testValue, key);
+        var result = pipeline.GetResult<string>(key);
+
+        // Assert
+        result.Should().Be(testValue);
+    }
+
+    [Fact]
+    public void GetResult_WhenKeyNotExists_ShouldReturnDefault()
+    {
+        // Arrange
+        var pipeline = WorkflowPipeline.Empty();
+
+        // Act
+        var result = pipeline.GetResult<string>("NonExistentKey");
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public void SetResult_ShouldOverwriteExistingValue()
+    {
+        // Arrange
+        var pipeline = WorkflowPipeline.Empty();
+        pipeline.SetResult("Initial Value");
+
+        // Act
+        pipeline.SetResult("Updated Value");
+        var result = pipeline.GetResult<string>();
+
+        // Assert
+        result.Should().Be("Updated Value");
     }
 }

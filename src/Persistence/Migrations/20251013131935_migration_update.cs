@@ -47,7 +47,7 @@ namespace Persistence.Migrations
                 name: "PK_midjourney_style_example_links",
                 schema: "public",
                 table: "midjourney_style_example_links",
-                columns: new[] { "link", "style_name", "version" });
+                columns: ["link", "style_name", "version"]);
         }
     }
 }
