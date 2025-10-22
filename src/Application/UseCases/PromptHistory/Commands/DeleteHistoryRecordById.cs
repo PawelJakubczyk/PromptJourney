@@ -2,9 +2,6 @@
 using Application.Abstractions.IRepository;
 using Application.UseCases.Common.Responses;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
-using Utilities.Constants;
-using Utilities.Extensions;
 using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Commands;

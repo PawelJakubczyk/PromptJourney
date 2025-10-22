@@ -12,6 +12,7 @@ namespace Persistence.Repositories;
 public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache cache) : IStyleRepository
 {
     private const string _tagCacheKey = "tag";
+    private const string _tagSupportedCacheKey = "supported_tag";
 
     private readonly MidjourneyDbContext _midjourneyDbContext = dbContext;
     private readonly HybridCache _cache = cache;
@@ -97,15 +98,10 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         return Result.Ok(styles);
     }
 
-    public async Task<Result<List<string>>> GetAllStyleTagsAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<Tag>>> GetAllStyleTagsAsync(CancellationToken cancellationToken)
     {
-        var styles = await _midjourneyDbContext.MidjourneyStyle
-            .Include(s => s.Tags)
-            .Where(s => s.Tags != null && s.Tags.Any())
-            .ToListAsync(cancellationToken);
-
+        // Use cached full Tag objects
         var allTags = await GetOrCreateCachedTagsAsync(cancellationToken);
-
         return Result.Ok(allTags);
     }
 
@@ -135,15 +131,15 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         await _midjourneyDbContext.MidjourneyStyle.AddAsync(style, cancellationToken);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
-        // If style has tags, check cached tags and invalidate if new tag(s) were introduced
+        // If style has tags, check cached supported tag values and invalidate if new tag(s) were introduced
         if (style.Tags != null && style.Tags.Count > 0)
         {
-            var cachedTags = await GetOrCreateCachedTagsAsync(cancellationToken);
+            var cachedSupportedTagValues = await GetOrCreateCachedSupportedTagsAsync(cancellationToken);
 
             var newTagDetected = style.Tags
                 .Select(t => t?.Value)
                 .Where(v => !string.IsNullOrEmpty(v))
-                .Any(v => !cachedTags.Contains(v));
+                .Any(v => !cachedSupportedTagValues.Contains(v!));
 
             if (newTagDetected)
             {
@@ -194,9 +190,11 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         style.AddTag(tagResult);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
-        var tags = await GetOrCreateCachedTagsAsync(cancellationToken);
-        if (!tags.Contains(tagResult.Value)) await InvalidateCacheAsync(cancellationToken);
-        
+        // Compare by tag values to avoid entity-tracking/equality pitfalls
+        var supportedTagValues = await GetOrCreateCachedSupportedTagsAsync(cancellationToken);
+        if (!supportedTagValues.Contains(tagResult.Value))
+            await InvalidateCacheAsync(cancellationToken);
+
         return Result.Ok(style);
     }
 
@@ -213,7 +211,9 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
 
-        style.RemoveTag(tagResult);
+        // Extract value and remove by Tag (avoid passing Result<Tag> into domain method)
+        var tag = tagResult.Value;
+        style.RemoveTag(tag);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
         await InvalidateCacheAsync(cancellationToken);
@@ -234,9 +234,9 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     }
 
     // Helper methods
-    private async Task<List<string?>> GetOrCreateCachedTagsAsync(CancellationToken cancellationToken)
+    private async Task<List<Tag>> GetOrCreateCachedTagsAsync(CancellationToken cancellationToken)
     {
-        return await _cache.GetOrCreateAsync
+        return await _cache.GetOrCreateAsync<List<Tag>>
         (
             _tagCacheKey,
             async (ct) =>
@@ -245,12 +245,36 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
                     .Include(style => style.Tags)
                     .Where(style => style.Tags != null && style.Tags.Any())
                     .SelectMany(style => style.Tags!)
-                    .Select(tag => tag.Value)
-                    .Where(value => !string.IsNullOrEmpty(value))
+                    .Select(tag => tag)
+                    .Where(value => value != null)
                     .Distinct()
                     .ToListAsync(ct);
 
-                return tags.Cast<string?>().ToList();
+                return [.. tags.Cast<Tag?>()];
+            },
+            _cacheOptions,
+            cancellationToken: cancellationToken
+        );
+    }
+
+    private async Task<List<string>> GetOrCreateCachedSupportedTagsAsync(CancellationToken cancellationToken)
+    {
+        return await _cache.GetOrCreateAsync<List<string>>
+        (
+            _tagSupportedCacheKey,
+            async (ct) =>
+            {
+                var tags = await _midjourneyDbContext.MidjourneyStyle
+                    .Include(style => style.Tags)
+                    .Where(style => style.Tags != null && style.Tags.Any())
+                    .SelectMany(style => style.Tags!)
+                    .Select(tag => tag.Value)
+                    .Where(value => !string.IsNullOrEmpty(value))
+                    .AsNoTracking()
+                    .Distinct()
+                    .ToListAsync(ct);
+
+                return tags!;
             },
             _cacheOptions,
             cancellationToken: cancellationToken
@@ -260,5 +284,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     private async Task InvalidateCacheAsync(CancellationToken cancellationToken)
     {
         await _cache.RemoveAsync(_tagCacheKey, cancellationToken);
+        await _cache.RemoveAsync(_tagSupportedCacheKey, cancellationToken);
     }
 }
