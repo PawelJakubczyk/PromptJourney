@@ -18,8 +18,11 @@ public class MidjourneyStyle : IEntity
     public List<Tag>? Tags { get; set; }
 
     // Navigation properties
-    public List<MidjourneyPromptHistory> MidjourneyPromptHistories { get; set; } = [];
-    public List<MidjourneyStyleExampleLink> MidjourneyExampleLinks { get; set; } = [];
+    private List<MidjourneyPromptHistory> PromptHistories { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyPromptHistory> MidjourneyPromptHistories => PromptHistories.AsReadOnly();
+
+    private List<MidjourneyStyleExampleLink> ExampleLink { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyStyleExampleLink> MidjourneyExampleLinks => ExampleLink.AsReadOnly();
 
     // Constructors
     private MidjourneyStyle()

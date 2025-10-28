@@ -171,7 +171,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         // Add styles if provided
         foreach (var style in styles)
         {
-            promptHistory.MidjourneyStyles.Add(style);
+            promptHistory.AddStyle(style);
         }
 
         var result = await PromptHistoryRepository.AddPromptToHistoryAsync(promptHistory, CancellationToken);
@@ -193,7 +193,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         // Add styles if provided
         foreach (var style in styles)
         {
-            promptHistory.MidjourneyStyles.Add(style);
+            promptHistory.AddStyle(style);
         }
 
         return promptHistory;

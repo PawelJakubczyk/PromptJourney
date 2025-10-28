@@ -15,7 +15,8 @@ public class MidjourneyPromptHistory : IEntity
 
     // Navigation
     public MidjourneyVersion MidjourneyVersion { get; set; }
-    public List<MidjourneyStyle> MidjourneyStyles { get; set; } = [];
+    private List<MidjourneyStyle> Styles { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles.AsReadOnly();
 
     // Constructors
     private MidjourneyPromptHistory()
@@ -55,5 +56,13 @@ public class MidjourneyPromptHistory : IEntity
             .MapResult<MidjourneyPromptHistory, MidjourneyPromptHistory>(history => history);
 
         return result;
+    }
+
+    public void AddStyle(MidjourneyStyle style)
+    {
+        if (!Styles.Contains(style))
+        {
+            Styles.Add(style);
+        }
     }
 }

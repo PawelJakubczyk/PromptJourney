@@ -14,9 +14,11 @@ public class MidjourneyVersion : IEntity
     public Description? Description { get; set; }
 
     // Navigation
-    public List<MidjourneyPromptHistory> MidjourneyHistories { get; set; }
+    private List<MidjourneyPromptHistory> Histories { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyPromptHistory> MidjourneyHistories => Histories.AsReadOnly();
 
-    public List<MidjourneyProperties> MidjourneyProperties { get; set; }
+    private List<MidjourneyProperties> Properties { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyProperties> MidjourneyProperties => Properties.AsReadOnly();
 
     // Constructors
     private MidjourneyVersion()

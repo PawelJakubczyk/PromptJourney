@@ -1,0 +1,4 @@
+comment = 'ULID type and generator'
+default_version = '1.0'
+requires = 'pgcrypto'
+module_pathname = '$libdir/pgulid'

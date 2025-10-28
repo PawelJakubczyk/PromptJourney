@@ -28,3 +28,6 @@ Update-Database -Project Persistence -StartupProject App migration_init
 
 # Cofniêcie migracji do konkretnej wersji / Aplikowanie migracji do konkretnej wersji w bazie danych 
 update-database -Project Persistence -StartupProject App -Migration 20231020123456_migration_init
+
+
+
