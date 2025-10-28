@@ -7,7 +7,7 @@ using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Constants;
 
-namespace Unit.Presentation.Tests.MoqControlersTests.Versions;
+namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
 
 public sealed class CreateVersionTests : VersionsControllerTestsBase
 {

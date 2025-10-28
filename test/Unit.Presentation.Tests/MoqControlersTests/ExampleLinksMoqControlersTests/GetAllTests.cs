@@ -4,7 +4,7 @@ using MediatR;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
 
-namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinks;
+namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
 
 public sealed class GetAllTests : ExampleLinksControllerTestsBase
 {

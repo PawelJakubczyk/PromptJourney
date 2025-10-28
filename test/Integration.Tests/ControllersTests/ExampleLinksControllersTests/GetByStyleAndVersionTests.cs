@@ -3,7 +3,7 @@ using FluentAssertions;
 using Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 using System.Net;
 
-namespace Integration.Tests.ControllersTests.ExampleLinks;
+namespace Integration.Tests.ControllersTests.ExampleLinksControllersTests;
 
 public sealed class GetByStyleAndVersionTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {

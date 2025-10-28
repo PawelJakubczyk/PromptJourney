@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Hybrid;
 
-namespace Persistence.Repositories.Helper;
+namespace Persistence.Repositories.Utilities;
 
 
 public sealed class DefaultHybridCache : HybridCache

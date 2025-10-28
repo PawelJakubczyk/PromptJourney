@@ -5,7 +5,7 @@ using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
-namespace Application.UseCases.Styles.Commands.AddTagToStyle;
+namespace Application.UseCases.Styles.Commands;
 
 public static class AddTagToStyle
 {

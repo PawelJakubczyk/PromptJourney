@@ -8,7 +8,7 @@ using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
 using Utilities.Constants;
 
-namespace Unit.Presentation.Tests.MoqControlersTests.Styles;
+namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
 
 public sealed class GetByNameTests : StylesControllerTestsBase
 {

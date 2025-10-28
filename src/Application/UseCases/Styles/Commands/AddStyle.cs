@@ -6,7 +6,7 @@ using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
-namespace Application.UseCases.Styles.Commands.AddStyle;
+namespace Application.UseCases.Styles.Commands;
 
 public static class AddStyle
 {

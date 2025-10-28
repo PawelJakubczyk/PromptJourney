@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.Registrations;
+namespace Presentation.Registrations;
 
 public static class PresentationRegistration
 {

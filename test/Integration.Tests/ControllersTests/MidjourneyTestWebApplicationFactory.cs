@@ -7,7 +7,7 @@ using Persistence.Context;
 using Application.Abstractions.IRepository;
 using Persistence.Repositories;
 
-namespace Integration.Tests;
+namespace Integration.Tests.ControllersTests;
 
 [CollectionDefinition("Integration Tests")]
 public class IntegrationTestsCollection : ICollectionFixture<MidjourneyTestWebApplicationFactory>

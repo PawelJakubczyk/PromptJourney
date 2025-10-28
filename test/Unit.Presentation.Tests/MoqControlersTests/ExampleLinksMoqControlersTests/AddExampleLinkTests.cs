@@ -7,7 +7,7 @@ using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
 using Utilities.Constants;
 
-namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinks;
+namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
 
 public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
 {

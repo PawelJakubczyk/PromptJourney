@@ -1,6 +1,7 @@
 using Application.Registrations;
 using Persistence.Registrations;
 using App.Middleware;
+using Presentation.Registrations;
 
 var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 var logger = loggerFactory.CreateLogger<Program>();

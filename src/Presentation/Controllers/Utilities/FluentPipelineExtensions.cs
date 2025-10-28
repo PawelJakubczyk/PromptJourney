@@ -6,7 +6,7 @@ using Utilities.Constants;
 using Utilities.Extensions;
 using static Presentation.Constants.StatusPriority;
 
-namespace Presentation.Controllers.ControllersUtilities;
+namespace Presentation.Controllers.Utilities;
 
 public sealed class Pipeline<TResponse>
 {

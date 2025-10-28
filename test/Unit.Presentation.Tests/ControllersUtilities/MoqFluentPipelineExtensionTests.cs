@@ -1,4 +1,4 @@
-﻿namespace Unit.Presentation.Tests.MoqFluentPipelineExtension;
+﻿namespace Unit.Presentation.Tests.ControllersUtilities;
 internal class MoqFluentPipelineExtensionTests
 {
 }
