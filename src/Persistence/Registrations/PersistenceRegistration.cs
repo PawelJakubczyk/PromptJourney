@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Context;
 using Persistence.Repositories;
-using Persistence.Repositories.Helper;
+using Persistence.Repositories.Utilities;
 
 namespace Persistence.Registrations;
 

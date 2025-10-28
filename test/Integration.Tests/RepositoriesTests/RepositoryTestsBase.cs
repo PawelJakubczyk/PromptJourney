@@ -3,7 +3,7 @@ using Domain.ValueObjects;
 using FluentAssertions;
 using FluentResults;
 using Persistence.Repositories;
-using Persistence.Repositories.Helper;
+using Persistence.Repositories.Utilities;
 
 namespace Integration.Tests.RepositoriesTests;
 

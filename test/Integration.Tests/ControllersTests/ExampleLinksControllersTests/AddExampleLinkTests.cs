@@ -4,7 +4,7 @@ using Integration.Tests.ControllersTests.ExampleLinksControllersTests.Base;
 using System.Net;
 using System.Net.Http.Json;
 
-namespace Integration.Tests.ControllersTests.ExampleLinks;
+namespace Integration.Tests.ControllersTests.ExampleLinksControllersTests;
 
 public sealed class AddExampleLinkTests(MidjourneyTestWebApplicationFactory factory) : ExampleLinksControllerTestsBase(factory)
 {

@@ -6,7 +6,7 @@ using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
 using Utilities.Constants;
 
-namespace Unit.Presentation.Tests.MoqControlersTests.Properties;
+namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
 
 public sealed class DeletePropertyTests : PropertiesControllerTestsBase
 {

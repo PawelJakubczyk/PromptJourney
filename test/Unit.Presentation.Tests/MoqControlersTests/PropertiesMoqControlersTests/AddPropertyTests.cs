@@ -1,6 +1,6 @@
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
 
-namespace Unit.Presentation.Tests.MoqControlersTests.Properties;
+namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
 
 public sealed class AddPropertyTests : PropertiesControllerTestsBase
 {

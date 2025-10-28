@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Extensions;
 
-namespace Persistence.Repositories.Helper;
+namespace Persistence.Repositories.Utilities;
 
 public static class RepositoryHelper
 {

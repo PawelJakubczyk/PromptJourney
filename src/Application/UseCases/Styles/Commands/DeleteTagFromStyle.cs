@@ -7,7 +7,7 @@ using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
-namespace Application.UseCases.Styles.Commands.RemoveTagInStyle;
+namespace Application.UseCases.Styles.Commands;
 
 public static class DeleteTagFromStyle
 {

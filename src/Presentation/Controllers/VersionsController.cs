@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
-using Presentation.Controllers.ControllersUtilities;
+using Presentation.Controllers.Utilities;
 
 namespace Presentation.Controllers;
 
