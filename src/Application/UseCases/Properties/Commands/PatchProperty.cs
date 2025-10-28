@@ -21,8 +21,7 @@ public static class PatchProperty
 
     public sealed class Handler(
         IPropertiesRepository propertiesRepository,
-        IVersionRepository versionRepository,
-        HybridCache cache
+        IVersionRepository versionRepository
     ) : ICommandHandler<Command, PropertyCommandResponse>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
@@ -35,10 +34,10 @@ public static class PatchProperty
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .Validate(pipeline => pipeline
+                    .Congregate(pipeline => pipeline
                         .CollectErrors(versionResult)
                         .CollectErrors(propertyNameResult))
-                    .Validate(pipeline => pipeline
+                    .Congregate(pipeline => pipeline
                         .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
                         .IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _propertiesRepository

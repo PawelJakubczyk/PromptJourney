@@ -54,7 +54,7 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
         .Empty()
-        .Validate(pipeline => pipeline
+        .Congregate(pipeline => pipeline
             .CollectErrors(nameResult)
             .CollectErrors(typeResult)
             .CollectErrors(descriptionResult)
@@ -81,7 +81,7 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
+            .Congregate(pipeline => pipeline
                 .CollectErrors(tag)
                 .IfListContain<DomainLayer, Tag>(Tags, tag.Value))
             .ExecuteIfNoErrors<Tag>(() =>
@@ -99,7 +99,7 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
+            .Congregate(pipeline => pipeline
                 .CollectErrors(tag)
                 .IfListIsNull<DomainLayer, Tag>(Tags)
                 .IfListIsEmpty<DomainLayer, Tag>(Tags)

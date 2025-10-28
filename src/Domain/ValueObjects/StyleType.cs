@@ -19,7 +19,7 @@ public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, StyleType>(value)
-            .Validate(pipeline => pipeline
+            .Congregate(pipeline => pipeline
                 .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
                 .IfStyleTypeNotInclude<DomainLayer>(value))
             .ExecuteIfNoErrors<StyleType>(() => new StyleType(value!))

@@ -58,7 +58,7 @@ public static class UpdateProperty
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(propertyResult)
-                .Validate(pipeline => pipeline
+                .Congregate(pipeline => pipeline
                     .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
                     .IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository

@@ -62,13 +62,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8C5969E2-1B15-4061-9C52-D337A6584AE9}"
 	ProjectSection(SolutionItems) = preProject
 		MIGRATION_GUIDE.md = MIGRATION_GUIDE.md
-		migration_manual.txt = migration_manual.txt
 		Paramiters.txt = Paramiters.txt
 		PosgresPasswordSuperUser.txt = PosgresPasswordSuperUser.txt
 		PostgresSQLConfigurationManual.md = PostgresSQLConfigurationManual.md
 		README.md = README.md
 		ReadMe.Program.md = ReadMe.Program.md
 		ReadMe.Prompts.md = ReadMe.Prompts.md
+		ToDo.Txt = ToDo.Txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{B7D9D0B0-6387-42F4-AE4D-BA93565D26F0}"

@@ -11,11 +11,7 @@ public static class GetExampleLinksById
 {
     public sealed record Query(string Id) : IQuery<ExampleLinkResponse>;
 
-    public sealed class Handler
-    (
-        IExampleLinksRepository exampleLinkRepository,
-        IStyleRepository styleRepository
-    ) : IQueryHandler<Query, ExampleLinkResponse>
+    public sealed class Handler(IExampleLinksRepository exampleLinkRepository) : IQueryHandler<Query, ExampleLinkResponse>
     {
         private readonly IExampleLinksRepository _exampleLinksRepository = exampleLinkRepository;
 

@@ -22,10 +22,10 @@ public static class AddTagToStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Validate(pipeline => pipeline
+                .Congregate(pipeline => pipeline
                     .CollectErrors(styleName)
                     .CollectErrors(tag))
-                .Validate(pipeline => pipeline
+                .Congregate(pipeline => pipeline
                     .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
                     .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository

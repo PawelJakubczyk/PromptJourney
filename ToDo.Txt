@@ -1,0 +1,8 @@
+new Entities Prompt
+Edit PromptHistory to have string representation of prompt and prompt ID
+Add table with false incorrect prompts that were in try but was stopped by validation before being sent.
+add Docks for every layer
+add more tests
+repair current tests
+add authentication
+add authorization

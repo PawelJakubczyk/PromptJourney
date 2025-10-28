@@ -60,7 +60,7 @@ public class MidjourneyProperties : IEntity
     {
         var result = WorkflowPipeline
         .Empty()
-        .Validate(pipeline => pipeline
+        .Congregate(pipeline => pipeline
             .CollectErrors<PropertyName>(propertyNameResult)
             .CollectErrors<ModelVersion>(versionResult)
             .CollectErrors<Param>(paramResultsList)

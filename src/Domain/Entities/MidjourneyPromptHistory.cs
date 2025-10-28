@@ -45,7 +45,7 @@ public class MidjourneyPromptHistory : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
+            .Congregate(pipeline => pipeline
                 .CollectErrors(prompt)
                 .CollectErrors(version))
             .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory

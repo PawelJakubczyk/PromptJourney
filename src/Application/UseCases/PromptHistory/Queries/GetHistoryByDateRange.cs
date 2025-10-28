@@ -23,7 +23,7 @@ public static class GetHistoryByDateRange
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Validate(pipeline => pipeline
+                .Congregate(pipeline => pipeline
                     .IfDateInFuture(query.From)
                     .IfDateInFuture(query.To)
                     .IfDateRangeNotChronological(query.From, query.To))

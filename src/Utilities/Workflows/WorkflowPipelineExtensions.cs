@@ -4,8 +4,8 @@ namespace Utilities.Workflows;
 
 public static class WorkflowPipelineExtensions
 {
-    // --- Validate ---
-    public static WorkflowPipeline Validate(this WorkflowPipeline pipeline, Func<WorkflowPipeline, WorkflowPipeline> validationBlock)
+    // --- Congregate ---
+    public static WorkflowPipeline Congregate(this WorkflowPipeline pipeline, Func<WorkflowPipeline, WorkflowPipeline> validationBlock)
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -19,7 +19,7 @@ public static class WorkflowPipelineExtensions
         return pipeline;
     }
 
-    public static async Task<WorkflowPipeline> Validate(this Task<WorkflowPipeline> pipelineTask, Func<Task<WorkflowPipeline>, Task<WorkflowPipeline>> validationBlock)
+    public static async Task<WorkflowPipeline> Congregate(this Task<WorkflowPipeline> pipelineTask, Func<Task<WorkflowPipeline>, Task<WorkflowPipeline>> validationBlock)
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 

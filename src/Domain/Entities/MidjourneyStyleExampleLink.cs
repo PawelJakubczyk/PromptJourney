@@ -47,7 +47,7 @@ public class MidjourneyStyleExampleLink : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Validate(pipeline => pipeline
+            .Congregate(pipeline => pipeline
                 .CollectErrors(linkResult)
                 .CollectErrors(styleNameResult)
                 .CollectErrors(versionResult))

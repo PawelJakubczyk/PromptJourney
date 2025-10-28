@@ -19,7 +19,7 @@ public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, strin
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
-            .Validate(pipeline => pipeline
+            .Congregate(pipeline => pipeline
                 .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
                 .IfVersionFormatInvalid<DomainLayer>(value))
             .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value))

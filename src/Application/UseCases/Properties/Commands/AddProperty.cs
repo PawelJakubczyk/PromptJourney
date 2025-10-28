@@ -26,8 +26,7 @@ public static class AddProperty
     public sealed class Handler
     (
         IVersionRepository versionRepository,
-        IPropertiesRepository propertiesRepository,
-        HybridCache cache
+        IPropertiesRepository propertiesRepository
     ) : ICommandHandler<Command, PropertyCommandResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
@@ -57,7 +56,7 @@ public static class AddProperty
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                .Validate(pipeline => pipeline
+                .Congregate(pipeline => pipeline
                     .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
                     .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository

@@ -19,7 +19,7 @@ public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, ExampleLink>(value)
-            .Validate(pipeline => pipeline
+            .Congregate(pipeline => pipeline
                 .IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength)
                 .IfLinkFormatInvalid<DomainLayer>(value))
             .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value))

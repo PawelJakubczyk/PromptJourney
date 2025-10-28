@@ -26,7 +26,7 @@ public static class CheckPropertyExists
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Validate(pipeline => pipeline
+                .Congregate(pipeline => pipeline
                     .CollectErrors(version)
                     .CollectErrors(propertyName))
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)

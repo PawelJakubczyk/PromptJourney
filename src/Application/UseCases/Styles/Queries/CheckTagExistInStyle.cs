@@ -21,7 +21,7 @@ public class CheckTagExistInStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Validate(pipeline => pipeline
+                .Congregate(pipeline => pipeline
                     .CollectErrors(styleName)
                     .CollectErrors(tag))
                 .ExecuteIfNoErrors(() => _styleRepository
