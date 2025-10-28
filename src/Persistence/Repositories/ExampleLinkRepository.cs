@@ -9,11 +9,11 @@ using Persistence.Context;
 
 namespace Persistence.Repositories;
 
-public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContext, VersionsRepository versionsRepository, StylesRepository styleRepository) : IExampleLinksRepository
+public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContext, IVersionRepository versionsRepository, IStyleRepository styleRepository) : IExampleLinksRepository
 {
     private readonly MidjourneyDbContext _midjourneyDbContext = midjourneyDbContext;
-    private readonly VersionsRepository _versionsRepository = versionsRepository;
-    private readonly StylesRepository _stylesRepository = styleRepository;
+    private readonly IVersionRepository _versionsRepository = versionsRepository;
+    private readonly IStyleRepository _stylesRepository = styleRepository;
 
     // For Commands
     public async Task<Result<MidjourneyStyleExampleLink>> AddExampleLinkAsync

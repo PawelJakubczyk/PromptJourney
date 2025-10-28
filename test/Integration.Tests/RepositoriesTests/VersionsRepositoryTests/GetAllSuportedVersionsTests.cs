@@ -22,9 +22,9 @@ public sealed class GetAllSuportedVersionsTests : RepositoryTestsBase
         // Assert
         AssertSuccessResult(result);
         result.Value.Should().HaveCount(3);
-        result.Value.Should().Contain(v => v == DefaultTestVersion1);
-        result.Value.Should().Contain(v => v == DefaultTestVersion2);
-        result.Value.Should().Contain(v => v == DefaultTestVersion3);
+        result.Value.Should().Contain(version => version == DefaultTestVersion1);
+        result.Value.Should().Contain(version => version == DefaultTestVersion2);
+        result.Value.Should().Contain(version => version == DefaultTestVersion3);
     }
 
     [Fact]
