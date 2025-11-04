@@ -159,14 +159,12 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
     protected async Task<MidjourneyPromptHistory> CreateAndSaveTestPromptHistoryAsync(
         string promptText,
         MidjourneyVersion version,
-        List<MidjourneyStyle> styles,
-        DateTime? createdOn = null)
+        List<MidjourneyStyle> styles)
     {
         var prompt = Prompt.Create(promptText).Value;
         var promptHistory = MidjourneyPromptHistory.Create(
             Result.Ok(prompt),
-            Result.Ok(version.Version),
-            createdOn).Value;
+            Result.Ok(version.Version)).Value;
 
         // Add styles if provided
         foreach (var style in styles)
@@ -179,7 +177,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         return result.Value;
     }
 
-    protected static async Task<MidjourneyPromptHistory> CreateTestPromptHistoryAsync(
+    protected static Task<MidjourneyPromptHistory> CreateTestPromptHistoryAsync(
         string promptText,
         MidjourneyVersion version,
         List<MidjourneyStyle> styles)
@@ -187,8 +185,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         var prompt = Prompt.Create(promptText).Value;
         var promptHistory = MidjourneyPromptHistory.Create(
             Result.Ok(prompt),
-            Result.Ok(version.Version),
-            DateTime.UtcNow).Value;
+            Result.Ok(version.Version)).Value;
 
         // Add styles if provided
         foreach (var style in styles)
@@ -196,7 +193,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
             promptHistory.AddStyle(style);
         }
 
-        return promptHistory;
+        return Task.FromResult(promptHistory);
     }
 
     // Properties Helper Methods - POPRAWKA BŁĘDU KONWERSJI

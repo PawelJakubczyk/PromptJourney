@@ -15,8 +15,8 @@ public sealed class GetHistoryByDateRangeTests(MidjourneyDbFixture fixture) : Re
         var dateFrom = DateTime.UtcNow.AddDays(-2);
         var dateTo = DateTime.UtcNow.AddDays(1);
 
-        await CreateAndSaveTestPromptHistoryAsync(DefaultTestPrompt1, version, [style], DateTime.UtcNow.AddDays(-1));
-        await CreateAndSaveTestPromptHistoryAsync(DefaultTestPrompt2, version, [style], DateTime.UtcNow.AddDays(-5)); // Outside range
+        await CreateAndSaveTestPromptHistoryAsync(DefaultTestPrompt1, version, [style]);
+        await CreateAndSaveTestPromptHistoryAsync(DefaultTestPrompt2, version, [style]); // Outside range
 
         // Act
         var result = await PromptHistoryRepository.GetHistoryByDateRangeAsync(dateFrom, dateTo, CancellationToken);

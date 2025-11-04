@@ -6,10 +6,10 @@ public class DeletePromptFromHistoryTests(MidjourneyDbFixture fixture) : Reposit
 {
 
     // Test Constants
-    private const string TestVersion1 = "1.0";
+    private const string _testVersion1 = "1.0";
 
-    private const string TestStyleName1 = "TestStyle1";
-    private const string TestPrompt1 = "A beautiful landscape";
+    private const string _testStyleName1 = "TestStyle1";
+    private const string _testPrompt1 = "A beautiful landscape";
 
     // DeletePromptFromHistoryAsync Tests (jeśli metoda istnieje)
     // Te testy będą dostępne tylko jeśli PromptHistoryRepository ma metodę DeletePromptFromHistoryAsync
@@ -24,10 +24,10 @@ public class DeletePromptFromHistoryTests(MidjourneyDbFixture fixture) : Reposit
 
         // Arrange
         var (version, style) = await CreateBasicTestDataAsync();
-        var promptHistory = await CreateAndSaveTestPromptHistoryAsync(TestPrompt1, version, [style]);
+        var promptHistory = await CreateAndSaveTestPromptHistoryAsync(_testPrompt1, version, [style]);
 
         // Act & Assert - Currently just verify that we can create test data
         promptHistory.Should().NotBeNull();
-        promptHistory.Prompt.Value.Should().Be(TestPrompt1);
+        promptHistory.Prompt.Value.Should().Be(_testPrompt1);
     }
 }

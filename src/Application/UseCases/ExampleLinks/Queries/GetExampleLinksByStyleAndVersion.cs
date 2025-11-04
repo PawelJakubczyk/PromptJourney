@@ -35,8 +35,8 @@ public static class GetExampleLinksByStyleAndVersion
                     .CollectErrors(styleName)
                     .CollectErrors(version))
                 .Congregate(pipeline => pipeline
-                    .IfStyleNotExists(styleName?.Value!, _styleRepository, cancellationToken)
-                    .IfVersionNotExists(version?.Value!, _versionRepository, cancellationToken))
+                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                    .IfVersionNotExists(version.Value, _versionRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
                 .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>

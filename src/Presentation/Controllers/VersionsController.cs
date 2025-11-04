@@ -21,9 +21,9 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
         var versions = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return versions;
     }
@@ -36,9 +36,9 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
         var versions = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return versions;
     }
@@ -51,31 +51,31 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
         var versionInfo = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return versionInfo;
     }
 
     // GET api/versions/{version}/exists
     [HttpGet("{version}/exists")]
-    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckExists(string version, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckExists(string version, CancellationToken cancellationToken)
     {
         var query = new CheckVersionExists.Query(version);
 
         var exist = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
+            .ToResultsCheckExistOkAsync();
 
         return exist;
     }
 
     // POST api/versions
     [HttpPost]
-    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Created<string>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
     {
         var command = new AddVersion.Command
         (
@@ -87,15 +87,16 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => {
-                if (!string.IsNullOrEmpty(payload)) {
-                    return CreatedAtAction(nameof(GetByVersion), new { version = payload }, new { version = payload });
-                }
-
-                return NoContent();
-            }))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareCreateResponse(payload => 
+                CreatedAtAction
+                (
+                    nameof(GetByVersion), 
+                    new { version = payload }, 
+                    new { version = payload }
+                )
+            )
+            .ToResultsCreatedAsync();
 
         return result;
     }

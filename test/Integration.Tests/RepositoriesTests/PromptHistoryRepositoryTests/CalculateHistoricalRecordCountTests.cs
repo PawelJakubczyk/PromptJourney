@@ -15,7 +15,6 @@ public class CalculateHistoricalRecordCountTests(MidjourneyDbFixture fixture) : 
         await CreateAndSaveTestPromptHistoryAsync(DefaultTestPrompt1, version, [style]);
         await CreateAndSaveTestPromptHistoryAsync(DefaultTestPrompt2, version, [style]);
         await CreateAndSaveTestPromptHistoryAsync(DefaultTestPrompt3, version, [style]);
-
         // Act
         var result = await PromptHistoryRepository.CalculateHistoricalRecordCountAsync(CancellationToken);
 

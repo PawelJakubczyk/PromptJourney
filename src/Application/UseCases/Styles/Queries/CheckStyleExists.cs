@@ -6,7 +6,7 @@ using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Queries;
 
-public static class CheckStyleExist
+public static class CheckStyleExists
 {
     public sealed record Query(string StyleName) : IQuery<bool>;
 

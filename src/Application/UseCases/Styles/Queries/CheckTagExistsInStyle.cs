@@ -6,7 +6,7 @@ using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Queries;
 
-public class CheckTagExistInStyle
+public class CheckTagExistsInStyle
 {
     public sealed record Query(string StyleName, string Tag) : IQuery<bool>;
 

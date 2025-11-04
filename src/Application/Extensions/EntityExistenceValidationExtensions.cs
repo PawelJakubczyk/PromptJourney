@@ -202,7 +202,7 @@ public static class EntityExistenceValidationExtensions
             pipelineTask,
             item,
             existsFunc,
-            nameof(TType),
+            typeof(TType).Name,
             shouldExist: false,
             cancellationToken
         )
@@ -222,7 +222,7 @@ public static class EntityExistenceValidationExtensions
             pipelineTask,
             item,
             existsFunc,
-            nameof(TType),
+            typeof(TType).Name,
             shouldExist: true,
             cancellationToken
         )

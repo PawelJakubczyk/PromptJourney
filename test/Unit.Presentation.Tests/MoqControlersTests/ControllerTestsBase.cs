@@ -1,15 +1,54 @@
 using FluentAssertions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 using Utilities.Constants;
 using Utilities.Extensions;
+
+// Explicitly alias the conflicting JsonOptions types
+using HttpJsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
 
 namespace Unit.Presentation.Tests.MoqControlersTests;
 
 public abstract class ControllerTestsBase
 {
     // Test Helper Methods (support both IActionResult and Results<> typed variants)
+
+    private static (int Status, string Body) ExecuteResult(IResult result)
+    {
+        // Provide minimal services required by typed results during execution
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddOptions();
+        services.AddRouting();
+        services.Configure<HttpJsonOptions>(_ => { });
+        // Optional, but safe for ProblemDetails scenarios
+        services.AddProblemDetails();
+
+        var provider = services.BuildServiceProvider();
+
+        var ctx = new DefaultHttpContext
+        {
+            RequestServices = provider
+        };
+
+        using var ms = new MemoryStream();
+        ctx.Response.Body = ms;
+
+        result.ExecuteAsync(ctx).GetAwaiter().GetResult();
+
+        ms.Position = 0;
+        var body = new StreamReader(ms).ReadToEnd();
+        return (ctx.Response.StatusCode, body);
+    }
+
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     protected static void AssertOkResult<T>(object actionResult, int expectedCount = -1)
     {
@@ -34,8 +73,7 @@ public abstract class ControllerTestsBase
         // Minimal API typed Ok<T>
         if (actionResult is Ok<T> typedOk)
         {
-            // value can be null (allowed)
-            var value = typedOk.Value;
+            var value = typedOk.Value; // allowed to be null
             value?.Should().BeOfType<T>();
             if (expectedCount >= 0)
             {
@@ -46,7 +84,22 @@ public abstract class ControllerTestsBase
                 else
                     throw new AssertionException("Expected a collection to assert count against.");
             }
+            return;
+        }
 
+        // Minimal API union Results<...>
+        if (actionResult is IResult unionResult)
+        {
+            var (status, body) = ExecuteResult(unionResult);
+            status.Should().Be(StatusCodes.Status200OK);
+
+            if (expectedCount >= 0)
+            {
+                // Try to deserialize as collection of T
+                var list = JsonSerializer.Deserialize<IEnumerable<T>>(body, _jsonOptions);
+                list.Should().NotBeNull();
+                list!.Count().Should().Be(expectedCount);
+            }
             return;
         }
 
@@ -81,10 +134,19 @@ public abstract class ControllerTestsBase
             return;
         }
 
-        // Typed Created<T> (Minimal API) - no ActionName available, just validate payload
+        // Typed Created<T> (Minimal API)
         if (actionResult is Created<T> typedCreated)
         {
             typedCreated.Value?.Should().BeOfType<T>();
+            return;
+        }
+
+        // Minimal API union Results<...>
+        if (actionResult is IResult unionResult)
+        {
+            var (status, _) = ExecuteResult(unionResult);
+            status.Should().Be(StatusCodes.Status201Created);
+            // Note: ActionName is not available from Minimal API union, so we only validate status.
             return;
         }
 
@@ -104,6 +166,15 @@ public abstract class ControllerTestsBase
         // Minimal API NoContent
         if (actionResult is NoContent)
         {
+            return;
+        }
+
+        // Minimal API union Results<...>
+        if (actionResult is IResult unionResult)
+        {
+            var (status, body) = ExecuteResult(unionResult);
+            status.Should().Be(StatusCodes.Status204NoContent);
+            body.Should().BeNullOrEmpty();
             return;
         }
 
@@ -137,6 +208,14 @@ public abstract class ControllerTestsBase
         {
             br.Value.Should().NotBeNull();
             br.Value!.Status.Should().Be(expectedStatusCode);
+            return;
+        }
+
+        // Minimal API union Results<...>
+        if (actionResult is IResult unionResult)
+        {
+            var (status, _) = ExecuteResult(unionResult);
+            status.Should().Be(expectedStatusCode);
             return;
         }
 
@@ -177,6 +256,18 @@ public abstract class ControllerTestsBase
                 (br.Value!.Detail ?? br.Value.Title ?? string.Empty).Should().Contain(expectedMessage);
             }
 
+            return;
+        }
+
+        // Minimal API union Results<...>
+        if (actionResult is IResult unionResult)
+        {
+            var (status, body) = ExecuteResult(unionResult);
+            status.Should().Be(StatusCodes.Status400BadRequest);
+            if (!string.IsNullOrEmpty(expectedMessage))
+            {
+                body.Should().Contain(expectedMessage);
+            }
             return;
         }
 

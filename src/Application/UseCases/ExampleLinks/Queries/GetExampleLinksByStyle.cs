@@ -29,7 +29,7 @@ public static class GetExampleLinksByStyle
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .IfStyleNotExists(styleName?.Value!, _styleRepository, cancellationToken)
+                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
                 .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>

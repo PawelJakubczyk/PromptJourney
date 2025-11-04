@@ -20,9 +20,9 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     {
         var styles = await Sender
             .Send(GetAllExampleLinks.Query.Singletone, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return styles;
     }
@@ -35,9 +35,9 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
         var styles = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return styles;
     }
@@ -50,59 +50,59 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
         var styles = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return styles;
     }
 
     // GET api/examplelinks/{link}/exists
     [HttpGet("{link}/exists")]
-    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinkExists(string link, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckLinkExists(string link, CancellationToken cancellationToken)
     {
         var query = new CheckExampleLinkExistsById.Query(link);
 
         var exist = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
+            .ToResultsCheckExistOkAsync();
 
         return exist;
     }
 
     // GET api/examplelinks/style/{styleName}/exists
     [HttpGet("style/{styleName}/exists")]
-    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinkWithStyleExists(string styleName, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckLinkWithStyleExists(string styleName, CancellationToken cancellationToken)
     {
         var query = new CheckExampleLinkExistsByStyle.Query(styleName);
 
         var exist = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
+            .ToResultsCheckExistOkAsync();
 
         return exist;
     }
 
     // GET api/examplelinks/noempty
     [HttpGet("no-empty")]
-    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckLinksEmpty(CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckLinksEmpty(CancellationToken cancellationToken)
     {
         var exist = await Sender
             .Send(CheckAnyExampleLinksExist.Query.Singletone, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { isEmpty = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
+            .ToResultsCheckExistOkAsync();
 
         return exist;
     }
 
     // POST api/examplelinks
     [HttpPost]
-    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Created<string>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
     {
         var command = new AddExampleLink.Command
         (
@@ -113,17 +113,10 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
-            {
-                if (!string.IsNullOrEmpty(payload))
-                {
-                    return CreatedAtAction(nameof(CheckLinkExists), new { link = payload }, new { linkId = payload });
-                }
-
-                return NoContent();
-            }))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareCreateResponse(payload =>
+                CreatedAtAction(nameof(CheckLinkExists), new { link = payload }, payload))
+            .ToResultsCreatedAsync();
 
         return result;
     }
@@ -136,9 +129,9 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(p => p.PrepareErrorResponse())
-            .Else(p => p.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -151,9 +144,9 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(p => p.PrepareErrorResponse())
-            .Else(p => p.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return result;
     }
