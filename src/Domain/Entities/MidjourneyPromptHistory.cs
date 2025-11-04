@@ -39,8 +39,7 @@ public class MidjourneyPromptHistory : IEntity
     public static Result<MidjourneyPromptHistory> Create
     (
         Result<Prompt> prompt,
-        Result<ModelVersion> version,
-        DateTime? createdOn = null
+        Result<ModelVersion> version
     )
     {
         var result = WorkflowPipeline

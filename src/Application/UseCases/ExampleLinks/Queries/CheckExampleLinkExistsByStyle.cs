@@ -24,7 +24,7 @@ public static class CheckExampleLinkExistsByStyle
                 .CollectErrors(styleName)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .CheckExampleLinkExistsByStyleAsync(styleName.Value, cancellationToken))
-                .MapResult(() => true);
+                .MapResult<bool>();
 
             return result;
         }

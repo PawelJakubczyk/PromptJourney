@@ -28,9 +28,9 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
         var properties = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return properties;
     }
@@ -42,16 +42,16 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     {
         var properties = await Sender
             .Send(GetAllProperties.Query.Singletone, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return properties;
     }
 
-    // GET api/properties/{propertyName}/exists
+    // GET api/properties/{version}/{propertyName}/exists
     [HttpGet("{version}/{propertyName}/exists")]
-    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckPropertyExists
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckPropertyExists
     (
         string version,
         string propertyName,
@@ -62,16 +62,16 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
         var exist = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
+            .ToResultsCheckExistOkAsync();
 
         return exist;
     }
 
     // POST api/properties/
     [HttpPost]
-    public async Task<Results<Ok<PropertyCommandResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
+    public async Task<Results<Created<PropertyCommandResponse>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
     (
         [FromBody] PropertyRequest request,
         CancellationToken cancellationToken
@@ -90,21 +90,16 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
-            {
-                if (payload is not null)
-                {
-                    return CreatedAtAction(
-                        nameof(CheckPropertyExists),
-                        new { version = payload.Version, propertyName = payload.PropertyName },
-                        payload
-                    );
-                }
-
-                return NoContent();
-            }))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareCreateResponse(payload =>
+                CreatedAtAction
+                (
+                    nameof(CheckPropertyExists),
+                    new { version = payload.Version, propertyName = payload.PropertyName },
+                    payload
+                )
+            )
+            .ToResultsCreatedAsync();
 
         return result;
     }
@@ -130,9 +125,9 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -155,9 +150,9 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -168,9 +163,9 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     {
         var result = await Sender
             .Send(new DeleteProperty.Command(version, propertyName), cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -179,8 +174,8 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 // Request DTOs
 public sealed record PropertyRequest
 (
-    string PropertyName,
     string Version,
+    string PropertyName,
     List<string> Parameters,
     string? DefaultValue = null,
     string? MinValue = null,
@@ -190,8 +185,8 @@ public sealed record PropertyRequest
 
 public sealed record PatchPropertyRequest
 (
-    string PropertyName,
     string Version,
+    string PropertyName,
     string CharacteristicToUpdate,
     string? NewValue
 );

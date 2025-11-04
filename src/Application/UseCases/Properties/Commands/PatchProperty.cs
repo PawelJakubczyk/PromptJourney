@@ -5,7 +5,6 @@ using Application.UseCases.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Commands;

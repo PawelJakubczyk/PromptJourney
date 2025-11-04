@@ -24,9 +24,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var styles = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return styles;
     }
@@ -43,9 +43,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var style = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return style;
     }
@@ -62,9 +62,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var styles = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return styles;
     }
@@ -81,9 +81,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var styles = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return styles;
     }
@@ -100,48 +100,48 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var styles = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return styles;
     }
 
     // GET api/styles/{name}/exists
     [HttpGet("{name}/exists")]
-    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckExists
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckExists
     (
         string name, 
         CancellationToken cancellationToken
     ) 
     {
-        var query = new CheckStyleExist.Query(name);
+        var query = new CheckStyleExists.Query(name);
 
         var exist = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
+            .ToResultsCheckExistOkAsync();
 
         return exist;
     }
 
     // GET api/styles/{styleName}/tags/{tag}/exists
     [HttpGet("{styleName}/tags/{tag}/exists")]
-    public async Task<Results<Ok<bool>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> CheckTagExists
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckTagExists
     (
         string styleName, 
         string tag, 
         CancellationToken cancellationToken
     ) 
     {
-        var query = new CheckTagExistInStyle.Query(styleName, tag);
+        var query = new CheckTagExistsInStyle.Query(styleName, tag);
 
         var exist = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { exists = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
+            .ToResultsCheckExistOkAsync();
 
         return exist;
     }
@@ -150,7 +150,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // POST api/styles
     [HttpPost]
-    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Create
+    public async Task<Results<Created<string>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create
     (
         [FromBody] CreateStyleRequest request,
         CancellationToken cancellationToken
@@ -166,17 +166,16 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload =>
-            {
-                if (!string.IsNullOrEmpty(payload))
-                {
-                    return CreatedAtAction(nameof(GetByName), new { name = payload }, new { styleName = payload });
-                }
-
-                return NoContent();
-            }))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareCreateResponse(payload =>
+                CreatedAtAction
+                (
+                    nameof(GetByName), 
+                    new { name = payload }, 
+                    new { styleName = payload }
+                )
+            )
+            .ToResultsCreatedAsync();
 
         return result;
     }
@@ -199,9 +198,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { styleName = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { styleName = payload }))
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -218,9 +217,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -238,9 +237,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { tag = payload, message = $"Tag '{payload}' added successfully" }))
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -258,9 +257,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return result;
     }
@@ -278,9 +277,9 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { description = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { description = payload }))
+            .ToResultsOkAsync();
 
         return result;
     }

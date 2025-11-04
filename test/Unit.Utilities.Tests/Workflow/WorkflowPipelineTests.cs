@@ -114,7 +114,7 @@ public class WorkflowPipelineTests
     public void Create_ShouldRespectBreakOnErrorParameter(bool breakOnError)
     {
         // Act
-        var pipeline = WorkflowPipeline.Create(new List<Error>(), breakOnError);
+        var pipeline = WorkflowPipeline.Create([], breakOnError);
 
         // Assert
         pipeline._breakOnError.Should().Be(breakOnError);

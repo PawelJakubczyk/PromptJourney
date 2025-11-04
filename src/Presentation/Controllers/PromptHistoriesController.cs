@@ -21,9 +21,9 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
     {
         var histories = await Sender
             .Send(GetAllHistoryRecords.Query.Singletone, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return histories;
     }
@@ -40,9 +40,9 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
         var histories = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return histories;
     }
@@ -60,9 +60,9 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
         var histories = await Sender
             .Send(query, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return histories;
     }
@@ -78,10 +78,10 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
         var query = new GetHistoryRecordsByPromptKeyword.Query(keyword);
 
         var histories = await Sender
-            .Send(new GetHistoryRecordsByPromptKeyword.Query(keyword), cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse())
-            .ToResultsAsync();
+            .Send(query, cancellationToken)
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync();
 
         return histories;
     }
@@ -90,18 +90,18 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
     [HttpGet("count")]
     public async Task<Results<Ok<int>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetRecordCount(CancellationToken cancellationToken)
     {
-        var hsitories =  await Sender
+        var histories =  await Sender
             .Send(CalculateHistoricalRecordCount.Query.Singletone, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => Ok(new { count = payload })))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(new { count = payload }))
+            .ToResultsOkAsync();
 
-        return hsitories;
+        return histories;
     }
 
     // POST api/prompthistory
     [HttpPost]
-    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddPrompt
+    public async Task<Results<Created<string>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> AddPrompt
     (
         [FromBody] AddPromptRequest request, 
         CancellationToken cancellationToken
@@ -115,16 +115,11 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
         var result = await Sender
             .Send(command, cancellationToken)
-            .IfErrors(pipeline => pipeline.PrepareErrorResponse())
-            .Else(pipeline => pipeline.PrepareOKResponse(payload => {
-                if (!string.IsNullOrEmpty(payload))
-                {
-                    return CreatedAtAction(nameof(GetRecordCount), null, new { historyId = payload });
-                }
-
-                return NoContent();
-            }))
-            .ToResultsAsync();
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareCreateResponse(payload => 
+                CreatedAtAction(nameof(AddPrompt), null, new { historyId = payload })
+            )
+            .ToResultsCreatedAsync();
 
         return result;
     }

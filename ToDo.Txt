@@ -6,3 +6,5 @@ add more tests
 repair current tests
 add authentication
 add authorization
+
+add signatures for controlers 500 errors

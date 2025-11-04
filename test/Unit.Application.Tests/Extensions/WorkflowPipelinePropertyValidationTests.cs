@@ -23,7 +23,7 @@ public class WorkflowPipelinePropertyValidationTests
 
         var result = await pipelineTask.IfPropertyAlreadyExists(property, version, repo.Object, _cancellationToken);
 
-        Assert.Contains(result.Errors, e => e.Message.Contains("Property 'Height' already exists"));
+        Assert.Contains(result.Errors, e => e.Message.Contains("PropertyName 'Height' already exists"));
     }
 
     [Fact]
@@ -38,6 +38,6 @@ public class WorkflowPipelinePropertyValidationTests
 
         var result = await pipelineTask.IfPropertyNotExists(property, version, repo.Object, _cancellationToken);
 
-        Assert.Contains(result.Errors, e => e.Message.Contains("Property 'Width' not found"));
+        Assert.Contains(result.Errors, e => e.Message.Contains("PropertyName 'Width' not found"));
     }
 }

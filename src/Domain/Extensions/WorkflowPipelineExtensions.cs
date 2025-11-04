@@ -8,9 +8,11 @@ namespace Domain.Extensions;
 
 public static class WorkflowPipelineExtensions
 {
-    public static WorkflowPipeline IfNullOrWhitespace<TLayer, TValue>(
+    public static WorkflowPipeline IfNullOrWhitespace<TLayer, TValue>
+    (
         this WorkflowPipeline pipeline,
-        string? value)
+        string? value
+    )   
         where TLayer : ILayer
         where TValue : ValueObject<string?>
     {

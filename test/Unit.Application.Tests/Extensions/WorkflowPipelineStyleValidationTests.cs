@@ -22,7 +22,7 @@ public class WorkflowPipelineStyleValidationTests
 
         var result = await pipelineTask.IfStyleAlreadyExists(style, repo.Object, _cancellationToken);
 
-        Assert.Contains(result.Errors, e => e.Message.Contains("Style 'ExistingStyle' already exists"));
+        Assert.Contains(result.Errors, e => e.Message.Contains("StyleName 'ExistingStyle' already exists"));
     }
 
     [Fact]
@@ -36,6 +36,6 @@ public class WorkflowPipelineStyleValidationTests
 
         var result = await pipelineTask.IfStyleNotExists(style, repo.Object, _cancellationToken);
 
-        Assert.Contains(result.Errors, e => e.Message.Contains("Style 'MissingStyle' not found"));
+        Assert.Contains(result.Errors, e => e.Message.Contains("StyleName 'MissingStyle' not found"));
     }
 }
