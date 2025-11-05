@@ -85,12 +85,12 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     }
 
     [Fact]
-    public async Task GetByStyle_ReturnsConflict_WhenStyleDoesNotExist()
+    public async Task GetByStyle_ReturnsNotFound_WhenStyleDoesNotExist()
     {
         // Arrange
         var nonExistentStyleName = "NonExistentStyle";
         var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
+            StatusCodes.Status404NotFound,
             $"Style '{nonExistentStyleName}' not found");
 
         var senderMock = new Mock<ISender>();
@@ -104,7 +104,7 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyle(nonExistentStyleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
     }
 
     [Fact]

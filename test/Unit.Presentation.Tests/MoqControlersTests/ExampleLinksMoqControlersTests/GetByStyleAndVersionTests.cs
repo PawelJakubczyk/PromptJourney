@@ -136,13 +136,13 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     }
 
     [Fact]
-    public async Task GetByStyleAndVersion_ReturnsConflict_WhenStyleDoesNotExist()
+    public async Task GetByStyleAndVersion_ReturnsNotFound_WhenStyleDoesNotExist()
     {
         // Arrange
         var nonExistentStyleName = "NonExistentStyle";
         var version = "1.0";
         var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
+            StatusCodes.Status404NotFound,
             $"Style '{nonExistentStyleName}' not found");
 
         var senderMock = new Mock<ISender>();
@@ -156,17 +156,17 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(nonExistentStyleName, version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
     }
 
     [Fact]
-    public async Task GetByStyleAndVersion_ReturnsConflict_WhenVersionDoesNotExist()
+    public async Task GetByStyleAndVersion_ReturnsNotFound_WhenVersionDoesNotExist()
     {
         // Arrange
         var styleName = "ModernArt";
         var nonExistentVersion = "99.0";
         var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
+            StatusCodes.Status404NotFound,
             $"Version '{nonExistentVersion}' not found");
 
         var senderMock = new Mock<ISender>();
@@ -180,17 +180,17 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, nonExistentVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
     }
 
     [Fact]
-    public async Task GetByStyleAndVersion_ReturnsConflict_WhenBothStyleAndVersionDoNotExist()
+    public async Task GetByStyleAndVersion_ReturnsNotFound_WhenBothStyleAndVersionDoNotExist()
     {
         // Arrange
         var nonExistentStyleName = "NonExistentStyle";
         var nonExistentVersion = "99.0";
         var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
+            StatusCodes.Status404NotFound,
             "Style and version not found");
 
         var senderMock = new Mock<ISender>();
@@ -204,7 +204,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(nonExistentStyleName, nonExistentVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
     }
 
     [Fact]

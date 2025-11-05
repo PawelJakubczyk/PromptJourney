@@ -37,14 +37,14 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // GET api/properties//
     [HttpGet]
-    public async Task<Results<Ok<List<PropertyQueryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll
+    public async Task<Results<Ok<List<PropertyQueryResponse>>, BadRequest<ProblemDetails>>> GetAll
         (CancellationToken cancellationToken)
     {
         var properties = await Sender
             .Send(GetAllProperties.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return properties;
     }
@@ -64,7 +64,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }

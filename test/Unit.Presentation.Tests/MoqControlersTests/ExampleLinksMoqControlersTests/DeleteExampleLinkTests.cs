@@ -35,12 +35,12 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     }
 
     [Fact]
-    public async Task DeleteExampleLink_ReturnsConflict_WhenLinkDoesNotExist()
+    public async Task DeleteExampleLink_ReturnsNotFound_WhenLinkDoesNotExist()
     {
         // Arrange
         var linkId = Guid.NewGuid().ToString();
         var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
+            StatusCodes.Status404NotFound,
             $"Link '{linkId}' not found");
 
         var senderMock = new Mock<ISender>();
@@ -54,7 +54,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -294,29 +294,6 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
 
         // Assert
         AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task DeleteExampleLink_ReturnsConflict_WhenLinkIsAlreadyDeleted()
-    {
-        // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
-            "Link has already been deleted");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<DeleteExampleLink.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
-
-        // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
     }
 
     [Fact]

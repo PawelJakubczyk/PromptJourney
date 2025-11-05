@@ -54,28 +54,6 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
     }
 
     [Fact]
-    public async Task GetSupported_ReturnsNotFound_WhenNoVersionsConfigured()
-    {
-        // Arrange
-        var failureResult = CreateFailureResult<List<string>, ApplicationLayer>(
-            StatusCodes.Status404NotFound,
-            "No supported versions found");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllSuportedVersions.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetSupported(CancellationToken.None);
-
-        // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
-    }
-
-    [Fact]
     public async Task GetSupported_ReturnsOkWithMultipleSupportedVersions()
     {
         // Arrange

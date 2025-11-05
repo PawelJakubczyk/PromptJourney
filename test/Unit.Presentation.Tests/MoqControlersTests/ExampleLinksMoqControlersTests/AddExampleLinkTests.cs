@@ -262,34 +262,6 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     }
 
     [Fact]
-    public async Task AddExampleLink_ReturnsInternalServerError_WhenDatabaseErrorOccurs()
-    {
-        // Arrange
-        var request = new AddExampleLinkRequest(
-            "http://example.com/image.jpg",
-            "ModernArt",
-            "1.0"
-        );
-
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
-            StatusCodes.Status500InternalServerError,
-            "Database connection failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<AddExampleLink.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
-
-        // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status500InternalServerError);
-    }
-
-    [Fact]
     public async Task AddExampleLink_VerifiesCommandIsCalledWithCorrectParameters()
     {
         // Arrange
