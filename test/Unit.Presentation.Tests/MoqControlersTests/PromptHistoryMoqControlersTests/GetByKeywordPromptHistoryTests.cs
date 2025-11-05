@@ -35,8 +35,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -57,8 +56,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 0);
+        actionResult.Should().BeOkResult().WithCount(0);
     }
 
     [Fact]
@@ -81,7 +79,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(emptyKeyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -104,7 +102,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(whitespaceKeyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -127,7 +125,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(nullKeyword!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -150,7 +148,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(tooLongKeyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -174,7 +172,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -201,8 +199,8 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(keyword, capturedQuery!.Keyword);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.Keyword.Should().Be(keyword);
     }
 
     [Fact]
@@ -221,8 +219,8 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByKeyword(keyword, cts.Token));
+        await FluentActions.Awaiting(() => controller.GetByKeyword(keyword, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -273,8 +271,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -299,10 +296,8 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult2 = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult1, 1);
-        AssertOkResult<PromptHistoryResponse>(actionResult2, 1);
+        actionResult1.Should().BeOkResult().WithCount(1);
+        actionResult2.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -326,8 +321,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(lowercaseKeyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -352,8 +346,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -377,8 +370,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -402,8 +394,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -431,8 +422,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 10);
+        actionResult.Should().BeOkResult().WithCount(10);
     }
 
     [Fact]
@@ -459,8 +449,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 3);
+        actionResult.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -483,7 +472,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -506,7 +495,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(keyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -530,8 +519,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
         var actionResult = await controller.GetByKeyword(unicodeKeyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]

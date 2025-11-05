@@ -16,13 +16,13 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 {
     // GET api/examplelinks
     [HttpGet]
-    public async Task<Results<Ok<List<ExampleLinkResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<ExampleLinkResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
         var styles = await Sender
             .Send(GetAllExampleLinks.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return styles;
     }
@@ -67,7 +67,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }
@@ -82,12 +82,12 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }
 
-    // GET api/examplelinks/noempty
+    // GET api/examplelinks/no-empty
     [HttpGet("no-empty")]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckLinksEmpty(CancellationToken cancellationToken)
     {
@@ -95,7 +95,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(CheckAnyExampleLinksExist.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }

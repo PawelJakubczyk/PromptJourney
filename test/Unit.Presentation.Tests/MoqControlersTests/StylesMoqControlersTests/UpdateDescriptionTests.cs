@@ -1,10 +1,8 @@
 ﻿using Application.UseCases.Styles.Commands;
-using Application.UseCases.Styles.Responses;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
@@ -32,8 +30,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -57,7 +54,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -81,7 +78,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(invalidStyleName, request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -105,7 +102,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(nullStyleName!, request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -129,7 +126,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(whitespaceStyleName, request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -153,7 +150,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(tooLongStyleName, request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -174,8 +171,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -196,8 +192,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -219,8 +214,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -242,8 +236,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -271,9 +264,9 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(styleName, capturedCommand!.StyleName);
-        Assert.Equal(description, capturedCommand.NewDescription);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.StyleName.Should().Be(styleName);
+        capturedCommand.NewDescription.Should().Be(description);
     }
 
     [Fact]
@@ -293,8 +286,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.UpdateDescription(styleName, request, cts.Token));
+        await FluentActions.Awaiting(() => controller.UpdateDescription(styleName, request, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -342,8 +335,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -365,10 +357,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult2 = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        actionResult1.Should().BeOfType<OkObjectResult>();
-        actionResult2.Should().BeOfType<OkObjectResult>();
+        actionResult1.Should().BeOkResult().WithValueOfType<string>();
+        actionResult2.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -390,8 +380,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -412,8 +401,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -438,7 +426,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -462,7 +450,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -484,8 +472,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -507,8 +494,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -556,8 +542,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
             var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
             // Assert
-            actionResult.Should().NotBeNull();
-            actionResult.Should().BeOfType<OkObjectResult>();
+            actionResult.Should().BeOkResult().WithValueOfType<string>();
         }
     }
 
@@ -579,8 +564,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(longStyleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -602,7 +586,6 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType<OkObjectResult>();
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 }

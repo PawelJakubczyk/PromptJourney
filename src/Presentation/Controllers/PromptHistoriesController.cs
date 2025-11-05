@@ -17,20 +17,20 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
     // GET api/prompthistory
     [HttpGet]
-    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
         var histories = await Sender
             .Send(GetAllHistoryRecords.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return histories;
     }
 
     // GET api/prompthistory/last/{count}
     [HttpGet("last/{count}")]
-    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetLast
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, BadRequest<ProblemDetails>>> GetLast
     (
         int count, 
         CancellationToken cancellationToken
@@ -42,14 +42,14 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return histories;
     }
 
     // GET api/prompthistory/daterange?from=2024-01-01&to=2024-12-31
     [HttpGet("date-range")]
-    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByDateRange
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, BadRequest<ProblemDetails>>> GetByDateRange
     (
         [FromQuery] DateTime from, 
         [FromQuery] DateTime to, 
@@ -62,14 +62,14 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return histories;
     }
 
     // GET api/prompthistory/keyword/{keyword}
     [HttpGet("keyword/{keyword}")]
-    public async Task<Results<Ok<List<PromptHistoryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByKeyword
+    public async Task<Results<Ok<List<PromptHistoryResponse>>, BadRequest<ProblemDetails>>> GetByKeyword
     (
         string keyword, 
         CancellationToken cancellationToken
@@ -81,20 +81,20 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return histories;
     }
 
     // GET api/prompthistory/count
     [HttpGet("count")]
-    public async Task<Results<Ok<int>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetRecordCount(CancellationToken cancellationToken)
+    public async Task<Results<Ok<int>, BadRequest<ProblemDetails>>> GetRecordCount(CancellationToken cancellationToken)
     {
         var histories =  await Sender
             .Send(CalculateHistoricalRecordCount.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { count = payload }))
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return histories;
     }

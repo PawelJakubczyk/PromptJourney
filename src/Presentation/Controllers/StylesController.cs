@@ -18,7 +18,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles
     [HttpGet]
-    public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken) 
+    public async Task<Results<Ok<List<StyleResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken) 
     {
         var query = GetAllStyles.Query.Singletone;
 
@@ -26,7 +26,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return styles;
     }
@@ -90,7 +90,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles/by-description?keyword=forest
     [HttpGet("by-description")]
-    public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByDescription
+    public async Task<Results<Ok<List<StyleResponse>>, BadRequest<ProblemDetails>>> GetByDescription
     (
         [FromQuery] string keyword, 
         CancellationToken cancellationToken
@@ -102,7 +102,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return styles;
     }
@@ -121,7 +121,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }
@@ -141,7 +141,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }
@@ -226,7 +226,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // POST api/styles/{name}/tags/{tag}
     [HttpPost("{name}/tags/{tag}")]
-    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddTag
+    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> AddTag
     (
         string name, 
         string tag, 
@@ -239,7 +239,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { tag = payload, message = $"Tag '{payload}' added successfully" }))
-            .ToResultsOkAsync();
+            .ToResultsOkExtendedAsync();
 
         return result;
     }

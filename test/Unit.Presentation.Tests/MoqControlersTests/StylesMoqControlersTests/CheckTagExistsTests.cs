@@ -29,8 +29,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -51,8 +50,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -76,7 +74,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(emptyStyleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -100,7 +98,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, emptyTag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -124,7 +122,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(emptyStyleName, emptyTag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -148,7 +146,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(whitespaceStyleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -172,7 +170,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, whitespaceTag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -196,7 +194,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(nullStyleName!, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -220,7 +218,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, nullTag!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -244,7 +242,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(tooLongStyleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -268,7 +266,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tooLongTag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -293,7 +291,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsCheckExistOkAsync maps all non-400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -320,9 +318,9 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(styleName, capturedQuery!.StyleName);
-        Assert.Equal(tag, capturedQuery.Tag);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.StyleName.Should().Be(styleName);
+        capturedQuery.Tag.Should().Be(tag);
     }
 
     [Fact]
@@ -342,8 +340,8 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.CheckTagExists(styleName, tag, cts.Token));
+        await FluentActions.Awaiting(() => controller.CheckTagExists(styleName, tag, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -390,8 +388,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -413,10 +410,8 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult2 = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult1);
-        AssertOkResult<bool>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -437,8 +432,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(nonExistentStyle, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -459,8 +453,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -481,8 +474,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -503,8 +495,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -525,8 +516,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -547,8 +537,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -569,8 +558,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -591,8 +579,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -616,7 +603,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -640,7 +627,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Theory]
@@ -663,8 +650,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckTagExists(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]

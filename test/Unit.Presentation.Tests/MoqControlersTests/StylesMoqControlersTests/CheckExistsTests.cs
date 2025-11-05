@@ -28,8 +28,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -49,8 +48,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -73,7 +71,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(emptyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -96,7 +94,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(whitespaceName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -119,7 +117,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(nullName!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -142,7 +140,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(tooLongName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -166,7 +164,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsCheckExistOkAsync maps all non-400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -192,8 +190,8 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(styleName, capturedQuery!.StyleName);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.StyleName.Should().Be(styleName);
     }
 
     [Fact]
@@ -212,8 +210,8 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.CheckExists(styleName, cts.Token));
+        await FluentActions.Awaiting(() => controller.CheckExists(styleName, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -259,8 +257,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -281,10 +278,8 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult2 = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult1);
-        AssertOkResult<bool>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -304,8 +299,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -325,8 +319,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -346,8 +339,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -367,8 +359,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -388,8 +379,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -409,8 +399,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -430,8 +419,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -454,7 +442,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -477,7 +465,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Theory]
@@ -500,8 +488,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
         var actionResult = await controller.CheckExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]

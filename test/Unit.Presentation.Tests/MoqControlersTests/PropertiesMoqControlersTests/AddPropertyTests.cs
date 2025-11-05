@@ -1,119 +1,131 @@
+using Application.UseCases.Properties.Commands;
+using Application.UseCases.Properties.Responses;
+using FluentAssertions;
+using FluentResults;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
+using Utilities.Constants;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
 
 public sealed class AddPropertyTests : PropertiesControllerTestsBase
 {
-    //[Fact]
-    //public async Task AddProperty_ReturnsCreated_WhenPropertyAddedSuccessfully()
-    //{
-    //    // Arrange
-    //    var version = "1.0";
-    //    var request = new AddPropertyRequest(
-    //        "stylize",
-    //        ["--s", "--stylize"],
-    //        "100",
-    //        "0",
-    //        "1000",
-    //        "Stylization parameter"
-    //    );
+    [Fact]
+    public async Task AddProperty_ReturnsCreated_WhenPropertyAddedSuccessfully()
+    {
+        // Arrange
+        var version = "1.0";
+        var request = new PropertyRequest(
+            version,
+            "stylize",
+            ["--s", "--stylize"],
+            "100",
+            "0",
+            "1000",
+            "Stylization parameter"
+        );
 
-    //    var response = new PropertyResponse(version, request.PropertyName, request.Parameters,
-    //        request.DefaultValue, request.MinValue, request.MaxValue, request.Description);
-    //    var result = Result.Ok(response);
-    //    var senderMock = new Mock<ISender>();
-    //    senderMock
-    //        .Setup(s => s.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()))
-    //        .ReturnsAsync(result);
+        var response = new PropertyCommandResponse(request.PropertyName, request.Version);
+        var result = Result.Ok(response);
+        var senderMock = new Mock<ISender>();
+        senderMock
+            .Setup(s => s.Send(It.IsAny<AddProperty.Command>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(result);
 
-    //    var controller = CreateController(senderMock);
+        var controller = CreateController(senderMock);
 
-    //    // Act
-    //    var actionResult = await controller.AddProperty(version, request, CancellationToken.None);
+        // Act
+        var actionResult = await controller.AddProperty(request, CancellationToken.None);
 
-    //    // Assert
-    //    AssertCreatedResult<PropertyResponse>(actionResult, nameof(PropertiesController.CheckPropertyExists));
-    //}
+        // Assert
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(PropertiesController.CheckPropertyExists));
+    }
 
-    //[Fact]
-    //public async Task AddProperty_ReturnsNoContent_WhenResultIsNull()
-    //{
-    //    // Arrange
-    //    var version = "1.0";
-    //    var request = new AddPropertyRequest(
-    //        "stylize",
-    //        ["--s"]
-    //    );
+    [Fact]
+    public async Task AddProperty_ReturnsNoContent_WhenResultIsNull()
+    {
+        // Arrange
+        var version = "1.0";
+        var request = new PropertyRequest(
+            version,
+            "stylize",
+            ["--s"]
+        );
 
-    //    PropertyResponse? nullResponse = null;
-    //    var result = Result.Ok(nullResponse);
-    //    var senderMock = new Mock<ISender>();
-    //    senderMock
-    //        .Setup(s => s.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()))
-    //        .ReturnsAsync(result);
+        PropertyCommandResponse? nullResponse = null;
+        var result = Result.Ok<PropertyCommandResponse?>(nullResponse);
+        var senderMock = new Mock<ISender>();
+        senderMock
+            .Setup(s => s.Send(It.IsAny<AddProperty.Command>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(result);
 
-    //    var controller = CreateController(senderMock);
+        var controller = CreateController(senderMock);
 
-    //    // Act
-    //    var actionResult = await controller.AddProperty(version, request, CancellationToken.None);
+        // Act
+        var actionResult = await controller.AddProperty(request, CancellationToken.None);
 
-    //    // Assert
-    //    AssertNoContentResult(actionResult);
-    //}
+        // Assert
+        actionResult.Should().BeNoContentResult();
+    }
 
-    //[Fact]
-    //public async Task AddProperty_ReturnsBadRequest_WhenRequestInvalid()
-    //{
-    //    // Arrange
-    //    var version = "1.0";
-    //    var invalidRequest = new AddPropertyRequest(
-    //        "",
-    //        []
-    //    );
+    [Fact]
+    public async Task AddProperty_ReturnsBadRequest_WhenRequestInvalid()
+    {
+        // Arrange
+        var version = "1.0";
+        var invalidRequest = new PropertyRequest(
+            version,
+            string.Empty,
+            []
+        );
 
-    //    var failureResult = CreateFailureResult<PropertyResponse, DomainLayer>(
-    //        StatusCodes.Status400BadRequest,
-    //        "Invalid property data");
+        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Invalid property data");
 
-    //    var senderMock = new Mock<ISender>();
-    //    senderMock
-    //        .Setup(s => s.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()))
-    //        .ReturnsAsync(failureResult);
+        var senderMock = new Mock<ISender>();
+        senderMock
+            .Setup(s => s.Send(It.IsAny<AddProperty.Command>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(failureResult);
 
-    //    var controller = CreateController(senderMock);
+        var controller = CreateController(senderMock);
 
-    //    // Act
-    //    var actionResult = await controller.AddProperty(version, invalidRequest, CancellationToken.None);
+        // Act
+        var actionResult = await controller.AddProperty(invalidRequest, CancellationToken.None);
 
-    //    // Assert
-    //    AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
-    //}
+        // Assert
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+    }
 
-    //[Fact]
-    //public async Task AddProperty_ReturnsNotFound_WhenVersionDoesNotExist()
-    //{
-    //    // Arrange
-    //    var version = "99.0";
-    //    var request = new AddPropertyRequest(
-    //        "stylize",
-    //        ["--s"]
-    //    );
+    [Fact]
+    public async Task AddProperty_ReturnsNotFound_WhenVersionDoesNotExist()
+    {
+        // Arrange
+        var version = "99.0";
+        var request = new PropertyRequest(
+            version,
+            "stylize",
+            ["--s"]
+        );
 
-    //    var failureResult = CreateFailureResult<PropertyResponse, ApplicationLayer>(
-    //        StatusCodes.Status404NotFound,
-    //        "Version not found");
+        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+            StatusCodes.Status404NotFound,
+            "Version not found");
 
-    //    var senderMock = new Mock<ISender>();
-    //    senderMock
-    //        .Setup(s => s.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()))
-    //        .ReturnsAsync(failureResult);
+        var senderMock = new Mock<ISender>();
+        senderMock
+            .Setup(s => s.Send(It.IsAny<AddProperty.Command>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(failureResult);
 
-    //    var controller = CreateController(senderMock);
+        var controller = CreateController(senderMock);
 
-    //    // Act
-    //    var actionResult = await controller.AddProperty(version, request, CancellationToken.None);
+        // Act
+        var actionResult = await controller.AddProperty(request, CancellationToken.None);
 
-    //    // Assert
-    //    AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
-    //}
+        // Assert
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+    }
 }

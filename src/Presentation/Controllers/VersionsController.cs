@@ -15,30 +15,26 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 {
     // GET api/versions
     [HttpGet]
-    public async Task<Results<Ok<List<VersionResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<VersionResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
-        var query = new GetAllVersions.Query();
-
         var versions = await Sender
-            .Send(query, cancellationToken)
+            .Send(GetAllVersions.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return versions;
     }
 
     // GET api/versions/supported
     [HttpGet("supported")]
-    public async Task<Results<Ok<List<string>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetSupported(CancellationToken cancellationToken)
+    public async Task<Results<Ok<List<string>>, BadRequest<ProblemDetails>>> GetSupported(CancellationToken cancellationToken)
     {
-        var query = new GetAllSuportedVersions.Query();
-
         var versions = await Sender
-            .Send(query, cancellationToken)
+            .Send(GetAllSuportedVersions.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return versions;
     }
@@ -68,7 +64,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }

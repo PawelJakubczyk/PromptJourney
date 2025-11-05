@@ -27,8 +27,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -47,8 +46,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -71,7 +69,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
 
         // Assert
         // ToResultsCheckExistOkAsync maps all non-400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -96,8 +94,8 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Same(CheckAnyExampleLinksExist.Query.Singletone, capturedQuery);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery.Should().BeSameAs(CheckAnyExampleLinksExist.Query.Singletone);
     }
 
     [Fact]
@@ -115,8 +113,8 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.CheckLinksEmpty(cts.Token));
+        await FluentActions.Awaiting(() => controller.CheckLinksEmpty(cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -157,10 +155,8 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult2 = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult1);
-        AssertOkResult<bool>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -182,7 +178,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -201,8 +197,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -221,8 +216,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Theory]
@@ -243,8 +237,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -263,8 +256,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -286,7 +278,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -315,8 +307,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
 
         // Assert
         capturedQueries.Should().HaveCount(3);
-        capturedQueries.Should().AllSatisfy(q =>
-            q.Should().BeSameAs(CheckAnyExampleLinksExist.Query.Singletone));
+        capturedQueries.Should().AllSatisfy(q => q.Should().BeSameAs(CheckAnyExampleLinksExist.Query.Singletone));
     }
 
     [Fact]

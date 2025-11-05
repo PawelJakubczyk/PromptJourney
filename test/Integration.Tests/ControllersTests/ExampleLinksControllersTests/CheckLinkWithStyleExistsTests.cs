@@ -14,7 +14,7 @@ public sealed class CheckLinkWithStyleExistsTests(MidjourneyTestWebApplicationFa
     public async Task CheckLinkWithStyleExists_ReturnsOk_ForValidStyleNames(string styleName)
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/style/{styleName}/exists");
+        var response = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(styleName)}/exists");
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.BadRequest);
@@ -47,7 +47,7 @@ public sealed class CheckLinkWithStyleExistsTests(MidjourneyTestWebApplicationFa
         var testStyleName = GenerateTestStyleName();
 
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/style/{testStyleName}/exists");
+        var response = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(testStyleName)}/exists");
 
         // Assert
         if (response.StatusCode == HttpStatusCode.OK)
@@ -65,8 +65,8 @@ public sealed class CheckLinkWithStyleExistsTests(MidjourneyTestWebApplicationFa
         var testStyleName = GenerateTestStyleName();
 
         // Act
-        var response1 = await Client.GetAsync($"{BaseUrl}/style/{testStyleName}/exists");
-        var response2 = await Client.GetAsync($"{BaseUrl}/style/{testStyleName}/exists");
+        var response1 = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(testStyleName)}/exists");
+        var response2 = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(testStyleName)}/exists");
 
         // Assert
         response1.StatusCode.Should().Be(response2.StatusCode);
@@ -114,7 +114,7 @@ public sealed class CheckLinkWithStyleExistsTests(MidjourneyTestWebApplicationFa
         var startTime = DateTime.UtcNow;
 
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/style/{testStyleName}/exists");
+        var response = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(testStyleName)}/exists");
 
         // Assert
         var duration = DateTime.UtcNow - startTime;

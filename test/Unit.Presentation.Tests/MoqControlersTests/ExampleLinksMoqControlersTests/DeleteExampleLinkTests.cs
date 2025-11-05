@@ -30,17 +30,16 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
-    public async Task DeleteExampleLink_ReturnsConflict_WhenLinkDoesNotExist()
+    public async Task DeleteExampleLink_ReturnsNotFound_WhenLinkDoesNotExist()
     {
         // Arrange
         var linkId = Guid.NewGuid().ToString();
         var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
+            StatusCodes.Status404NotFound,
             $"Link '{linkId}' not found");
 
         var senderMock = new Mock<ISender>();
@@ -54,7 +53,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -77,7 +76,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(invalidLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -100,7 +99,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(emptyLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -123,7 +122,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(whitespaceLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -146,7 +145,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(nullLinkId!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -170,7 +169,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -197,8 +196,8 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(linkId, capturedCommand!.Id);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.Id.Should().Be(linkId);
     }
 
     [Fact]
@@ -217,8 +216,8 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.DeleteExampleLink(linkId, cts.Token));
+        await FluentActions.Awaiting(() => controller.DeleteExampleLink(linkId, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -264,8 +263,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Theory]
@@ -293,30 +291,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(invalidLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task DeleteExampleLink_ReturnsConflict_WhenLinkIsAlreadyDeleted()
-    {
-        // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
-            StatusCodes.Status409Conflict,
-            "Link has already been deleted");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<DeleteExampleLink.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
-
-        // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -339,7 +314,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(malformedGuid, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -361,10 +336,8 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult2 = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult1);
-        AssertOkResult<DeleteResponse>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<DeleteResponse>();
+        actionResult2.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -387,7 +360,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -408,8 +381,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(lowercaseGuid, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -432,7 +404,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -477,7 +449,6 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(linkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 }

@@ -4,7 +4,6 @@ using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
 using Utilities.Constants;
@@ -31,8 +30,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -55,7 +53,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -78,7 +76,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(invalidName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -101,7 +99,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(nullName!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -124,7 +122,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(whitespaceName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -147,7 +145,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(tooLongName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -168,8 +166,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -190,8 +187,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -218,8 +214,8 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(styleName, capturedQuery!.StyleName);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.StyleName.Should().Be(styleName);
     }
 
     [Fact]
@@ -238,8 +234,8 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByName(styleName, cts.Token));
+        await FluentActions.Awaiting(() => controller.GetByName(styleName, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -287,8 +283,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -310,10 +305,8 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult2 = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult1, -1);
-        AssertOkResult<StyleResponse>(actionResult2, -1);
+        actionResult1.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult2.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -338,8 +331,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -360,8 +352,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -382,8 +373,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -404,8 +394,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -429,7 +418,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -452,7 +441,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -473,8 +462,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -518,8 +506,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -544,8 +531,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
             var actionResult = await controller.GetByName(styleName, CancellationToken.None);
 
             // Assert
-            actionResult.Should().NotBeNull();
-            AssertOkResult<StyleResponse>(actionResult, -1);
+            actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
         }
     }
 }

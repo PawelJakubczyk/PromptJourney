@@ -31,8 +31,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -56,7 +55,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -80,7 +79,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(emptyVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -104,7 +103,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, emptyPropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -128,7 +127,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(emptyVersion, emptyPropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -152,7 +151,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(nonExistentVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -176,7 +175,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(whitespaceVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -200,7 +199,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, whitespacePropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -224,7 +223,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(nullVersion!, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -248,7 +247,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, nullPropertyName!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -272,7 +271,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(invalidVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -296,7 +295,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, tooLongPropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -321,7 +320,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -349,9 +348,9 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(version, capturedCommand!.Version);
-        Assert.Equal(propertyName, capturedCommand.PropertyName);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.Version.Should().Be(version);
+        capturedCommand.PropertyName.Should().Be(propertyName);
     }
 
     [Fact]
@@ -371,8 +370,8 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.DeleteProperty(version, propertyName, cts.Token));
+        await FluentActions.Awaiting(() => controller.DeleteProperty(version, propertyName, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -420,8 +419,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -444,10 +442,8 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult2 = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult1);
-        AssertOkResult<DeleteResponse>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<DeleteResponse>();
+        actionResult2.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -471,7 +467,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, nonExistentProperty, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -493,8 +489,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -518,7 +513,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -542,7 +537,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -565,8 +560,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.DeleteProperty(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]

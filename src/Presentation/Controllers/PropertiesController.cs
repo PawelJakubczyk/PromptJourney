@@ -37,14 +37,14 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // GET api/properties//
     [HttpGet]
-    public async Task<Results<Ok<List<PropertyQueryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAll
+    public async Task<Results<Ok<List<PropertyQueryResponse>>, BadRequest<ProblemDetails>>> GetAll
         (CancellationToken cancellationToken)
     {
         var properties = await Sender
             .Send(GetAllProperties.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return properties;
     }
@@ -64,14 +64,14 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsCheckExistOkAsync();
+            .ToResultsSimpleOkAsync();
 
         return exist;
     }
 
     // POST api/properties/
     [HttpPost]
-    public async Task<Results<Created<PropertyCommandResponse>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
+    public async Task<Results<Created<PropertyCommandResponse>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
     (
         [FromBody] PropertyRequest request,
         CancellationToken cancellationToken
@@ -92,14 +92,17 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareCreateResponse(payload =>
-                CreatedAtAction
-                (
-                    nameof(CheckPropertyExists),
-                    new { version = payload.Version, propertyName = payload.PropertyName },
-                    payload
-                )
+                // If handler returns null payload, return NoContent instead of creating a resource
+                payload is null
+                    ? NoContent()
+                    : CreatedAtAction
+                    (
+                        nameof(CheckPropertyExists),
+                        new { version = payload.Version, propertyName = payload.PropertyName },
+                        payload
+                    )
             )
-            .ToResultsCreatedAsync();
+            .ToResultsCreatedExtendedAsync();
 
         return result;
     }

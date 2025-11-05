@@ -29,8 +29,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -51,8 +50,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -76,7 +74,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(emptyVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -100,7 +98,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, emptyPropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -124,7 +122,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(emptyVersion, emptyPropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -148,7 +146,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(whitespaceVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -172,7 +170,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, whitespacePropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -196,7 +194,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(nullVersion!, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -220,7 +218,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, nullPropertyName!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -244,7 +242,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(invalidVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -268,7 +266,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, tooLongPropertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -293,7 +291,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
 
         // Assert
         // ToResultsCheckExistOkAsync maps all non-400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -320,9 +318,9 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(version, capturedQuery!.Version);
-        Assert.Equal(propertyName, capturedQuery.PropertyName);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.Version.Should().Be(version);
+        capturedQuery.PropertyName.Should().Be(propertyName);
     }
 
     [Fact]
@@ -342,8 +340,8 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.CheckPropertyExists(version, propertyName, cts.Token));
+        await FluentActions.Awaiting(() => controller.CheckPropertyExists(version, propertyName, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -389,8 +387,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -412,10 +409,8 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult2 = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult1);
-        AssertOkResult<bool>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -439,7 +434,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(nonExistentVersion, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -460,8 +455,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -482,8 +476,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -507,7 +500,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -531,7 +524,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         var actionResult = await controller.CheckPropertyExists(version, propertyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]

@@ -157,7 +157,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     public async Task GetByTags_ReturnsBadRequest_WhenTagExceedsMaxLength()
     {
         // Arrange
-        var invalidTags = new List<string> { new string('a', 256) };
+        var invalidTags = new List<string> { new('a', 256) };
         var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Tag exceeds maximum length");

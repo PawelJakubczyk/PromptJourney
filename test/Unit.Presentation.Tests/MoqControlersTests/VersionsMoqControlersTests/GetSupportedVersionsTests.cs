@@ -29,7 +29,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 4);
+        actionResult.Should().BeOkResult().WithCount(4);
     }
 
     [Fact]
@@ -50,29 +50,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 0);
-    }
-
-    [Fact]
-    public async Task GetSupported_ReturnsNotFound_WhenNoVersionsConfigured()
-    {
-        // Arrange
-        var failureResult = CreateFailureResult<List<string>, ApplicationLayer>(
-            StatusCodes.Status404NotFound,
-            "No supported versions found");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllSuportedVersions.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetSupported(CancellationToken.None);
-
-        // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeOkResult().WithCount(0);
     }
 
     [Fact]
@@ -96,7 +74,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 10);
+        actionResult.Should().BeOkResult().WithCount(10);
     }
 
     [Fact]
@@ -117,7 +95,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 6);
+        actionResult.Should().BeOkResult().WithCount(6);
     }
 
     [Fact]
@@ -138,7 +116,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 3);
+        actionResult.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -162,7 +140,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 7);
+        actionResult.Should().BeOkResult().WithCount(7);
     }
 
     [Fact]
@@ -183,7 +161,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -204,7 +182,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 6);
+        actionResult.Should().BeOkResult().WithCount(6);
     }
 
     [Fact]
@@ -295,8 +273,8 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         // Assert
         actionResult1.Should().NotBeNull();
         actionResult2.Should().NotBeNull();
-        AssertOkResult<string>(actionResult1, 3);
-        AssertOkResult<string>(actionResult2, 3);
+        actionResult1.Should().BeOkResult().WithCount(3);
+        actionResult2.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -319,7 +297,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -341,7 +319,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var actionResult = await controller.GetSupported(CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -387,7 +365,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 8);
+        actionResult.Should().BeOkResult().WithCount(8);
     }
 
     [Fact]
@@ -411,7 +389,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 3);
+        actionResult.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -435,7 +413,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 4);
+        actionResult.Should().BeOkResult().WithCount(4);
     }
 
     [Fact]
@@ -459,7 +437,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 4);
+        actionResult.Should().BeOkResult().WithCount(4);
     }
 
     [Fact]
@@ -482,7 +460,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 20);
+        actionResult.Should().BeOkResult().WithCount(20);
     }
 
     [Theory]
@@ -510,7 +488,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, count);
+        actionResult.Should().BeOkResult().WithCount(count);
     }
 
     [Fact]
@@ -534,7 +512,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 3);
+        actionResult.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -558,7 +536,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 3);
+        actionResult.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -579,7 +557,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 6);
+        actionResult.Should().BeOkResult().WithCount(6);
     }
 
     [Fact]
@@ -600,6 +578,6 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult, 4);
+        actionResult.Should().BeOkResult().WithCount(4);
     }
 }

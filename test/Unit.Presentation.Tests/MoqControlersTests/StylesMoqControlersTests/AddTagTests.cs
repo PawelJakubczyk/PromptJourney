@@ -29,8 +29,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -54,7 +53,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -78,7 +77,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, emptyTag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -102,7 +101,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -126,7 +125,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(emptyStyleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -150,7 +149,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, whitespaceTag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -174,7 +173,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(whitespaceStyleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -198,7 +197,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, nullTag!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -222,7 +221,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(nullStyleName!, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -246,7 +245,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tooLongTag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -270,7 +269,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(tooLongStyleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -295,7 +294,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -322,9 +321,9 @@ public sealed class AddTagTests : StylesControllerTestsBase
         await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(styleName, capturedCommand!.StyleName);
-        Assert.Equal(tag, capturedCommand.Tag);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.StyleName.Should().Be(styleName);
+        capturedCommand.Tag.Should().Be(tag);
     }
 
     [Fact]
@@ -344,8 +343,8 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.AddTag(styleName, tag, cts.Token));
+        await FluentActions.Awaiting(() => controller.AddTag(styleName, tag, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -391,8 +390,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -414,10 +412,8 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult2 = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<string>(actionResult1);
-        AssertOkResult<string>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<string>();
+        actionResult2.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -438,8 +434,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -460,8 +455,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -482,8 +476,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -504,8 +497,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -526,8 +518,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -548,8 +539,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -573,7 +563,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -597,7 +587,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
         var actionResult = await controller.AddTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]

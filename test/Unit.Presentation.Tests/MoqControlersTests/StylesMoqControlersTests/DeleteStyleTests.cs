@@ -30,8 +30,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -54,7 +53,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -77,7 +76,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(emptyName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -100,7 +99,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(whitespaceName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -123,7 +122,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(nullName!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -146,7 +145,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(tooLongName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -170,7 +169,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -197,8 +196,8 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(styleName, capturedCommand!.StyleName);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.StyleName.Should().Be(styleName);
     }
 
     [Fact]
@@ -217,8 +216,8 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.Delete(styleName, cts.Token));
+        await FluentActions.Awaiting(() => controller.Delete(styleName, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -265,8 +264,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -288,10 +286,8 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult2 = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult1);
-        AssertOkResult<DeleteResponse>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<DeleteResponse>();
+        actionResult2.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -312,8 +308,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -334,8 +329,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -356,8 +350,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -378,8 +371,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -400,8 +392,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -422,8 +413,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -444,8 +434,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -468,7 +457,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -491,7 +480,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -513,8 +502,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<DeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<DeleteResponse>();
     }
 
     [Fact]
@@ -537,7 +525,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Delete(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]

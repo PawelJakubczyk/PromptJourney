@@ -31,7 +31,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.GetByVersion(version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.GetByVersion(invalidVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.GetByVersion(nullVersion!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.GetByVersion(whitespaceVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.GetByVersion(invalidVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.GetByVersion(tooLongVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Theory]
@@ -291,7 +291,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -386,8 +386,8 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Assert
         actionResult1.Should().NotBeNull();
         actionResult2.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult1, -1);
-        AssertOkResult<VersionResponse>(actionResult2, -1);
+        actionResult1.Should().BeOkResult().WithValueOfType<VersionResponse>();
+        actionResult2.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -409,7 +409,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -431,7 +431,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -454,7 +454,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -477,7 +477,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -501,7 +501,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -524,7 +524,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.GetByVersion(version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -570,7 +570,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -593,7 +593,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -615,7 +615,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -637,7 +637,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -659,7 +659,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 
     [Fact]
@@ -681,6 +681,6 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<VersionResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
     }
 }
