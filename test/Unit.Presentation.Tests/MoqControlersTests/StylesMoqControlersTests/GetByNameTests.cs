@@ -4,7 +4,6 @@ using FluentAssertions;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
 using Utilities.Constants;

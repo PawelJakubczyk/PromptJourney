@@ -1,59 +1,15 @@
 using FluentAssertions;
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
-using Utilities.Constants;
-using Utilities.Extensions;
-
-// Explicitly alias the conflicting JsonOptions types
-using HttpJsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
 
 namespace Unit.Presentation.Tests.MoqControlersTests;
 
-public abstract class ControllerTestsBase
+public static class AssertionExtensions
 {
-    // Test Helper Methods (support both IActionResult and Results<> typed variants)
-
-    internal static (int Status, string Body) ExecuteResult(IResult result)
+    public static void ShouldBeOkResult<T>(this object actionResult, int expectedCount = -1)
     {
-        // Provide minimal services required by typed results during execution
-        var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddOptions();
-        services.AddRouting();
-        services.Configure<HttpJsonOptions>(_ => { });
-        // Optional, but safe for ProblemDetails scenarios
-        services.AddProblemDetails();
-
-        var provider = services.BuildServiceProvider();
-
-        var ctx = new DefaultHttpContext
-        {
-            RequestServices = provider
-        };
-
-        using var ms = new MemoryStream();
-        ctx.Response.Body = ms;
-
-        result.ExecuteAsync(ctx).GetAwaiter().GetResult();
-
-        ms.Position = 0;
-        var body = new StreamReader(ms).ReadToEnd();
-        return (ctx.Response.StatusCode, body);
-    }
-
-    internal static readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
-    protected static void AssertOkResult<T>(object actionResult, int expectedCount = -1)
-    {
-        actionResult.Should().NotBeNull();
-
         // Old-style MVC IActionResult
         if (actionResult is IActionResult mvcResult)
         {
@@ -82,7 +38,7 @@ public abstract class ControllerTestsBase
                 else if (value is IEnumerable<T> collT)
                     collT.Should().HaveCount(expectedCount);
                 else
-                    throw new AssertionException("Expected a collection to assert count against.");
+                    throw new Exception("Expected a collection to assert count against.");
             }
             return;
         }
@@ -90,13 +46,12 @@ public abstract class ControllerTestsBase
         // Minimal API union Results<...>
         if (actionResult is IResult unionResult)
         {
-            var (status, body) = ExecuteResult(unionResult);
+            var (status, body) = ControllerTestsBase.ExecuteResult(unionResult);
             status.Should().Be(StatusCodes.Status200OK);
 
             if (expectedCount >= 0)
             {
-                // Try to deserialize as collection of T
-                var list = JsonSerializer.Deserialize<IEnumerable<T>>(body, _jsonOptions);
+                var list = JsonSerializer.Deserialize<IEnumerable<T>>(body, ControllerTestsBase._jsonOptions);
                 list.Should().NotBeNull();
                 list!.Count().Should().Be(expectedCount);
             }
@@ -116,13 +71,11 @@ public abstract class ControllerTestsBase
             return;
         }
 
-        throw new AssertionException($"Result is not an OK result. Actual type: {actionResult.GetType().FullName}");
+        throw new Exception($"Result is not an OK result. Actual type: {actionResult.GetType().FullName}");
     }
 
-    protected static void AssertCreatedResult<T>(object actionResult, string expectedActionName)
+    public static void ShouldBeCreatedResult<T>(this object actionResult, string expectedActionName)
     {
-        actionResult.Should().NotBeNull();
-
         if (actionResult is IActionResult mvcResult)
         {
             mvcResult.Should().BeOfType<CreatedAtActionResult>();
@@ -144,47 +97,40 @@ public abstract class ControllerTestsBase
         // Minimal API union Results<...>
         if (actionResult is IResult unionResult)
         {
-            var (status, _) = ExecuteResult(unionResult);
+            var (status, _) = ControllerTestsBase.ExecuteResult(unionResult);
             status.Should().Be(StatusCodes.Status201Created);
-            // Note: ActionName is not available from Minimal API union, so we only validate status.
             return;
         }
 
-        throw new AssertionException($"Result is not a Created result. Actual type: {actionResult.GetType().FullName}");
+        throw new Exception($"Result is not a Created result. Actual type: {actionResult.GetType().FullName}");
     }
 
-    protected static void AssertNoContentResult(object actionResult)
+    public static void ShouldBeNoContentResult(this object actionResult)
     {
-        actionResult.Should().NotBeNull();
-
         if (actionResult is IActionResult mvcResult)
         {
             mvcResult.Should().BeOfType<NoContentResult>();
             return;
         }
 
-        // Minimal API NoContent
         if (actionResult is NoContent)
         {
             return;
         }
 
-        // Minimal API union Results<...>
         if (actionResult is IResult unionResult)
         {
-            var (status, body) = ExecuteResult(unionResult);
+            var (status, body) = ControllerTestsBase.ExecuteResult(unionResult);
             status.Should().Be(StatusCodes.Status204NoContent);
             body.Should().BeNullOrEmpty();
             return;
         }
 
-        throw new AssertionException($"Result is not NoContent. Actual type: {actionResult.GetType().FullName}");
+        throw new Exception($"Result is not NoContent. Actual type: {actionResult.GetType().FullName}");
     }
 
-    protected static void AssertErrorResult(object actionResult, int expectedStatusCode)
+    public static void ShouldBeErrorResult(this object actionResult, int expectedStatusCode)
     {
-        actionResult.Should().NotBeNull();
-
         if (actionResult is IActionResult mvcResult)
         {
             mvcResult.Should().BeOfType<ObjectResult>();
@@ -214,7 +160,7 @@ public abstract class ControllerTestsBase
         // Minimal API union Results<...>
         if (actionResult is IResult unionResult)
         {
-            var (status, _) = ExecuteResult(unionResult);
+            var (status, _) = ControllerTestsBase.ExecuteResult(unionResult);
             status.Should().Be(expectedStatusCode);
             return;
         }
@@ -227,13 +173,11 @@ public abstract class ControllerTestsBase
             return;
         }
 
-        throw new AssertionException($"Result is not an error result. Actual type: {actionResult.GetType().FullName}");
+        throw new Exception($"Result is not an error result. Actual type: {actionResult.GetType().FullName}");
     }
 
-    protected static void AssertBadRequestResult(object actionResult, string? expectedMessage = null)
+    public static void ShouldBeBadRequestResult(this object actionResult, string? expectedMessage = null)
     {
-        actionResult.Should().NotBeNull();
-
         if (actionResult is IActionResult mvcResult)
         {
             mvcResult.Should().BeOfType<BadRequestObjectResult>();
@@ -259,10 +203,9 @@ public abstract class ControllerTestsBase
             return;
         }
 
-        // Minimal API union Results<...>
         if (actionResult is IResult unionResult)
         {
-            var (status, body) = ExecuteResult(unionResult);
+            var (status, body) = ControllerTestsBase.ExecuteResult(unionResult);
             status.Should().Be(StatusCodes.Status400BadRequest);
             if (!string.IsNullOrEmpty(expectedMessage))
             {
@@ -283,43 +226,6 @@ public abstract class ControllerTestsBase
             return;
         }
 
-        throw new AssertionException($"Result is not a BadRequest result. Actual type: {actionResult.GetType().FullName}");
-    }
-
-    // Error Response Models for testing
-    public class ErrorResponseModel
-    {
-        public MainErrorModel MainError { get; set; } = new();
-        public List<DetailModel> Details { get; set; } = [];
-    }
-
-    public class MainErrorModel
-    {
-        public int Code { get; set; }
-        public string Message { get; set; } = string.Empty;
-    }
-
-    public class DetailModel
-    {
-        public string Message { get; set; } = string.Empty;
-    }
-
-    // Helper method to create error results
-    protected static Result<TResult> CreateFailureResult<TResult, TLayer>(int statusCode, string message)
-        where TLayer : ILayer
-    {
-        var error = ErrorBuilder.New()
-            .WithLayer<TLayer>()
-            .WithMessage(message)
-            .WithErrorCode(statusCode)
-            .Build();
-
-        return Result.Fail<TResult>(error);
-    }
-
-    // Custom assertion exception to keep failures explicit
-    private class AssertionException : Exception
-    {
-        public AssertionException(string message) : base(message) { }
+        throw new Exception($"Result is not a BadRequest result. Actual type: {actionResult.GetType().FullName}");
     }
 }
