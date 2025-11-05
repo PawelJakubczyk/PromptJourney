@@ -15,7 +15,7 @@ public sealed class GetByStyleAndVersionTests(MidjourneyTestWebApplicationFactor
     public async Task GetByStyleAndVersion_ReturnsValidResponse_ForValidParameters(string styleName, string version)
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/style/{styleName}/version/{version}");
+        var response = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(styleName)}/version/{Uri.EscapeDataString(version)}");
 
         // Assert
         response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
@@ -81,8 +81,8 @@ public sealed class GetByStyleAndVersionTests(MidjourneyTestWebApplicationFactor
         var version = "1.0";
 
         // Act
-        var response1 = await Client.GetAsync($"{BaseUrl}/style/{styleName}/version/{version}");
-        var response2 = await Client.GetAsync($"{BaseUrl}/style/{styleName}/version/{version}");
+        var response1 = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(styleName)}/version/{Uri.EscapeDataString(version)}");
+        var response2 = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString(styleName)}/version/{Uri.EscapeDataString(version)}");
 
         // Assert
         response1.StatusCode.Should().Be(response2.StatusCode);
@@ -100,7 +100,7 @@ public sealed class GetByStyleAndVersionTests(MidjourneyTestWebApplicationFactor
     public async Task GetByStyleAndVersion_ValidatesResponseStructure()
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/style/TestStyle/version/1.0");
+        var response = await Client.GetAsync($"{BaseUrl}/style/{Uri.EscapeDataString("TestStyle")}/version/{Uri.EscapeDataString("1.0")}");
 
         // Assert
         if (response.StatusCode == HttpStatusCode.OK)

@@ -10,7 +10,7 @@ public sealed class CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory fac
     public async Task CheckLinksEmpty_ReturnsOk_WithValidResponse()
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/noempty");
+        var response = await Client.GetAsync($"{Uri.EscapeDataString(BaseUrl)}/no-empty");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -21,7 +21,7 @@ public sealed class CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory fac
     public async Task CheckLinksEmpty_ReturnsJsonWithIsEmptyProperty()
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/noempty");
+        var response = await Client.GetAsync($"{Uri.EscapeDataString(BaseUrl)}/no-empty");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -35,8 +35,8 @@ public sealed class CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory fac
     public async Task CheckLinksEmpty_ReturnsConsistentResults()
     {
         // Act
-        var response1 = await Client.GetAsync($"{BaseUrl}/noempty");
-        var response2 = await Client.GetAsync($"{BaseUrl}/noempty");
+        var response1 = await Client.GetAsync($"{Uri.EscapeDataString(BaseUrl)}/no-empty");
+        var response2 = await Client.GetAsync($"{Uri.EscapeDataString(BaseUrl)}/no-empty");
 
         // Assert
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -55,7 +55,7 @@ public sealed class CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory fac
         var startTime = DateTime.UtcNow;
 
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/noempty");
+        var response = await Client.GetAsync($"{Uri.EscapeDataString(BaseUrl)}/no-empty");
 
         // Assert
         var duration = DateTime.UtcNow - startTime;
@@ -67,7 +67,7 @@ public sealed class CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory fac
     public async Task CheckLinksEmpty_ValidatesResponseStructure()
     {
         // Act
-        var response = await Client.GetAsync($"{BaseUrl}/noempty");
+        var response = await Client.GetAsync($"{Uri.EscapeDataString(BaseUrl)}/no-empty");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -86,7 +86,7 @@ public sealed class CheckLinksEmptyTests(MidjourneyTestWebApplicationFactory fac
         // Act
         for (int i = 0; i < 5; i++)
         {
-            tasks.Add(Client.GetAsync($"{BaseUrl}/noempty"));
+            tasks.Add(Client.GetAsync($"{Uri.EscapeDataString(BaseUrl)}/no-empty"));
         }
 
         var responses = await Task.WhenAll(tasks);

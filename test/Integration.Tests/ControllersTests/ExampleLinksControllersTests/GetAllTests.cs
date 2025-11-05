@@ -14,8 +14,7 @@ public sealed class GetAllTests(MidjourneyTestWebApplicationFactory factory) : E
         var response = await Client.GetAsync(BaseUrl);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
+        AssertOkResponse(response);
 
         var links = await DeserializeResponse<List<ExampleLinkResponse>>(response);
         links.Should().NotBeNull();
@@ -45,7 +44,7 @@ public sealed class GetAllTests(MidjourneyTestWebApplicationFactory factory) : E
         var response = await Client.GetAsync(BaseUrl);
 
         // Assert
-        AssertOkResponse<ExampleLinkResponse>(response);
+        AssertOkResponse(response);
 
         var links = await DeserializeResponse<List<ExampleLinkResponse>>(response);
         links.Should().NotBeNull();

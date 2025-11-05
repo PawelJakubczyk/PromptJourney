@@ -87,7 +87,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
         return exist;
     }
 
-    // GET api/examplelinks/noempty
+    // GET api/examplelinks/no-empty
     [HttpGet("no-empty")]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckLinksEmpty(CancellationToken cancellationToken)
     {
