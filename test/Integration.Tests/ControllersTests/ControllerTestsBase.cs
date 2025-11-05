@@ -10,7 +10,7 @@ public abstract class ControllerTestsBase {
     protected readonly MidjourneyTestWebApplicationFactory Factory;
     protected readonly HttpClient Client;
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    internal static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -24,8 +24,23 @@ public abstract class ControllerTestsBase {
         });
     }
 
-    // Helper methods for HTTP assertions
-    protected static void AssertOkResponse<T>(HttpResponseMessage response, int expectedCount = -1)
+    // Generic helper for callers that expect a typed list
+    protected static async Task AssertOkResponse<T>(HttpResponseMessage response, int expectedCount = -1)
+    {
+        response.Should().NotBeNull();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
+
+        if (expectedCount >= 0)
+        {
+            var items = await DeserializeResponse<List<T>>(response);
+            items.Should().NotBeNull();
+            items!.Count.Should().Be(expectedCount);
+        }
+    }
+
+    // Non-generic helper for callers that don't want to specify a type
+    protected static void AssertOkResponse(HttpResponseMessage response, int expectedCount = -1)
     {
         response.Should().NotBeNull();
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -34,8 +49,23 @@ public abstract class ControllerTestsBase {
         if (expectedCount >= 0)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            var items = JsonSerializer.Deserialize<List<T>>(content, JsonOptions);
-            items.Should().HaveCount(expectedCount);
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                content.Should().NotBeNullOrEmpty();
+            }
+            else
+            {
+                using var doc = JsonDocument.Parse(content);
+                if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    doc.RootElement.GetArrayLength().Should().Be(expectedCount);
+                }
+                else
+                {
+                    // If the response is not an array, fail the assertion
+                    throw new Exception("Expected JSON array when asserting expectedCount.");
+                }
+            }
         }
     }
 

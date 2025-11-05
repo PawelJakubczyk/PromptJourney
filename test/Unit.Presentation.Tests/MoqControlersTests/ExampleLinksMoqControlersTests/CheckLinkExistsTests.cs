@@ -28,8 +28,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -49,8 +48,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -73,7 +71,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(invalidLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -96,7 +94,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(emptyLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -119,7 +117,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(whitespaceLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -143,7 +141,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
 
         // Assert
         // ToResultsCheckExistOkAsync maps all non-400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -169,8 +167,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(linkId, capturedQuery!.Id);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.Id.Should().Be(linkId);
     }
 
     [Fact]
@@ -189,8 +187,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.CheckLinkExists(linkId, cts.Token));
+        await FluentActions.Awaiting(() => controller.CheckLinkExists(linkId, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Theory]
@@ -212,8 +210,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Theory]
@@ -241,7 +238,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(invalidLinkId, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -264,7 +261,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(nullLinkId!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -285,11 +282,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult2 = await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        // Both should return the same status
-        AssertOkResult<bool>(actionResult1);
-        AssertOkResult<bool>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
@@ -312,7 +306,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(malformedGuid, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -354,7 +348,6 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(lowercaseGuid, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<bool>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<bool>();
     }
 }

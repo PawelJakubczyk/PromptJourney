@@ -33,8 +33,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<BulkDeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
     }
 
     [Fact]
@@ -58,8 +57,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<BulkDeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
     }
 
     [Fact]
@@ -82,7 +80,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -105,7 +103,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(emptyStyleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -128,7 +126,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(whitespaceStyleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -151,7 +149,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(tooLongStyleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -174,7 +172,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(nullStyleName!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -198,7 +196,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -225,8 +223,8 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(styleName, capturedCommand!.StyleName);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.StyleName.Should().Be(styleName);
     }
 
     [Fact]
@@ -245,8 +243,8 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.DeleteAllByStyle(styleName, cts.Token));
+        await FluentActions.Awaiting(() => controller.DeleteAllByStyle(styleName, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -295,8 +293,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<BulkDeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
     }
 
     [Theory]
@@ -322,7 +319,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(invalidStyleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -346,8 +343,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<BulkDeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
     }
 
     [Fact]
@@ -368,8 +364,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleNameWithSpecialChars, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<BulkDeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
     }
 
     [Fact]
@@ -392,7 +387,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -414,10 +409,8 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult2 = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<BulkDeleteResponse>(actionResult1);
-        AssertOkResult<BulkDeleteResponse>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        actionResult2.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
     }
 
     [Fact]
@@ -438,8 +431,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(lowercaseStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<BulkDeleteResponse>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
     }
 
     [Fact]
@@ -462,7 +454,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]

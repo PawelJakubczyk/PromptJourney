@@ -1,7 +1,8 @@
+using Application.UseCases.Properties.Responses;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Utilities.Constants;
 using Utilities.Extensions;
 using static Presentation.Constants.StatusPriority;
@@ -248,6 +249,26 @@ public static class PipelineExtensions
 
         return status switch {
             StatusCodes.Status409Conflict => TypedResults.Conflict(problem!),
+            StatusCodes.Status400BadRequest => TypedResults.BadRequest(problem!),
+            _ => TypedResults.BadRequest(problem!)
+        };
+    }
+
+    public static async Task<Results<Created<T>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> ToResultsCreatedExtendedAsync<T>(
+        this Task<Pipeline<T>> pipelineTask,
+        Func<T?, string>? locationFactory = null)
+    {
+        var (success, payload, problem, status) = await EvaluatePipelineAsync(pipelineTask).ConfigureAwait(false);
+
+        if (success)
+        {
+            var location = locationFactory?.Invoke(payload) ?? string.Empty;
+            return TypedResults.Created(location, payload);
+        }
+
+        return status switch {
+            StatusCodes.Status409Conflict => TypedResults.Conflict(problem!),
+            StatusCodes.Status404NotFound   => TypedResults.NotFound(problem!),
             StatusCodes.Status400BadRequest => TypedResults.BadRequest(problem!),
             _ => TypedResults.BadRequest(problem!)
         };

@@ -36,7 +36,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 0);
+        actionResult.Should().BeOkResult().WithCount(0);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(emptyKeyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(whitespaceKeyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(nullKeyword!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(tooLongKeyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -301,8 +301,8 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         // Assert
         actionResult1.Should().NotBeNull();
         actionResult2.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult1, 1);
-        AssertOkResult<StyleResponse>(actionResult2, 1);
+        actionResult1.Should().BeOkResult().WithCount(1);
+        actionResult2.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -327,7 +327,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -353,7 +353,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -382,7 +382,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 10);
+        actionResult.Should().BeOkResult().WithCount(10);
     }
 
     [Fact]
@@ -408,7 +408,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -433,7 +433,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -458,7 +458,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -483,7 +483,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -508,7 +508,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -535,7 +535,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 3);
+        actionResult.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -558,7 +558,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -581,7 +581,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -606,7 +606,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]

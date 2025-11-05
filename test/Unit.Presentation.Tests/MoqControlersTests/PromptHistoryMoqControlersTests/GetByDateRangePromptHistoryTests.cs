@@ -36,8 +36,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -59,8 +58,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 0);
+        actionResult.Should().BeOkResult().WithCount(0);
     }
 
     [Fact]
@@ -84,7 +82,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -108,7 +106,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -132,7 +130,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -156,7 +154,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -181,7 +179,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -209,9 +207,9 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(from, capturedQuery!.From);
-        Assert.Equal(to, capturedQuery.To);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.From.Should().Be(from);
+        capturedQuery.To.Should().Be(to);
     }
 
     [Fact]
@@ -231,8 +229,8 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByDateRange(from, to, cts.Token));
+        await FluentActions.Awaiting(() => controller.GetByDateRange(from, to, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -281,8 +279,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Theory]
@@ -314,8 +311,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, count);
+        actionResult.Should().BeOkResult().WithCount(count);
     }
 
     [Fact]
@@ -341,10 +337,8 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult2 = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult1, 1);
-        AssertOkResult<PromptHistoryResponse>(actionResult2, 1);
+        actionResult1.Should().BeOkResult().WithCount(1);
+        actionResult2.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -370,8 +364,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -399,8 +392,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 3);
+        actionResult.Should().BeOkResult().WithCount(3);
     }
 
     [Fact]
@@ -424,7 +416,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -448,7 +440,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -475,8 +467,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -502,8 +493,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetByDateRange(from, to, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<PromptHistoryResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]

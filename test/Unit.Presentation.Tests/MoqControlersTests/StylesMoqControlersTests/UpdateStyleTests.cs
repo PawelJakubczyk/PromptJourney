@@ -36,7 +36,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -255,7 +255,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -283,7 +283,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -341,7 +341,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -368,7 +368,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -395,7 +395,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -422,7 +422,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -449,7 +449,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -477,7 +477,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -504,7 +504,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -537,11 +537,11 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         await controller.Update(request, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(styleName, capturedCommand!.StyleName);
-        Assert.Equal(request.Type, capturedCommand.Type);
-        Assert.Equal(request.Description, capturedCommand.Description);
-        Assert.Equal(request.Tags, capturedCommand.Tags);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.StyleName.Should().Be(styleName);
+        capturedCommand.Type.Should().Be(request.Type);
+        capturedCommand.Description.Should().Be(request.Description);
+        capturedCommand.Tags.Should().BeEquivalentTo(request.Tags);
     }
 
     [Fact]
@@ -564,8 +564,8 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.Update(request, cts.Token));
+        await FluentActions.Awaiting(() => controller.Update(request, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -623,7 +623,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -651,8 +651,8 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult2 = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult1);
-        AssertOkResult<string>(actionResult2);
+        actionResult1.Should().BeOkResult().WithValueOfType<string>();
+        actionResult2.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -679,7 +679,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -706,7 +706,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -734,7 +734,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -761,7 +761,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -788,7 +788,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -842,7 +842,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -869,7 +869,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 
     [Fact]
@@ -896,6 +896,6 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        AssertOkResult<string>(actionResult);
+        actionResult.Should().BeOkResult().WithValueOfType<string>();
     }
 }

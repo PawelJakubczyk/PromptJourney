@@ -36,8 +36,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult, 2);
+        actionResult.Should().BeOkResult().WithCount(2);
     }
 
     [Fact]
@@ -59,8 +58,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult, 0);
+        actionResult.Should().BeOkResult().WithCount(0);
     }
 
     [Fact]
@@ -84,7 +82,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(invalidStyleName, version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -108,7 +106,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, invalidVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -132,7 +130,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(invalidStyleName, invalidVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -156,7 +154,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(nonExistentStyleName, version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -180,7 +178,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, nonExistentVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -204,7 +202,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(nonExistentStyleName, nonExistentVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -228,7 +226,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(whitespaceStyleName, version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -252,7 +250,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, whitespaceVersion, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -276,7 +274,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(tooLongStyleName, version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -301,7 +299,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -332,9 +330,9 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(styleName, capturedQuery!.StyleName);
-        Assert.Equal(version, capturedQuery.Version);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.StyleName.Should().Be(styleName);
+        capturedQuery.Version.Should().Be(version);
     }
 
     [Fact]
@@ -354,8 +352,8 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByStyleAndVersion(styleName, version, cts.Token));
+        await FluentActions.Awaiting(() => controller.GetByStyleAndVersion(styleName, version, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -406,8 +404,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult, count);
+        actionResult.Should().BeOkResult().WithCount(count);
     }
 
     [Fact]
@@ -433,10 +430,8 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult2 = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult1, 1);
-        AssertOkResult<ExampleLinkResponse>(actionResult2, 1);
+        actionResult1.Should().BeOkResult().WithCount(1);
+        actionResult2.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -461,8 +456,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleNameWithSpecialChars, version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Theory]
@@ -490,8 +484,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -515,7 +508,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -539,7 +532,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -564,8 +557,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(lowercaseStyleName, version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult, 1);
+        actionResult.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
@@ -593,8 +585,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetByStyleAndVersion(styleName, version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertOkResult<ExampleLinkResponse>(actionResult, 4);
+        actionResult.Should().BeOkResult().WithCount(4);
     }
 
     [Fact]

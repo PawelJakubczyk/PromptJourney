@@ -6,6 +6,7 @@ using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
 using Utilities.Constants;
+using FluentAssertions;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
 
@@ -34,7 +35,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertCreatedResult<string>(actionResult, nameof(ExampleLinksController.CheckLinkExists));
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(ExampleLinksController.CheckLinkExists))
+            .WithValueOfType<string>();
     }
 
     [Fact]
@@ -62,7 +67,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest)
+            .WithErrorMessage("Invalid link format");
     }
 
     [Fact]
@@ -90,7 +99,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest)
+            .WithErrorMessage("Style name exceeds maximum length");
     }
 
     [Fact]
@@ -118,7 +131,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest)
+            .WithErrorMessage("Invalid version format");
     }
 
     [Fact]
@@ -146,7 +163,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult
+            .Should().
+            BeErrorResult().
+            WithStatusCode(StatusCodes.Status400BadRequest)
+            .WithErrorMessage("All fields are required");
     }
 
     [Fact]
@@ -174,7 +195,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status409Conflict)
+            .WithErrorMessage("Link already exists");
     }
 
     [Fact]
@@ -189,7 +214,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
 
         var failureResult = CreateFailureResult<string, ApplicationLayer>(
             StatusCodes.Status409Conflict,
-            "Style 'NonExistentStyle' not found");
+            "Style 'NonExistentStyle' already exist");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -202,7 +227,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status409Conflict)
+            .WithErrorMessage("Style 'NonExistentStyle' already exist");
     }
 
     [Fact]
@@ -230,7 +259,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status409Conflict)
+            .WithErrorMessage("Version '99.0' not found");
     }
 
     [Fact]
@@ -258,7 +291,11 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status409Conflict)
+            .WithErrorMessage("Style and version not found");
     }
 
     [Fact]
@@ -286,13 +323,19 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.AddExampleLink(request, CancellationToken.None);
+        var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(request.Link, capturedCommand!.Link);
-        Assert.Equal(request.Style, capturedCommand.StyleName);
-        Assert.Equal(request.Version, capturedCommand.Version);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.Link.Should().Be(request.Link);
+        capturedCommand.StyleName.Should().Be(request.Style);
+        capturedCommand.Version.Should().Be(request.Version);
+
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(ExampleLinksController.CheckLinkExists))
+            .WithValueOfType<string>();
     }
 
     [Fact]
@@ -315,9 +358,15 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
 
         var controller = CreateController(senderMock);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.AddExampleLink(request, cts.Token));
+        // Act
+        var action = async () =>
+        {
+            await controller.AddExampleLink(request, cts.Token);
+        };
+
+        // Assert
+        await action.Should().ThrowAsync<OperationCanceledException>();
+
     }
 
     [Theory]
@@ -342,7 +391,10 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertCreatedResult<string>(actionResult, nameof(ExampleLinksController.CheckLinkExists));
+        actionResult.Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(ExampleLinksController.CheckLinkExists))
+            .WithValueOfType<string>();
     }
 
     [Theory]
@@ -377,6 +429,9 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.AddExampleLink(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest);
     }
 }

@@ -32,7 +32,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -319,7 +319,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -342,7 +342,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -443,7 +443,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -468,8 +468,8 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Assert
         actionResult1.Should().NotBeNull();
         actionResult2.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult1, -1);
-        AssertOkResult<StyleResponse>(actionResult2, -1);
+        actionResult1.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult2.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -492,7 +492,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -515,7 +515,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -538,7 +538,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -561,7 +561,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -633,7 +633,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -680,7 +680,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -703,7 +703,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 
     [Fact]
@@ -726,6 +726,6 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        AssertOkResult<StyleResponse>(actionResult, -1);
+        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
     }
 }

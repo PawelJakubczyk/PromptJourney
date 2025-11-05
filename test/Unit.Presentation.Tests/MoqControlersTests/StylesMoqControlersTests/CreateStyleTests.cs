@@ -1,4 +1,5 @@
 using Application.UseCases.Styles.Commands;
+using Domain.ValueObjects;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -35,8 +36,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status409Conflict);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status409Conflict);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -198,7 +198,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -225,7 +225,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -252,7 +252,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -306,7 +306,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -334,7 +334,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -363,7 +363,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -392,7 +392,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -420,7 +420,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsCreatedAsync maps all non-409/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -452,11 +452,11 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         await controller.Create(request, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(request.Name, capturedCommand!.Name);
-        Assert.Equal(request.Type, capturedCommand.Type);
-        Assert.Equal(request.Description, capturedCommand.Description);
-        Assert.Equal(request.Tags, capturedCommand.Tags);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.Name.Should().Be(request.Name);
+        capturedCommand.Type.Should().Be(request.Type);
+        capturedCommand.Description.Should().Be(request.Description);
+        capturedCommand.Tags.Should().BeEquivalentTo(request.Tags);
     }
 
     [Fact]
@@ -478,8 +478,8 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.Create(request, cts.Token));
+        await FluentActions.Awaiting(() => controller.Create(request, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -529,8 +529,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -555,8 +554,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -582,8 +580,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -609,8 +606,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -636,8 +632,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -663,8 +658,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -688,8 +682,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -714,8 +707,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        AssertCreatedResult<string>(actionResult, nameof(StylesController.GetByName));
+        actionResult.Should().BeCreatedResult().WithActionName(nameof(StylesController.GetByName));
     }
 
     [Fact]
@@ -742,7 +734,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -769,7 +761,7 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
