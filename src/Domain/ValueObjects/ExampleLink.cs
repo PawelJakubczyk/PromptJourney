@@ -1,9 +1,8 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
@@ -29,9 +28,13 @@ public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?
     }
 }
 
-file static class ExampleLinkErrorsExtensions
+internal static class ExampleLinkErrorsExtensions
 {
-    internal static WorkflowPipeline IfLinkFormatInvalid<TLayer>(this WorkflowPipeline pipeline, string? value)
+    internal const string InvalidUrlFormatMessage = $"Invalid URL format";
+
+    internal static WorkflowPipeline IfLinkFormatInvalid<TLayer>(
+        this WorkflowPipeline pipeline,
+        string? value)
         where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
@@ -47,15 +50,11 @@ file static class ExampleLinkErrorsExtensions
 
         if (!isValid)
         {
-            pipeline.Errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<TLayer>()
-                .WithMessage($"Invalid URL format: {value}")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
+            pipeline.Errors.Add(
+                ErrorFactories.InvalidPattern<string, TLayer>(value, InvalidUrlFormatMessage)
             );
         }
+
         return pipeline;
     }
 }

@@ -18,16 +18,11 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example1.com/image1.jpg", "ModernArt", "1.0"),
+            new(CorrectUrl, CorrectStyleName, CorrectVersion),
             new("http://example2.com/image2.png", "ClassicStyle", "2.0")
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -42,12 +37,8 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var emptyList = new List<ExampleLinkResponse>();
-        var result = Result.Ok(emptyList);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(emptyList));
         var controller = CreateController(senderMock);
 
         // Act
@@ -64,19 +55,14 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var failureResult = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        // ToResultsOkAsync maps all non-404/400 errors to BadRequest
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
@@ -87,12 +73,8 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var failureResult = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
             StatusCodes.Status400BadRequest,
             "Repository error");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -106,22 +88,13 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_UsesSingletonQuery()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", "Style", "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var senderMock = CreateSenderMock();
         GetAllExampleLinks.Query? capturedQuery = null;
-
         senderMock
             .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<List<ExampleLinkResponse>>>, CancellationToken>((query, ct) =>
-            {
-                capturedQuery = query as GetAllExampleLinks.Query;
-            })
-            .ReturnsAsync(result);
-
+            .Callback<IRequest<Result<List<ExampleLinkResponse>>>, CancellationToken>((query, ct) => { capturedQuery = query as GetAllExampleLinks.Query; })
+            .ReturnsAsync(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -138,17 +111,16 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var cts = new CancellationTokenSource();
         cts.Cancel();
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new OperationCanceledException());
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendThrowsOperationCanceledForAny<List<ExampleLinkResponse>>();
         var controller = CreateController(senderMock);
 
-        // Act & Assert
-        await FluentActions.Awaiting(() => controller.GetAll(cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        // Act
+        var action = () => controller.GetAll(cts.Token);
+
+        // Assert
+        await action.Should().ThrowAsync<OperationCanceledException>()
+            .WithMessage(ErrorCanceledOperation);
     }
 
     [Fact]
@@ -156,46 +128,33 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var list = new List<ExampleLinkResponse>();
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
         await controller.GetAll(CancellationToken.None);
 
         // Assert
-        senderMock.Verify(
-            s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()),
-            Times.Once);
+        senderMock.Verify(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
     public async Task GetAll_ReturnsConsistentResults_WhenCalledMultipleTimes()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", "Style", "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.GetAll(CancellationToken.None);
-        var actionResult2 = await controller.GetAll(CancellationToken.None);
+        var r1 = await controller.GetAll(CancellationToken.None);
+        var r2 = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithCount(1);
-        actionResult2.Should().BeOkResult().WithCount(1);
+        r1.Should().BeOkResult().WithCount(1);
+        r2.Should().BeOkResult().WithCount(1);
     }
 
     [Theory]
@@ -210,13 +169,8 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var list = Enumerable.Range(1, count)
             .Select(i => new ExampleLinkResponse($"http://example{i}.com/image.jpg", $"Style{i}", "1.0"))
             .ToList();
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -232,18 +186,13 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example1.com/image1.jpg", "ModernArt", "1.0"),
+            new("http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
             new("http://example2.com/image2.jpg", "ClassicStyle", "2.0"),
             new("http://example3.com/image3.jpg", "Abstract", "5.2"),
             new("http://example4.com/image4.jpg", "Minimal", "6.0")
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -260,12 +209,8 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -280,15 +225,11 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var list = new List<ExampleLinkResponse>();
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
-        // Act - Only requires CancellationToken
+        // Act
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
@@ -299,23 +240,13 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_UsesSingletonPattern_VerifiesSameInstance()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", "Style", "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var senderMock = CreateSenderMock();
         var capturedQueries = new List<GetAllExampleLinks.Query>();
-
         senderMock
             .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<List<ExampleLinkResponse>>>, CancellationToken>((query, ct) =>
-            {
-                if (query is GetAllExampleLinks.Query q)
-                    capturedQueries.Add(q);
-            })
-            .ReturnsAsync(result);
-
+            .Callback<IRequest<Result<List<ExampleLinkResponse>>>, CancellationToken>((query, ct) => { if (query is GetAllExampleLinks.Query q) capturedQueries.Add(q); })
+            .ReturnsAsync(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -325,8 +256,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
 
         // Assert
         capturedQueries.Should().HaveCount(3);
-        capturedQueries.Should().AllSatisfy(q =>
-            q.Should().BeSameAs(GetAllExampleLinks.Query.Singletone));
+        capturedQueries.Should().AllSatisfy(q => q.Should().BeSameAs(GetAllExampleLinks.Query.Singletone));
     }
 
     [Fact]
@@ -335,17 +265,12 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example.com/image.jpg", "Style1", "1.0"),
-            new("https://secure.example.com/image.png", "Style2", "1.0"),
-            new("http://example.com/path/to/image.jpeg", "Style3", "1.0")
+            new("http://example.com/image.jpg", "Style1", CorrectVersion),
+            new("https://secure.example.com/image.png", "Style2", CorrectVersion),
+            new("http://example.com/path/to/image.jpeg", "Style3", CorrectVersion)
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -360,21 +285,16 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var list = new List<ExampleLinkResponse>();
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
-        var startTime = DateTime.UtcNow;
+        var start = DateTime.UtcNow;
 
         // Act
         await controller.GetAll(CancellationToken.None);
 
         // Assert
-        var duration = DateTime.UtcNow - startTime;
-        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
+        (DateTime.UtcNow - start).Should().BeLessThan(TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -384,13 +304,8 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var largeList = Enumerable.Range(1, 1000)
             .Select(i => new ExampleLinkResponse($"http://example{i}.com/image{i}.jpg", $"Style{i % 10}", $"{i % 6}.0"))
             .ToList();
-
-        var result = Result.Ok(largeList);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(largeList));
         var controller = CreateController(senderMock);
 
         // Act
@@ -406,17 +321,12 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example1.com/image1.jpg", "ModernArt", "1.0"),
-            new("http://example2.com/image2.jpg", "ModernArt", "1.0"),
-            new("http://example3.com/image3.jpg", "ModernArt", "1.0")
+            new("http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
+            new("http://example2.com/image2.jpg", CorrectStyleName, CorrectVersion),
+            new("http://example3.com/image3.jpg", CorrectStyleName, CorrectVersion)
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -436,13 +346,8 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
             new("http://example2.com/image2.jpg", "Style2", "5.2"),
             new("http://example3.com/image3.jpg", "Style3", "5.2")
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllExampleLinks.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act

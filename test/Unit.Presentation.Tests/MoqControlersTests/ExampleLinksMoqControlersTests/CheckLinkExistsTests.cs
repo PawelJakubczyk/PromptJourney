@@ -15,153 +15,126 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsOkWithTrue_WhenLinkExists()
     {
         // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(linkId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(CorrectId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValueOfType<bool>();
     }
 
     [Fact]
     public async Task CheckLinkExists_ReturnsOkWithFalse_WhenLinkDoesNotExist()
     {
         // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var result = Result.Ok(false);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(Result.Ok(false));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(linkId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(CorrectId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValueOfType<bool>();
     }
 
     [Fact]
     public async Task CheckLinkExists_ReturnsBadRequest_WhenLinkIdIsInvalidGuid()
     {
         // Arrange
-        var invalidLinkId = "not-a-guid";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Invalid link ID format");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Invalid link ID format");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(invalidLinkId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists("not-a-guid", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
     public async Task CheckLinkExists_ReturnsBadRequest_WhenLinkIdIsEmpty()
     {
         // Arrange
-        var emptyLinkId = string.Empty;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Link ID cannot be empty");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Link ID cannot be empty");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(emptyLinkId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(string.Empty, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
     public async Task CheckLinkExists_ReturnsBadRequest_WhenLinkIdIsWhitespace()
     {
         // Arrange
-        var whitespaceLinkId = "   ";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Link ID cannot be whitespace");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Link ID cannot be whitespace");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(whitespaceLinkId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists("   ", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
     public async Task CheckLinkExists_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
-            StatusCodes.Status500InternalServerError,
-            "Database connection failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failureResult = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status500InternalServerError, "Database connection failed");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(linkId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(CorrectId, CancellationToken.None);
 
         // Assert
-        // ToResultsCheckExistOkAsync maps all non-400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeErrorResult()
+            .WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
     public async Task CheckLinkExists_VerifiesQueryIsCalledWithCorrectParameters()
     {
         // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
+        var senderMock = CreateSenderMock();
         CheckExampleLinkExistsById.Query? capturedQuery = null;
-
         senderMock
             .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<bool>>, CancellationToken>((query, ct) =>
-            {
-                capturedQuery = query as CheckExampleLinkExistsById.Query;
-            })
-            .ReturnsAsync(result);
-
+            .Callback<IRequest<Result<bool>>, CancellationToken>((query, ct) => { capturedQuery = query as CheckExampleLinkExistsById.Query; })
+            .ReturnsAsync(Result.Ok(true));
         var controller = CreateController(senderMock);
+        var linkId = CorrectId;
 
         // Act
         await controller.CheckLinkExists(linkId, CancellationToken.None);
@@ -175,20 +148,18 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_HandlesCancellationToken()
     {
         // Arrange
-        var linkId = Guid.NewGuid().ToString();
         var cts = new CancellationTokenSource();
         cts.Cancel();
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new OperationCanceledException());
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendThrowsOperationCanceledForAny<bool>();
         var controller = CreateController(senderMock);
 
-        // Act & Assert
-        await FluentActions.Awaiting(() => controller.CheckLinkExists(linkId, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        // Act
+        var action = () => controller.CheckLinkExists(CorrectId, cts.Token);
+
+        // Assert
+        await action.Should().ThrowAsync<OperationCanceledException>()
+            .WithMessage(ErrorCanceledOperation);
     }
 
     [Theory]
@@ -198,19 +169,18 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsOk_ForVariousValidGuids(string linkId)
     {
         // Arrange
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValueOfType<bool>();
     }
 
     [Theory]
@@ -219,19 +189,13 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     [InlineData("not-a-guid")]
     [InlineData("12345")]
     [InlineData("invalid-format-12345")]
-    [InlineData("00000000-0000-0000-0000-00000000000g")] // Invalid character
+    [InlineData("00000000-0000-0000-0000-00000000000g")]
     public async Task CheckLinkExists_ReturnsBadRequest_ForInvalidInputs(string invalidLinkId)
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Invalid link ID");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Invalid link ID");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -245,20 +209,13 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_WhenNullLinkId()
     {
         // Arrange
-        string? nullLinkId = null;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Link ID cannot be null");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Link ID cannot be null");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(nullLinkId!, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(null!, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -268,13 +225,9 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsConsistentResults_ForSameLinkId()
     {
         // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var linkId = CorrectId;
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
@@ -290,16 +243,10 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_ForMalformedGuidWithHyphens()
     {
         // Arrange
-        var malformedGuid = "12345678-1234-1234-1234-12345678"; // Too short
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Malformed GUID format");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var malformedGuid = "12345678-1234-1234-1234-12345678";
+        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Malformed GUID format");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -313,22 +260,16 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_VerifiesSenderIsCalledOnce()
     {
         // Arrange
-        var linkId = Guid.NewGuid().ToString();
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var linkId = CorrectId;
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
         await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        senderMock.Verify(
-            s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()),
-            Times.Once);
+        senderMock.Verify(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -336,12 +277,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var lowercaseGuid = "a1b2c3d4-e5f6-7890-abcd-1234567890ef";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act

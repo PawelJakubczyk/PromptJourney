@@ -56,7 +56,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         var exampleLink = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .FirstOrDefaultAsync(exampleLink => exampleLink.Id == id, cancellationToken);
 
-        if (exampleLink is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExamleLinkNotFound(id));
+        if (exampleLink is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExampleLinkNotFound(id));
 
         _midjourneyDbContext.MidjourneyStyleExampleLinks.Remove(exampleLink);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -113,7 +113,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
             .Include(exampleLink => exampleLink.MidjourneyMaster)
             .FirstOrDefaultAsync(exampleLink => exampleLink.Id == id, cancellationToken);
 
-        if (item is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExamleLinkNotFound(id));
+        if (item is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExampleLinkNotFound(id));
         
 
         return Result.Ok(item);

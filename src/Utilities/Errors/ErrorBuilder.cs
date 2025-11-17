@@ -2,10 +2,10 @@ using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 
-namespace Utilities.Extensions;
+namespace Utilities.Errors;
 
 public class ErrorBuilder {
-    private string _message = "An error occurred";
+    private static string _message = ErrorsMessages.ErrorBuilderBaseMessage;
     private int? _errorCode;
     private string? _layer;
 
@@ -42,7 +42,7 @@ public class ErrorBuilder {
 }
 
 public static class ErrorExtensions
-    {
+{
     public static int? GetErrorCode(this Error error)
     {
         if (error.Metadata.TryGetValue("ErrorCode", out var code) && code is int intCode)
@@ -61,10 +61,11 @@ public static class ErrorExtensions
 
     public static Dictionary<string, string> GetDetail(this Error error)
     {
-        return new Dictionary<string, string> {
+        return new Dictionary<string, string> 
+        {
             ["ErrorCode"] = (error.GetErrorCode() ?? StatusCodes.Status500InternalServerError).ToString(),
             ["Message"] = error.Message,
-            ["Layer"] = error.GetLayer() ?? "UnknownLayer"
+            ["Layer"] = error.GetLayer() ?? typeof(UnknownLayer).Name
         };
     }
 }

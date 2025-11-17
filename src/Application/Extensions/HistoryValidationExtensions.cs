@@ -2,13 +2,33 @@ using Application.Abstractions.IRepository;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 using Utilities.Workflows;
 
 namespace Application.Extensions;
 
 public static class HistoryValidationExtensions
 {
+    internal static string HistoryLimitNotGreaterThanZeroMessage(int count) =>
+        $"History count must be greater than zero. Provided: {count}.";
+    internal static string HistoryRequestedExceedsAvailableMessage(int requested, int available) =>
+        $"Requested {requested} records, but only {available} are available.";
+
+    public static Error HistoryLimitNotGreaterThanZero(int count) =>
+        ErrorBuilder.New()
+            .WithLayer<ApplicationLayer>()
+            .WithMessage(HistoryLimitNotGreaterThanZeroMessage(count))
+            .WithErrorCode(StatusCodes.Status400BadRequest)
+            .Build();
+
+    public static Error HistoryRequestedExceedsAvailable(int requested, int available) =>
+        ErrorBuilder.New()
+            .WithLayer<ApplicationLayer>()
+            .WithMessage(HistoryRequestedExceedsAvailableMessage(requested, available))
+            .WithErrorCode(StatusCodes.Status400BadRequest)
+            .Build();
+
+
     public static async Task<WorkflowPipeline> IfDateInFuture
     (
         this Task<WorkflowPipeline> pipelineTask,
@@ -22,14 +42,7 @@ public static class HistoryValidationExtensions
 
         if (date > DateTime.UtcNow)
         {
-            errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<DomainLayer>()
-                .WithMessage($"Date '{date:yyyy-MM-dd}' cannot be in the future.")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
+            errors.Add(ErrorFactories.DateInFuture(date));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -50,14 +63,7 @@ public static class HistoryValidationExtensions
 
         if (from > to)
         {
-            errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<DomainLayer>()
-                .WithMessage($"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
+            errors.Add(ErrorFactories.DateRangeNotChronological(from, to));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -77,14 +83,7 @@ public static class HistoryValidationExtensions
 
         if (count <= 0)
         {
-            errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<ApplicationLayer>()
-                .WithMessage($"History count must be greater than zero. Provided: {count}.")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
+            errors.Add(HistoryLimitNotGreaterThanZero(count));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -114,14 +113,7 @@ public static class HistoryValidationExtensions
 
         if (requestedCount > availableCountResult.Value)
         {
-            errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<ApplicationLayer>()
-                .WithMessage($"Requested {requestedCount} records, but only {availableCountResult.Value} are available.")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
+            errors.Add(HistoryRequestedExceedsAvailable(requestedCount, availableCountResult.Value));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);

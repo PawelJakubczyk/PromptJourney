@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 
 namespace Unit.Utilities.Tests.Extensions;
 

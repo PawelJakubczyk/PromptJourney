@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 
 namespace Persistence.Repositories;
 

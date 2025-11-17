@@ -1,10 +1,9 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
@@ -31,29 +30,34 @@ public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, strin
 
 internal static partial class ModelVersionErrorsExtensions
 {
+    internal const string InvalidVersionFormatMessage =
+        $"Invalid version format. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')";
+
     internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>(
-        this WorkflowPipeline pipeline, string? value)
+        this WorkflowPipeline pipeline,
+        string? value)
         where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
             return pipeline;
 
-        if (value is null) return pipeline;
+        if (value is null)
+            return pipeline;
 
-        if (!ValidNijiRegex().IsMatch(value) && !ValidNumericRegex().IsMatch(value))
+        var isValid =
+            ValidNijiRegex().IsMatch(value) ||
+            ValidNumericRegex().IsMatch(value);
+
+        if (!isValid)
         {
-            pipeline.Errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<TLayer>()
-                .WithMessage($"Invalid version format: {value}. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
+            pipeline.Errors.Add(
+                ErrorFactories.InvalidPattern<string, TLayer>(value, InvalidVersionFormatMessage)
             );
         }
 
         return pipeline;
     }
+
 
     [GeneratedRegex(@"^[1-9][0-9]*(\.[0-9])?$", RegexOptions.Compiled)]
     private static partial Regex ValidNumericRegex();

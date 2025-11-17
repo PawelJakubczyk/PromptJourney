@@ -16,23 +16,17 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsOkWithList_WhenStyleExists()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example1.com/image1.jpg", styleName, "1.0"),
-            new("http://example2.com/image2.png", styleName, "2.0")
+        var list = new List<ExampleLinkResponse> 
+        { 
+            new(CorrectUrl, CorrectStyleName, CorrectVersion), 
+            new("http://example2.com/image2.png", CorrectStyleName, "2.0") 
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithCount(2);
@@ -42,18 +36,13 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsOkWithEmptyList_WhenStyleHasNoLinks()
     {
         // Arrange
-        var styleName = "EmptyStyle";
-        var emptyList = new List<ExampleLinkResponse>();
-        var result = Result.Ok(emptyList);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(
+            Result.Ok(new List<ExampleLinkResponse>()));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle("EmptyStyle", CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithCount(0);
@@ -63,20 +52,15 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_WhenStyleNameIsEmpty()
     {
         // Arrange
-        var emptyStyleName = string.Empty;
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
-            StatusCodes.Status400BadRequest,
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+            StatusCodes.Status400BadRequest, 
             "Style name cannot be empty");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(emptyStyleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(string.Empty, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -86,20 +70,15 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsNotFound_WhenStyleDoesNotExist()
     {
         // Arrange
-        var nonExistentStyleName = "NonExistentStyle";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
-            StatusCodes.Status404NotFound,
-            $"Style '{nonExistentStyleName}' not found");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
+            StatusCodes.Status404NotFound, 
+            $"Style '{NonExistStyleName}' not found");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(nonExistentStyleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(NonExistStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
@@ -109,20 +88,15 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_WhenStyleNameIsWhitespace()
     {
         // Arrange
-        var whitespaceStyleName = "   ";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
-            StatusCodes.Status400BadRequest,
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+            StatusCodes.Status400BadRequest, 
             "Style name cannot be whitespace");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(whitespaceStyleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle("   ", CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -132,20 +106,15 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
     {
         // Arrange
-        var tooLongStyleName = new string('A', 256);
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name exceeds maximum length");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+            StatusCodes.Status400BadRequest, 
+            ErrorMessageStyleNameTooLong);
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(tooLongStyleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(IncorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -155,20 +124,15 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_WhenStyleNameIsNull()
     {
         // Arrange
-        string? nullStyleName = null;
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
-            StatusCodes.Status400BadRequest,
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+            StatusCodes.Status400BadRequest, 
             "Style name cannot be null");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(nullStyleName!, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(null!, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -178,23 +142,17 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
-            StatusCodes.Status500InternalServerError,
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
+            StatusCodes.Status500InternalServerError, 
             "Database connection failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        // ToResultsOkAsync maps all non-404/400 errors to BadRequest
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
@@ -202,73 +160,56 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_VerifiesQueryIsCalledWithCorrectParameters()
     {
         // Arrange
-        var styleName = "TestStyle";
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", styleName, "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        GetExampleLinksByStyle.Query? capturedQuery = null;
-
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var senderMock = CreateSenderMock();
+        GetExampleLinksByStyle.Query? captured = null;
         senderMock
             .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<List<ExampleLinkResponse>>>, CancellationToken>((query, ct) =>
-            {
-                capturedQuery = query as GetExampleLinksByStyle.Query;
-            })
-            .ReturnsAsync(result);
-
+            .Callback<IRequest<Result<List<ExampleLinkResponse>>>, CancellationToken>((q, ct) => { captured = q as GetExampleLinksByStyle.Query; })
+            .ReturnsAsync(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetByStyle(styleName, CancellationToken.None);
+        await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        capturedQuery.Should().NotBeNull();
-        capturedQuery!.StyleName.Should().Be(styleName);
+        captured.Should().NotBeNull();
+        captured!.StyleName.Should().Be(CorrectStyleName);
     }
 
     [Fact]
     public async Task GetByStyle_HandlesCancellationToken()
     {
         // Arrange
-        var styleName = "ModernArt";
         var cts = new CancellationTokenSource();
         cts.Cancel();
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new OperationCanceledException());
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendThrowsOperationCanceledForAny<List<ExampleLinkResponse>>();
         var controller = CreateController(senderMock);
 
-        // Act & Assert
-        await FluentActions.Awaiting(() => controller.GetByStyle(styleName, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        // Act
+        var action = () => controller.GetByStyle(CorrectStyleName, cts.Token);
+
+        // Assert
+        await action.Should().ThrowAsync<OperationCanceledException>()
+            .WithMessage(ErrorCanceledOperation);
     }
 
     [Fact]
     public async Task GetByStyle_VerifiesSenderIsCalledOnce()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var list = new List<ExampleLinkResponse>();
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(
+            Result.Ok(new List<ExampleLinkResponse>()));
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetByStyle(styleName, CancellationToken.None);
+        await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
         senderMock.Verify(
-            s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()),
+            s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()), 
             Times.Once);
     }
 
@@ -283,13 +224,8 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
         var list = Enumerable.Range(1, count)
             .Select(i => new ExampleLinkResponse($"http://example{i}.com/image.jpg", styleName, $"{i % 6}.0"))
             .ToList();
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -303,51 +239,37 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsConsistentResults_ForSameStyleName()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", styleName, "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.GetByStyle(styleName, CancellationToken.None);
-        var actionResult2 = await controller.GetByStyle(styleName, CancellationToken.None);
+        var r1 = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
+        var r2 = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithCount(1);
-        actionResult2.Should().BeOkResult().WithCount(1);
+        r1.Should().BeOkResult().WithCount(1);
+        r2.Should().BeOkResult().WithCount(1);
     }
 
     [Fact]
     public async Task GetByStyle_ReturnsOk_WithLinksFromDifferentVersions()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example1.com/image1.jpg", styleName, "1.0"),
-            new("http://example2.com/image2.jpg", styleName, "2.0"),
-            new("http://example3.com/image3.jpg", styleName, "5.2"),
-            new("http://example4.com/image4.jpg", styleName, "6.0")
+        var list = new List<ExampleLinkResponse> 
+        { 
+            new("http://example1.com/image1.jpg", CorrectStyleName, "1.0"), 
+            new("http://example2.com/image2.jpg", CorrectStyleName, "2.0"), 
+            new("http://example3.com/image3.jpg", CorrectStyleName, "5.2"), 
+            new("http://example4.com/image4.jpg", CorrectStyleName, "6.0") 
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithCount(4);
@@ -357,21 +279,14 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_HandlesSpecialCharactersInStyleName()
     {
         // Arrange
-        var styleNameWithSpecialChars = "Modern-Art_2024";
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", styleNameWithSpecialChars, "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var style = "Modern-Art_2024";
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, style, CorrectVersion) };
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleNameWithSpecialChars, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(style, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithCount(1);
@@ -386,16 +301,9 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsOk_ForVariousValidStyleNames(string styleName)
     {
         // Arrange
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", styleName, "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, styleName, CorrectVersion) };
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
@@ -413,15 +321,11 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_ForInvalidStyleNames(string invalidStyleName)
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
-            StatusCodes.Status400BadRequest,
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+            StatusCodes.Status400BadRequest, 
             "Invalid style name");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
@@ -435,20 +339,15 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
-            StatusCodes.Status400BadRequest,
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
+            StatusCodes.Status400BadRequest, 
             "Repository error");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -458,20 +357,15 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
-            StatusCodes.Status400BadRequest,
+        var failure = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
+            StatusCodes.Status400BadRequest, 
             "Query handler failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -481,21 +375,14 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_HandlesCaseInsensitiveStyleNames()
     {
         // Arrange
-        var lowercaseStyleName = "modernart";
-        var list = new List<ExampleLinkResponse>
-        {
-            new("http://example.com/image.jpg", lowercaseStyleName, "1.0")
-        };
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var styleName = "modernart";
+        var list = new List<ExampleLinkResponse> { new(CorrectUrl, styleName, CorrectVersion) };
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(lowercaseStyleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithCount(1);
@@ -509,13 +396,8 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
         var largeList = Enumerable.Range(1, 100)
             .Select(i => new ExampleLinkResponse($"http://example{i}.com/image{i}.jpg", styleName, $"{i % 6}.0"))
             .ToList();
-
-        var result = Result.Ok(largeList);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(largeList));
         var controller = CreateController(senderMock);
 
         // Act
@@ -529,24 +411,18 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_ReturnsOk_WithMixedUrlFormats()
     {
         // Arrange
-        var styleName = "ModernArt";
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example.com/image.jpg", styleName, "1.0"),
-            new("https://secure.example.com/image.png", styleName, "1.0"),
-            new("http://example.com/path/to/image.jpeg", styleName, "1.0")
+            new("http://example.com/image.jpg", CorrectStyleName, CorrectVersion),
+            new("https://secure.example.com/image.png", CorrectStyleName, CorrectVersion),
+            new("http://example.com/path/to/image.jpeg", CorrectStyleName, CorrectVersion)
         };
-
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByStyle(styleName, CancellationToken.None);
+        var actionResult = await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithCount(3);
@@ -556,22 +432,16 @@ public sealed class GetByStyleTests : ExampleLinksControllerTestsBase
     public async Task GetByStyle_RespondsQuickly_ForPerformanceTest()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var list = new List<ExampleLinkResponse>();
-        var result = Result.Ok(list);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetExampleLinksByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyle.Query, List<ExampleLinkResponse>>(
+            Result.Ok(new List<ExampleLinkResponse>()));
         var controller = CreateController(senderMock);
-        var startTime = DateTime.UtcNow;
+        var start = DateTime.UtcNow;
 
         // Act
-        await controller.GetByStyle(styleName, CancellationToken.None);
+        await controller.GetByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        var duration = DateTime.UtcNow - startTime;
-        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
+        (DateTime.UtcNow - start).Should().BeLessThan(TimeSpan.FromSeconds(1));
     }
 }

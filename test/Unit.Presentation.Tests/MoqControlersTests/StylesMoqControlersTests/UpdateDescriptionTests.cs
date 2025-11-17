@@ -20,9 +20,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest("Updated description");
         var result = Result.Ok(request.Description);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -42,11 +40,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var failureResult = CreateFailureResult<string, ApplicationLayer>(
             StatusCodes.Status404NotFound,
             "Style not found");
-
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(failureResult);
 
         var controller = CreateController(senderMock);
 
@@ -66,11 +61,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var failureResult = CreateFailureResult<string, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
-
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(failureResult);
 
         var controller = CreateController(senderMock);
 
@@ -90,11 +82,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var failureResult = CreateFailureResult<string, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
-
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(failureResult);
 
         var controller = CreateController(senderMock);
 
@@ -114,11 +103,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var failureResult = CreateFailureResult<string, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
-
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(failureResult);
 
         var controller = CreateController(senderMock);
 
@@ -138,11 +124,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var failureResult = CreateFailureResult<string, DomainLayer>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
-
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(failureResult);
 
         var controller = CreateController(senderMock);
 
@@ -161,9 +144,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(null!);
         var result = Result.Ok<string>(null!);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -182,9 +163,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest("");
         var result = Result.Ok("");
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -204,9 +183,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(longDescription);
         var result = Result.Ok(longDescription);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -226,9 +203,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(descriptionWithSpecialChars);
         var result = Result.Ok(descriptionWithSpecialChars);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -279,9 +254,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         cts.Cancel();
 
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new OperationCanceledException());
+        senderMock.SetupSendThrowsOperationCanceledForAny<string>();
 
         var controller = CreateController(senderMock);
 
@@ -298,9 +271,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest("New description");
         var result = Result.Ok(request.Description);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -325,9 +296,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(description);
         var result = Result.Ok(description);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -346,9 +315,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest("Consistent description");
         var result = Result.Ok(request.Description);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -370,9 +337,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(descriptionWithNewlines);
         var result = Result.Ok(descriptionWithNewlines);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -391,9 +356,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest("Updated description");
         var result = Result.Ok(request.Description);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -413,11 +376,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var failureResult = CreateFailureResult<string, PersistenceLayer>(
             StatusCodes.Status500InternalServerError,
             "Repository error during description update");
-
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(failureResult);
 
         var controller = CreateController(senderMock);
 
@@ -438,11 +398,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var failureResult = CreateFailureResult<string, ApplicationLayer>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
-
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(failureResult);
 
         var controller = CreateController(senderMock);
 
@@ -462,9 +419,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(descriptionWithHtml);
         var result = Result.Ok(descriptionWithHtml);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -484,9 +439,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(descriptionWithJson);
         var result = Result.Ok(descriptionWithJson);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -505,9 +458,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest("Performance test description");
         var result = Result.Ok(request.Description);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
         var startTime = DateTime.UtcNow;
@@ -527,16 +478,13 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var styleName = "TestStyle";
         var descriptions = new[] { "First", "Second", "Third" };
         var senderMock = new Mock<ISender>();
-
         var controller = CreateController(senderMock);
 
         foreach (var description in descriptions)
         {
             var request = new UpdateDescriptionRequest(description);
             var result = Result.Ok(description);
-            senderMock
-                .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(result);
+            senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
             // Act
             var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
@@ -554,9 +502,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest("Test description");
         var result = Result.Ok(request.Description);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 
@@ -576,9 +522,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var request = new UpdateDescriptionRequest(descriptionWithQuotes);
         var result = Result.Ok(descriptionWithQuotes);
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
         var controller = CreateController(senderMock);
 

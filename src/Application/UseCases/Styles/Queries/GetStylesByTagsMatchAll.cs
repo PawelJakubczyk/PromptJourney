@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
+using Domain.Extensions;
 using Application.UseCases.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;

@@ -15,17 +15,12 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsOkWithTrue_WhenStyleHasLinks()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValueOfType<bool>();
@@ -35,17 +30,12 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsOkWithFalse_WhenStyleHasNoLinks()
     {
         // Arrange
-        var styleName = "EmptyStyle";
-        var result = Result.Ok(false);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(false));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists("EmptyStyle", CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValueOfType<bool>();
@@ -55,20 +45,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameIsEmpty()
     {
         // Arrange
-        var emptyStyleName = string.Empty;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name cannot be empty");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be empty");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(emptyStyleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(string.Empty, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -78,20 +61,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameIsWhitespace()
     {
         // Arrange
-        var whitespaceStyleName = "   ";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name cannot be whitespace");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be whitespace");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(whitespaceStyleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists("   ", CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -101,20 +77,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
     {
         // Arrange
-        var tooLongStyleName = new string('A', 256); // Assuming max length is 255
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name exceeds maximum length");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, ErrorMessageStyleNameTooLong);
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(tooLongStyleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(IncorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -124,20 +93,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameIsNull()
     {
         // Arrange
-        string? nullStyleName = null;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name cannot be null");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be null");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(nullStyleName!, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(null!, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -147,23 +109,15 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
-            StatusCodes.Status500InternalServerError,
-            "Database connection failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status500InternalServerError, "Database connection failed");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        // ToResultsCheckExistOkAsync maps all non-400 errors to BadRequest
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
@@ -172,68 +126,53 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     {
         // Arrange
         var styleName = "TestStyle";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        CheckExampleLinkExistsByStyle.Query? capturedQuery = null;
-
+        var senderMock = CreateSenderMock();
+        CheckExampleLinkExistsByStyle.Query? captured = null;
         senderMock
             .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<bool>>, CancellationToken>((query, ct) =>
-            {
-                capturedQuery = query as CheckExampleLinkExistsByStyle.Query;
-            })
-            .ReturnsAsync(result);
-
+            .Callback<IRequest<Result<bool>>, CancellationToken>((q, ct) => { captured = q as CheckExampleLinkExistsByStyle.Query; })
+            .ReturnsAsync(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
         await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
-        capturedQuery.Should().NotBeNull();
-        capturedQuery!.StyleName.Should().Be(styleName);
+        captured.Should().NotBeNull();
+        captured!.StyleName.Should().Be(styleName);
     }
 
     [Fact]
     public async Task CheckLinkWithStyleExists_HandlesCancellationToken()
     {
         // Arrange
-        var styleName = "ModernArt";
         var cts = new CancellationTokenSource();
         cts.Cancel();
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new OperationCanceledException());
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendThrowsOperationCanceledForAny<bool>();
         var controller = CreateController(senderMock);
 
-        // Act & Assert
-        await FluentActions.Awaiting(() => controller.CheckLinkWithStyleExists(styleName, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        // Act
+        var action = () => controller.CheckLinkWithStyleExists(CorrectStyleName, cts.Token);
+
+        // Assert
+        await action.Should().ThrowAsync<OperationCanceledException>()
+            .WithMessage(ErrorCanceledOperation);
     }
 
     [Fact]
     public async Task CheckLinkWithStyleExists_VerifiesSenderIsCalledOnce()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        senderMock.Verify(
-            s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()),
-            Times.Once);
+        senderMock.Verify(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -245,12 +184,8 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsOk_ForVariousValidStyleNames(string styleName)
     {
         // Arrange
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
@@ -268,15 +203,9 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_ForInvalidStyleNames(string invalidStyleName)
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Invalid style name");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Invalid style name");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
@@ -290,42 +219,31 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsConsistentResults_ForSameStyleName()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var styleName = CorrectStyleName;
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
-        var actionResult2 = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var r1 = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var r2 = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
-        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
+        r1.Should().BeOkResult().WithValueOfType<bool>();
+        r2.Should().BeOkResult().WithValueOfType<bool>();
     }
 
     [Fact]
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
-            StatusCodes.Status400BadRequest,
-            "Repository error");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status400BadRequest, "Repository error");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -335,17 +253,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_HandlesStyleNameWithSpecialCharacters()
     {
         // Arrange
-        var styleNameWithSpecialChars = "Modern-Art_2024";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var styleName = "Modern-Art_2024";
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleNameWithSpecialChars, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValueOfType<bool>();
@@ -355,17 +269,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_HandlesStyleNameWithNumbers()
     {
         // Arrange
-        var styleNameWithNumbers = "Style123";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var styleName = "Style123";
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleNameWithNumbers, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValueOfType<bool>();
@@ -375,17 +285,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_HandlesCaseInsensitiveStyleNames()
     {
         // Arrange
-        var lowercaseStyleName = "modernart";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var styleName = "modernart";
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(lowercaseStyleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValueOfType<bool>();
@@ -397,17 +303,12 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsOk_ForBothBooleanValues(bool exists)
     {
         // Arrange
-        var styleName = "TestStyle";
-        var result = Result.Ok(exists);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(exists));
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists("TestStyle", CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValueOfType<bool>();
@@ -417,20 +318,13 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var failureResult = CreateFailureResult<bool, ApplicationLayer>(
-            StatusCodes.Status400BadRequest,
-            "Query handler failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        var failure = CreateFailureResult<bool, ApplicationLayer>(StatusCodes.Status400BadRequest, "Query handler failed");
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
         actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
@@ -440,21 +334,15 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_RespondsQuickly_ForPerformanceTest()
     {
         // Arrange
-        var styleName = "ModernArt";
-        var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckExampleLinkExistsByStyle.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
+        var senderMock = CreateSenderMock();
+        senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(Result.Ok(true));
         var controller = CreateController(senderMock);
-        var startTime = DateTime.UtcNow;
+        var start = DateTime.UtcNow;
 
         // Act
-        await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
+        await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        var duration = DateTime.UtcNow - startTime;
-        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
+        (DateTime.UtcNow - start).Should().BeLessThan(TimeSpan.FromSeconds(1));
     }
 }

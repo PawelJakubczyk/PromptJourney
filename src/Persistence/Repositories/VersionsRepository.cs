@@ -52,7 +52,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
 
         if (allVersions.Count is 0) 
-            return Result.Fail<MidjourneyVersion>(DomainErrors.NoVersionFound());
+            return Result.Fail<MidjourneyVersion>(DomainErrors.NoAvailableVersionFound());
 
         var latest = allVersions
             .OrderByDescending(version => version.ReleaseDate ?? DateTime.MinValue)

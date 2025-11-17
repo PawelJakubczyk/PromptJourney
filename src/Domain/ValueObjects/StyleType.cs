@@ -1,9 +1,8 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
@@ -31,7 +30,9 @@ public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
 
 internal static class StyleTypeErrorsExtensions
 {
-    internal static WorkflowPipeline IfStyleTypeNotInclude<TLayer>(this WorkflowPipeline pipeline, string? value)
+    internal static WorkflowPipeline IfStyleTypeNotInclude<TLayer>(
+        this WorkflowPipeline pipeline,
+        string? value)
         where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
@@ -39,18 +40,12 @@ internal static class StyleTypeErrorsExtensions
 
         if (!Enum.TryParse<StyleTypeEnum>(value, true, out var _))
         {
-            pipeline.Errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<TLayer>()
-                .WithMessage($"Invalid style type: {value}. Expected values are: {string.Join(", ", Enum.GetNames<StyleTypeEnum>())}")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
+            pipeline.Errors.Add(ErrorFactories.OptionNotAllowed<StyleTypeEnum, TLayer>(value, typeof(StyleTypeEnum)));
         }
 
         return pipeline;
     }
+
 }
 
 public enum StyleTypeEnum

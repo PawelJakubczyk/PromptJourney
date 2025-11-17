@@ -1,61 +1,27 @@
 ﻿using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 
 namespace Domain.Errors;
 
 public static class DomainErrors
 {
-    public static Error ExamleLinkNotFound(Guid id) =>
-        ErrorBuilder.New()
-            .WithLayer<DomainLayer>()
-            .WithMessage($"Example link with ID {id} not found")
-            .WithErrorCode(StatusCodes.Status404NotFound)
-            .Build();
-
-    public static Error HistoryNotFoundError(Guid historyId) => 
-        ErrorBuilder.New()
-            .WithLayer<DomainLayer>()
-            .WithMessage($"History record with ID {historyId} not found")
-            .WithErrorCode(StatusCodes.Status404NotFound)
-            .Build();
-
+    public static Error NoAvailableVersionFound() =>
+        ErrorFactories.NoAvailableExist<ModelVersion, DomainLayer>();
 
     public static Error VersionNotFound(ModelVersion modelVersion) =>
-        ErrorBuilder.New()
-            .WithLayer<DomainLayer>()
-            .WithMessage($"Version '{modelVersion.Value}' not found")
-            .WithErrorCode(StatusCodes.Status404NotFound)
-            .Build();
+        ErrorFactories.NotFound<ModelVersion, DomainLayer>(modelVersion);
 
-    public static Error NoVersionFound() =>
-        ErrorBuilder.New()
-            .WithLayer<DomainLayer>()
-            .WithMessage("No version found")
-            .WithErrorCode(StatusCodes.Status404NotFound)
-            .Build();
+    public static Error ExampleLinkNotFound(Guid id) =>
+        ErrorFactories.NotFound<Guid, DomainLayer>(id);
+
+    public static Error HistoryNotFoundError(Guid historyId) =>
+        ErrorFactories.NotFound<Guid, DomainLayer>(historyId);
 
     public static Error StyleNotFound(StyleName style) =>
-        ErrorBuilder.New()
-            .WithLayer<DomainLayer>()
-            .WithMessage($"Style with name '{style.Value}' not found")
-            .WithErrorCode(StatusCodes.Status404NotFound)
-            .Build();
+        ErrorFactories.NotFound<StyleName, DomainLayer>(style);
 
     public static Error PropertyNotFound(PropertyName propertyName) =>
-        ErrorBuilder.New()
-            .WithLayer<DomainLayer>()
-            .WithMessage($"Property '{propertyName.Value}' not found")
-            .WithErrorCode(StatusCodes.Status404NotFound)
-            .Build();
-
-    public static Error ParameterInvalid(Param parameter) =>
-        ErrorBuilder.New()
-            .WithLayer<DomainLayer>()
-            .WithMessage($"Parameter '{parameter.Value}' is invalid")
-            .WithErrorCode(StatusCodes.Status400BadRequest)
-            .Build();
-
+        ErrorFactories.NotFound<PropertyName, DomainLayer>(propertyName);
 }

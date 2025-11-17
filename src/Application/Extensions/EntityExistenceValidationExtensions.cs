@@ -1,9 +1,8 @@
 using Application.Abstractions.IRepository;
 using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 using Utilities.Workflows;
 
 namespace Application.Extensions;
@@ -114,7 +113,8 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.IfAlreadyExist(
+        return pipelineTask.IfAlreadyExist
+        (
             link,
             repository.CheckExampleLinkExistsByLinkAsync,
             cancellationToken
@@ -130,7 +130,8 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.IfAlreadyExist(
+        return pipelineTask.IfAlreadyExist
+        (
             property,
             (property, cancellationToken) => repository.CheckPropertyExistsInVersionAsync(version, property, cancellationToken),
             cancellationToken
@@ -146,7 +147,8 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.IfNotExist(
+        return pipelineTask.IfNotExist
+        (
             property,
             (property, cancellationToken) => repository.CheckPropertyExistsInVersionAsync(version, property, cancellationToken),
             cancellationToken
@@ -162,7 +164,8 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence(
+        return pipelineTask.ValidateExistence
+        (
             tag,
             (tag, cancellationToken) => repository.CheckTagExistsInStyleAsync(styleName, tag, cancellationToken),
             $"Tag in style '{styleName}'",
@@ -180,7 +183,8 @@ public static class EntityExistenceValidationExtensions
         CancellationToken cancellationToken
     )
     {
-        return pipelineTask.ValidateExistence(
+        return pipelineTask.ValidateExistence
+        (
             tag,
             (tag, cancellationToken) => repository.CheckTagExistsInStyleAsync(styleName, tag, cancellationToken),
             $"Tag in style '{styleName}'",
@@ -234,45 +238,33 @@ public static class EntityExistenceValidationExtensions
         this Task<WorkflowPipeline> pipelineTask,
         TType item,
         Func<TType, CancellationToken, Task<Result<bool>>> existsFunc,
-        string Name,
+        string name,
         bool shouldExist,
         CancellationToken cancellationToken
     )
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
-        var errors = pipeline.Errors;
 
         if (pipeline.BreakOnError)
             return pipeline;
 
         var result = await existsFunc(item, cancellationToken).ConfigureAwait(false);
+        var errors = pipeline.Errors;
 
         if (result.IsFailed)
         {
-            errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<PersistenceLayer>()
-                .WithMessage($"Failed to check if {Name} exists")
-                .WithErrorCode(StatusCodes.Status404NotFound)
-                .Build()
-            );
+            errors.Add(ErrorFactories.DatabaseConnectionFailed<PersistenceLayer>(name));
+
+            return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
         }
 
-        var state = shouldExist ? "not found" : "already exists";
+        var exists = result.Value;
 
-        if (result.IsSuccess && result.Value != shouldExist)
-        {
-            errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<ApplicationLayer>()
-                .WithMessage($"{Name} '{item}' {state}")
-                .WithErrorCode(StatusCodes.Status409Conflict)
-                .Build()
-            );
-        }
+        if (shouldExist && !exists) errors.Add(ErrorFactories.NotFound<TType, ApplicationLayer>(item!));
 
+        if (!shouldExist && exists) errors.Add(ErrorFactories.AlreadyExist<TType, ApplicationLayer>(item!));
+        
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
+
 }

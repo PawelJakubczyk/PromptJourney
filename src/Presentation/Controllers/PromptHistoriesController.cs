@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
-using Presentation.Controllers.Utilities;
+using Presentation.Controllers.Pipeline;
 
 namespace Presentation.Controllers;
 
@@ -23,7 +23,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(GetAllHistoryRecords.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -42,7 +42,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -62,7 +62,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -81,7 +81,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -93,8 +93,8 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
         var histories =  await Sender
             .Send(CalculateHistoricalRecordCount.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
-            .ElsePrepareOKResponse(payload => Ok(new { count = payload }))
-            .ToResultsSimpleOkAsync();
+            .ElsePrepareOKResponse(payload => Ok(payload))
+            .ToResultsAsync<int, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -119,7 +119,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .ElsePrepareCreateResponse(payload => 
                 CreatedAtAction(nameof(AddPrompt), null, new { historyId = payload })
             )
-            .ToResultsCreatedAsync();
+            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }

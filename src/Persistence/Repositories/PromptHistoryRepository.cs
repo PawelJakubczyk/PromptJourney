@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using Utilities.Constants;
-using Utilities.Extensions;
+using Utilities.Errors;
 
 namespace Persistence.Repositories;
 

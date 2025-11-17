@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
-using Presentation.Controllers.Utilities;
+using Presentation.Controllers.Pipeline;
 
 namespace Presentation.Controllers;
 
@@ -21,7 +21,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(GetAllVersions.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<VersionResponse>, BadRequest<ProblemDetails>>();
 
         return versions;
     }
@@ -34,7 +34,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(GetAllSuportedVersions.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<string>, BadRequest<ProblemDetails>>();
 
         return versions;
     }
@@ -49,7 +49,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsAsync<VersionResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return versionInfo;
     }
@@ -63,8 +63,8 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
         var exist = await Sender
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
-            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsSimpleOkAsync();
+            .ElsePrepareOKResponse(payload => Ok(payload))
+            .ToResultsAsync<bool, BadRequest<ProblemDetails>>();
 
         return exist;
     }
@@ -92,7 +92,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
                     new { version = payload }
                 )
             )
-            .ToResultsCreatedAsync();
+            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }

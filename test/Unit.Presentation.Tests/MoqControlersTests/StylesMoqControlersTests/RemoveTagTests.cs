@@ -56,7 +56,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status404NotFound);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName!, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag!, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -224,7 +224,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -248,7 +248,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -586,7 +586,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -610,7 +610,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        AssertErrorResult(actionResult, StatusCodes.Status400BadRequest);
+        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
     }
 
     [Fact]

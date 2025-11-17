@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Utilities.Extensions;
 using Utilities.Constants;
 using FluentResults;
 using System.Text.Json;
+using Utilities.Errors;
 
 namespace App.Middleware;
 

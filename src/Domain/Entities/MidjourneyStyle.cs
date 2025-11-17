@@ -2,9 +2,7 @@ using Domain.Abstractions;
 using Domain.Extensions;
 using Domain.ValueObjects;
 using FluentResults;
-using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
-using Utilities.Extensions;
 using Utilities.Workflows;
 
 namespace Domain.Entities;
@@ -130,87 +128,3 @@ public class MidjourneyStyle : IEntity
     }
 }
 
-internal static class MidjourneyStylePipelineExtensions
-{
-    public static WorkflowPipeline IfListIsNull<TLayer, TValue>(
-        this WorkflowPipeline pipeline,
-        List<TValue?>? value)
-        where TLayer : ILayer
-        where TValue : ValueObject<string>
-    {
-        if (value is null)
-        {
-            pipeline.Errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<TLayer>()
-                .WithMessage($"List of {typeof(TValue).Name}: cannot be null.")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
-        }
-        return pipeline;
-    }
-
-    public static WorkflowPipeline IfListIsEmpty<TLayer, TValue>(
-        this WorkflowPipeline pipeline,
-        List<TValue>? items)
-        where TLayer : ILayer
-        where TValue : ValueObject<string?>?
-    {
-        if (items != null && items.Count == 0)
-        {
-            pipeline.Errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<TLayer>()
-                .WithMessage($"{typeof(TValue).Name}: cannot be an empty collection.")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
-        }
-        return pipeline;
-    }
-
-    public static WorkflowPipeline IfListNotContain<TLayer, TValue>(
-        this WorkflowPipeline pipeline,
-        List<TValue>? items,
-        TValue element)
-        where TLayer : ILayer
-        where TValue : ValueObject<string>
-    {
-        if (items != null && !items.Contains(element))
-        {
-            pipeline.Errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<TLayer>()
-                .WithMessage($"{typeof(TValue).Name}: collection does not contain the required element.")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
-        }
-        return pipeline;
-    }
-
-    public static WorkflowPipeline IfListContain<TLayer, TValue>(
-        this WorkflowPipeline pipeline,
-        List<TValue>? items,
-        TValue element)
-        where TLayer : ILayer
-        where TValue : ValueObject<string>
-    {
-        if (items != null && items.Contains(element))
-        {
-            pipeline.Errors.Add
-            (
-            ErrorBuilder.New()
-                .WithLayer<TLayer>()
-                .WithMessage($"{typeof(TValue).Name}: collection already contains the element.")
-                .WithErrorCode(StatusCodes.Status400BadRequest)
-                .Build()
-            );
-        }
-        return pipeline;
-    }
-}

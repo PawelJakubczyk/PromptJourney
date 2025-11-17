@@ -52,7 +52,8 @@ public static class ValueObjectsMapping<TValueObject, TValue>
     public class Converter : ValueConverter<TValueObject?, TValue?>
     {
         public Converter()
-            : base(
+            : base
+            (
                 // To database: extract primitive value
                 vo => vo == null ? default : vo.Value,
 
@@ -65,7 +66,8 @@ public static class ValueObjectsMapping<TValueObject, TValue>
     public class Comparer : ValueComparer<TValueObject?>
     {
         public Comparer()
-            : base(
+            : base
+            (
                 // Equality comparison
                 (a, b) => (a == null && b == null) ||
                           (a != null && b != null && EqualityComparer<TValue>.Default.Equals(a.Value, b.Value)),
@@ -82,7 +84,8 @@ public static class ValueObjectsMapping<TValueObject, TValue>
     public class ListConverter : ValueConverter<List<TValueObject?>?, TValue[]?>
     {
         public ListConverter()
-            : base(
+            : base
+            (
                 // To database: convert List<TValueObject> to array of primitive values
                 list => list == null ? null : list.Select(vo => vo!.Value).ToArray(),
 
@@ -100,7 +103,8 @@ public static class ValueObjectsMapping<TValueObject, TValue>
     public class ListComparer : ValueComparer<List<TValueObject?>?>
     {
         public ListComparer()
-            : base(
+            : base
+            (
                 // Equality comparison - compare lists by their values using SequenceEqual
                 (a, b) => (a == null && b == null) ||
                           (a != null && b != null &&

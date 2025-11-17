@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
-using Presentation.Controllers.Utilities;
+using Presentation.Controllers.Pipeline;
 
 namespace Presentation.Controllers;
 
@@ -26,7 +26,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<StyleResponse>, BadRequest<ProblemDetails>>();
 
         return styles;
     }
@@ -45,7 +45,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsAsync<StyleResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return style;
     }
@@ -64,7 +64,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsAsync<List<StyleResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return styles;
     }
@@ -83,7 +83,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsAsync<List<StyleResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return styles;
     }
@@ -102,7 +102,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsSimpleOkAsync();
+            .ToResultsAsync<List<StyleResponse>, BadRequest<ProblemDetails>>();
 
         return styles;
     }
@@ -120,8 +120,8 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
         var exist = await Sender
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
-            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsSimpleOkAsync();
+            .ElsePrepareOKResponse(payload => Ok(payload))
+            .ToResultsAsync<bool, BadRequest<ProblemDetails>>();
 
         return exist;
     }
@@ -140,8 +140,8 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
         var exist = await Sender
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
-            .ElsePrepareOKResponse(payload => Ok(new { exists = payload }))
-            .ToResultsSimpleOkAsync();
+            .ElsePrepareOKResponse(payload => Ok(payload))
+            .ToResultsAsync<bool, BadRequest<ProblemDetails>>();
 
         return exist;
     }
@@ -175,7 +175,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
                     new { styleName = payload }
                 )
             )
-            .ToResultsCreatedAsync();
+            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
@@ -200,7 +200,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { styleName = payload }))
-            .ToResultsOkAsync();
+            .ToResultsAsync<string, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
@@ -219,7 +219,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
@@ -239,7 +239,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { tag = payload, message = $"Tag '{payload}' added successfully" }))
-            .ToResultsOkExtendedAsync();
+            .ToResultsAsync<string, NotFound<ProblemDetails>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
@@ -259,7 +259,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync();
+            .ToResultsAsync<StyleResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
@@ -279,7 +279,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { description = payload }))
-            .ToResultsOkAsync();
+            .ToResultsAsync<string, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }

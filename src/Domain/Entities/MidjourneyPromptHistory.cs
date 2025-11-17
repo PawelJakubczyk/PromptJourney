@@ -56,12 +56,4 @@ public class MidjourneyPromptHistory : IEntity
 
         return result;
     }
-
-    public void AddStyle(MidjourneyStyle style)
-    {
-        if (!Styles.Contains(style))
-        {
-            Styles.Add(style);
-        }
-    }
 }
