@@ -60,101 +60,70 @@ public static class ToResultsPipelineExtensions
         return (false, default, pdMain, status);
     }
 
-    private static IResult CreateResult(Type resultType, object? payload, ProblemDetails? problem, string? location)
-    {
-        // OK / Created
-        if (resultType.IsGenericType)
-        {
-            var generic = resultType.GetGenericTypeDefinition();
-            var arg = resultType.GetGenericArguments()[0];
-
-            if (generic == typeof(Ok<>))
-                return TypedResults.Ok(payload);
-
-            if (generic == typeof(Created<>))
-                return TypedResults.Created(location ?? string.Empty, payload);
-
-            if (generic == typeof(BadRequest<>))
-                return TypedResults.BadRequest(problem);
-
-            if (generic == typeof(NotFound<>))
-                return TypedResults.NotFound(problem);
-
-            if (generic == typeof(Conflict<>))
-                return TypedResults.Conflict(problem);
-        }
-
-        throw new NotSupportedException($"Result type {resultType.Name} is not supported.");
-    }
-
-    private static async Task<IResult> ToResultsCoreAsync<TResponse>(
-    Task<Pipeline<TResponse>> pipelineTask,
-    Func<TResponse?, string>? locationFactory,
-    params Type[] allowedResultTypes)
-    {
-        var (success, payload, problem, status) =
-            await EvaluatePipelineAsync(pipelineTask);
-
-        if (success)
-        {
-            var resultType = allowedResultTypes
-                .First(t => t.Name.StartsWith("Ok") || t.Name.StartsWith("Created"));
-
-            return CreateResult(resultType, payload, null, locationFactory?.Invoke(payload));
-        }
-        else
-        {
-            var resultType = allowedResultTypes.First(t =>
-                status switch
-                {
-                    400 => t.Name.StartsWith("BadRequest"),
-                    404 => t.Name.StartsWith("NotFound"),
-                    409 => t.Name.StartsWith("Conflict"),
-                    _ => false
-                });
-
-            return CreateResult(resultType, null, problem, null);
-        }
-    }
-
     // For Ok results (2 result types total)
-    public static async Task<Results<Ok<TResponse>, TError1>> ToResultsAsync<TResponse, TError1>
+    public static async Task<Results<Ok<TResponse>, TError1>> ToResultsOkAsync<TResponse, TError1>
     (
         this Task<Pipeline<TResponse>> pipelineTask
     )
     where TError1 : IResult
     {
-        var result = await ToResultsCoreAsync(
-            pipelineTask,
-            null,
-            typeof(Ok<TResponse>),
-            typeof(TError1)
-        );
+        var (success, payload, problem, status) = await EvaluatePipelineAsync(pipelineTask);
 
-        return (Results<Ok<TResponse>, TError1>)(object)result;
+        if (success)
+        {
+            return TypedResults.Ok(payload!);
+        }
+
+        if (status == 400 && typeof(TError1) == typeof(BadRequest<ProblemDetails>))
+            return (TError1)(object)TypedResults.BadRequest(problem);
+        if (status == 404 && typeof(TError1) == typeof(NotFound<ProblemDetails>))
+            return (TError1)(object)TypedResults.NotFound(problem);
+        if (status == 409 && typeof(TError1) == typeof(Conflict<ProblemDetails>))
+            return (TError1)(object)TypedResults.Conflict(problem);
+
+        return (TError1)(object)TypedResults.BadRequest(problem);
     }
 
     // For Ok results (3 result types total)
-    public static async Task<Results<Ok<TResponse>, TError1, TError2>> ToResultsAsync<TResponse, TError1, TError2>
+    public static async Task<Results<Ok<TResponse>, TError1, TError2>> ToResultsOkAsync<TResponse, TError1, TError2>
     (
         this Task<Pipeline<TResponse>> pipelineTask
     )
     where TError1 : IResult
     where TError2 : IResult
     {
-        var result = await ToResultsCoreAsync(
-            pipelineTask,
-            null,
-            typeof(Ok<TResponse>),
-            typeof(TError1),
-            typeof(TError2)
-        );
+        var (success, payload, problem, status) = await EvaluatePipelineAsync(pipelineTask);
 
-        return (Results<Ok<TResponse>, TError1, TError2>)(object)result;
+        if (success)
+        {
+            return TypedResults.Ok(payload!);
+        }
+
+        if (status == 400)
+        {
+            if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+            if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+        }
+        else if (status == 404)
+        {
+            if (typeof(TError1) == typeof(NotFound<ProblemDetails>)) return (TError1)(object)TypedResults.NotFound(problem);
+            if (typeof(TError2) == typeof(NotFound<ProblemDetails>)) return (TError2)(object)TypedResults.NotFound(problem);
+        }
+        else if (status == 409)
+        {
+            if (typeof(TError1) == typeof(Conflict<ProblemDetails>)) return (TError1)(object)TypedResults.Conflict(problem);
+            if (typeof(TError2) == typeof(Conflict<ProblemDetails>)) return (TError2)(object)TypedResults.Conflict(problem);
+        }
+
+        // Fallback to BadRequest
+        if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+        if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+
+        throw new InvalidOperationException($"No suitable error result type found for status code {status}");
     }
 
     // For Ok results (4 result types total)
-    public static async Task<Results<Ok<TResponse>, TError1, TError2, TError3>> ToResultsAsync<TResponse, TError1, TError2, TError3>
+    public static async Task<Results<Ok<TResponse>, TError1, TError2, TError3>> ToResultsOkAsync<TResponse, TError1, TError2, TError3>
     (
         this Task<Pipeline<TResponse>> pipelineTask
     )
@@ -162,16 +131,38 @@ public static class ToResultsPipelineExtensions
     where TError2 : IResult
     where TError3 : IResult
     {
-        var result = await ToResultsCoreAsync(
-            pipelineTask,
-            null,
-            typeof(Ok<TResponse>),
-            typeof(TError1),
-            typeof(TError2),
-            typeof(TError3)
-        );
+        var (success, payload, problem, status) = await EvaluatePipelineAsync(pipelineTask);
 
-        return (Results<Ok<TResponse>, TError1, TError2, TError3>)(object)result;
+        if (success)
+        {
+            return TypedResults.Ok(payload!);
+        }
+
+        if (status == 400)
+        {
+            if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+            if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+            if (typeof(TError3) == typeof(BadRequest<ProblemDetails>)) return (TError3)(object)TypedResults.BadRequest(problem);
+        }
+        else if (status == 404)
+        {
+            if (typeof(TError1) == typeof(NotFound<ProblemDetails>)) return (TError1)(object)TypedResults.NotFound(problem);
+            if (typeof(TError2) == typeof(NotFound<ProblemDetails>)) return (TError2)(object)TypedResults.NotFound(problem);
+            if (typeof(TError3) == typeof(NotFound<ProblemDetails>)) return (TError3)(object)TypedResults.NotFound(problem);
+        }
+        else if (status == 409)
+        {
+            if (typeof(TError1) == typeof(Conflict<ProblemDetails>)) return (TError1)(object)TypedResults.Conflict(problem);
+            if (typeof(TError2) == typeof(Conflict<ProblemDetails>)) return (TError2)(object)TypedResults.Conflict(problem);
+            if (typeof(TError3) == typeof(Conflict<ProblemDetails>)) return (TError3)(object)TypedResults.Conflict(problem);
+        }
+
+        // Fallback to BadRequest
+        if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+        if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+        if (typeof(TError3) == typeof(BadRequest<ProblemDetails>)) return (TError3)(object)TypedResults.BadRequest(problem);
+
+        throw new InvalidOperationException($"No suitable error result type found for status code {status}");
     }
 
     // For Created results (2 result types total)
@@ -182,14 +173,22 @@ public static class ToResultsPipelineExtensions
     )
     where TError1 : IResult
     {
-        var result = await ToResultsCoreAsync(
-            pipelineTask,
-            locationFactory,
-            typeof(Created<TResponse>),
-            typeof(TError1)
-        );
+        var (success, payload, problem, status) = await EvaluatePipelineAsync(pipelineTask);
 
-        return (Results<Created<TResponse>, TError1>)(object)result;
+        if (success)
+        {
+            var location = locationFactory?.Invoke(payload) ?? string.Empty;
+            return TypedResults.Created(location, payload!);
+        }
+
+        if (status == 400 && typeof(TError1) == typeof(BadRequest<ProblemDetails>))
+            return (TError1)(object)TypedResults.BadRequest(problem);
+        if (status == 404 && typeof(TError1) == typeof(NotFound<ProblemDetails>))
+            return (TError1)(object)TypedResults.NotFound(problem);
+        if (status == 409 && typeof(TError1) == typeof(Conflict<ProblemDetails>))
+            return (TError1)(object)TypedResults.Conflict(problem);
+
+        return (TError1)(object)TypedResults.BadRequest(problem);
     }
 
     // For Created results (3 result types total)
@@ -201,15 +200,35 @@ public static class ToResultsPipelineExtensions
     where TError1 : IResult
     where TError2 : IResult
     {
-        var result = await ToResultsCoreAsync(
-            pipelineTask,
-            locationFactory,
-            typeof(Created<TResponse>),
-            typeof(TError1),
-            typeof(TError2)
-        );
+        var (success, payload, problem, status) = await EvaluatePipelineAsync(pipelineTask);
 
-        return (Results<Created<TResponse>, TError1, TError2>)(object)result;
+        if (success)
+        {
+            var location = locationFactory?.Invoke(payload) ?? string.Empty;
+            return TypedResults.Created(location, payload!);
+        }
+
+        if (status == 400)
+        {
+            if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+            if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+        }
+        else if (status == 404)
+        {
+            if (typeof(TError1) == typeof(NotFound<ProblemDetails>)) return (TError1)(object)TypedResults.NotFound(problem);
+            if (typeof(TError2) == typeof(NotFound<ProblemDetails>)) return (TError2)(object)TypedResults.NotFound(problem);
+        }
+        else if (status == 409)
+        {
+            if (typeof(TError1) == typeof(Conflict<ProblemDetails>)) return (TError1)(object)TypedResults.Conflict(problem);
+            if (typeof(TError2) == typeof(Conflict<ProblemDetails>)) return (TError2)(object)TypedResults.Conflict(problem);
+        }
+
+        // Fallback to BadRequest
+        if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+        if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+
+        throw new InvalidOperationException($"No suitable error result type found for status code {status}");
     }
 
     // For Created results (4 result types total)
@@ -222,16 +241,38 @@ public static class ToResultsPipelineExtensions
     where TError2 : IResult
     where TError3 : IResult
     {
-        var result = await ToResultsCoreAsync(
-            pipelineTask,
-            locationFactory,
-            typeof(Created<TResponse>),
-            typeof(TError1),
-            typeof(TError2),
-            typeof(TError3)
-        );
+        var (success, payload, problem, status) = await EvaluatePipelineAsync(pipelineTask);
 
-        return (Results<Created<TResponse>, TError1, TError2, TError3>)(object)result;
+        if (success)
+        {
+            var location = locationFactory?.Invoke(payload) ?? string.Empty;
+            return TypedResults.Created(location, payload!);
+        }
+
+        if (status == 400)
+        {
+            if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+            if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+            if (typeof(TError3) == typeof(BadRequest<ProblemDetails>)) return (TError3)(object)TypedResults.BadRequest(problem);
+        }
+        else if (status == 404)
+        {
+            if (typeof(TError1) == typeof(NotFound<ProblemDetails>)) return (TError1)(object)TypedResults.NotFound(problem);
+            if (typeof(TError2) == typeof(NotFound<ProblemDetails>)) return (TError2)(object)TypedResults.NotFound(problem);
+            if (typeof(TError3) == typeof(NotFound<ProblemDetails>)) return (TError3)(object)TypedResults.NotFound(problem);
+        }
+        else if (status == 409)
+        {
+            if (typeof(TError1) == typeof(Conflict<ProblemDetails>)) return (TError1)(object)TypedResults.Conflict(problem);
+            if (typeof(TError2) == typeof(Conflict<ProblemDetails>)) return (TError2)(object)TypedResults.Conflict(problem);
+            if (typeof(TError3) == typeof(Conflict<ProblemDetails>)) return (TError3)(object)TypedResults.Conflict(problem);
+        }
+
+        // Fallback to BadRequest
+        if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
+        if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
+        if (typeof(TError3) == typeof(BadRequest<ProblemDetails>)) return (TError3)(object)TypedResults.BadRequest(problem);
+
+        throw new InvalidOperationException($"No suitable error result type found for status code {status}");
     }
 }
-

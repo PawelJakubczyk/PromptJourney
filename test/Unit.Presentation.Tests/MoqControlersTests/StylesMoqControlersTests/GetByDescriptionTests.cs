@@ -35,8 +35,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -57,8 +62,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(0);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(0);
     }
 
     [Fact]
@@ -81,7 +91,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(emptyKeyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Keyword cannot be empty");
     }
 
     [Fact]
@@ -104,7 +117,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(whitespaceKeyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Keyword cannot be whitespace");
     }
 
     [Fact]
@@ -127,7 +143,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(nullKeyword!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Keyword cannot be null");
     }
 
     [Fact]
@@ -150,7 +169,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(tooLongKeyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Keyword exceeds maximum length");
     }
 
     [Fact]
@@ -174,7 +196,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -201,8 +226,8 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(keyword, capturedQuery!.DescriptionKeyword);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.DescriptionKeyword.Should().Be(keyword);
     }
 
     [Fact]
@@ -221,8 +246,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByDescription(keyword, cts.Token));
+        await FluentActions
+            .Awaiting(() => controller.GetByDescription(keyword, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -273,8 +300,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(1);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -299,10 +331,20 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult2 = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        actionResult1.Should().BeOkResult().WithCount(1);
-        actionResult2.Should().BeOkResult().WithCount(1);
+        actionResult1
+            .Should()
+            .NotBeNull();
+        actionResult2
+            .Should()
+            .NotBeNull();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -326,8 +368,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(lowercaseKeyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(1);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -352,8 +399,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -381,8 +433,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(10);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(10);
     }
 
     [Fact]
@@ -407,8 +464,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -432,8 +494,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(1);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -457,8 +524,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(1);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -482,8 +554,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(1);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -507,8 +584,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(1);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -534,8 +616,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(3);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(3);
     }
 
     [Fact]
@@ -558,7 +645,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during keyword search");
     }
 
     [Fact]
@@ -581,7 +671,10 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(keyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]
@@ -605,8 +698,13 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.GetByDescription(longKeyword, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(1);
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]

@@ -11,6 +11,10 @@ namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTe
 
 public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
 {
+    /// -----------------
+    /// Happy Path Tests
+    /// -----------------
+
     [Fact]
     public async Task CheckLinkExists_ReturnsOkWithTrue_WhenLinkExists()
     {
@@ -26,7 +30,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeOkResult()
-            .WithValueOfType<bool>();
+            .WithValue(true);
     }
 
     [Fact]
@@ -44,8 +48,12 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeOkResult()
-            .WithValueOfType<bool>();
+            .WithValue(false);
     }
+
+    /// -----------------------
+    /// Input Validation Tests
+    /// -----------------------
 
     [Fact]
     public async Task CheckLinkExists_ReturnsBadRequest_WhenLinkIdIsInvalidGuid()
@@ -62,8 +70,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest);
+            .BeBadRequestResult()
+            .WithMessage("Invalid link ID format");
     }
 
     [Fact]
@@ -81,8 +89,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest);
+            .BeBadRequestResult()
+            .WithMessage("Link ID cannot be empty");
     }
 
     [Fact]
@@ -100,8 +108,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest);
+            .BeBadRequestResult()
+            .WithMessage("Link ID cannot be whitespace");
     }
 
     [Fact]
@@ -119,8 +127,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest);
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -180,7 +188,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeOkResult()
-            .WithValueOfType<bool>();
+            .WithValue(true);
     }
 
     [Theory]
@@ -202,7 +210,10 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(invalidLinkId, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid link ID");
     }
 
     [Fact]
@@ -218,7 +229,10 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(null!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Link ID cannot be null");
     }
 
     [Fact]
@@ -235,8 +249,15 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult2 = await controller.CheckLinkExists(linkId, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
-        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
+
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -253,7 +274,10 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(malformedGuid, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Malformed GUID format");
     }
 
     [Fact]
@@ -285,6 +309,9 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinkExists(lowercaseGuid, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 }

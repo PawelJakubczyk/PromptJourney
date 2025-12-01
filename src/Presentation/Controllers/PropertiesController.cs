@@ -30,7 +30,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<PropertyQueryResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PropertyQueryResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return properties;
     }
@@ -44,7 +44,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(GetAllProperties.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<PropertyQueryResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PropertyQueryResponse>, BadRequest<ProblemDetails>>();
 
         return properties;
     }
@@ -64,7 +64,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsAsync<bool, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();
 
         return exist;
     }
@@ -130,7 +130,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<PropertyCommandResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<PropertyCommandResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
@@ -155,7 +155,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<PropertyCommandResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<PropertyCommandResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
@@ -168,7 +168,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(new DeleteProperty.Command(version, propertyName), cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }

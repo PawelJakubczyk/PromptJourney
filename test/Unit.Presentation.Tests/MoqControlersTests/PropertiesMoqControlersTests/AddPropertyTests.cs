@@ -41,7 +41,10 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.AddProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(PropertiesController.CheckPropertyExists));
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(PropertiesController.CheckPropertyExists));
     }
 
     [Fact]
@@ -68,7 +71,9 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.AddProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeNoContentResult();
+        actionResult
+            .Should()
+            .BeNoContentResult();
     }
 
     [Fact]
@@ -97,7 +102,10 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.AddProperty(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid property data");
     }
 
     [Fact]
@@ -126,6 +134,9 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.AddProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage("Version not found");
     }
 }

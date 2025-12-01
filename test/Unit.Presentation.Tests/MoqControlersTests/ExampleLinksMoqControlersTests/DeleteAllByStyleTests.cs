@@ -28,7 +28,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(bulkDeleteResponse);
     }
 
     [Fact]
@@ -47,7 +50,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle("EmptyStyle", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(bulkDeleteResponse);
     }
 
     [Fact]
@@ -65,7 +71,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(NonExistStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage($"Style '{NonExistStyleName}' not found");
     }
 
     [Fact]
@@ -83,7 +92,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(string.Empty, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be empty");
     }
 
     [Fact]
@@ -101,7 +113,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle("   ", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be whitespace");
     }
 
     [Fact]
@@ -119,7 +134,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(IncorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage(ErrorMessageStyleNameTooLong);
     }
 
     [Fact]
@@ -137,7 +155,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(null!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be null");
     }
 
     [Fact]
@@ -155,7 +176,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -192,7 +216,9 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var action = () => controller.DeleteAllByStyle(CorrectStyleName, cts.Token);
 
         // Assert
-        await action.Should().ThrowAsync<OperationCanceledException>()
+        await action
+            .Should()
+            .ThrowAsync<OperationCanceledException>()
             .WithMessage(ErrorCanceledOperation);
     }
 
@@ -222,16 +248,19 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsOk_ForVariousDeletionCounts(string styleName, int deletedCount)
     {
         // Arrange
-        var response = BulkDeleteResponse.Success(deletedCount, $"Deleted {deletedCount} links");
+        var bulkDeleteResponse = BulkDeleteResponse.Success(deletedCount, $"Deleted {deletedCount} links");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteAllExampleLinksByStyle.Command, BulkDeleteResponse>(Result.Ok(response));
+        senderMock.SetupSendReturnsForRequest<DeleteAllExampleLinksByStyle.Command, BulkDeleteResponse>(Result.Ok(bulkDeleteResponse));
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(bulkDeleteResponse);
     }
 
     [Theory]
@@ -253,7 +282,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(invalidStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid style name");
     }
 
     [Fact]
@@ -269,7 +301,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle("PopularStyle", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -277,16 +312,20 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var styleName = "Modern-Art_2024";
+        var bulkDeleteResponse = BulkDeleteResponse.Success(3, $"Successfully deleted 3 example links for style '{styleName}'.");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<DeleteAllExampleLinksByStyle.Command, BulkDeleteResponse>(
-            Result.Ok(BulkDeleteResponse.Success(3, "Deleted 3 links")));
+            Result.Ok(bulkDeleteResponse));
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(bulkDeleteResponse);
     }
 
     [Fact]
@@ -304,7 +343,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during deletion");
     }
 
     [Fact]
@@ -312,8 +354,8 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        var response = BulkDeleteResponse.Success(5, "Deleted 5 links");
-        senderMock.SetupSendReturnsForRequest<DeleteAllExampleLinksByStyle.Command, BulkDeleteResponse>(Result.Ok(response));
+        var bulkDeleteResponse = BulkDeleteResponse.Success(5, "Deleted 5 links");
+        senderMock.SetupSendReturnsForRequest<DeleteAllExampleLinksByStyle.Command, BulkDeleteResponse>(Result.Ok(bulkDeleteResponse));
         var controller = CreateController(senderMock);
 
         // Act
@@ -321,8 +363,15 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var r2 = await controller.DeleteAllByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        r1.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
-        r2.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        r1
+            .Should()
+            .BeOkResult()
+            .WithValue(bulkDeleteResponse);
+
+        r2
+            .Should()
+            .BeOkResult()
+            .WithValue(bulkDeleteResponse);
     }
 
     [Fact]
@@ -330,16 +379,20 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var styleName = "modernart";
+        var bulkDeleteResponse = BulkDeleteResponse.Success(3, $"Successfully deleted 3 example links for style '{styleName}'.");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<DeleteAllExampleLinksByStyle.Command, BulkDeleteResponse>(
-            Result.Ok(BulkDeleteResponse.Success(3, "Deleted 3 links")));
+            Result.Ok(bulkDeleteResponse));
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.DeleteAllByStyle(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<BulkDeleteResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(bulkDeleteResponse);
     }
 
     [Fact]
@@ -357,7 +410,10 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteAllByStyle(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 
     [Fact]

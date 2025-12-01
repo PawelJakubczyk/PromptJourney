@@ -9,9 +9,19 @@ namespace Unit.Presentation.Tests.MoqControlersTests;
 
 public static class ActionResultAssertionExtensions
 {
-    public static ErrorResultAssertions BeErrorResult(this ObjectAssertions assertions)
+    public static BadRequestResultAssertions BeBadRequestResult(this ObjectAssertions assertions)
     {
-        return new ErrorResultAssertions(assertions.Subject);
+        return new BadRequestResultAssertions(assertions.Subject);
+    }
+
+    public static NotFoundResultAssertions BeNotFoundResult(this ObjectAssertions assertions)
+    {
+        return new NotFoundResultAssertions(assertions.Subject);
+    }
+
+    public static ConflictResultAssertions BeConflictResult(this ObjectAssertions assertions)
+    {
+        return new ConflictResultAssertions(assertions.Subject);
     }
 
     public static CreatedResultAssertions BeCreatedResult(this ObjectAssertions assertions)
@@ -30,92 +40,114 @@ public static class ActionResultAssertionExtensions
     }
 }
 
-public sealed class ErrorResultAssertions
+public sealed class BadRequestResultAssertions
 {
     private readonly object subject;
-    internal ErrorResultAssertions(object subject) => this.subject = subject;
+    internal BadRequestResultAssertions(object subject) => this.subject = subject;
 
-    public ErrorResultAssertions WithStatusCode(int expectedStatus)
+    public BadRequestResultAssertions WithMessage(string expected)
     {
         if (subject is IActionResult mvcResult)
         {
             mvcResult.Should().BeOfType<ObjectResult>();
             var obj = mvcResult as ObjectResult;
-            obj!.StatusCode.Should().Be(expectedStatus);
+            obj!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
             obj.Value.Should().NotBeNull();
-            return this;
-        }
-
-        if (subject is NotFound<ProblemDetails> nf)
-        {
-            nf.Value.Should().NotBeNull();
-            nf.Value!.Status.Should().Be(expectedStatus);
+            obj.Value.ToString()!.Should().Contain(expected);
             return this;
         }
 
         if (subject is BadRequest<ProblemDetails> br)
         {
             br.Value.Should().NotBeNull();
-            br.Value!.Status.Should().Be(expectedStatus);
+            br.Value!.Status.Should().Be(StatusCodes.Status400BadRequest);
+            (br.Value.Detail ?? br.Value.Title ?? string.Empty).Should().Contain(expected);
             return this;
         }
 
-        if (subject is IResult union)
+        if (subject is IResult result)
         {
-            var (status, _) = ControllerTestsBase.ExecuteResult(union);
-            status.Should().Be(expectedStatus);
-            return this;
-        }
-
-        if (subject is ObjectResult objRes)
-        {
-            objRes.StatusCode.Should().Be(expectedStatus);
-            objRes.Value.Should().NotBeNull();
-            return this;
-        }
-
-        throw new Exception($"Result is not an error result. Actual type: {subject.GetType().FullName}");
-    }
-
-    public ErrorResultAssertions WithErrorMessage(string expected)
-    {
-        if (subject is IActionResult mvcResult)
-        {
-            var obj = mvcResult as ObjectResult;
-            obj!.Value.Should().NotBeNull();
-            obj.Value.ToString().Should().Contain(expected);
-            return this;
-        }
-
-        if (subject is NotFound<ProblemDetails> nf)
-        {
-            nf.Value.Should().NotBeNull();
-            (nf.Value!.Detail ?? nf.Value.Title ?? string.Empty).Should().Contain(expected);
-            return this;
-        }
-
-        if (subject is BadRequest<ProblemDetails> br)
-        {
-            br.Value.Should().NotBeNull();
-            (br.Value!.Detail ?? br.Value.Title ?? string.Empty).Should().Contain(expected);
-            return this;
-        }
-
-        if (subject is IResult union)
-        {
-            var (_, body) = ControllerTestsBase.ExecuteResult(union);
+            var (status, body) = ControllerTestsBase.ExecuteResult(result);
+            status.Should().Be(StatusCodes.Status400BadRequest);
             body.Should().Contain(expected);
             return this;
         }
 
-        if (subject is ObjectResult objRes)
+        throw new Exception($"Result is not a BadRequest result. Actual type: {subject.GetType().FullName}");
+    }
+}
+
+public sealed class NotFoundResultAssertions
+{
+    private readonly object subject;
+    internal NotFoundResultAssertions(object subject) => this.subject = subject;
+
+    public NotFoundResultAssertions WithMessage(string expected)
+    {
+        if (subject is IActionResult mvcResult)
         {
-            objRes.Value.Should().NotBeNull();
-            objRes.Value.ToString().Should().Contain(expected);
+            mvcResult.Should().BeOfType<ObjectResult>();
+            var obj = mvcResult as ObjectResult;
+            obj!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+            obj.Value.Should().NotBeNull();
+            obj.Value.ToString()!.Should().Contain(expected);
             return this;
         }
 
-        throw new Exception($"Result is not an error result. Actual type: {subject.GetType().FullName}");
+        if (subject is NotFound<ProblemDetails> nf)
+        {
+            nf.Value.Should().NotBeNull();
+            nf.Value!.Status.Should().Be(StatusCodes.Status404NotFound);
+            (nf.Value.Detail ?? nf.Value.Title ?? string.Empty).Should().Contain(expected);
+            return this;
+        }
+
+        if (subject is IResult result)
+        {
+            var (status, body) = ControllerTestsBase.ExecuteResult(result);
+            status.Should().Be(StatusCodes.Status404NotFound);
+            body.Should().Contain(expected);
+            return this;
+        }
+
+        throw new Exception($"Result is not a NotFound result. Actual type: {subject.GetType().FullName}");
+    }
+}
+
+public sealed class ConflictResultAssertions
+{
+    private readonly object subject;
+    internal ConflictResultAssertions(object subject) => this.subject = subject;
+
+    public ConflictResultAssertions WithMessage(string expected)
+    {
+        if (subject is IActionResult mvcResult)
+        {
+            mvcResult.Should().BeOfType<ObjectResult>();
+            var obj = mvcResult as ObjectResult;
+            obj!.StatusCode.Should().Be(StatusCodes.Status409Conflict);
+            obj.Value.Should().NotBeNull();
+            obj.Value.ToString()!.Should().Contain(expected);
+            return this;
+        }
+
+        if (subject is Conflict<ProblemDetails> cf)
+        {
+            cf.Value.Should().NotBeNull();
+            cf.Value!.Status.Should().Be(StatusCodes.Status409Conflict);
+            (cf.Value.Detail ?? cf.Value.Title ?? string.Empty).Should().Contain(expected);
+            return this;
+        }
+
+        if (subject is IResult result)
+        {
+            var (status, body) = ControllerTestsBase.ExecuteResult(result);
+            status.Should().Be(StatusCodes.Status409Conflict);
+            body.Should().Contain(expected);
+            return this;
+        }
+
+        throw new Exception($"Result is not a Conflict result. Actual type: {subject.GetType().FullName}");
     }
 }
 
@@ -183,6 +215,48 @@ public sealed class CreatedResultAssertions
         }
 
         throw new Exception($"Result does not contain a created value of type {typeof(T).FullName}.");
+    }
+
+    public CreatedResultAssertions WithValue<TValue>(TValue expected)
+    {
+        // Handle MVC IActionResult
+        if (subject is IActionResult mvcResult)
+        {
+            mvcResult.Should().BeOfType<CreatedAtActionResult>();
+            var created = mvcResult as CreatedAtActionResult;
+            created!.Value.Should().NotBeNull();
+            created.Value.Should().Be(expected);
+            return this;
+        }
+
+        // Handle Created<TValue> directly
+        if (subject is Created<TValue> typedCreated)
+        {
+            typedCreated.Value.Should().Be(expected);
+            return this;
+        }
+
+        // Handle Results<> (Minimal API IResult)
+        if (subject is IResult result)
+        {
+            var (status, body) = ControllerTestsBase.ExecuteResult(result);
+            status.Should().Be(StatusCodes.Status201Created);
+
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                throw new Exception(
+                    $"Result body is empty but expected a created value of type {typeof(TValue).FullName}."
+                );
+            }
+
+            var deserialized = JsonSerializer.Deserialize<TValue>(body, ControllerTestsBase._jsonOptions);
+            deserialized.Should().BeEquivalentTo(expected);
+            return this;
+        }
+
+        throw new Exception(
+            $"Result is not a Created result with a value. Actual type: {subject.GetType().FullName}"
+        );
     }
 }
 
@@ -257,38 +331,41 @@ public sealed class OkResultAssertions
         throw new Exception($"Result is not an OK result. Actual type: {subject.GetType().FullName}");
     }
 
-    public OkResultAssertions WithValueOfType<T>()
+    public OkResultAssertions WithValue<TValue>(TValue expected)
     {
+        // Handle IActionResult (MVC style)
         if (subject is IActionResult mvcResult)
         {
             mvcResult.Should().BeOfType<OkObjectResult>();
             var ok = mvcResult as OkObjectResult;
-            ok!.Value.Should().BeOfType<T>();
+            ok!.Value.Should().NotBeNull();
+            ok.Value.Should().Be(expected);
             return this;
         }
 
-        if (subject is Ok<T> typedOk)
+        // Handle Ok<TValue> directly
+        if (subject is Ok<TValue> typedOk)
         {
-            typedOk.Value?.Should().BeOfType<T>();
+            typedOk.Value.Should().Be(expected);
             return this;
         }
 
-        if (subject is IResult union)
+        // Handle Results<> union types
+        if (subject is IResult result)
         {
-            var (_, body) = ControllerTestsBase.ExecuteResult(union);
+            var (status, body) = ControllerTestsBase.ExecuteResult(result);
+            status.Should().Be(StatusCodes.Status200OK);
 
             if (string.IsNullOrWhiteSpace(body))
             {
-                // Accept empty body when expecting nullable/reference types
-                if (default(T) == null) return this;
-                throw new Exception($"Result body is empty but expected a value of type {typeof(T).FullName}.");
+                throw new Exception($"Result body is empty but expected a value of type {typeof(TValue).FullName}.");
             }
 
-            var obj = JsonSerializer.Deserialize<T>(body, ControllerTestsBase._jsonOptions);
-            obj.Should().NotBeNull();
+            var deserialized = JsonSerializer.Deserialize<TValue>(body, ControllerTestsBase._jsonOptions);
+            deserialized.Should().BeEquivalentTo(expected);
             return this;
         }
 
-        throw new Exception($"Result is not an OK result with a value of type {typeof(T).FullName}.");
+        throw new Exception($"Result is not an OK result with value. Actual type: {subject.GetType().FullName}");
     }
 }

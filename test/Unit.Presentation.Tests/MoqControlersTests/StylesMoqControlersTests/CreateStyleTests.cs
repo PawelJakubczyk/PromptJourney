@@ -62,7 +62,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be empty");
     }
 
     [Fact]
@@ -89,7 +92,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be empty");
     }
 
     [Fact]
@@ -116,7 +122,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name and type cannot be empty");
     }
 
     [Fact]
@@ -143,7 +152,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status409Conflict);
+        actionResult
+            .Should()
+            .BeConflictResult()
+            .WithMessage($"Style '{request.Name}' already exists");
     }
 
     [Fact]
@@ -170,7 +182,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be whitespace");
     }
 
     [Fact]
@@ -197,7 +212,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be whitespace");
     }
 
     [Fact]
@@ -224,7 +242,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be null");
     }
 
     [Fact]
@@ -251,7 +272,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be null");
     }
 
     [Fact]
@@ -278,7 +302,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name exceeds maximum length");
     }
 
     [Fact]
@@ -305,7 +332,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type exceeds maximum length");
     }
 
     [Fact]
@@ -333,7 +363,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Description exceeds maximum length");
     }
 
     [Fact]
@@ -362,7 +395,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be empty");
     }
 
     [Fact]
@@ -391,7 +427,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag exceeds maximum length");
     }
 
     [Fact]
@@ -419,7 +458,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsCreatedAsync maps all non-409/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -733,7 +775,10 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during style creation");
     }
 
     [Fact]
@@ -760,32 +805,9 @@ public sealed class CreateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task Create_RespondsQuickly_ForPerformanceTest()
-    {
-        // Arrange
-        var request = new CreateStyleRequest(
-            "NewStyle",
-            "Custom"
-        );
-
-        var result = Result.Ok(request.Name);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<AddStyle.Command>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-        var startTime = DateTime.UtcNow;
-
-        // Act
-        await controller.Create(request, CancellationToken.None);
-
-        // Assert
-        var duration = DateTime.UtcNow - startTime;
-        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 }

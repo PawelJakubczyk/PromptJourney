@@ -34,7 +34,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -54,7 +57,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(0);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(0);
     }
 
     [Fact]
@@ -77,7 +83,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -99,7 +108,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Application layer error");
     }
 
     [Fact]
@@ -144,8 +156,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await FluentActions.Awaiting(() => controller.GetAll(cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        await FluentActions
+            .Awaiting(() => controller.GetAll(cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -192,7 +206,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -217,7 +234,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -242,7 +262,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -272,7 +295,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(100);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(100);
     }
 
     [Fact]
@@ -299,7 +325,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(4);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(4);
     }
 
     [Fact]
@@ -324,7 +353,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -348,8 +380,14 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult2 = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithCount(1);
-        actionResult2.Should().BeOkResult().WithCount(1);
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -375,7 +413,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -400,7 +441,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -426,7 +470,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(3);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(3);
     }
 
     [Fact]
@@ -448,7 +495,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during retrieval");
     }
 
     [Fact]
@@ -470,7 +520,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Theory]
@@ -503,7 +556,10 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(count);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(count);
     }
 
     [Fact]

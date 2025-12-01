@@ -28,7 +28,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<int>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
     }
 
     [Fact]
@@ -48,7 +51,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<int>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
     }
 
     [Fact]
@@ -71,7 +77,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -91,7 +100,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<int>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
     }
 
     [Fact]
@@ -136,8 +148,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await FluentActions.Awaiting(() => controller.GetRecordCount(cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        await FluentActions
+            .Awaiting(() => controller.GetRecordCount(cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -186,7 +200,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<int>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
     }
 
     [Fact]
@@ -207,8 +224,15 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult2 = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValueOfType<int>();
-        actionResult2.Should().BeOkResult().WithValueOfType<int>();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
+
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
     }
 
     [Fact]
@@ -228,7 +252,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<int>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
     }
 
     [Fact]
@@ -281,7 +308,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error");
     }
 
     [Fact]
@@ -303,7 +333,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]
@@ -323,7 +356,10 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<int>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(count);
     }
 
     [Fact]
@@ -345,9 +381,20 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         var actionResult3 = await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValueOfType<int>();
-        actionResult2.Should().BeOkResult().WithValueOfType<int>();
-        actionResult3.Should().BeOkResult().WithValueOfType<int>();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue(5);
+
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue(10);
+
+        actionResult3
+            .Should()
+            .BeOkResult()
+            .WithValue(15);
     }
 
     [Fact]

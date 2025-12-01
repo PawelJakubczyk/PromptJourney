@@ -28,8 +28,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -49,8 +54,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -73,7 +83,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(invalidVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be empty");
     }
 
     [Fact]
@@ -96,7 +109,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(nullVersion!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be null");
     }
 
     [Fact]
@@ -119,7 +135,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(whitespaceVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be whitespace");
     }
 
     [Fact]
@@ -142,7 +161,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(invalidVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid version format");
     }
 
     [Fact]
@@ -165,7 +187,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(tooLongVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version exceeds maximum length");
     }
 
     [Fact]
@@ -188,7 +213,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database error");
     }
 
     [Theory]
@@ -213,8 +241,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -240,8 +273,8 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(version, capturedQuery!.Version);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.Version.Should().Be(version);
     }
 
     [Fact]
@@ -260,8 +293,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.CheckExists(version, cts.Token));
+        await FluentActions
+            .Awaiting(() => controller.CheckExists(version, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -304,10 +339,20 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult2 = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        actionResult1.Should().BeOkResult().WithValueOfType<bool>();
-        actionResult2.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult1
+            .Should()
+            .NotBeNull();
+        actionResult2
+            .Should()
+            .NotBeNull();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -327,8 +372,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -348,8 +398,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -369,8 +424,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -390,8 +450,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -414,7 +479,10 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]
@@ -456,8 +524,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -477,8 +550,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -498,8 +576,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -519,8 +602,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Theory]
@@ -544,8 +632,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -565,8 +658,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -588,8 +686,13 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
             var actionResult = await controller.CheckExists(version, CancellationToken.None);
 
             // Assert
-            actionResult.Should().NotBeNull();
-            actionResult.Should().BeOkResult().WithValueOfType<bool>();
+            actionResult
+                .Should()
+                .NotBeNull();
+            actionResult
+                .Should()
+                .BeOkResult()
+                .WithValue(true);
         }
     }
 }

@@ -11,4 +11,15 @@
 	<ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Unit.Presentation.Tests</_Parameter1>
+    </AssemblyAttribute>
+
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Unit.Application.Tests</_Parameter1>
+    </AssemblyAttribute>
+
+  </ItemGroup>
+
 </Project>

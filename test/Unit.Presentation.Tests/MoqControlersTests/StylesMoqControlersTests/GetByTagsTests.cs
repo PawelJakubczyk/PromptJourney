@@ -35,9 +35,11 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithCount(2);
-        actionResult.Should().BeOkResult().WithValueOfType<List<StyleResponse>>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2)
+            .WithValue(styles);
     }
 
     [Fact]
@@ -82,7 +84,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var actionResult = await controller.GetByTags(emptyTags, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tags list cannot be empty");
     }
 
     [Fact]
@@ -105,7 +110,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var actionResult = await controller.GetByTags(nullTags!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tags list cannot be null");
     }
 
     [Fact]
@@ -128,7 +136,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be empty");
     }
 
     [Fact]
@@ -151,7 +162,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be whitespace");
     }
 
     [Fact]
@@ -174,7 +188,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag exceeds maximum length");
     }
 
     [Fact]
@@ -281,8 +298,8 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(tags, capturedQuery!.Tags);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.Tags.Should().BeEquivalentTo(tags);
     }
 
     [Fact]
@@ -301,8 +318,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByTags(tags, cts.Token));
+        await FluentActions
+            .Awaiting(() => controller.GetByTags(tags, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -560,7 +579,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during tag search");
     }
 
     [Fact]
@@ -583,7 +605,10 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]

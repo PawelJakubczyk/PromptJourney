@@ -28,7 +28,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -49,7 +49,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage("Style not found");
     }
 
     [Fact]
@@ -70,7 +73,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(invalidStyleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be empty");
     }
 
     [Fact]
@@ -91,7 +97,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(nullStyleName!, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be null");
     }
 
     [Fact]
@@ -112,7 +121,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(whitespaceStyleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be whitespace");
     }
 
     [Fact]
@@ -133,7 +145,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(tooLongStyleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name exceeds maximum length");
     }
 
     [Fact]
@@ -152,7 +167,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue("");
     }
 
     [Fact]
@@ -171,7 +189,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue("");
     }
 
     [Fact]
@@ -191,7 +209,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -211,7 +229,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -304,7 +322,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(description);
     }
 
     [Fact]
@@ -324,8 +342,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult2 = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValueOfType<string>();
-        actionResult2.Should().BeOkResult().WithValueOfType<string>();
+        actionResult1.Should().BeOkResult().WithValue("Consistent description");
+        actionResult2.Should().BeOkResult().WithValue("Consistent description");
     }
 
     [Fact]
@@ -345,7 +363,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -364,7 +382,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -386,7 +404,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during description update");
     }
 
     [Fact]
@@ -407,7 +428,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 
     [Fact]
@@ -427,7 +451,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -447,7 +471,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -490,7 +514,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
             var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
             // Assert
-            actionResult.Should().BeOkResult().WithValueOfType<string>();
+            actionResult.Should().BeOkResult().WithValue(styleName);
         }
     }
 
@@ -510,7 +534,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(longStyleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(longStyleName);
     }
 
     [Fact]
@@ -530,6 +554,6 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 }

@@ -169,10 +169,13 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         // Add styles if provided
         foreach (var style in styles)
         {
-            promptHistory.AddStyle(style);
+            if (promptHistory.MidjourneyStyles is List<MidjourneyStyle> styleList)
+            {
+                styleList.Add(style);
+            }
         }
 
-        var result = await PromptHistoryRepository.AddPromptToHistoryAsync(promptHistory, CancellationToken);
+            var result = await PromptHistoryRepository.AddPromptToHistoryAsync(promptHistory, CancellationToken);
         AssertSuccessResult(result);
         return result.Value;
     }
@@ -190,10 +193,13 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         // Add styles if provided
         foreach (var style in styles)
         {
-            promptHistory.AddStyle(style);
+            if (promptHistory.MidjourneyStyles is List<MidjourneyStyle> styleList)
+            {
+                styleList.Add(style);
+            }
         }
 
-        return Task.FromResult(promptHistory);
+            return Task.FromResult(promptHistory);
     }
 
     // Properties Helper Methods - POPRAWKA BŁĘDU KONWERSJI

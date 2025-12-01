@@ -1,4 +1,4 @@
-using Application.UseCases.PromptHistory.Commands;
+﻿using Application.UseCases.PromptHistory.Commands;
 using FluentAssertions;
 using FluentResults;
 using MediatR;
@@ -38,7 +38,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
             .Should()
             .BeCreatedResult()
             .WithActionName(nameof(PromptHistoriesController.GetRecordCount))
-            .WithValueOfType<string>();
+            .WithValue(historyId);
     }
 
     [Fact]
@@ -65,7 +65,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Prompt cannot be empty");
     }
 
     [Fact]
@@ -92,7 +95,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be empty");
     }
 
     [Fact]
@@ -119,7 +125,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Prompt and version cannot be empty");
     }
 
     [Fact]
@@ -146,7 +155,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status409Conflict);
+        actionResult
+            .Should()
+            .BeConflictResult()
+            .WithMessage("Version '99.0' not found");
     }
 
     [Fact]
@@ -173,7 +185,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Prompt exceeds maximum length");
     }
 
     [Fact]
@@ -200,7 +215,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Prompt cannot be whitespace");
     }
 
     [Fact]
@@ -227,7 +245,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be whitespace");
     }
 
     [Fact]
@@ -254,7 +275,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Prompt cannot be null");
     }
 
     [Fact]
@@ -281,7 +305,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be null");
     }
 
     [Fact]
@@ -308,7 +335,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid version format");
     }
 
     [Fact]
@@ -336,7 +366,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
 
         // Assert
         // ToResultsCreatedAsync maps all non-409/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -384,8 +417,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await FluentActions.Awaiting(() => controller.AddPrompt(request, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        await FluentActions
+            .Awaiting(() => controller.AddPrompt(request, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -433,7 +468,11 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(PromptHistoriesController.GetRecordCount)).WithValueOfType<string>();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(PromptHistoriesController.GetRecordCount))
+            .WithValue(historyId);
     }
 
     [Fact]
@@ -455,7 +494,11 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(PromptHistoriesController.GetRecordCount)).WithValueOfType<string>();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(PromptHistoriesController.GetRecordCount))
+            .WithValue(historyId);
     }
 
     [Fact]
@@ -477,7 +520,11 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(PromptHistoriesController.GetRecordCount)).WithValueOfType<string>();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(PromptHistoriesController.GetRecordCount))
+            .WithValue(historyId);
     }
 
     [Fact]
@@ -501,8 +548,17 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult2 = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeCreatedResult().WithActionName(nameof(PromptHistoriesController.GetRecordCount)).WithValueOfType<string>();
-        actionResult2.Should().BeCreatedResult().WithActionName(nameof(PromptHistoriesController.GetRecordCount)).WithValueOfType<string>();
+        actionResult1
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(PromptHistoriesController.GetRecordCount))
+            .WithValue(historyId1);
+
+        actionResult2
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(PromptHistoriesController.GetRecordCount))
+            .WithValue(historyId2);
     }
 
     [Fact]
@@ -525,7 +581,10 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error");
     }
 
     [Fact]
@@ -548,14 +607,17 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 
     [Fact]
     public async Task AddPrompt_ReturnsCreated_WithUnicodeCharacters()
     {
         // Arrange
-        var promptWithUnicode = "A beautiful ?? landscape ?? ??";
+        var promptWithUnicode = "A beautiful ñ landscape ü ö";
         var request = new AddPromptRequest(promptWithUnicode, "1.0");
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
@@ -570,7 +632,11 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.AddPrompt(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(PromptHistoriesController.GetRecordCount)).WithValueOfType<string>();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(PromptHistoriesController.GetRecordCount))
+            .WithValue(historyId);
     }
 
     [Fact]

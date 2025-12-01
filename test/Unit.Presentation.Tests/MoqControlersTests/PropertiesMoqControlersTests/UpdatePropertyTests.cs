@@ -42,7 +42,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -72,7 +75,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage($"Property '{propertyName}' not found for version '{version}'");
     }
 
     [Fact]
@@ -102,7 +108,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(invalidRequest, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Parameters cannot be empty");
     }
 
     [Fact]
@@ -132,7 +141,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be empty");
     }
 
     [Fact]
@@ -162,7 +174,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Property name cannot be empty");
     }
 
     [Fact]
@@ -192,7 +207,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be whitespace");
     }
 
     [Fact]
@@ -222,7 +240,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Property name cannot be whitespace");
     }
 
     [Fact]
@@ -252,7 +273,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid version format");
     }
 
     [Fact]
@@ -282,7 +306,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage($"Version '{nonExistentVersion}' not found");
     }
 
     [Fact]
@@ -312,7 +339,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid parameter format");
     }
 
     [Fact]
@@ -343,7 +373,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -419,8 +452,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await FluentActions.Awaiting(() => controller.UpdateProperty(request, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        await FluentActions
+            .Awaiting(() => controller.UpdateProperty(request, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -480,7 +515,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -513,8 +551,15 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult2 = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
-        actionResult2.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
+
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -546,7 +591,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -578,7 +626,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -606,7 +657,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -638,7 +692,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<PropertyCommandResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -668,7 +725,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during update");
     }
 
     [Fact]
@@ -698,7 +758,10 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var actionResult = await controller.UpdateProperty(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 
     [Fact]

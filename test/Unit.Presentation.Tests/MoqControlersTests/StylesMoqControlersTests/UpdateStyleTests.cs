@@ -27,7 +27,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 
     [Fact]
@@ -35,7 +35,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("NonExistentStyle", "Custom");
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(StatusCodes.Status404NotFound, "Style not found");
+        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+            StatusCodes.Status404NotFound,
+            "Style not found");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -44,7 +46,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage("Style not found");
     }
 
     [Fact]
@@ -52,7 +57,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("", "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be empty");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style name cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -61,7 +68,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be empty");
     }
 
     [Fact]
@@ -69,7 +79,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", "");
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style type cannot be empty");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style type cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -78,7 +90,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be empty");
     }
 
     [Fact]
@@ -86,7 +101,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest(null!, "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be null");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style name cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -95,7 +112,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be null");
     }
 
     [Fact]
@@ -103,7 +123,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", null!);
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style type cannot be null");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style type cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -112,7 +134,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be null");
     }
 
     [Fact]
@@ -120,7 +145,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("   ", "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be whitespace");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style name cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -129,7 +156,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be whitespace");
     }
 
     [Fact]
@@ -137,7 +167,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", "   ");
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style type cannot be whitespace");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style type cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -146,7 +178,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be whitespace");
     }
 
     [Fact]
@@ -154,7 +189,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest(new string('a', 256), "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style name exceeds maximum length");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style name exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -163,7 +200,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name exceeds maximum length");
     }
 
     [Fact]
@@ -171,7 +211,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", new string('a', 256));
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Style type exceeds maximum length");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Style type exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -180,7 +222,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type exceeds maximum length");
     }
 
     [Fact]
@@ -188,7 +233,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["valid", ""]);
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Tag cannot be empty");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Tag cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -197,7 +244,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be empty");
     }
 
     [Fact]
@@ -205,7 +255,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["valid", "   "]);
-        var failureResult = CreateFailureResult<string, DomainLayer>(StatusCodes.Status400BadRequest, "Tag cannot be whitespace");
+        var failureResult = CreateFailureResult<string, DomainLayer>(
+            StatusCodes.Status400BadRequest,
+            "Tag cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -214,7 +266,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be whitespace");
     }
 
     [Fact]
@@ -231,7 +286,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -248,7 +303,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -265,7 +320,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -282,7 +337,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -300,7 +355,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -317,7 +372,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -398,7 +453,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -416,8 +471,8 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult2 = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValueOfType<string>();
-        actionResult2.Should().BeOkResult().WithValueOfType<string>();
+        actionResult1.Should().BeOkResult().WithValue(result);
+        actionResult2.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -434,7 +489,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -451,7 +506,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -459,7 +514,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", "Custom");
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(StatusCodes.Status500InternalServerError, "Repository error during style update");
+        var failureResult = CreateFailureResult<string, PersistenceLayer>(
+            StatusCodes.Status500InternalServerError,
+            "Repository error during style update");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -469,7 +526,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during style update");
     }
 
     [Fact]
@@ -477,7 +537,9 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var request = new UpdateStyleRequest("TestStyle", "Custom");
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(StatusCodes.Status400BadRequest, "Command handler failed");
+        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+            StatusCodes.Status400BadRequest,
+            "Command handler failed");
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
         var controller = CreateController(senderMock);
@@ -486,7 +548,10 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 
     [Fact]
@@ -503,7 +568,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -539,7 +604,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -556,7 +621,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 
     [Fact]
@@ -573,6 +638,6 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<string>();
+        actionResult.Should().BeOkResult().WithValue(result);
     }
 }

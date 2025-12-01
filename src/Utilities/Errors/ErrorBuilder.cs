@@ -5,7 +5,7 @@ using Utilities.Constants;
 namespace Utilities.Errors;
 
 public class ErrorBuilder {
-    private static string _message = ErrorsMessages.ErrorBuilderBaseMessage;
+    private string _message = ErrorsMessages.ErrorBuilderBaseMessage;
     private int? _errorCode;
     private string? _layer;
 

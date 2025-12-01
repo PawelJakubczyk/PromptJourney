@@ -35,8 +35,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -63,7 +68,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be empty");
     }
 
     [Fact]
@@ -90,7 +98,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Parameter cannot be empty");
     }
 
     [Fact]
@@ -117,7 +128,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be null");
     }
 
     [Fact]
@@ -144,7 +158,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Parameter cannot be null");
     }
 
     [Fact]
@@ -171,7 +188,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be whitespace");
     }
 
     [Fact]
@@ -198,7 +218,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Parameter cannot be whitespace");
     }
 
     [Fact]
@@ -225,7 +248,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version already exists");
     }
 
     [Fact]
@@ -253,7 +279,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version exceeds maximum length");
     }
 
     [Fact]
@@ -281,7 +310,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Parameter exceeds maximum length");
     }
 
     [Fact]
@@ -305,8 +337,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -333,8 +370,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -360,8 +402,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -387,8 +434,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -414,8 +466,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Theory]
@@ -447,8 +504,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -481,11 +543,11 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         await controller.Create(request, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(request.Version, capturedCommand!.Version);
-        Assert.Equal(request.Parameter, capturedCommand.Parameter);
-        Assert.Equal(releaseDate, capturedCommand.ReleaseDate);
-        Assert.Equal(request.Description, capturedCommand.Description);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.Version.Should().Be(request.Version);
+        capturedCommand.Parameter.Should().Be(request.Parameter);
+        capturedCommand.ReleaseDate.Should().Be(releaseDate);
+        capturedCommand.Description.Should().Be(request.Description);
     }
 
     [Fact]
@@ -508,8 +570,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.Create(request, cts.Token));
+        await FluentActions
+            .Awaiting(() => controller.Create(request, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -562,8 +626,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -589,8 +658,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -617,7 +691,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during version creation");
     }
 
     [Fact]
@@ -644,7 +721,10 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 
     [Fact]
@@ -699,8 +779,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -727,8 +812,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 
     [Fact]
@@ -754,7 +844,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeCreatedResult().WithActionName(nameof(VersionsController.GetByVersion));
+        actionResult
+            .Should()
+            .NotBeNull();
+        actionResult
+            .Should()
+            .BeCreatedResult()
+            .WithActionName(nameof(VersionsController.GetByVersion));
     }
 }

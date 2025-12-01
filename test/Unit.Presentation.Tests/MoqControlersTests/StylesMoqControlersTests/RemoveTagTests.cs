@@ -32,7 +32,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 
     [Fact]
@@ -56,7 +56,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage("Style not found");
     }
 
     [Fact]
@@ -80,7 +83,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage("Tag not found in style");
     }
 
     [Fact]
@@ -104,7 +110,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be empty");
     }
 
     [Fact]
@@ -128,7 +137,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be empty");
     }
 
     [Fact]
@@ -152,7 +164,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name and tag cannot be empty");
     }
 
     [Fact]
@@ -176,7 +191,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName!, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be null");
     }
 
     [Fact]
@@ -200,7 +218,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be null");
     }
 
     [Fact]
@@ -224,7 +245,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name cannot be whitespace");
     }
 
     [Fact]
@@ -248,7 +272,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag cannot be whitespace");
     }
 
     [Fact]
@@ -272,7 +299,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style name exceeds maximum length");
     }
 
     [Fact]
@@ -296,7 +326,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Tag exceeds maximum length");
     }
 
     [Fact]
@@ -319,7 +352,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 
     [Fact]
@@ -342,7 +375,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 
     [Fact]
@@ -370,9 +403,9 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedCommand);
-        Assert.Equal(styleName, capturedCommand!.StyleName);
-        Assert.Equal(tag, capturedCommand.Tag);
+        capturedCommand.Should().NotBeNull();
+        capturedCommand!.StyleName.Should().Be(styleName);
+        capturedCommand.Tag.Should().Be(tag);
     }
 
     [Fact]
@@ -392,8 +425,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.RemoveTag(styleName, tag, cts.Token));
+        await FluentActions
+            .Awaiting(() => controller.RemoveTag(styleName, tag, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -443,7 +478,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 
     [Fact]
@@ -466,10 +501,14 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult2 = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        actionResult1.Should().BeOkResult().WithValueOfType<StyleResponse>();
-        actionResult2.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -491,8 +530,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -514,8 +555,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -537,8 +580,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -560,8 +605,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(response);
     }
 
     [Fact]
@@ -585,8 +632,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during tag removal");
     }
 
     [Fact]
@@ -610,7 +659,10 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         var actionResult = await controller.RemoveTag(styleName, tag, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Command handler failed");
     }
 
     [Fact]
@@ -633,7 +685,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 
     [Fact]
@@ -680,7 +732,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 
     [Fact]
@@ -703,7 +755,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 
     [Fact]
@@ -726,6 +778,6 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
 
         // Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<StyleResponse>();
+        actionResult.Should().BeOkResult().WithValue(response);
     }
 }

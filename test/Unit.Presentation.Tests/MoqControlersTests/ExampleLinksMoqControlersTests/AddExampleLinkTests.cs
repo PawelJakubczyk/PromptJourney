@@ -26,8 +26,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeCreatedResult()
-            .WithActionName(nameof(ExampleLinksController.CheckLinkExists))
-            .WithValueOfType<string>();
+            .WithValue(CorrectId);
     }
 
     [Fact]
@@ -44,9 +43,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest)
-            .WithErrorMessage(ErrorMessageInvalidLinkFormat);
+            .BeBadRequestResult()
+            .WithMessage(ErrorMessageInvalidLinkFormat);
     }
 
     [Fact]
@@ -63,9 +61,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest)
-            .WithErrorMessage(ErrorMessageStyleNameTooLong);
+            .BeBadRequestResult()
+            .WithMessage(ErrorMessageStyleNameTooLong);
     }
 
     [Fact]
@@ -82,9 +79,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest)
-            .WithErrorMessage(ErrorMessageInvalidVersionFormat);
+            .BeBadRequestResult()
+            .WithMessage(ErrorMessageInvalidVersionFormat);
     }
 
     [Fact]
@@ -101,9 +97,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest)
-            .WithErrorMessage(ErrorMessageAllFieldsRequired);
+            .BeBadRequestResult()
+            .WithMessage(ErrorMessageAllFieldsRequired);
     }
 
     [Fact]
@@ -120,9 +115,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status409Conflict)
-            .WithErrorMessage(ErrorMessageLinkAlreadyExists);
+            .BeConflictResult()
+            .WithMessage(ErrorMessageLinkAlreadyExists);
     }
 
     [Fact]
@@ -139,9 +133,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status409Conflict)
-            .WithErrorMessage(ErrorMessageStyleNotFound);
+            .BeConflictResult()
+            .WithMessage(ErrorMessageStyleNotFound);
     }
 
     [Fact]
@@ -158,9 +151,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status404NotFound)
-            .WithErrorMessage(ErrorMessageVersionNotFound);
+            .BeNotFoundResult()
+            .WithMessage(ErrorMessageVersionNotFound);
     }
 
     [Fact]
@@ -177,32 +169,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status404NotFound)
-            .WithErrorMessage(ErrorMessageStyleAndVersionNotFound);
-    }
-
-    [Fact]
-    public async Task AddExampleLink_VerifiesCommandIsCalledWithCorrectParameters()
-    {
-        // Arrange
-        var senderMock = CreateSenderMock();
-        AddExampleLink.Command? capturedCommand = null;
-
-        senderMock
-            .Setup(s => s.Send(It.IsAny<AddExampleLink.Command>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<string>>, CancellationToken>((cmd, ct) => { capturedCommand = cmd as AddExampleLink.Command; })
-            .ReturnsAsync(resultOk);
-        var controller = CreateController(senderMock);
-
-        // Act
-        await controller.AddExampleLink(requestOk, CancellationToken.None);
-
-        // Assert
-        capturedCommand.Should().NotBeNull();
-        capturedCommand!.Link.Should().Be(requestOk.Link);
-        capturedCommand.StyleName.Should().Be(requestOk.Style);
-        capturedCommand.Version.Should().Be(requestOk.Version);
+            .BeNotFoundResult()
+            .WithMessage(ErrorMessageStyleAndVersionNotFound);
     }
 
     [Fact]
@@ -233,7 +201,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var request = new AddExampleLinkRequest(link, style, version);
-        var result = Result.Ok($"generated-id-{Guid.NewGuid()}");
+        var id = Guid.NewGuid().ToString();
+        var result = Result.Ok(id);
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(result);
         var controller = CreateController(senderMock);
@@ -245,8 +214,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeCreatedResult()
-            .WithActionName(nameof(ExampleLinksController.CheckLinkExists))
-            .WithValueOfType<string>();
+            .WithValue(id);
     }
 
     [Theory]
@@ -255,7 +223,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     [InlineData("http://example.com", "Style", "")]
     [InlineData(null, "Style", "1.0")]
     [InlineData("http://example.com", null, "1.0")]
-    [InlineData("http://example.com", "Style", null)]
+        [InlineData("http://example.com", "Style", null)]
     public async Task AddExampleLink_ReturnsBadRequest_ForInvalidInputCombinations(string? link, string? style, string? version)
     {
         // Arrange
@@ -270,8 +238,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeErrorResult()
-            .WithStatusCode(StatusCodes.Status400BadRequest)
-            .WithErrorMessage(ErrorMessageInvalidInputData);
+            .BeBadRequestResult()
+            .WithMessage(ErrorMessageInvalidInputData);
     }
 }

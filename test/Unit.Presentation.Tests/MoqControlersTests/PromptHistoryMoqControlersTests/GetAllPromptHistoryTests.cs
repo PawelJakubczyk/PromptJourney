@@ -34,7 +34,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -54,7 +57,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(0);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(0);
     }
 
     [Fact]
@@ -77,7 +83,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -122,8 +131,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await FluentActions.Awaiting(() => controller.GetAll(cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        await FluentActions
+            .Awaiting(() => controller.GetAll(cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -169,8 +180,15 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult2 = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithCount(1);
-        actionResult2.Should().BeOkResult().WithCount(1);
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
+
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Theory]
@@ -202,7 +220,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(count);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(count);
     }
 
     [Fact]
@@ -229,7 +250,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(4);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(4);
     }
 
     [Fact]
@@ -251,7 +275,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error");
     }
 
     [Fact]
@@ -273,7 +300,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]
@@ -293,7 +323,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(0);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(0);
     }
 
     [Fact]
@@ -355,7 +388,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(4);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(4);
     }
 
     [Fact]
@@ -381,7 +417,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -391,7 +430,7 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var historyRecords = new List<PromptHistoryResponse>
         {
             new(Guid.NewGuid(), "Prompt with @#$% special chars", "1.0", DateTime.UtcNow),
-            new(Guid.NewGuid(), "Unicode: ??? ?? ??", "1.0", DateTime.UtcNow.AddMinutes(-1))
+            new(Guid.NewGuid(), "Unicode: ? ü ö", "1.0", DateTime.UtcNow.AddMinutes(-1))
         };
 
         var result = Result.Ok(historyRecords);
@@ -406,7 +445,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -433,7 +475,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(3);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(3);
     }
 
     [Fact]
@@ -460,7 +505,10 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(1000);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(1000);
     }
 
     [Fact]

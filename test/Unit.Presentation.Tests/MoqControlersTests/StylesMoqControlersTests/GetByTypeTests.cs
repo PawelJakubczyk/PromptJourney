@@ -81,7 +81,10 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         var actionResult = await controller.GetByType(invalidType, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be empty");
     }
 
     [Fact]
@@ -104,7 +107,10 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         var actionResult = await controller.GetByType(nullType!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be null");
     }
 
     [Fact]
@@ -127,7 +133,10 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         var actionResult = await controller.GetByType(whitespaceType, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type cannot be whitespace");
     }
 
     [Fact]
@@ -150,7 +159,10 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         var actionResult = await controller.GetByType(tooLongType, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Style type exceeds maximum length");
     }
 
     [Fact]
@@ -258,8 +270,8 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         await controller.GetByType(styleType, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(styleType, capturedQuery!.StyleType);
+        capturedQuery.Should().NotBeNull();
+        capturedQuery!.StyleType.Should().Be(styleType);
     }
 
     [Fact]
@@ -278,8 +290,10 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByType(styleType, cts.Token));
+        await FluentActions
+            .Awaiting(() => controller.GetByType(styleType, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -534,7 +548,10 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during type search");
     }
 
     [Fact]
@@ -557,7 +574,10 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         var actionResult = await controller.GetByType(styleType, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]

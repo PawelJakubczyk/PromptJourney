@@ -63,7 +63,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Repository error");
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Query handler failed");
     }
 
     [Fact]

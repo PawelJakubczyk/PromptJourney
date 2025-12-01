@@ -21,7 +21,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(GetAllVersions.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<VersionResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<VersionResponse>, BadRequest<ProblemDetails>>();
 
         return versions;
     }
@@ -34,7 +34,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(GetAllSuportedVersions.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<string>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<string>, BadRequest<ProblemDetails>>();
 
         return versions;
     }
@@ -49,7 +49,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<VersionResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<VersionResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return versionInfo;
     }
@@ -64,7 +64,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsAsync<bool, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();
 
         return exist;
     }

@@ -23,7 +23,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(false);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -123,8 +123,8 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var r2 = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        r1.Should().BeOkResult().WithValueOfType<bool>();
-        r2.Should().BeOkResult().WithValueOfType<bool>();
+        r1.Should().BeOkResult().WithValue(true);
+        r2.Should().BeOkResult().WithValue(true);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Repository error");
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(false);
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Theory]
@@ -187,7 +187,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(isEmpty);
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Query handler failed");
     }
 
     [Fact]

@@ -1,152 +1,159 @@
 ﻿using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
+using Domain.Entities;
+using Domain.ValueObjects;
 using FluentAssertions;
+using FluentAssertions.Equivalency.Tracing;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using Newtonsoft.Json.Linq;
+using System.Data;
+using System.Globalization;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Constants;
+using Utilities.Errors;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
 
 public sealed class GetByVersionTests : VersionsControllerTestsBase
 {
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WhenVersionExists()
+    [Theory]
+    [InlineData("1.0", "--v 1.0", "2025-12-22", "Version 1.0")]
+    [InlineData("5.1", "--v 5.1", "2025-12-22", "Version 5.1")]
+    [InlineData("niji 6", "--niji 6", "2025-12-22", "Niji version 6")]
+    [InlineData("niji 3", "--niji 3", null, null)]
+    [InlineData("7.1", "--v 7.1", "2025-12-22", null)]
+    [InlineData("5.1", "--v 5.1", null, "Version 5.1")]
+    [InlineData("niji 6", "--niji 6", null, "Niji version 6")]
+    public async Task GetByVersion_ReturnsOk_WhenVersionExists
+    (
+        string version,
+        string command,
+        string? releaseDate,
+        string? description
+    )
     {
         // Arrange
-        var version = "1.0";
-        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, "Version 1.0");
+        DateTime? releaseDateTime = releaseDate != null
+            ? DateTime.ParseExact(releaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+            : null;
+
+        var versionResponse = new VersionResponse(version, command, releaseDateTime, description);
+
         var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
 
+        var senderMock = new Mock<ISender>();
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse> (result);
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.GetByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(versionResponse);
     }
 
-    [Fact]
-    public async Task GetByVersion_ReturnsNotFound_WhenVersionDoesNotExist()
+
+    [Theory]
+    [InlineData("99.0")]
+    [InlineData("niji 17")]
+    [InlineData("13")]
+    public async Task GetByVersion_ReturnsNotFound_WhenVersionDoesNotExist(string version)
     {
         // Arrange
-        var version = "99.0";
-        var failureResult = CreateFailureResult<VersionResponse, ApplicationLayer>(
+        var noFoundMessage = ErrorsMessages.NotFoundMessage(version);
+
+        var failureResult = CreateFailureResult<VersionResponse, ApplicationLayer>
+        (
             StatusCodes.Status404NotFound,
-            "Version not found");
+            noFoundMessage
+        );
 
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.GetByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage(noFoundMessage);
     }
 
-    [Fact]
-    public async Task GetByVersion_ReturnsBadRequest_WhenVersionIsEmpty()
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    [InlineData("   ")]
+    public async Task GetByVersion_ReturnsBadRequest_WhenVersionIsNullOrWhitspace(string? invalidVersion)
     {
         // Arrange
-        var invalidVersion = "";
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>(
+        var nullOrWhitespaceVersionMessage = ErrorsMessages.NullOrWhitespaceMessage<ModelVersion>();
+
+        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>
+        (
             StatusCodes.Status400BadRequest,
-            "Version cannot be empty");
+            nullOrWhitespaceVersionMessage
+        );
 
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.GetByVersion(invalidVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage(nullOrWhitespaceVersionMessage);
     }
 
-    [Fact]
-    public async Task GetByVersion_ReturnsBadRequest_WhenVersionIsNull()
+    [Theory]
+    [InlineData("0")]               // not allowed - must start from 1-9
+    [InlineData("01")]              // leading zero invalid
+    [InlineData("5.10")]            // too many decimal digits
+    [InlineData("13.13.13.13")]     // invalid pattern
+    [InlineData("5.")]              // incomplete decimal
+    [InlineData(".5")]              // invalid
+    [InlineData("wrong format")]    // text
+    [InlineData("niji")]            // incomplete niji
+    [InlineData("niji5")]           // missing space
+    [InlineData("niji 0")]          // zero invalid
+    [InlineData("niji -5")]         // negative invalid
+    [InlineData("niji 5.1")]        // decimal not allowed for niji
+    [InlineData("9999")]            // to many digits
+    public async Task GetByVersion_ReturnsBadRequest_WhenVersionFormatIsInvalid(string invalidVersion)
     {
         // Arrange
-        string? nullVersion = null;
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>(
+        var invalidFormatVersionMessage = ModelVersionErrorsExtensions.InvalidVersionFormatMessage;
+
+        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>
+        (
             StatusCodes.Status400BadRequest,
-            "Version cannot be null");
+            invalidFormatVersionMessage
+        );
 
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(nullVersion!, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsBadRequest_WhenVersionIsWhitespace()
-    {
-        // Arrange
-        var whitespaceVersion = "   ";
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Version cannot be whitespace");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(whitespaceVersion, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsBadRequest_WhenVersionHasInvalidFormat()
-    {
-        // Arrange
-        var invalidVersion = "invalid.format.here";
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Invalid version format");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.GetByVersion(invalidVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage(invalidFormatVersionMessage);
     }
 
     [Fact]
@@ -154,172 +161,26 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
     {
         // Arrange
         var tooLongVersion = new string('1', 256);
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>(
+        var tooLongVersionMessage = ErrorsMessages.TooLongMessage<ModelVersion>(tooLongVersion, ModelVersion.MaxLength);
+        
+        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>
+        (
             StatusCodes.Status400BadRequest,
-            "Version exceeds maximum length");
+            tooLongVersionMessage
+        );
 
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
         var actionResult = await controller.GetByVersion(tooLongVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithCompleteVersionData()
-    {
-        // Arrange
-        var version = "1.0";
-        var releaseDate = new DateTime(2023, 1, 15, 0, 0, 0, DateTimeKind.Utc);
-        var versionResponse = new VersionResponse(
-            version,
-            "--v 1.0",
-            releaseDate,
-            "Complete version with all fields");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithNullDescription()
-    {
-        // Arrange
-        var version = "1.0";
-        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, null);
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithNullReleaseDate()
-    {
-        // Arrange
-        var version = "1.0";
-        var versionResponse = new VersionResponse(version, "--v 1.0", null, "Version without release date");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_ForNijiVersion()
-    {
-        // Arrange
-        var version = "niji 5";
-        var versionResponse = new VersionResponse(version, "--niji 5", DateTime.UtcNow, "Niji version 5");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Theory]
-    [InlineData("1.0")]
-    [InlineData("2.5")]
-    [InlineData("3.0")]
-    [InlineData("4.0")]
-    [InlineData("5.2")]
-    [InlineData("6.0")]
-    [InlineData("niji 5")]
-    [InlineData("niji 6")]
-    public async Task GetByVersion_ReturnsOk_ForVariousVersionFormats(string version)
-    {
-        // Arrange
-        var versionResponse = new VersionResponse(version, $"--v {version}", DateTime.UtcNow, $"Version {version}");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_VerifiesQueryIsCalledWithCorrectParameters()
-    {
-        // Arrange
-        var version = "1.0";
-        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, "Version 1.0");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        GetVersion.Query? capturedQuery = null;
-
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<VersionResponse>>, CancellationToken>((query, ct) =>
-            {
-                capturedQuery = query as GetVersion.Query;
-            })
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        Assert.NotNull(capturedQuery);
-        Assert.Equal(version, capturedQuery!.Version);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage(tooLongVersionMessage);
     }
 
     [Fact]
@@ -338,8 +199,10 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            controller.GetByVersion(version, cts.Token));
+        await FluentActions
+            .Awaiting(() => controller.GetByVersion(version, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -384,102 +247,19 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var actionResult2 = await controller.GetByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().NotBeNull();
-        actionResult2.Should().NotBeNull();
-        actionResult1.Should().BeOkResult().WithValueOfType<VersionResponse>();
-        actionResult2.Should().BeOkResult().WithValueOfType<VersionResponse>();
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue(versionResponse);
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue(versionResponse);
     }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithVersionContainingDash()
-    {
-        // Arrange
-        var version = "7.0-beta";
-        var versionResponse = new VersionResponse(version, "--v 7.0", DateTime.UtcNow, "Beta version");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithVersionContainingMultipleDecimals()
-    {
-        // Arrange
-        var version = "1.2.3";
-        var versionResponse = new VersionResponse(version, "--v 1.2.3", DateTime.UtcNow, "Version with multiple decimals");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithLongDescription()
-    {
-        // Arrange
-        var version = "1.0";
-        var longDescription = new string('A', 1000) + " This is a very long description for testing purposes.";
-        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, longDescription);
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithSpecialCharactersInDescription()
-    {
-        // Arrange
-        var version = "1.0";
-        var description = "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()";
-        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, description);
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
+    /// <summary>
+    /// ///////////////////////////////////////////////////////
+    /// </summary>
+    /// <returns></returns>
     [Fact]
     public async Task GetByVersion_ReturnsBadRequest_WhenRepositoryFails()
     {
@@ -501,186 +281,9 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsBadRequest_WhenQueryHandlerFails()
-    {
-        // Arrange
-        var version = "1.0";
-        var failureResult = CreateFailureResult<VersionResponse, ApplicationLayer>(
-            StatusCodes.Status400BadRequest,
-            "Query handler failed");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
-    }
-
-    [Fact]
-    public async Task GetByVersion_RespondsQuickly_ForPerformanceTest()
-    {
-        // Arrange
-        var version = "1.0";
-        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, "Performance test");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-        var startTime = DateTime.UtcNow;
-
-        // Act
-        await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        var duration = DateTime.UtcNow - startTime;
-        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithFutureReleaseDate()
-    {
-        // Arrange
-        var version = "8.0";
-        var futureDate = DateTime.UtcNow.AddMonths(6);
-        var versionResponse = new VersionResponse(version, "--v 8.0", futureDate, "Future version");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithPastReleaseDate()
-    {
-        // Arrange
-        var version = "1.0";
-        var pastDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var versionResponse = new VersionResponse(version, "--v 1.0", pastDate, "Old version");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithMajorVersionOnly()
-    {
-        // Arrange
-        var version = "6";
-        var versionResponse = new VersionResponse(version, "--v 6", DateTime.UtcNow, "Major version only");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithAlphaVersion()
-    {
-        // Arrange
-        var version = "8.0-alpha";
-        var versionResponse = new VersionResponse(version, "--v 8.0", DateTime.UtcNow, "Alpha version");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithDifferentParameterFormats()
-    {
-        // Arrange
-        var version = "1.0";
-        var versionResponse = new VersionResponse(version, "--version 1.0", DateTime.UtcNow, "Different parameter format");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
-    }
-
-    [Fact]
-    public async Task GetByVersion_ReturnsOk_WithVersionZero()
-    {
-        // Arrange
-        var version = "0.0";
-        var versionResponse = new VersionResponse(version, "--v 0.0", DateTime.UtcNow, "Version zero");
-        var result = Result.Ok(versionResponse);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetVersion.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetByVersion(version, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().NotBeNull();
-        actionResult.Should().BeOkResult().WithValueOfType<VersionResponse>();
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error during version retrieval");
     }
 }

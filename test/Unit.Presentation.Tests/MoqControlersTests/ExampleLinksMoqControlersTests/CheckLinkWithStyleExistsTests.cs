@@ -23,7 +23,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists("EmptyStyle", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(false);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(string.Empty, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Style name cannot be empty");
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists("   ", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Style name cannot be whitespace");
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(IncorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage(ErrorMessageStyleNameTooLong);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(null!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Style name cannot be null");
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Theory]
@@ -212,7 +212,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(invalidStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Invalid style name");
     }
 
     [Fact]
@@ -229,8 +229,8 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var r2 = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
-        r1.Should().BeOkResult().WithValueOfType<bool>();
-        r2.Should().BeOkResult().WithValueOfType<bool>();
+        r1.Should().BeOkResult().WithValue(true);
+        r2.Should().BeOkResult().WithValue(true);
     }
 
     [Fact]
@@ -246,7 +246,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Repository error");
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Fact]
@@ -278,7 +278,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Fact]
@@ -294,7 +294,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(styleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(true);
     }
 
     [Theory]
@@ -311,7 +311,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists("TestStyle", CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValueOfType<bool>();
+        actionResult.Should().BeOkResult().WithValue(exists);
     }
 
     [Fact]
@@ -327,7 +327,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult.Should().BeBadRequestResult().WithMessage("Query handler failed");
     }
 
     [Fact]

@@ -35,7 +35,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -56,7 +59,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(0);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(0);
     }
 
     [Fact]
@@ -79,7 +85,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(emptyVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be empty");
     }
 
     [Fact]
@@ -102,7 +111,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(nonExistentVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status404NotFound);
+        actionResult
+            .Should()
+            .BeNotFoundResult()
+            .WithMessage($"Version '{nonExistentVersion}' not found");
     }
 
     [Fact]
@@ -125,7 +137,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(whitespaceVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be whitespace");
     }
 
     [Fact]
@@ -148,7 +163,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(nullVersion!, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Version cannot be null");
     }
 
     [Fact]
@@ -171,7 +189,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(invalidVersion, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Invalid version format");
     }
 
     [Fact]
@@ -195,7 +216,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Database connection failed");
     }
 
     [Fact]
@@ -242,8 +266,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act & Assert
-        await FluentActions.Awaiting(() => controller.GetAllPropertiesByVersion(version, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        await FluentActions
+            .Awaiting(() => controller.GetAllPropertiesByVersion(version, cts.Token))
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -300,7 +326,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(count);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(count);
     }
 
     [Fact]
@@ -325,8 +354,15 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult2 = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithCount(1);
-        actionResult2.Should().BeOkResult().WithCount(1);
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
+
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithCount(1);
     }
 
     [Fact]
@@ -352,7 +388,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -378,7 +417,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]
@@ -401,7 +443,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Repository error");
     }
 
     [Fact]
@@ -424,7 +469,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeErrorResult().WithStatusCode(StatusCodes.Status400BadRequest);
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]
@@ -455,7 +503,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(50);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(50);
     }
 
     [Fact]
@@ -483,7 +534,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
             var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
             // Assert
-            actionResult.Should().BeOkResult().WithCount(1);
+            actionResult
+                .Should()
+                .BeOkResult()
+                .WithCount(1);
         }
     }
 
@@ -510,7 +564,10 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         var actionResult = await controller.GetAllPropertiesByVersion(version, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithCount(2);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithCount(2);
     }
 
     [Fact]

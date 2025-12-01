@@ -23,7 +23,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(GetAllHistoryRecords.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -42,7 +42,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -62,7 +62,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -81,7 +81,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PromptHistoryResponse>, BadRequest<ProblemDetails>>();
 
         return histories;
     }
@@ -94,7 +94,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(CalculateHistoricalRecordCount.Query.Singletone, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsAsync<int, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<int, BadRequest<ProblemDetails>>();
 
         return histories;
     }
