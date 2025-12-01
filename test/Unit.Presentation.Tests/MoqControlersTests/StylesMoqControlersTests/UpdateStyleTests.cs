@@ -286,7 +286,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -303,7 +303,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -320,7 +320,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -337,7 +337,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -355,7 +355,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -372,7 +372,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -453,7 +453,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -471,8 +471,8 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult2 = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValue(result);
-        actionResult2.Should().BeOkResult().WithValue(result);
+        actionResult1.Should().BeOkResult().WithValue(result.Value);
+        actionResult2.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -489,7 +489,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -506,7 +506,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -568,7 +568,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -604,7 +604,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -621,7 +621,7 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 
     [Fact]
@@ -638,6 +638,6 @@ public sealed class UpdateStyleTests : StylesControllerTestsBase
         var actionResult = await controller.Update(request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(result);
+        actionResult.Should().BeOkResult().WithValue(result.Value);
     }
 }

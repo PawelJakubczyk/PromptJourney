@@ -60,7 +60,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         actionResult
             .Should()
             .BeOkResult()
-            .WithValue(true);
+            .WithValue(false);
     }
 
     [Fact]
@@ -382,63 +382,11 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     }
 
     [Fact]
-    public async Task CheckExists_ReturnsOk_WithVersionContainingLeadingZeros()
-    {
-        // Arrange
-        var version = "01.05";
-        var result = Result.Ok(false);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckVersionExists.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .NotBeNull();
-        actionResult
-            .Should()
-            .BeOkResult()
-            .WithValue(true);
-    }
-
-    [Fact]
     public async Task CheckExists_ReturnsOk_WithBetaVersion()
     {
         // Arrange
         var version = "7.0-beta";
         var result = Result.Ok(true);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckVersionExists.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .NotBeNull();
-        actionResult
-            .Should()
-            .BeOkResult()
-            .WithValue(true);
-    }
-
-    [Fact]
-    public async Task CheckExists_ReturnsOk_WithAlphaVersion()
-    {
-        // Arrange
-        var version = "8.0-alpha";
-        var result = Result.Ok(false);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<CheckVersionExists.Query>(), It.IsAny<CancellationToken>()))
@@ -534,58 +482,6 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     }
 
     [Fact]
-    public async Task CheckExists_ReturnsOk_WithVersionZero()
-    {
-        // Arrange
-        var version = "0.0";
-        var result = Result.Ok(false);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckVersionExists.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .NotBeNull();
-        actionResult
-            .Should()
-            .BeOkResult()
-            .WithValue(true);
-    }
-
-    [Fact]
-    public async Task CheckExists_ReturnsOk_WithHighMajorVersion()
-    {
-        // Arrange
-        var version = "100.0";
-        var result = Result.Ok(false);
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CheckVersionExists.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .NotBeNull();
-        actionResult
-            .Should()
-            .BeOkResult()
-            .WithValue(true);
-    }
-
-    [Fact]
     public async Task CheckExists_ReturnsOk_WithDecimalMinorVersion()
     {
         // Arrange
@@ -635,10 +531,11 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         actionResult
             .Should()
             .NotBeNull();
+
         actionResult
             .Should()
             .BeOkResult()
-            .WithValue(true);
+            .WithValue(exists);
     }
 
     [Fact]

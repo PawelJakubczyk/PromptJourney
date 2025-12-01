@@ -368,4 +368,42 @@ public sealed class OkResultAssertions
 
         throw new Exception($"Result is not an OK result with value. Actual type: {subject.GetType().FullName}");
     }
+
+    public OkResultAssertions WithNullValue()
+    {
+        // Handle IActionResult (MVC style)
+        if (subject is IActionResult mvcResult)
+        {
+            mvcResult.Should().BeOfType<OkObjectResult>();
+            var ok = mvcResult as OkObjectResult;
+            ok!.Value.Should().BeNull();
+            return this;
+        }
+
+        // Handle Ok<T> directly
+        var subjectType = subject.GetType();
+        if (subjectType.IsGenericType && subjectType.GetGenericTypeDefinition() == typeof(Ok<>))
+        {
+            var valueProp = subjectType.GetProperty("Value");
+            var value = valueProp!.GetValue(subject);
+            value.Should().BeNull();
+            return this;
+        }
+
+        // Handle Results<> union types (IResult)
+        if (subject is IResult result)
+        {
+            var (status, body) = ControllerTestsBase.ExecuteResult(result);
+            status.Should().Be(StatusCodes.Status200OK);
+
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                throw new Exception($"Expected null value, but response body was not empty: '{body}'.");
+            }
+
+            return this;
+        }
+
+        throw new Exception($"Result is not an OK result. Actual type: {subject.GetType().FullName}");
+    }
 }

@@ -71,13 +71,13 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         actionResult1
             .Should()
             .BeOkResult()
-            .WithCount(3)
+            .WithCount(10)
             .WithValue(supportedVersions);
 
         actionResult2
             .Should()
             .BeOkResult()
-            .WithCount(3)
+            .WithCount(10)
             .WithValue(supportedVersions);
     }
 

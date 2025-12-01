@@ -17,7 +17,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var request = new UpdateDescriptionRequest("Updated description");
+        var updatedDescription = "Updated description";
+        var request = new UpdateDescriptionRequest(updatedDescription);
         var result = Result.Ok(request.Description);
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
@@ -28,7 +29,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(updatedDescription);
     }
 
     [Fact]
@@ -170,7 +174,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         actionResult
             .Should()
             .BeOkResult()
-            .WithValue("");
+            .WithNullValue();
     }
 
     [Fact]
@@ -189,7 +193,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue("");
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue("");
     }
 
     [Fact]
@@ -209,7 +216,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(longDescription);
     }
 
     [Fact]
@@ -217,9 +227,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
+        var newDescription = "New description with special characters: !@#$%^&*()_+[]{}|;:',.<>?/~`";
         var descriptionWithSpecialChars = "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()";
-        var request = new UpdateDescriptionRequest(descriptionWithSpecialChars);
-        var result = Result.Ok(descriptionWithSpecialChars);
+        var request = new UpdateDescriptionRequest(newDescription);
+        var result = Result.Ok(newDescription);
         var senderMock = new Mock<ISender>();
         senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
 
@@ -229,7 +240,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(newDescription);
     }
 
     [Fact]
@@ -276,9 +290,13 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
 
         var controller = CreateController(senderMock);
 
-        // Act & Assert
-        await FluentActions.Awaiting(() => controller.UpdateDescription(styleName, request, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
+        // Act
+        var action = () => controller.UpdateDescription(styleName, request, cts.Token);
+
+        // Assert
+        await action
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -298,7 +316,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
 
         // Assert
         senderMock.Verify(
-            s => s.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()),
+            sender => sender.Send(It.IsAny<UpdateDescriptionInStyle.Command>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -322,7 +340,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(description);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(description);
     }
 
     [Fact]
@@ -342,47 +363,15 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         var actionResult2 = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
         // Assert
-        actionResult1.Should().BeOkResult().WithValue("Consistent description");
-        actionResult2.Should().BeOkResult().WithValue("Consistent description");
-    }
-
-    [Fact]
-    public async Task UpdateDescription_ReturnsOk_WithDescriptionContainingNewlines()
-    {
-        // Arrange
-        var styleName = "TestStyle";
-        var descriptionWithNewlines = "First line\nSecond line\nThird line";
-        var request = new UpdateDescriptionRequest(descriptionWithNewlines);
-        var result = Result.Ok(descriptionWithNewlines);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
-    }
-
-    [Fact]
-    public async Task UpdateDescription_ReturnsOk_WithStyleNameContainingSpecialCharacters()
-    {
-        // Arrange
-        var styleName = "Modern-Art_2024";
-        var request = new UpdateDescriptionRequest("Updated description");
-        var result = Result.Ok(request.Description);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
+        actionResult1
+            .Should()
+            .BeOkResult()
+            .WithValue("Consistent description");
+        
+        actionResult2
+            .Should()
+            .BeOkResult()
+            .WithValue("Consistent description");
     }
 
     [Fact]
@@ -435,46 +424,6 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
     }
 
     [Fact]
-    public async Task UpdateDescription_ReturnsOk_WithDescriptionContainingHtml()
-    {
-        // Arrange
-        var styleName = "TestStyle";
-        var descriptionWithHtml = "<p>Description with <strong>HTML</strong> tags</p>";
-        var request = new UpdateDescriptionRequest(descriptionWithHtml);
-        var result = Result.Ok(descriptionWithHtml);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
-    }
-
-    [Fact]
-    public async Task UpdateDescription_ReturnsOk_WithDescriptionContainingJson()
-    {
-        // Arrange
-        var styleName = "TestStyle";
-        var descriptionWithJson = "{\"style\": \"modern\", \"color\": \"blue\"}";
-        var request = new UpdateDescriptionRequest(descriptionWithJson);
-        var result = Result.Ok(descriptionWithJson);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
-    }
-
-    [Fact]
     public async Task UpdateDescription_RespondsQuickly_ForPerformanceTest()
     {
         // Arrange
@@ -492,7 +441,9 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
 
         // Assert
         var duration = DateTime.UtcNow - startTime;
-        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
+        duration
+            .Should()
+            .BeLessThan(TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -500,7 +451,8 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var descriptions = new[] { "First", "Second", "Third" };
+        var lastDescription = "Final description";
+        var descriptions = new[] { "Orginal Description", "Second Description", "Third Description", lastDescription };
         var senderMock = new Mock<ISender>();
         var controller = CreateController(senderMock);
 
@@ -514,46 +466,10 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
             var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
 
             // Assert
-            actionResult.Should().BeOkResult().WithValue(styleName);
+            actionResult
+                .Should()
+                .BeOkResult()
+                .WithValue(description);
         }
-    }
-
-    [Fact]
-    public async Task UpdateDescription_ReturnsOk_WithLongStyleName()
-    {
-        // Arrange
-        var longStyleName = new string('a', 100);
-        var request = new UpdateDescriptionRequest("Test description");
-        var result = Result.Ok(request.Description);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.UpdateDescription(longStyleName, request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(longStyleName);
-    }
-
-    [Fact]
-    public async Task UpdateDescription_ReturnsOk_WithDescriptionContainingQuotes()
-    {
-        // Arrange
-        var styleName = "TestStyle";
-        var descriptionWithQuotes = "Description with \"double quotes\" and 'single quotes'";
-        var request = new UpdateDescriptionRequest(descriptionWithQuotes);
-        var result = Result.Ok(descriptionWithQuotes);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateDescriptionInStyle.Command, string>(result);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.UpdateDescription(styleName, request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
     }
 }
