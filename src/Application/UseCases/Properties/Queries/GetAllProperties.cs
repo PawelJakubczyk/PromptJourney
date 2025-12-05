@@ -11,7 +11,7 @@ public static class GetAllProperties
 {
     public sealed record Query : IQuery<List<PropertyQueryResponse>>
     {
-        public static readonly Query Singletone = new();
+        public static readonly Query Singleton = new();
     };
 
     public sealed class Handler

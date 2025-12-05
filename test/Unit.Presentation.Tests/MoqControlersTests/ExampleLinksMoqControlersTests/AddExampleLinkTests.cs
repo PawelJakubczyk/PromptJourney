@@ -1,8 +1,5 @@
 using Application.UseCases.ExampleLinks.Commands;
 using FluentResults;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
 using FluentAssertions;

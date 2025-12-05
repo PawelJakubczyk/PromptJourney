@@ -112,8 +112,12 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         await controller.GetAll(CancellationToken.None);
 
         // Assert
-        capturedQuery.Should().NotBeNull();
-        capturedQuery.Should().BeSameAs(GetAllHistoryRecords.Query.Singletone);
+        capturedQuery
+            .Should()
+            .NotBeNull();
+        capturedQuery
+            .Should()
+            .BeSameAs(GetAllHistoryRecords.Query.Singleton);
     }
 
     [Fact]
@@ -360,7 +364,7 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         // Assert
         capturedQueries.Should().HaveCount(3);
         capturedQueries.Should().AllSatisfy(q =>
-            q.Should().BeSameAs(GetAllHistoryRecords.Query.Singletone));
+            q.Should().BeSameAs(GetAllHistoryRecords.Query.Singleton));
     }
 
     [Fact]

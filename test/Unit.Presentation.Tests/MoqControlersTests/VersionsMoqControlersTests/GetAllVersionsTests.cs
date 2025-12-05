@@ -314,8 +314,12 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
         await controller.GetAll(CancellationToken.None);
 
         // Assert
-        capturedQuery.Should().NotBeNull();
-        capturedQuery.Should().BeSameAs(GetAllVersions.Query.Singletone);
+        capturedQuery
+            .Should()
+            .NotBeNull();
+        capturedQuery
+            .Should()
+            .BeSameAs(GetAllVersions.Query.Singleton);
     }
 
     [Fact]

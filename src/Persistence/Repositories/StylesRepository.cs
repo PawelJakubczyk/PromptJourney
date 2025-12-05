@@ -28,7 +28,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     {
         var styles = await _midjourneyDbContext.MidjourneyStyle
             .Include(s => s.MidjourneyExampleLinks)
-            .Include(s => s.Tags)
             .ToListAsync(cancellationToken);
 
         return Result.Ok(styles);
@@ -38,7 +37,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     {
         var style = await _midjourneyDbContext.MidjourneyStyle
             .Include(s => s.MidjourneyExampleLinks)
-            .Include(s => s.Tags)
             .FirstOrDefaultAsync(s => s.StyleName == name, cancellationToken);
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(name));
@@ -50,7 +48,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     {
         var styles = await _midjourneyDbContext.MidjourneyStyle
             .Include(s => s.MidjourneyExampleLinks)
-            .Include(s => s.Tags)
             .Where(s => s.Type == type)
             .ToListAsync(cancellationToken);
 
@@ -65,7 +62,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
         var styles = await _midjourneyDbContext.MidjourneyStyle
             .Include(s => s.MidjourneyExampleLinks)
-            .Include(s => s.Tags)
             .Where(s => s.Tags != null && s.Tags.Any(t => tagValues.Contains(t.Value)))
             .ToListAsync(cancellationToken);
 
@@ -80,7 +76,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
         var styles = await _midjourneyDbContext.MidjourneyStyle
             .Include(s => s.MidjourneyExampleLinks)
-            .Include(s => s.Tags)
             .Where(s => s.Tags != null && tagValues.All(tv => s.Tags.Any(t => t.Value == tv)))
             .ToListAsync(cancellationToken);
 
@@ -91,7 +86,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     {
         var styles = await _midjourneyDbContext.MidjourneyStyle
             .Include(s => s.MidjourneyExampleLinks)
-            .Include(s => s.Tags)
             .Where(s => s.Description != null && EF.Functions.Like(s.Description.Value, $"%{keyword.Value}%"))
             .ToListAsync(cancellationToken);
 
@@ -116,7 +110,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     public async Task<Result<bool>> CheckTagExistsInStyleAsync(StyleName styleName, Tag tag, CancellationToken cancellationToken)
     {
         var style = await _midjourneyDbContext.MidjourneyStyle
-            .Include(s => s.Tags)
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<bool>(DomainErrors.StyleNotFound(styleName));
@@ -182,7 +175,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     public async Task<Result<MidjourneyStyle>> AddTagToStyleAsync(StyleName styleName, Tag tagResult, CancellationToken cancellationToken)
     {
         var style = await _midjourneyDbContext.MidjourneyStyle
-            .Include(s => s.Tags)
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
@@ -206,7 +198,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         }
 
         var style = await _midjourneyDbContext.MidjourneyStyle
-            .Include(s => s.Tags)
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
@@ -242,7 +233,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             async (ct) =>
             {
                 var tags = await _midjourneyDbContext.MidjourneyStyle
-                    .Include(style => style.Tags)
                     .Where(style => style.Tags != null && style.Tags.Any())
                     .SelectMany(style => style.Tags!)
                     .Select(tag => tag)
@@ -265,7 +255,6 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             async (ct) =>
             {
                 var tags = await _midjourneyDbContext.MidjourneyStyle
-                    .Include(style => style.Tags)
                     .Where(style => style.Tags != null && style.Tags.Any())
                     .SelectMany(style => style.Tags!)
                     .Select(tag => tag.Value)

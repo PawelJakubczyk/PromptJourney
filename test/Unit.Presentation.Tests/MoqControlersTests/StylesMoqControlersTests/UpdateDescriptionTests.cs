@@ -228,7 +228,6 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var newDescription = "New description with special characters: !@#$%^&*()_+[]{}|;:',.<>?/~`";
-        var descriptionWithSpecialChars = "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()";
         var request = new UpdateDescriptionRequest(newDescription);
         var result = Result.Ok(newDescription);
         var senderMock = new Mock<ISender>();

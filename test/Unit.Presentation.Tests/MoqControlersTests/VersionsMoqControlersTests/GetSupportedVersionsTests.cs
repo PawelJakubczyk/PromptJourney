@@ -106,7 +106,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
             .NotBeNull();
         capturedQuery
             .Should()
-            .BeSameAs(GetAllSuportedVersions.Query.Singletone);
+            .BeSameAs(GetAllSuportedVersions.Query.Singleton);
     }
 
     [Fact]

@@ -11,7 +11,7 @@ public static class GetAllVersions
 {
     public sealed record Query : IQuery<List<VersionResponse>>
     {
-        public static readonly Query Singletone = new();
+        public static readonly Query Singleton = new();
     };
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, List<VersionResponse>>

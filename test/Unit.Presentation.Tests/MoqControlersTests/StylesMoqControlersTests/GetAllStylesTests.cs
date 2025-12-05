@@ -137,8 +137,12 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
         await controller.GetAll(CancellationToken.None);
 
         // Assert
-        capturedQuery.Should().NotBeNull();
-        capturedQuery.Should().BeSameAs(GetAllStyles.Query.Singletone);
+        capturedQuery
+            .Should()
+            .NotBeNull();
+        capturedQuery
+            .Should()
+            .BeSameAs(GetAllStyles.Query.Singleton);
     }
 
     [Fact]
@@ -589,7 +593,7 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
 
         // Assert
         capturedQueries.Should().HaveCount(3);
-        capturedQueries.Should().AllSatisfy(q => q.Should().BeSameAs(GetAllStyles.Query.Singletone));
+        capturedQueries.Should().AllSatisfy(q => q.Should().BeSameAs(GetAllStyles.Query.Singleton));
     }
 
     [Fact]

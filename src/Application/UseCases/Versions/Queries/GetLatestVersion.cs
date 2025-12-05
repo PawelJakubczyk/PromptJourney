@@ -11,7 +11,7 @@ public sealed class GetLatestVersion
 {
     public sealed record Query : IQuery<VersionResponse>
     {
-        public static readonly Query Singletone = new();
+        public static readonly Query Singleton = new();
     };
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, VersionResponse>

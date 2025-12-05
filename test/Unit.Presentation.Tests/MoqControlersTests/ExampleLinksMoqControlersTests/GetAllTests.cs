@@ -102,7 +102,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
 
         // Assert
         capturedQuery.Should().NotBeNull();
-        capturedQuery.Should().BeSameAs(GetAllExampleLinks.Query.Singletone);
+        capturedQuery.Should().BeSameAs(GetAllExampleLinks.Query.Singleton);
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
 
         // Assert
         capturedQueries.Should().HaveCount(3);
-        capturedQueries.Should().AllSatisfy(q => q.Should().BeSameAs(GetAllExampleLinks.Query.Singletone));
+        capturedQueries.Should().AllSatisfy(q => q.Should().BeSameAs(GetAllExampleLinks.Query.Singleton));
     }
 
     [Fact]
