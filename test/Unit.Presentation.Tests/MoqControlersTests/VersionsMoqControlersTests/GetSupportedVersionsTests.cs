@@ -23,7 +23,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetSupportedVersions(CancellationToken.None);
+        var actionResult = await controller.GetSupported(CancellationToken.None);
 
         // Assert
         actionResult
@@ -44,7 +44,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetSupportedVersions(CancellationToken.None);
+        var actionResult = await controller.GetSupported(CancellationToken.None);
 
         // Assert
         actionResult
@@ -64,8 +64,8 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.GetSupportedVersions(CancellationToken.None);
-        var actionResult2 = await controller.GetSupportedVersions(CancellationToken.None);
+        var actionResult1 = await controller.GetSupported(CancellationToken.None);
+        var actionResult2 = await controller.GetSupported(CancellationToken.None);
 
         // Assert
         actionResult1
@@ -98,7 +98,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetSupportedVersions(CancellationToken.None);
+        await controller.GetSupported(CancellationToken.None);
 
         // Assert
         capturedQuery
@@ -121,7 +121,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Act & Assert
         await FluentActions
-            .Awaiting(() => controller.GetSupportedVersions(cts.Token))
+            .Awaiting(() => controller.GetSupported(cts.Token))
             .Should()
             .ThrowAsync<OperationCanceledException>();
     }
@@ -136,7 +136,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetSupportedVersions(CancellationToken.None);
+        await controller.GetSupported(CancellationToken.None);
 
         // Assert
         senderMock.Verify(

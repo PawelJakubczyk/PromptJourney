@@ -41,7 +41,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
         (CancellationToken cancellationToken)
     {
         var properties = await Sender
-            .Send(GetAllProperties.Query.Singletone, cancellationToken)
+            .Send(GetAllProperties.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
             .ToResultsOkAsync<List<PropertyQueryResponse>, BadRequest<ProblemDetails>>();

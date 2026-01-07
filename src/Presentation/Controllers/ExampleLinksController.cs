@@ -19,7 +19,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     public async Task<Results<Ok<List<ExampleLinkResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
         var styles = await Sender
-            .Send(GetAllExampleLinks.Query.Singletone, cancellationToken)
+            .Send(GetAllExampleLinks.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
             .ToResultsOkAsync<List<ExampleLinkResponse>, BadRequest<ProblemDetails>>();
@@ -92,7 +92,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckLinksEmpty(CancellationToken cancellationToken)
     {
         var exist = await Sender
-            .Send(CheckAnyExampleLinksExist.Query.Singletone, cancellationToken)
+            .Send(CheckAnyExampleLinksExist.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
             .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();

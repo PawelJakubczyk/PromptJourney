@@ -20,7 +20,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [HttpGet]
     public async Task<Results<Ok<List<StyleResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken) 
     {
-        var query = GetAllStyles.Query.Singletone;
+        var query = GetAllStyles.Query.Singleton;
 
         var styles = await Sender
             .Send(query, cancellationToken)

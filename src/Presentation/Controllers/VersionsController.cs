@@ -18,7 +18,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
     public async Task<Results<Ok<List<VersionResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
         var versions = await Sender
-            .Send(GetAllVersions.Query.Singletone, cancellationToken)
+            .Send(GetAllVersions.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
             .ToResultsOkAsync<List<VersionResponse>, BadRequest<ProblemDetails>>();
@@ -31,7 +31,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
     public async Task<Results<Ok<List<string>>, BadRequest<ProblemDetails>>> GetSupported(CancellationToken cancellationToken)
     {
         var versions = await Sender
-            .Send(GetAllSuportedVersions.Query.Singletone, cancellationToken)
+            .Send(GetAllSupportedVersions.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
             .ToResultsOkAsync<List<string>, BadRequest<ProblemDetails>>();
