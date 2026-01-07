@@ -10,7 +10,7 @@ public sealed class GetAllStyleTags
 {
     public sealed record Query : IQuery<List<string>>
     {
-        public static readonly Query Singletone = new();
+        public static readonly Query Singleton = new();
     };
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<string>>

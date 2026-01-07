@@ -83,6 +83,24 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         return Result.Ok(newVersion);
     }
 
+    public async Task<Result<MidjourneyVersion>> DeleteVersionAsync(ModelVersion version, CancellationToken cancellationToken)
+    {
+        var existingVersion = await _dbContext.MidjourneyVersions
+            .FirstOrDefaultAsync(v => v.Version == version, cancellationToken);
+
+        if (existingVersion is null)
+        {
+            return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(version));
+        }
+
+        _dbContext.MidjourneyVersions.Remove(existingVersion);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await InvalidateCacheAsync(cancellationToken);
+
+        return Result.Ok(existingVersion);
+    }
+
     // Helper methods
     private async Task<List<string?>> GetOrCreateCachedSupportedVersionsAsync(CancellationToken cancellationToken)
     {

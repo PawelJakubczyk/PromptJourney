@@ -1,16 +1,15 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.ValueObjects;
 using FluentResults;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Versions.Queries;
 
-public static class GetAllSuportedVersions
+public static class GetAllSupportedVersions
 {
     public sealed record Query : IQuery<List<string>>
     {
-        public static readonly Query Singletone = new();
+        public static readonly Query Singleton = new();
     };
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, List<string>>
@@ -23,8 +22,7 @@ public static class GetAllSuportedVersions
                 .EmptyAsync()
                 .ExecuteIfNoErrors(() => _versionRepository
                     .GetAllSupportedVersionsAsync(cancellationToken))
-                .MapResult<List<ModelVersion>, List<string>>
-                    (versionsList => [.. versionsList.Select(v => v.Value)]);
+                .MapResult<List<string>>();
 
             return result;
         }

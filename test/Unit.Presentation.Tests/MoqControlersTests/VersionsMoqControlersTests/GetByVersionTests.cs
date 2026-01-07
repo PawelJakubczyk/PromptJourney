@@ -1,15 +1,11 @@
 ﻿using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
-using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
-using FluentAssertions.Equivalency.Tracing;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using Newtonsoft.Json.Linq;
-using System.Data;
 using System.Globalization;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Constants;

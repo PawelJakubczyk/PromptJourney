@@ -73,8 +73,12 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        captured.Should().NotBeNull();
-        captured.Should().BeSameAs(CheckAnyExampleLinksExist.Query.Singletone);
+        captured
+            .Should()
+            .NotBeNull();
+        captured
+            .Should()
+            .BeSameAs(CheckAnyExampleLinksExist.Query.Singleton);
     }
 
     [Fact]
@@ -91,7 +95,9 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var action = () => controller.CheckLinksEmpty(cts.Token);
 
         // Assert
-        await action.Should().ThrowAsync<OperationCanceledException>()
+        await action
+            .Should()
+            .ThrowAsync<OperationCanceledException>()
             .WithMessage(ErrorCanceledOperation);
     }
 
@@ -119,12 +125,18 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var r1 = await controller.CheckLinksEmpty(CancellationToken.None);
-        var r2 = await controller.CheckLinksEmpty(CancellationToken.None);
+        var result1 = await controller.CheckLinksEmpty(CancellationToken.None);
+        var result2 = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        r1.Should().BeOkResult().WithValue(true);
-        r2.Should().BeOkResult().WithValue(true);
+        result1
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
+        result2
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -155,7 +167,10 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(false);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(false);
     }
 
     [Fact]
@@ -170,7 +185,10 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(true);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Theory]
@@ -187,7 +205,10 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(isEmpty);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(isEmpty);
     }
 
     [Fact]
@@ -202,7 +223,10 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeOkResult().WithValue(true);
+        actionResult
+            .Should()
+            .BeOkResult()
+            .WithValue(true);
     }
 
     [Fact]
@@ -218,7 +242,10 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeBadRequestResult().WithMessage("Query handler failed");
+        actionResult
+            .Should()
+            .BeBadRequestResult()
+            .WithMessage("Query handler failed");
     }
 
     [Fact]
@@ -240,7 +267,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
 
         // Assert
         captured.Should().HaveCount(3);
-        captured.Should().AllSatisfy(q => q.Should().BeSameAs(CheckAnyExampleLinksExist.Query.Singletone));
+        captured.Should().AllSatisfy(q => q.Should().BeSameAs(CheckAnyExampleLinksExist.Query.Singleton));
     }
 
     [Fact]

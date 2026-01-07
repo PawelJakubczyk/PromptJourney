@@ -1,5 +1,5 @@
 @App_HostAddress = http://localhost:5294
-@version = "6.1"
+@version = 6.1
 
 ### Versions API ###
 

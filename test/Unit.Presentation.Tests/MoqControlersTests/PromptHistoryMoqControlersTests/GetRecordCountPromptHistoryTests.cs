@@ -129,8 +129,12 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         await controller.GetRecordCount(CancellationToken.None);
 
         // Assert
-        capturedQuery.Should().NotBeNull();
-        capturedQuery.Should().BeSameAs(CalculateHistoricalRecordCount.Query.Singletone);
+        capturedQuery
+            .Should()
+            .NotBeNull();
+        capturedQuery
+            .Should()
+            .BeSameAs(CalculateHistoricalRecordCount.Query.Singleton);
     }
 
     [Fact]
@@ -286,7 +290,7 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         // Assert
         capturedQueries.Should().HaveCount(3);
         capturedQueries.Should().AllSatisfy(q =>
-            q.Should().BeSameAs(CalculateHistoricalRecordCount.Query.Singletone));
+            q.Should().BeSameAs(CalculateHistoricalRecordCount.Query.Singleton));
     }
 
     [Fact]
