@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Persistence.Context;
 using Persistence.Repositories;
 using Persistence.Repositories.Utilities;
@@ -10,12 +11,19 @@ namespace Persistence.Registrations;
 
 public static class PersistenceRegistration
 {
-    public static IServiceCollection RegisterPersistenceLayer(this IServiceCollection services)
+    public static IServiceCollection RegisterPersistenceLayer
+    (
+        this IServiceCollection services,
+        IHostEnvironment environment
+    )
     {
-        services.AddDbContext<MidjourneyDbContext>(options =>
+        if (environment.EnvironmentName != "Testing")
         {
-            options.UseNpgsql("Host=localhost;Port=5432;Database=midjourney_test;Username=admin_0;Password=GR52MqngWxfT");
-        });
+            services.AddDbContext<MidjourneyDbContext>(options =>
+            {
+                options.UseNpgsql("Host=localhost;Port=5432;Database=midjourney_test;Username=admin_0;Password=GR52MqngWxfT");
+            });
+        }
 
         // Add caching used by repositories
         services.AddMemoryCache();

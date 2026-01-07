@@ -4,8 +4,8 @@ using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Constants;
+using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
 
@@ -25,7 +25,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -51,7 +51,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -80,7 +80,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(invalidVersion, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(invalidVersion, CancellationToken.None);
 
         // Assert
         actionResult
@@ -106,7 +106,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(nullVersion!, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(nullVersion!, CancellationToken.None);
 
         // Assert
         actionResult
@@ -132,7 +132,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(whitespaceVersion, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(whitespaceVersion, CancellationToken.None);
 
         // Assert
         actionResult
@@ -158,7 +158,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(invalidVersion, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(invalidVersion, CancellationToken.None);
 
         // Assert
         actionResult
@@ -184,7 +184,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(tooLongVersion, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(tooLongVersion, CancellationToken.None);
 
         // Assert
         actionResult
@@ -210,7 +210,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -238,7 +238,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -270,7 +270,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.CheckExists(version, CancellationToken.None);
+        await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         capturedQuery.Should().NotBeNull();
@@ -294,7 +294,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
 
         // Act & Assert
         await FluentActions
-            .Awaiting(() => controller.CheckExists(version, cts.Token))
+            .Awaiting(() => controller.CheckVersionExists(version, cts.Token))
             .Should()
             .ThrowAsync<OperationCanceledException>();
     }
@@ -313,7 +313,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.CheckExists(version, CancellationToken.None);
+        await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         senderMock.Verify(
@@ -335,8 +335,8 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.CheckExists(version, CancellationToken.None);
-        var actionResult2 = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult1 = await controller.CheckVersionExists(version, CancellationToken.None);
+        var actionResult2 = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult1
@@ -369,7 +369,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -395,7 +395,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -424,7 +424,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -448,7 +448,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var startTime = DateTime.UtcNow;
 
         // Act
-        await controller.CheckExists(version, CancellationToken.None);
+        await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         var duration = DateTime.UtcNow - startTime;
@@ -469,7 +469,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -495,7 +495,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -525,7 +525,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -552,7 +552,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckExists(version, CancellationToken.None);
+        var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
         // Assert
         actionResult
@@ -580,7 +580,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
                 .ReturnsAsync(result);
 
             // Act
-            var actionResult = await controller.CheckExists(version, CancellationToken.None);
+            var actionResult = await controller.CheckVersionExists(version, CancellationToken.None);
 
             // Assert
             actionResult

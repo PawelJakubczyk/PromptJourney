@@ -9,6 +9,8 @@ public interface IVersionRepository
     // For Commands
     Task<Result<MidjourneyVersion>> AddVersionAsync(MidjourneyVersion version, CancellationToken cancellationToken);
 
+    Task<Result<MidjourneyVersion>> DeleteVersionAsync(ModelVersion version, CancellationToken cancellationToken);
+
     // For Queries
     Task<Result<bool>> CheckIfAnyVersionExistsAsync(CancellationToken cancellationToken);
 

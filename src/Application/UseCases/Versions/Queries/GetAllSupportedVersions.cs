@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Application.UseCases.Versions.Queries;
 
-public static class GetAllSuportedVersions
+public static class GetAllSupportedVersions
 {
     public sealed record Query : IQuery<List<string>>
     {

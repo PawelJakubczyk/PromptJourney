@@ -19,11 +19,11 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var expectedVersionsList = expectedVersions.ToList();
         var result = Result.Ok(expectedVersionsList);
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetAllSuportedVersions.Query, List<string>>(result);
+        senderMock.SetupSendReturnsForRequest<GetAllSupportedVersions.Query, List<string>>(result);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetSupported(CancellationToken.None);
+        var actionResult = await controller.GetSupportedVersions(CancellationToken.None);
 
         // Assert
         actionResult
@@ -40,11 +40,11 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         var supportedEmpty = new List<string>();
         var result = Result.Ok(supportedEmpty);
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetAllSuportedVersions.Query, List<string>>(result);
+        senderMock.SetupSendReturnsForRequest<GetAllSupportedVersions.Query, List<string>>(result);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetSupported(CancellationToken.None);
+        var actionResult = await controller.GetSupportedVersions(CancellationToken.None);
 
         // Assert
         actionResult
@@ -60,12 +60,12 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         // Arrange
         var result = Result.Ok(supportedVersions);
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetAllSuportedVersions.Query, List<string>>(result);
+        senderMock.SetupSendReturnsForRequest<GetAllSupportedVersions.Query, List<string>>(result);
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.GetSupported(CancellationToken.None);
-        var actionResult2 = await controller.GetSupported(CancellationToken.None);
+        var actionResult1 = await controller.GetSupportedVersions(CancellationToken.None);
+        var actionResult2 = await controller.GetSupportedVersions(CancellationToken.None);
 
         // Assert
         actionResult1
@@ -87,18 +87,18 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         // Arrange
         var result = Result.Ok(new List<string>());
         var senderMock = new Mock<ISender>();
-        GetAllSuportedVersions.Query? capturedQuery = null;
+        GetAllSupportedVersions.Query? capturedQuery = null;
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllSuportedVersions.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetAllSupportedVersions.Query>(), It.IsAny<CancellationToken>()))
             .Callback<IRequest<Result<List<string>>>, CancellationToken>((query, ct) =>
             {
-                capturedQuery = query as GetAllSuportedVersions.Query;
+                capturedQuery = query as GetAllSupportedVersions.Query;
             })
             .ReturnsAsync(result);
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetSupported(CancellationToken.None);
+        await controller.GetSupportedVersions(CancellationToken.None);
 
         // Assert
         capturedQuery
@@ -106,7 +106,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
             .NotBeNull();
         capturedQuery
             .Should()
-            .BeSameAs(GetAllSuportedVersions.Query.Singleton);
+            .BeSameAs(GetAllSupportedVersions.Query.Singleton);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
 
         // Act & Assert
         await FluentActions
-            .Awaiting(() => controller.GetSupported(cts.Token))
+            .Awaiting(() => controller.GetSupportedVersions(cts.Token))
             .Should()
             .ThrowAsync<OperationCanceledException>();
     }
@@ -132,15 +132,15 @@ public sealed class GetSupportedVersionsTests : VersionsControllerTestsBase
         // Arrange
         var result = Result.Ok(supportedVersions);
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetAllSuportedVersions.Query, List<string>>(result);
+        senderMock.SetupSendReturnsForRequest<GetAllSupportedVersions.Query, List<string>>(result);
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetSupported(CancellationToken.None);
+        await controller.GetSupportedVersions(CancellationToken.None);
 
         // Assert
         senderMock.Verify(
-            s => s.Send(It.IsAny<GetAllSuportedVersions.Query>(), It.IsAny<CancellationToken>()),
+            s => s.Send(It.IsAny<GetAllSupportedVersions.Query>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

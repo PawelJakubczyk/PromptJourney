@@ -31,9 +31,9 @@ public static class AddExampleLink
 
             var linkResult = MidjourneyStyleExampleLink.Create
             (
-                link.Value,
-                styleName.Value,
-                version.Value
+                link,
+                styleName,
+                version
             );
 
             var result = await WorkflowPipeline
