@@ -25,7 +25,7 @@ try
     builder.Services
         //.RegisterAppOptions()
         .RegisterApplicationLayer()
-        .RegisterPersistenceLayer()
+        .RegisterPersistenceLayer(builder.Environment)
         //.RegisterInfrastructureLayer()
         .RegisterPresentationLayer();
 
