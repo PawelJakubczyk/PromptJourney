@@ -1,7 +1,7 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
-using FluentResults;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.Entities;
 
@@ -10,7 +10,7 @@ public class MidjourneyVersion : IEntity
     // Columns
     public ModelVersion Version { get; set; }
     public Param Parameter { get; set; }
-    public DateTime? ReleaseDate { get; set; }
+    public ReleaseDate? ReleaseDate { get; set; }
     public Description? Description { get; set; }
 
     // Navigation
@@ -29,7 +29,7 @@ public class MidjourneyVersion : IEntity
     private MidjourneyVersion(
         ModelVersion version,
         Param parameter,
-        DateTime? releaseDate = null,
+        ReleaseDate releaseDate = null,
         Description? description = null)
     {
         Version = version;
@@ -42,23 +42,24 @@ public class MidjourneyVersion : IEntity
     (
         Result<ModelVersion> versionResult,
         Result<Param> parameterResult,
-        DateTime? releaseDate = null,
+        Result<ReleaseDate?>? releaseDate = null,
         Result<Description?>? descriptionResult = null
     )
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(versionResult)
-                .CollectErrors(parameterResult)
-                .CollectErrors(descriptionResult))
+            .Congregate(
+                pipeline => pipeline.CollectErrors(versionResult),
+                pipeline => pipeline.CollectErrors(parameterResult),
+                pipeline => pipeline.CollectErrors(releaseDate),
+                pipeline => pipeline.CollectErrors(descriptionResult))
             .ExecuteIfNoErrors<MidjourneyVersion>(() =>
             {
                 var midjourneyVersion = new MidjourneyVersion(
                     versionResult.Value,
                     parameterResult.Value,
-                    releaseDate,
-                    descriptionResult?.Value
+                    releaseDate.ValueOr(null),
+                    descriptionResult?.ValueOr(null)
                 );
 
                 return midjourneyVersion;

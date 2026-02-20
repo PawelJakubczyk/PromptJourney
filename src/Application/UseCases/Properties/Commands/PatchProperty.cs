@@ -4,7 +4,8 @@ using Application.Extensions;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
+
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Commands;
@@ -33,12 +34,12 @@ public static class PatchProperty
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .Congregate(pipeline => pipeline
-                        .CollectErrors(versionResult)
-                        .CollectErrors(propertyNameResult))
-                    .Congregate(pipeline => pipeline
-                        .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
-                        .IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                    .Congregate(
+                        pipeline => pipeline.CollectErrors(versionResult),
+                        pipeline => pipeline.CollectErrors(propertyNameResult))
+                    .Congregate(
+                        pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
+                        pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _propertiesRepository
                         .PatchPropertyAsync
                         (

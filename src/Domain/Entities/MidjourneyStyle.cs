@@ -1,7 +1,7 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Constants;
 using Utilities.Workflows;
 
@@ -52,13 +52,13 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
         .Empty()
-        .Congregate(pipeline => pipeline
-            .CollectErrors(nameResult)
-            .CollectErrors(typeResult)
-            .CollectErrors(descriptionResult)
-            .CollectErrors(tagsResultsList)
-            .IfListIsEmpty<DomainLayer, Tag>(tagsResultsList?.ToValueList())
-            .IfListHasDuplicates<DomainLayer, Tag>(tagsResultsList?.ToValueList()))
+        .Congregate(
+            pipeline => pipeline.CollectErrors(nameResult),
+            pipeline => pipeline.CollectErrors(typeResult),
+            pipeline => pipeline.CollectErrors(descriptionResult),
+            pipeline => pipeline.CollectErrors<Tag>(tagsResultsList?.ToArray() ?? []),
+            pipeline => pipeline.IfListIsEmpty<DomainLayer, Tag>(tagsResultsList?.ToValueList()),
+            pipeline => pipeline.IfListHasDuplicates<DomainLayer, Tag>(tagsResultsList?.ToValueList()))
         .ExecuteIfNoErrors<MidjourneyStyle>(() =>
         {
             var style = new MidjourneyStyle
@@ -79,9 +79,9 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(tag)
-                .IfListContain<DomainLayer, Tag>(Tags, tag.Value))
+            .Congregate(
+                pipeline => pipeline.CollectErrors(tag),
+                pipeline => pipeline.IfListContain<DomainLayer, Tag>(Tags, tag.Value))
             .ExecuteIfNoErrors<Tag>(() =>
             {
                 Tags ??= [];
@@ -97,11 +97,11 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(tag)
-                .IfListIsNull<DomainLayer, Tag>(Tags)
-                .IfListIsEmpty<DomainLayer, Tag>(Tags)
-                .IfListNotContain<DomainLayer, Tag>(Tags, tag.Value))
+            .Congregate(
+                pipeline => pipeline.CollectErrors(tag),
+                pipeline => pipeline.IfListIsNull<DomainLayer, Tag>(Tags),
+                pipeline => pipeline.IfListIsEmpty<DomainLayer, Tag>(Tags),
+                pipeline => pipeline.IfListNotContain<DomainLayer, Tag>(Tags, tag.Value))
             .ExecuteIfNoErrors(() =>
             {
                 Tags!.RemoveAll(t => t.Equals(tag.Value));

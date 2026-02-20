@@ -1,4 +1,4 @@
-﻿using FluentResults;
+﻿using Utilities.Results;
 
 namespace Domain.Abstractions;
 

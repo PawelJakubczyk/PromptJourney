@@ -2,8 +2,8 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.UseCases.PromptHistory.Responses;
 using Domain.Entities;
+using Utilities.Results;
 using Domain.ValueObjects;
-using FluentResults;
 using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Queries;

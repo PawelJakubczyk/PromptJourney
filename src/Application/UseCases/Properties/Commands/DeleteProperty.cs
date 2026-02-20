@@ -3,7 +3,8 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.Common.Responses;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
+
 using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Workflows;
 
@@ -31,12 +32,12 @@ public static class DeleteProperty
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .CollectErrors(versionResult)
-                    .CollectErrors(propertyNameResult))
-                .Congregate(pipeline => pipeline
-                    .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
-                    .IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                .Congregate(
+                    pipeline => pipeline.CollectErrors(versionResult),
+                    pipeline => pipeline.CollectErrors(propertyNameResult))
+                .Congregate(
+                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .DeletePropertyAsync(versionResult.Value, propertyNameResult.Value, cancellationToken))
                 .MapResult(() => DeleteResponse.Success

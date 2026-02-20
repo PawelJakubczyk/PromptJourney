@@ -1,7 +1,7 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
-using FluentResults;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.Entities;
 
@@ -47,10 +47,10 @@ public class MidjourneyStyleExampleLink : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(linkResult)
-                .CollectErrors(styleNameResult)
-                .CollectErrors(versionResult))
+            .Congregate(
+                pipeline => pipeline.CollectErrors(linkResult),
+                pipeline => pipeline.CollectErrors(styleNameResult),
+                pipeline => pipeline.CollectErrors(versionResult))
             .ExecuteIfNoErrors<MidjourneyStyleExampleLink>(() =>
             {
                 var exampleLink = new MidjourneyStyleExampleLink(

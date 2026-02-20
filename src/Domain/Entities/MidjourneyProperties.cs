@@ -1,7 +1,7 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Constants;
 using Utilities.Workflows;
 
@@ -60,16 +60,16 @@ public class MidjourneyProperties : IEntity
     {
         var result = WorkflowPipeline
         .Empty()
-        .Congregate(pipeline => pipeline
-            .CollectErrors<PropertyName>(propertyNameResult)
-            .CollectErrors<ModelVersion>(versionResult)
-            .CollectErrors<Param>(paramResultsList)
-            .CollectErrors<DefaultValue>(defaultValueResult)
-            .CollectErrors<MinValue>(minValueResult)
-            .CollectErrors<MaxValue>(maxValueResult)
-            .CollectErrors<Description>(descriptionResult)
-            .IfListIsEmpty<DomainLayer, Param>(paramResultsList?.ToValueList())
-            .IfListHasDuplicates<DomainLayer, Param>(paramResultsList?.ToValueList()))
+        .Congregate(
+            pipeline => pipeline.CollectErrors<PropertyName>(propertyNameResult),
+            pipeline => pipeline.CollectErrors<ModelVersion>(versionResult),
+            pipeline => pipeline.CollectErrors<Param>(paramResultsList?.ToArray() ?? []),
+            pipeline => pipeline.CollectErrors<DefaultValue>(defaultValueResult),
+            pipeline => pipeline.CollectErrors<MinValue>(minValueResult),
+            pipeline => pipeline.CollectErrors<MaxValue>(maxValueResult),
+            pipeline => pipeline.CollectErrors<Description>(descriptionResult),
+            pipeline => pipeline.IfListIsEmpty<DomainLayer, Param>(paramResultsList?.ToValueList()),
+            pipeline => pipeline.IfListHasDuplicates<DomainLayer, Param>(paramResultsList?.ToValueList()))
         .ExecuteIfNoErrors(() =>
         {
             var versionBase = new MidjourneyProperties

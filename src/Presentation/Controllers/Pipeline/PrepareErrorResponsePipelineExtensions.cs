@@ -1,18 +1,16 @@
-﻿using FluentResults;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Results;
 
 namespace Presentation.Controllers.Pipeline;
 
 internal static class PrepareErrorResponsePipelineExtensions
 {
-    public static async Task<Pipeline<TResponse>> IfErrorsPrepareErrorResponse<TResponse>
-(
-    this Task<Result<TResponse>> sourceTask,
-    Func<Error, IEnumerable<object>,
-    IActionResult>? bodyFactory = null
-)
+    public static async Task<Pipeline<TResponse>> IfErrorsPrepareErrorResponse<TResponse>(
+        this Task<Result<TResponse>> sourceTask,
+        Func<Error, IEnumerable<string>, IActionResult>? bodyFactory = null)
     {
         ArgumentNullException.ThrowIfNull(sourceTask);
 
@@ -30,14 +28,19 @@ internal static class PrepareErrorResponsePipelineExtensions
             ? Pipeline<TResponse>.PickHighestPriorityErrorInternal(errors)
             : ErrorFactories.Unknown<PresentationLayer>();
 
-        var details = errors.Select(error => error.GetDetail()).ToList();
+        var errorMessages = errors.Select(error => error.Message).ToList();
 
         pipeline.SetResponse(bodyFactory != null
-            ? bodyFactory(mainError, details)
+            ? bodyFactory(mainError, errorMessages)
             : new ObjectResult(new
             {
-                mainError = new { code = mainError.GetErrorCode(), message = mainError.Message },
-                details
+                mainError = new
+                {
+                    code = mainError.GetErrorCode(),
+                    message = mainError.Message,
+                    layer = mainError.GetLayer()
+                },
+                errors = errorMessages
             })
             {
                 StatusCode = mainError.GetErrorCode()

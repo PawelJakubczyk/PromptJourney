@@ -1,5 +1,4 @@
 using Application.Abstractions.IRepository;
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Utilities.Constants;
 using Utilities.Errors;
@@ -7,7 +6,7 @@ using Utilities.Workflows;
 
 namespace Application.Extensions;
 
-public static class HistoryValidationExtensions
+public static class HistoryValidationWorkflowPipelineExtensions
 {
     internal static string HistoryLimitNotGreaterThanZeroMessage(int count) =>
         $"History count must be greater than zero. Provided: {count}.";

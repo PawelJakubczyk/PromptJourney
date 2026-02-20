@@ -37,6 +37,8 @@ public static class ValueObjectsMapping
     public sealed class TagComparer : ValueObjectsMapping<Tag, string>.Comparer { }
     public sealed class TagListConverter : ValueObjectsMapping<Tag, string>.ListConverter { }
     public sealed class TagListComparer : ValueObjectsMapping<Tag, string>.ListComparer { }
+    public sealed class ReleaseDateConverter : ValueObjectsMapping<ReleaseDate, string?>.Converter { }
+    public sealed class ReleaseDateComparer : ValueObjectsMapping<ReleaseDate, string?>.Comparer { }
 }
 
 public static class ValueObjectsMapping<TValueObject, TValue>

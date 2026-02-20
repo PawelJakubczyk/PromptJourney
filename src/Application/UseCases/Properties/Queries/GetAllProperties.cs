@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Queries;

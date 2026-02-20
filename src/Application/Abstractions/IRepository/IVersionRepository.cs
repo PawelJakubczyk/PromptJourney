@@ -1,6 +1,6 @@
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 
 namespace Application.Abstractions.IRepository;
 
@@ -15,6 +15,8 @@ public interface IVersionRepository
     Task<Result<bool>> CheckIfAnyVersionExistsAsync(CancellationToken cancellationToken);
 
     Task<Result<bool>> CheckVersionExistsAsync(ModelVersion version, CancellationToken cancellationToken);
+
+    Task<Result<bool>> CheckParameterExistsAsync(Param parameter, CancellationToken cancellationToken);
 
     Task<Result<List<string>>> GetAllSupportedVersionsAsync(CancellationToken cancellationToken);
 

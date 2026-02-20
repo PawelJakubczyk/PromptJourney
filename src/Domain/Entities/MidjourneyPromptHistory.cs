@@ -1,6 +1,6 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Domain.Entities;
@@ -44,9 +44,9 @@ public class MidjourneyPromptHistory : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(prompt)
-                .CollectErrors(version))
+            .Congregate(
+                pipeline => pipeline.CollectErrors(prompt),
+                pipeline => pipeline.CollectErrors(version))
             .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
             (
                 prompt.Value,

@@ -6,7 +6,7 @@ public sealed record VersionResponse
 (
     string Version,
     string Parameter,
-    DateTime? ReleaseDate,
+    string? ReleaseDate,
     string? Description
 )
 {
@@ -14,7 +14,7 @@ public sealed record VersionResponse
         new(
             version.Version.Value,
             version.Parameter.Value,
-            version.ReleaseDate,
+            version.ReleaseDate.Value,
             version.Description?.Value
         );
 }

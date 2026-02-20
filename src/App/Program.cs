@@ -1,7 +1,9 @@
 using Application.Registrations;
 using Persistence.Registrations;
 using App.Middleware;
+using App.Configuration;
 using Presentation.Registrations;
+using System.Text.Json.Serialization;
 
 var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 var logger = loggerFactory.CreateLogger<Program>();
@@ -28,6 +30,16 @@ try
         .RegisterPersistenceLayer(builder.Environment)
         //.RegisterInfrastructureLayer()
         .RegisterPresentationLayer();
+
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        })
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.ConfigureCustomModelStateValidation();
+        });
 
     //Build the application
 

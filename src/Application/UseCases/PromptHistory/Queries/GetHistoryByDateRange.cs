@@ -2,8 +2,8 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.PromptHistory.Responses;
+using Utilities.Results;
 using Domain.Entities;
-using FluentResults;
 using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Queries;
@@ -23,10 +23,10 @@ public static class GetHistoryByDateRange
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .IfDateInFuture(query.From)
-                    .IfDateInFuture(query.To)
-                    .IfDateRangeNotChronological(query.From, query.To))
+                .Congregate(
+                    pipeline => pipeline.IfDateInFuture(query.From),
+                    pipeline => pipeline.IfDateInFuture(query.To),
+                    pipeline => pipeline.IfDateRangeNotChronological(query.From, query.To))
                 .ExecuteIfNoErrors(() => _promptHistoryRepository
                     .GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
                 .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>

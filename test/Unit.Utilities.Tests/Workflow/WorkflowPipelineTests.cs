@@ -1,6 +1,6 @@
 using Utilities.Workflows;
 using FluentAssertions;
-using FluentResults;
+using Utilities.Errors;
 
 namespace Unit.Utilities.Tests.Workflow;
 

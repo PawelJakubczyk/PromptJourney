@@ -3,7 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.PromptHistory.Responses;
 using Domain.Entities;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Queries;
@@ -23,9 +23,9 @@ public static class GetLastHistoryRecords
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .IfHistoryLimitNotGreaterThanZero(query.Count)
-                    .IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
+                .Congregate(
+                    pipeline => pipeline.IfHistoryLimitNotGreaterThanZero(query.Count),
+                    pipeline => pipeline.IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _promptHistoryRepository
                     .GetLastHistoryRecordsAsync(query.Count, cancellationToken))
                 .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>

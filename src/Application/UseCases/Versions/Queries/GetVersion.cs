@@ -4,7 +4,7 @@ using Application.Extensions;
 using Application.UseCases.Versions.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Versions.Queries;
@@ -24,7 +24,7 @@ public static class GetVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .IfVersionNotExists(version.ValueOr(null!), _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository
                     .GetVersionAsync(version.Value, cancellationToken))
                 .MapResult<MidjourneyVersion, VersionResponse>

@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Commands;
@@ -22,9 +22,9 @@ public static class UpdateDescriptionInStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .CollectErrors(styleName)
-                    .CollectErrors(description))
+                .Congregate(
+                    pipeline => pipeline.CollectErrors(styleName),
+                    pipeline => pipeline.CollectErrors(description))
                 .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository
                     .UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))

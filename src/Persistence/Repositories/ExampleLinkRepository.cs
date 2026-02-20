@@ -3,9 +3,9 @@ using Application.UseCases.Common.Responses;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.ValueObjects;
-using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
+using Utilities.Results;
 
 namespace Persistence.Repositories;
 

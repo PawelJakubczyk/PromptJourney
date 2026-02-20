@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Commands;
@@ -22,12 +22,12 @@ public static class AddTagToStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .CollectErrors(styleName)
-                    .CollectErrors(tag))
-                .Congregate(pipeline => pipeline
-                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
+                .Congregate(
+                    pipeline => pipeline.CollectErrors(styleName),
+                    pipeline => pipeline.CollectErrors(tag))
+                .Congregate(
+                    pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
+                    pipeline => pipeline.IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository
                     .AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
                 .MapResult(() => command.Tag);

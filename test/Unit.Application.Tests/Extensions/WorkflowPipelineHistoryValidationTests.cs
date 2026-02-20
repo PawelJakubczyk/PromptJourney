@@ -1,8 +1,8 @@
 ﻿using Application.Abstractions.IRepository;
 using Application.Extensions;
 using FluentAssertions;
-using FluentResults;
 using Moq;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Unit.Application.Tests.Extensions;

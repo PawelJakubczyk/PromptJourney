@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Queries;
@@ -26,9 +26,9 @@ public static class CheckPropertyExists
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .CollectErrors(version)
-                    .CollectErrors(propertyName))
+                .Congregate(
+                    pipeline => pipeline.CollectErrors(version),
+                    pipeline => pipeline.CollectErrors(propertyName))
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .CheckPropertyExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))

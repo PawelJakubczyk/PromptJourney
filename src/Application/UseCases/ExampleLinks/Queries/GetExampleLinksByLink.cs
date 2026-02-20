@@ -3,7 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.UseCases.ExampleLinks.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.ExampleLinks.Queries;

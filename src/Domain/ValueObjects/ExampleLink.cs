@@ -1,9 +1,9 @@
 using Domain.Abstractions;
 using Domain.Extensions;
-using FluentResults;
 using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.ValueObjects;
 
@@ -18,9 +18,9 @@ public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, ExampleLink>(value)
-            .Congregate(pipeline => pipeline
-                .IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength)
-                .IfLinkFormatInvalid<DomainLayer>(value))
+            .Congregate(
+                pipeline => pipeline.IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength),
+                pipeline => pipeline.IfLinkFormatInvalid<DomainLayer>(value))
             .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value))
             .MapResult<ExampleLink>();
 

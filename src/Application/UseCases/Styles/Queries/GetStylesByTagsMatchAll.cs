@@ -4,7 +4,7 @@ using Domain.Extensions;
 using Application.UseCases.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Queries;
@@ -24,7 +24,7 @@ public static class GetStylesByTagsMatchAll
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .IfListIsNullOrEmpty(query.Tags)
-                .CollectErrors(tags!)
+                .CollectErrors(tags?.ToArray() ?? [])
                 .ExecuteIfNoErrors(() => _styleRepository
                     .GetStylesByTagsMatchAllAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
                 .MapResult<List<MidjourneyStyle>, List<StyleResponse>>

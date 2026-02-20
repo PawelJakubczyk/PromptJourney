@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Versions\Queries\" />
+	<ProjectReference Include="..\..\src\Utilities\Utilities.csproj" />
   </ItemGroup>
 
 </Project>

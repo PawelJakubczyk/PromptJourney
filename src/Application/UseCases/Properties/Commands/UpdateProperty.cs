@@ -4,7 +4,8 @@ using Application.Extensions;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
+
 using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Workflows;
 
@@ -58,9 +59,9 @@ public static class UpdateProperty
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(propertyResult)
-                .Congregate(pipeline => pipeline
-                    .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
-                    .IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                .Congregate(
+                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .UpdatePropertyAsync(propertyResult.Value, cancellationToken))
                 .MapResult<MidjourneyProperties, PropertyCommandResponse>

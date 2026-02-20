@@ -1,6 +1,6 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using FluentResults;
+using Utilities.Results;
 
 namespace Application.UseCases.ExampleLinks.Queries;
 

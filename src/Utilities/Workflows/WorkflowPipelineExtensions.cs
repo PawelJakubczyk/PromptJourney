@@ -1,36 +1,53 @@
-using FluentResults;
+using Utilities.Errors;
+using Utilities.Results;
 
 namespace Utilities.Workflows;
 
 public static class WorkflowPipelineExtensions
 {
     // --- Congregate ---
-    public static WorkflowPipeline Congregate(this WorkflowPipeline pipeline, Func<WorkflowPipeline, WorkflowPipeline> validationBlock)
+    public static WorkflowPipeline Congregate
+    (
+        this WorkflowPipeline pipeline, 
+        params Func<WorkflowPipeline, WorkflowPipeline>[] validationBlocks
+    )
     {
         if (pipeline.BreakOnError)
             return pipeline;
 
         var tempPipeline = WorkflowPipeline.Create([.. pipeline.Errors], breakOnError: false);
 
-        tempPipeline = validationBlock(tempPipeline);
-
-        pipeline.Errors.AddRange(tempPipeline.Errors);
+        foreach (var validationBlock in validationBlocks)
+        {
+            var beforeCount = tempPipeline.Errors.Count;
+            tempPipeline = validationBlock(tempPipeline);
+            var newErrors = tempPipeline.Errors.Skip(beforeCount);
+            pipeline.Errors.AddRange(newErrors);
+        }
 
         return pipeline;
     }
 
-    public static async Task<WorkflowPipeline> Congregate(this Task<WorkflowPipeline> pipelineTask, Func<Task<WorkflowPipeline>, Task<WorkflowPipeline>> validationBlock)
+    public static async Task<WorkflowPipeline> Congregate
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        params Func<Task<WorkflowPipeline>, Task<WorkflowPipeline>>[] validationBlocks)
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 
         if (pipeline.BreakOnError)
             return pipeline;
 
-        var tempPipelineTask = Task.FromResult(WorkflowPipeline.Create([.. pipeline.Errors], breakOnError: false));
+        var tempPipeline = WorkflowPipeline.Create([.. pipeline.Errors], breakOnError: false);
 
-        var validatedPipeline = await validationBlock(tempPipelineTask).ConfigureAwait(false);
+        foreach (var validationBlock in validationBlocks)
+        {
+            var beforeCount = tempPipeline.Errors.Count;
+            tempPipeline = await validationBlock(Task.FromResult(tempPipeline)).ConfigureAwait(false);
+            var newErrors = tempPipeline.Errors.Skip(beforeCount);
+            pipeline.Errors.AddRange(newErrors);
+        }
 
-        pipeline.Errors.AddRange(validatedPipeline.Errors);
         return pipeline;
     }
 
@@ -38,7 +55,7 @@ public static class WorkflowPipelineExtensions
     public static WorkflowPipeline CollectErrors<TValue>
     (
         this WorkflowPipeline pipeline,
-        Result<TValue> result
+        params Result<TValue>[] results
     )
     {
         if (pipeline.BreakOnError)
@@ -46,11 +63,11 @@ public static class WorkflowPipelineExtensions
 
         var errorsCopy = new List<Error>(pipeline.Errors);
 
-        if (pipeline.BreakOnError && errorsCopy.Count != 0)
-            return pipeline;
-
-        if (result is not null && result.IsFailed)
-            errorsCopy.AddRange(result.Errors.OfType<Error>());
+        foreach (var result in results)
+        {
+            if (result is not null && result.IsFailed)
+                errorsCopy.AddRange(result.Errors.OfType<Error>());
+        }
 
         return WorkflowPipeline.Create(errorsCopy, pipeline.BreakOnError);
     }
@@ -58,56 +75,12 @@ public static class WorkflowPipelineExtensions
     public static async Task<WorkflowPipeline> CollectErrors<TValue>
     (
         this Task<WorkflowPipeline> pipelineTask,
-        Result<TValue> result
+        params Result<TValue>[] results
     )   
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
-        return pipeline.CollectErrors(result);
-    }
 
-    public static WorkflowPipeline CollectErrors<TValue>
-    (
-        this WorkflowPipeline pipeline,
-        List<Result<TValue>>? results
-    )
-    {
-        if (pipeline.BreakOnError)
-            return pipeline;
-
-        var errorsCopy = new List<Error>(pipeline.Errors); ;
-
-        if (results != null && results.Count > 0)
-        {
-            foreach (var result in results)
-            {
-                if (result.IsFailed)
-                    errorsCopy.AddRange(result.Errors.OfType<Error>());
-            }
-        }
-
-        return WorkflowPipeline.Create(errorsCopy, pipeline.BreakOnError);
-    }
-
-    public static async Task<WorkflowPipeline> CollectErrors<TValue>
-    (
-        this Task<WorkflowPipeline> pipelineTask,
-        List<Result<TValue>> results
-    )
-    {
-        var pipeline = await pipelineTask.ConfigureAwait(false);
-
-        if (pipeline.BreakOnError)
-            return pipeline;
-
-        var errors = pipeline.Errors;
-
-        foreach (var result in results)
-        {
-            if (result.IsFailed)
-                errors.AddRange(result.Errors.OfType<Error>());
-        }
-
-        return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
+        return pipeline.CollectErrors(results);
     }
 
     // --- ExecuteIfNoErrors ---
@@ -117,7 +90,7 @@ public static class WorkflowPipelineExtensions
         Func<Result<TType>> action
     )
     {
-        if (pipeline.BreakOnError)
+        if (pipeline.BreakOnError || pipeline.Errors.Count > 0)
             return pipeline;
 
         var result = action();
@@ -141,7 +114,7 @@ public static class WorkflowPipelineExtensions
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 
-        if (pipeline.BreakOnError)
+        if (pipeline.BreakOnError || pipeline.Errors.Count > 0)
             return pipeline;
 
         var actionResult = await action().ConfigureAwait(false);
@@ -165,9 +138,11 @@ public static class WorkflowPipelineExtensions
         return Result.Ok(pipeline.GetResult<TResponse>()!);
     }
 
-    public static Result<TResponse> MapResult<TResponse>(
+    public static Result<TResponse> MapResult<TResponse>
+    (
         this WorkflowPipeline pipeline,
-        Func<TResponse> mapResponse)
+        Func<TResponse> mapResponse
+    )
     {
         if (pipeline.Errors.Count != 0)
             return Result.Fail<TResponse>(pipeline.Errors);
@@ -175,9 +150,11 @@ public static class WorkflowPipelineExtensions
         return Result.Ok(mapResponse());
     }
 
-    public static Result<TResponse> MapResult<TSource, TResponse>(
+    public static Result<TResponse> MapResult<TSource, TResponse>
+    (
         this WorkflowPipeline pipeline,
-        Func<TSource, TResponse> mapResponse)
+        Func<TSource, TResponse> mapResponse
+    )
     {
         if (pipeline.Errors.Count != 0)
             return Result.Fail<TResponse>(pipeline.Errors);
@@ -192,17 +169,21 @@ public static class WorkflowPipelineExtensions
         return pipeline.MapResult<TResponse>();
     }
 
-    public static async Task<Result<TResponse>> MapResult<TResponse>(
+    public static async Task<Result<TResponse>> MapResult<TResponse>
+    (
         this Task<WorkflowPipeline> pipelineTask,
-        Func<TResponse> mapResponse)
+        Func<TResponse> mapResponse
+    )
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
         return pipeline.MapResult(mapResponse);
     }
 
-    public static async Task<Result<TResponse>> MapResult<TSource, TResponse>(
+    public static async Task<Result<TResponse>> MapResult<TSource, TResponse>
+    (
         this Task<WorkflowPipeline> pipelineTask,
-        Func<TSource, TResponse> mapResponse)
+        Func<TSource, TResponse> mapResponse
+    )
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
         return pipeline.MapResult(mapResponse);

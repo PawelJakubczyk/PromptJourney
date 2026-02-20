@@ -1,8 +1,8 @@
 using Domain.Abstractions;
 using Domain.Extensions;
-using FluentResults;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
@@ -18,9 +18,9 @@ public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, StyleType>(value)
-            .Congregate(pipeline => pipeline
-                .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
-                .IfStyleTypeNotInclude<DomainLayer>(value))
+            .Congregate(
+                pipeline => pipeline.IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength),
+                pipeline => pipeline.IfStyleTypeNotInclude<DomainLayer>(value))
             .ExecuteIfNoErrors<StyleType>(() => new StyleType(value!))
             .MapResult<StyleType>();
 

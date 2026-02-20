@@ -26,8 +26,11 @@ public class MidjourneyVersionConfiguration : IEntityTypeConfiguration<Midjourne
             .HasColumnType(ColumnType.VarChar(Param.MaxLength))
             .IsRequired();
 
+        builder.HasIndex(master => master.Parameter).IsUnique();
+
         builder
             .Property(master => master.ReleaseDate)
+            .HasConversion<ReleaseDateConverter, ReleaseDateComparer>()
             .HasColumnName("release_date")
             .HasColumnType(ColumnType.TimestampWithTimeZone());
 

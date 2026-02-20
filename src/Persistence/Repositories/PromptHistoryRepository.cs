@@ -3,12 +3,12 @@ using Application.UseCases.Common.Responses;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.ValueObjects;
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Results;
 
 namespace Persistence.Repositories;
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Utilities.Constants;
-using FluentResults;
 using System.Text.Json;
 using Utilities.Errors;
 

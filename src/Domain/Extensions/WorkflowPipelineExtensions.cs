@@ -7,7 +7,8 @@ namespace Domain.Extensions;
 
 public static class WorkflowPipelineExtensions
 {
-    public static WorkflowPipeline IfNullOrWhitespace<TLayer, TValue>(
+    public static WorkflowPipeline IfNullOrWhitespace<TLayer, TValue>
+    (
         this WorkflowPipeline pipeline,
         string? value)
         where TLayer : ILayer
@@ -19,7 +20,7 @@ public static class WorkflowPipelineExtensions
         if (string.IsNullOrWhiteSpace(value))
         {
             pipeline.Errors.Add(
-                ErrorFactories.NullOrWhitespace<TValue, TLayer>()
+                ErrorFactories.NullOrWhitespace<TValue, TLayer>(value)
             );
         }
 
@@ -38,7 +39,7 @@ public static class WorkflowPipelineExtensions
         if (value != null && string.IsNullOrWhiteSpace(value))
         {
             pipeline.Errors.Add(
-                ErrorFactories.Whitespace<TValue, TLayer>()
+                ErrorFactories.Whitespace<TValue, TLayer>(value)
             );
         }
 
@@ -89,6 +90,5 @@ public static class WorkflowPipelineExtensions
 
         return pipeline;
     }
-
 }
 

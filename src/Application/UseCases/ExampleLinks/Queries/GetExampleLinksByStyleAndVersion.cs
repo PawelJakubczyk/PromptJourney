@@ -4,7 +4,7 @@ using Application.Extensions;
 using Application.UseCases.ExampleLinks.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.ExampleLinks.Queries;
@@ -31,12 +31,12 @@ public static class GetExampleLinksByStyleAndVersion
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .CollectErrors(styleName)
-                    .CollectErrors(version))
-                .Congregate(pipeline => pipeline
-                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .IfVersionNotExists(version.Value, _versionRepository, cancellationToken))
+                .Congregate(
+                    pipeline => pipeline.CollectErrors(styleName),
+                    pipeline => pipeline.CollectErrors(version))
+                .Congregate(
+                    pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
+                    pipeline => pipeline.IfVersionNotExists(version.Value, _versionRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
                 .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>

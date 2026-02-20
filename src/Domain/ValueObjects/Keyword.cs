@@ -1,6 +1,6 @@
 using Domain.Abstractions;
 using Domain.Extensions;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Constants;
 using Utilities.Workflows;
 

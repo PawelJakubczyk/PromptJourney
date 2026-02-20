@@ -1,13 +1,13 @@
 using Application.Abstractions.IRepository;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Workflows;
 using Utilities.Constants;
 using Utilities.Errors;
-using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Application.Extensions;
 
-public static class EntityExistenceValidationExtensions
+public static class EntityExistenceValidationWorkflowPipelineExtensions
 {
     public static Task<WorkflowPipeline> IfVersionNotExists
     (
@@ -37,6 +37,22 @@ public static class EntityExistenceValidationExtensions
         (
             version,
             repository.CheckVersionExistsAsync,
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfParamterAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Param parameter,
+        IVersionRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfAlreadyExist
+        (
+            parameter,
+            repository.CheckParameterExistsAsync,
             cancellationToken
         );
     }
@@ -245,7 +261,7 @@ public static class EntityExistenceValidationExtensions
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 
-        if (pipeline.BreakOnError)
+        if (pipeline.BreakOnError || pipeline.Errors.Count > 0)
             return pipeline;
 
         var result = await existsFunc(item, cancellationToken).ConfigureAwait(false);

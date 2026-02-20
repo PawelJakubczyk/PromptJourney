@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <!-- Core dependencies -->
-    <PackageVersion Include="FluentResults" Version="4.0.0" />
     <PackageVersion Include="MediatR" Version="12.5.0" />
     <PackageVersion Include="NUlid" Version="1.7.3" />
 

@@ -1,8 +1,8 @@
 using Domain.Abstractions;
 using Domain.Extensions;
-using FluentResults;
 using Utilities.Constants;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.ValueObjects;
 

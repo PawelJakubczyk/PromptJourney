@@ -1,10 +1,10 @@
 using Domain.Abstractions;
 using Domain.Extensions;
-using FluentResults;
 using System.Text.RegularExpressions;
 using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.ValueObjects;
 
@@ -18,10 +18,10 @@ public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, strin
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
-            .Congregate(pipeline => pipeline
-                .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
-                .IfVersionFormatInvalid<DomainLayer>(value))
-            .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value))
+            .Congregate(
+                pipeline => pipeline.IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength),
+                pipeline => pipeline.IfVersionFormatInvalid<DomainLayer>(value))
+            .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value!))
             .MapResult<ModelVersion>();
 
         return result;
@@ -33,9 +33,11 @@ internal static partial class ModelVersionErrorsExtensions
     internal const string InvalidVersionFormatMessage =
         $"Invalid version format. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')";
 
-    internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>(
+    internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>
+    (
         this WorkflowPipeline pipeline,
-        string? value)
+        string? value
+    )
         where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
@@ -50,17 +52,18 @@ internal static partial class ModelVersionErrorsExtensions
 
         if (!isValid)
         {
-            pipeline.Errors.Add(
-                ErrorFactories.InvalidPattern<string, TLayer>(value, InvalidVersionFormatMessage)
+            pipeline.Errors.Add
+            (
+                ErrorFactories.InvalidPattern<ModelVersion, TLayer>(value, InvalidVersionFormatMessage)
             );
         }
 
         return pipeline;
     }
 
-
     [GeneratedRegex(@"^[1-9][0-9]*(\.[0-9])?$", RegexOptions.Compiled)]
     private static partial Regex ValidNumericRegex();
+    
     [GeneratedRegex(@"^niji [1-9][0-9]*$", RegexOptions.Compiled)]
     private static partial Regex ValidNijiRegex();
 }

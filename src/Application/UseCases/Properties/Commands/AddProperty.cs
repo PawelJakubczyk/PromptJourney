@@ -3,8 +3,9 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
+using Utilities.Results;
 using Domain.ValueObjects;
-using FluentResults;
+
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Commands;
@@ -55,9 +56,9 @@ public static class AddProperty
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                .Congregate(pipeline => pipeline
-                    .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
-                    .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                .Congregate(
+                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .AddPropertyAsync(property.Value, cancellationToken))
                 .MapResult<MidjourneyProperties, PropertyCommandResponse>
