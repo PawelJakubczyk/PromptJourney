@@ -2,7 +2,6 @@
 using Application.UseCases.Versions.Commands;
 using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

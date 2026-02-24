@@ -2,78 +2,56 @@
 
 namespace Presentation.Constants;
 
+/// <summary>
+/// Provides HTTP status code priority mapping for error handling.
+/// Lower values indicate higher priority (more urgent/critical).
+/// </summary>
 public static class StatusPriority
 {
-    public static Dictionary<int, int> StatusPriorityDict = new()
+    /// <summary>
+    /// Gets the priority value for a given HTTP status code.
+    /// </summary>
+    /// <param name="statusCode">The HTTP status code.</param>
+    /// <returns>Priority value (1 = highest priority, 9 = lowest priority).</returns>
+    public static int GetPriority(int statusCode) => statusCode switch
     {
-        // 1xx Information (lowest priority)
-        [StatusCodes.Status100Continue] = 9,
-        [StatusCodes.Status101SwitchingProtocols] = 9,
-        [StatusCodes.Status102Processing] = 9,
+        // 5xx Server Errors (highest priority = 1)
+        >= 500 and < 600 => 1,
 
-        // 2xx Success (very low priority)
-        [StatusCodes.Status200OK] = 8,
-        [StatusCodes.Status201Created] = 8,
-        [StatusCodes.Status202Accepted] = 8,
-        [StatusCodes.Status203NonAuthoritative] = 8,
-        [StatusCodes.Status204NoContent] = 8,
-        [StatusCodes.Status205ResetContent] = 8,
-        [StatusCodes.Status206PartialContent] = 8,
-        [StatusCodes.Status207MultiStatus] = 8,
-        [StatusCodes.Status208AlreadyReported] = 8,
+        // 4xx Client Errors (priority 2-6 depending on type)
+        StatusCodes.Status409Conflict => 2,           // State conflict - high priority
+        StatusCodes.Status429TooManyRequests => 2,    // Throttling - high priority
+        StatusCodes.Status404NotFound => 3,           // Not found - medium priority
+        StatusCodes.Status401Unauthorized => 4,       // Auth errors
+        StatusCodes.Status403Forbidden => 4,
+        StatusCodes.Status408RequestTimeout => 4,
+        StatusCodes.Status410Gone => 4,
+        StatusCodes.Status402PaymentRequired => 6,    // Special case
+        StatusCodes.Status418ImATeapot => 6,          // Special case (joke status)
+        >= 400 and < 500 => 5,                        // Other 4xx client errors
 
-        // 3xx redirection (low priority; usually not client/server errors)
-        [StatusCodes.Status300MultipleChoices] = 7,
-        [StatusCodes.Status301MovedPermanently] = 7,
-        [StatusCodes.Status302Found] = 7,
-        [StatusCodes.Status303SeeOther] = 7,
-        [StatusCodes.Status304NotModified] = 7,
-        [StatusCodes.Status305UseProxy] = 7,
-        [StatusCodes.Status306SwitchProxy] = 7,
-        [StatusCodes.Status307TemporaryRedirect] = 7,
-        [StatusCodes.Status308PermanentRedirect] = 7,
+        // 3xx Redirects (low priority = 7)
+        >= 300 and < 400 => 7,
 
-        // 4xx client errors (higher priority than 2xx/3xx; distinctions inside the class)
-        // The most important for domain logic: conflict, Throttling, Auth
-        [StatusCodes.Status400BadRequest] = 5,
-        [StatusCodes.Status401Unauthorized] = 4,
-        [StatusCodes.Status402PaymentRequired] = 6,
-        [StatusCodes.Status403Forbidden] = 4,
-        [StatusCodes.Status404NotFound] = 3,
-        [StatusCodes.Status405MethodNotAllowed] = 5,
-        [StatusCodes.Status406NotAcceptable] = 5,
-        [StatusCodes.Status407ProxyAuthenticationRequired] = 5,
-        [StatusCodes.Status408RequestTimeout] = 4,
-        [StatusCodes.Status409Conflict] = 2,         // High priority in 4xx (state conflict)
-        [StatusCodes.Status410Gone] = 4,
-        [StatusCodes.Status411LengthRequired] = 5,
-        [StatusCodes.Status412PreconditionFailed] = 5,
-        [StatusCodes.Status413PayloadTooLarge] = 5,
-        [StatusCodes.Status414UriTooLong] = 5,
-        [StatusCodes.Status415UnsupportedMediaType] = 5,
-        [StatusCodes.Status416RangeNotSatisfiable] = 5,
-        [StatusCodes.Status417ExpectationFailed] = 5,
-        [StatusCodes.Status418ImATeapot] = 6,
-        [StatusCodes.Status421MisdirectedRequest] = 5,
-        [StatusCodes.Status422UnprocessableEntity] = 5,
-        [StatusCodes.Status423Locked] = 5,
-        [StatusCodes.Status424FailedDependency] = 5,
-        [StatusCodes.Status426UpgradeRequired] = 5,
-        [StatusCodes.Status428PreconditionRequired] = 5,
-        [StatusCodes.Status429TooManyRequests] = 2,   // High Priority (Throttling)
-        [StatusCodes.Status431RequestHeaderFieldsTooLarge] = 5,
-        [StatusCodes.Status451UnavailableForLegalReasons] = 5,
+        // 2xx Success (very low priority = 8)
+        >= 200 and < 300 => 8,
 
-        // 5xx Server Errors (highest priority)
-        [StatusCodes.Status500InternalServerError] = 1,
-        [StatusCodes.Status501NotImplemented] = 1,
-        [StatusCodes.Status502BadGateway] = 1,
-        [StatusCodes.Status503ServiceUnavailable] = 1,
-        [StatusCodes.Status504GatewayTimeout] = 1,
-        [StatusCodes.Status505HttpVersionNotsupported] = 1,
-        [StatusCodes.Status506VariantAlsoNegotiates] = 1,
-        [StatusCodes.Status507InsufficientStorage] = 1,
-        [StatusCodes.Status508LoopDetected] = 1,
-        [StatusCodes.Status511NetworkAuthenticationRequired] = 1
+        // 1xx Information (lowest priority = 9)
+        >= 100 and < 200 => 9,
+
+        // Default for unknown codes
+        _ => 10
     };
+
+    /// <summary>
+    /// Gets the priority value for a given HTTP status code with fallback to default.
+    /// </summary>
+    /// <param name="statusCode">The HTTP status code.</param>
+    /// <param name="defaultPriority">The default priority if code is not recognized.</param>
+    /// <returns>Priority value, or defaultPriority if not found.</returns>
+    public static int GetPriorityOrDefault(int statusCode, int defaultPriority = int.MaxValue)
+    {
+        var priority = GetPriority(statusCode);
+        return priority == int.MaxValue ? defaultPriority : priority;
+    }
 }

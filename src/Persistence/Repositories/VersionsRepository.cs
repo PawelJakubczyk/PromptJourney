@@ -68,7 +68,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
             );
 
         var latest = allVersions
-            .OrderByDescending(version => version.ReleaseDate is not null ? version.ReleaseDate.ToDateTime() : DateTime.MinValue)
+            .OrderByDescending(version => version.ReleaseDate?.Value ?? DateTimeOffset.MinValue)
             .First();
 
         return Result.Ok(latest);
