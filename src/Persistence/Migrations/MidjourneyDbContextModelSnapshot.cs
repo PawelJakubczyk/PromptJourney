@@ -172,14 +172,17 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Parameter")
                         .IsRequired()
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("varchar(12)")
                         .HasColumnName("parameter");
 
-                    b.Property<DateTime?>("ReleaseDate")
+                    b.Property<DateTimeOffset?>("ReleaseDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("release_date");
 
                     b.HasKey("Version");
+
+                    b.HasIndex("Parameter")
+                        .IsUnique();
 
                     b.ToTable("midjourney_versions", "public");
                 });
