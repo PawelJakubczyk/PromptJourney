@@ -21,16 +21,13 @@ public class MidjourneyVersion : IEntity
     public IReadOnlyCollection<MidjourneyProperties> MidjourneyProperties => Properties.AsReadOnly();
 
     // Constructors
-    private MidjourneyVersion()
-    {
-        // Parameterless constructor for EF Core
-    }
-
-    private MidjourneyVersion(
+    private MidjourneyVersion
+    (
         ModelVersion version,
         Param parameter,
-        ReleaseDate releaseDate = null,
-        Description? description = null)
+        ReleaseDate? releaseDate,
+        Description? description
+    )
     {
         Version = version;
         Parameter = parameter;
@@ -42,13 +39,13 @@ public class MidjourneyVersion : IEntity
     (
         Result<ModelVersion> versionResult,
         Result<Param> parameterResult,
-        Result<ReleaseDate?>? releaseDate = null,
-        Result<Description?>? descriptionResult = null
+        Result<ReleaseDate?> releaseDate = null,
+        Result<Description?> descriptionResult = null
     )
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(
+            .CongregateErrors(
                 pipeline => pipeline.CollectErrors(versionResult),
                 pipeline => pipeline.CollectErrors(parameterResult),
                 pipeline => pipeline.CollectErrors(releaseDate),

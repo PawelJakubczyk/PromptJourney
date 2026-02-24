@@ -14,9 +14,11 @@ public record MinValue : ValueObject<string?>, ICreatable<MinValue, string?>
 
     public static Result<MinValue> Create(string? value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+            value = null;
+
         var result = WorkflowPipeline
             .Empty()
-            .IfWhitespace<DomainLayer, MinValue>(value)
             .IfLengthTooLong<DomainLayer, MinValue>(value, MaxLength)
             .ExecuteIfNoErrors<MinValue>(() => new MinValue(value))
             .MapResult<MinValue>();

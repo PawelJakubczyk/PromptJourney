@@ -40,14 +40,16 @@ public class MidjourneyStyleExampleLink : IEntity
         Version = version;
     }
 
-    public static Result<MidjourneyStyleExampleLink> Create(
+    public static Result<MidjourneyStyleExampleLink> Create
+    (
         Result<ExampleLink>? linkResult,
         Result<StyleName>? styleNameResult,
-        Result<ModelVersion>? versionResult)
+        Result<ModelVersion>? versionResult
+    )
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(
+            .CongregateErrors(
                 pipeline => pipeline.CollectErrors(linkResult),
                 pipeline => pipeline.CollectErrors(styleNameResult),
                 pipeline => pipeline.CollectErrors(versionResult))

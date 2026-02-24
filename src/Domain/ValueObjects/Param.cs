@@ -18,10 +18,10 @@ public record Param : ValueObject<string>, ICreatable<Param, string?>
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(
-                 pipeline => pipeline.IfNullOrWhitespace<DomainLayer, Param>(value),
-                 pipeline => pipeline.IfNotStartsWithDoubleDash<DomainLayer>(value),
-                 pipeline => pipeline.IfLengthTooLong<DomainLayer, Param>(value, MaxLength))
+            .IfNullOrWhitespace<DomainLayer, Param>(value)
+            .CongregateErrors(
+                 pipeline => pipeline.IfLengthTooLong<DomainLayer, Param>(value, MaxLength),
+                 pipeline => pipeline.IfNotStartsWithDoubleDash<DomainLayer>(value))
             .ExecuteIfNoErrors<Param>(() => new Param(value))
             .MapResult<Param>();
 

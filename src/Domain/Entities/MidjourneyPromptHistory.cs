@@ -11,7 +11,7 @@ public class MidjourneyPromptHistory : IEntity
     public Guid HistoryId { get; }
     public Prompt Prompt { get; }
     public ModelVersion Version { get; }
-    public DateTime CreatedOn { get; }
+    public DateTimeOffset CreatedOn { get; }
 
     // Navigation
     public MidjourneyVersion MidjourneyVersion { get; set; }
@@ -19,11 +19,6 @@ public class MidjourneyPromptHistory : IEntity
     public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles.AsReadOnly();
 
     // Constructors
-    private MidjourneyPromptHistory()
-    {
-        // Parameterless constructor for EF Core
-    }
-
     private MidjourneyPromptHistory
     (
         Prompt prompt,
@@ -33,7 +28,7 @@ public class MidjourneyPromptHistory : IEntity
         HistoryId = Guid.NewGuid();
         Prompt = prompt;
         Version = version;
-        CreatedOn = DateTime.UtcNow;
+        CreatedOn = DateTimeOffset.UtcNow;
     }
 
     public static Result<MidjourneyPromptHistory> Create
@@ -44,7 +39,7 @@ public class MidjourneyPromptHistory : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(
+            .CongregateErrors(
                 pipeline => pipeline.CollectErrors(prompt),
                 pipeline => pipeline.CollectErrors(version))
             .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory

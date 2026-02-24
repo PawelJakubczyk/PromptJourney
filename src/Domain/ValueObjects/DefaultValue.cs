@@ -14,9 +14,11 @@ public record DefaultValue : ValueObject<string?>, ICreatable<DefaultValue, stri
 
     public static Result<DefaultValue> Create(string? value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+            value = null;
+
         var result = WorkflowPipeline
             .Empty()
-            .IfWhitespace<DomainLayer, DefaultValue>(value)
             .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength)
             .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
             .MapResult<DefaultValue>();

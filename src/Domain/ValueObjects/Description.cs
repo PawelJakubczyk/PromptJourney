@@ -6,20 +6,22 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record Description : ValueObject<string?>, ICreatable<Description, string?>
+public record Description : ValueObject<string?>, ICreatable<Description?, string?>
 {
     public const int MaxLength = 500;
 
     private Description(string? value) : base(value) { }
 
-    public static Result<Description> Create(string? value)
+    public static Result<Description?> Create(string? value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+            value = null;
+
         var result = WorkflowPipeline
             .Empty()
-            .IfWhitespace<DomainLayer, Description>(value)
             .IfLengthTooLong<DomainLayer, Description>(value, MaxLength)
             .ExecuteIfNoErrors<Description>(() => new Description(value))
-            .MapResult<Description>();
+            .MapResult<Description?>();
 
         return result;
     }

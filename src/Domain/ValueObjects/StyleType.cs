@@ -9,7 +9,7 @@ namespace Domain.ValueObjects;
 
 public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
 {
-    public const int MaxLength = 30;
+    public const int MaxLength = 16;
 
     private StyleType(string value) : base(value) { }
 
@@ -18,7 +18,7 @@ public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, StyleType>(value)
-            .Congregate(
+            .CongregateErrors(
                 pipeline => pipeline.IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength),
                 pipeline => pipeline.IfStyleTypeNotInclude<DomainLayer>(value))
             .ExecuteIfNoErrors<StyleType>(() => new StyleType(value!))

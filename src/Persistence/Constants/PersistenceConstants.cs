@@ -11,6 +11,7 @@ public static partial class PersistenceConstants
         internal const string TextArray = $"{Text}[]";
 
         internal static string TimestampWithTimeZone() => "timestamp with time zone";
+        internal static string Timestamp() => "timestamptz";
 
         internal static string VarChar(int length) => $"varchar({length})";
     }

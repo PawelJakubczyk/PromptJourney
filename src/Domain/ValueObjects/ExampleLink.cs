@@ -18,10 +18,10 @@ public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, ExampleLink>(value)
-            .Congregate(
-                pipeline => pipeline.IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength),
-                pipeline => pipeline.IfLinkFormatInvalid<DomainLayer>(value))
-            .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value))
+            .CongregateErrors(
+                pipeline => pipeline.IfLengthTooLong<DomainLayer, ExampleLink>(value!, MaxLength),
+                pipeline => pipeline.IfLinkFormatInvalid<DomainLayer>(value!))
+            .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value!))
             .MapResult<ExampleLink>();
 
         return result;

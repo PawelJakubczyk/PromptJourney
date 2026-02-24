@@ -7,7 +7,7 @@ public sealed record PromptHistoryResponse
     Guid HistoryId,
     string Prompt,
     string Version,
-    DateTime CreatedOn
+    DateTimeOffset CreatedOn
 )
 {
     public static PromptHistoryResponse FromDomain(MidjourneyPromptHistory history) =>

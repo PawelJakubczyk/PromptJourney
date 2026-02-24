@@ -1,55 +1,68 @@
 using Domain.Abstractions;
+using System.Globalization;
 using Utilities.Constants;
 using Utilities.Errors;
-using Utilities.Workflows;
 using Utilities.Results;
-using Domain.Extensions;
+using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record ReleaseDate : ValueObject<string>, ICreatable<ReleaseDate, string?>
+public record ReleaseDate : ValueObject<DateTimeOffset?>, ICreatable<ReleaseDate?, string?>
 {
-    private ReleaseDate(string value) : base(value) { }
+    private ReleaseDate(DateTimeOffset? value) : base(value) { }
 
-    public static Result<ReleaseDate> Create(string? value)
+    public static Result<ReleaseDate?> Create(string? value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            value = null;
+        }
+
         var result = WorkflowPipeline
             .Empty()
             .IfDateFormatInvalid<DomainLayer>(value)
-            .MapResult<ReleaseDate>();
+            .ExecuteIfNoErrors<ReleaseDate>
+                (() => new ReleaseDate(value == null
+                    ? null
+                    : DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal)))
+            .MapResult<ReleaseDate?>();
 
         return result;
-    }
-
-    public DateTime ToDateTime()
-    {
-        return DateTime.Parse(Value, null, System.Globalization.DateTimeStyles.RoundtripKind);
     }
 }
 
 internal static class ReleaseDateErrorsExtensions
 {
-    internal const string InvalidDateFormatMessage = "Invalid date format (expected ISO 8601)";
-
     internal static WorkflowPipeline IfDateFormatInvalid<TLayer>
     (
         this WorkflowPipeline pipeline,
-        string? value
+        string? input
     ) where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
             return pipeline;
 
-        // Check whether the date is in the correct ISO 8601 format
-        var isValid = DateTime.TryParse(value, null, System.Globalization.DateTimeStyles.RoundtripKind, out _);
+        // ---- skip if null/empty -> handled by Required validator ----
+        if (string.IsNullOrWhiteSpace(input))
+            return pipeline;
+
+        var isValid = DateTimeOffset.TryParse(
+            input,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AdjustToUniversal,
+            out _
+        );
 
         if (!isValid)
         {
             pipeline.Errors.Add(
-                ErrorFactories.InvalidPattern<string, TLayer>(value, InvalidDateFormatMessage)
+                ErrorFactories.InvalidDateFormat<ReleaseDate, DomainLayer>(
+                    input
+                )
             );
         }
 
         return pipeline;
     }
+
 }

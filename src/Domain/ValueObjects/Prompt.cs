@@ -14,9 +14,10 @@ public record Prompt : ValueObject<string>, ICreatable<Prompt, string?>
 
     public static Result<Prompt> Create(string? value)
     {
+        value ??= string.Empty;
+
         var result = WorkflowPipeline
             .Empty()
-            .IfNullOrWhitespace<DomainLayer, Prompt>(value)
             .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength)
             .ExecuteIfNoErrors<Prompt>(() => new Prompt(value))
             .MapResult<Prompt>();

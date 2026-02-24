@@ -22,20 +22,15 @@ public class MidjourneyProperties : IEntity
     public MidjourneyVersion MidjourneyVersion { get; set; }
 
     // Constructors
-    protected MidjourneyProperties()
-    {
-        // Parameterless constructor for EF Core
-    }
-
-    protected MidjourneyProperties
+    private MidjourneyProperties
     (
         PropertyName propertyName,
         ModelVersion version,
-        List<Param>? parameters = null,
-        DefaultValue? defaultValue = null,
-        MinValue? minValue = null,
-        MaxValue? maxValue = null,
-        Description? description = null
+        List<Param>? parameters,
+        DefaultValue? defaultValue,
+        MinValue? minValue,
+        MaxValue? maxValue,
+        Description? description
     )
     {
         PropertyName = propertyName!;
@@ -51,24 +46,28 @@ public class MidjourneyProperties : IEntity
     (
         Result<PropertyName> propertyNameResult,
         Result<ModelVersion> versionResult,
-        List<Result<Param>>? paramResultsList = null,
+        List<Result<Param>> paramResultsList = null,
         Result<DefaultValue?>? defaultValueResult = null,
         Result<MinValue?>? minValueResult = null,
         Result<MaxValue?>? maxValueResult = null,
         Result<Description?>? descriptionResult = null
     )
     {
+        if (paramResultsList != null && paramResultsList.Count == 0)
+        {
+            paramResultsList = null;
+        }
+
         var result = WorkflowPipeline
         .Empty()
-        .Congregate(
-            pipeline => pipeline.CollectErrors<PropertyName>(propertyNameResult),
-            pipeline => pipeline.CollectErrors<ModelVersion>(versionResult),
-            pipeline => pipeline.CollectErrors<Param>(paramResultsList?.ToArray() ?? []),
-            pipeline => pipeline.CollectErrors<DefaultValue>(defaultValueResult),
-            pipeline => pipeline.CollectErrors<MinValue>(minValueResult),
-            pipeline => pipeline.CollectErrors<MaxValue>(maxValueResult),
-            pipeline => pipeline.CollectErrors<Description>(descriptionResult),
-            pipeline => pipeline.IfListIsEmpty<DomainLayer, Param>(paramResultsList?.ToValueList()),
+        .CongregateErrors(
+            pipeline => pipeline.CollectErrors(propertyNameResult),
+            pipeline => pipeline.CollectErrors(versionResult),
+            pipeline => pipeline.CollectErrors(paramResultsList?.ToArray()),
+            pipeline => pipeline.CollectErrors(defaultValueResult),
+            pipeline => pipeline.CollectErrors(minValueResult),
+            pipeline => pipeline.CollectErrors(maxValueResult),
+            pipeline => pipeline.CollectErrors(descriptionResult),
             pipeline => pipeline.IfListHasDuplicates<DomainLayer, Param>(paramResultsList?.ToValueList()))
         .ExecuteIfNoErrors(() =>
         {

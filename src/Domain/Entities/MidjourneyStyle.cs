@@ -32,8 +32,8 @@ public class MidjourneyStyle : IEntity
     (
         StyleName name,
         StyleType type,
-        Description? description = null,
-        List<Tag>? tags = null
+        Description? description,
+        List<Tag>? tags
     )
     {
         StyleName = name;
@@ -52,11 +52,11 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
         .Empty()
-        .Congregate(
+        .CongregateErrors(
             pipeline => pipeline.CollectErrors(nameResult),
             pipeline => pipeline.CollectErrors(typeResult),
             pipeline => pipeline.CollectErrors(descriptionResult),
-            pipeline => pipeline.CollectErrors<Tag>(tagsResultsList?.ToArray() ?? []),
+            pipeline => pipeline.CollectErrors(tagsResultsList?.ToArray() ?? []),
             pipeline => pipeline.IfListIsEmpty<DomainLayer, Tag>(tagsResultsList?.ToValueList()),
             pipeline => pipeline.IfListHasDuplicates<DomainLayer, Tag>(tagsResultsList?.ToValueList()))
         .ExecuteIfNoErrors<MidjourneyStyle>(() =>
@@ -79,7 +79,7 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(
+            .CongregateErrors(
                 pipeline => pipeline.CollectErrors(tag),
                 pipeline => pipeline.IfListContain<DomainLayer, Tag>(Tags, tag.Value))
             .ExecuteIfNoErrors<Tag>(() =>
@@ -97,7 +97,7 @@ public class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(
+            .CongregateErrors(
                 pipeline => pipeline.CollectErrors(tag),
                 pipeline => pipeline.IfListIsNull<DomainLayer, Tag>(Tags),
                 pipeline => pipeline.IfListIsEmpty<DomainLayer, Tag>(Tags),

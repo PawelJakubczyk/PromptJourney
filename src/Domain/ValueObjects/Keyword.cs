@@ -17,7 +17,7 @@ public record Keyword : ValueObject<string>, ICreatable<Keyword, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, Keyword>(value)
-            .IfLengthTooLong<DomainLayer, Keyword>(value, MaxLength)
+            .IfLengthTooLong<DomainLayer, Keyword>(value!, MaxLength)
             .ExecuteIfNoErrors<Keyword>(() => new Keyword(value!))
             .MapResult<Keyword>();
 
