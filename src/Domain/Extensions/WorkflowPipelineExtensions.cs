@@ -1,4 +1,5 @@
 using Domain.Abstractions;
+using System.Text.RegularExpressions;
 using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Workflows;
@@ -7,6 +8,11 @@ namespace Domain.Extensions;
 
 public static class WorkflowPipelineExtensions
 {
+
+    private static readonly Regex XssPattern = new(
+    @"<script|javascript:|on\w+\s*=|<iframe|<object|<embed|<img\s+src",
+    RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     public static WorkflowPipeline IfNullOrWhitespace<TLayer, TValue>
     (
         this WorkflowPipeline pipeline,
@@ -27,7 +33,8 @@ public static class WorkflowPipelineExtensions
         return pipeline;
     }
 
-    public static WorkflowPipeline IfLengthTooLong<TLayer, TValue>(
+    public static WorkflowPipeline IfLengthTooLong<TLayer, TValue>
+    (
         this WorkflowPipeline pipeline,
         string? value,
         int maxLength)
@@ -41,6 +48,27 @@ public static class WorkflowPipelineExtensions
         {
             pipeline.Errors.Add(
                 ErrorFactories.TooLong<TValue, TLayer>(value, maxLength)
+            );
+        }
+
+        return pipeline;
+    }
+
+    public static WorkflowPipeline IfContainsSuspiciousContent<TLayer, TValue>
+    (
+        this WorkflowPipeline pipeline,
+        string? value
+    )
+        where TLayer : ILayer
+        where TValue : ValueObject<string?>
+    {
+        if (pipeline.BreakOnError)
+            return pipeline;
+
+        if (XssPattern.IsMatch(value ?? string.Empty))
+        {
+            pipeline.Errors.Add(
+                ErrorFactories.SuspiciousContent<TValue, TLayer>(value)
             );
         }
 

@@ -231,4 +231,35 @@ public class ErrorFactories
             .WithErrorCodeString("INVALID_OPTION")
             .WithRejectedValue(value)
             .Build();
+
+    // ========================================
+    // Security Errors
+    // ========================================
+
+    /// <summary>
+    /// Creates an error for potentially malicious content (XSS, SQL injection patterns).
+    /// </summary>
+    public static Error SuspiciousContent<TEntity, TLayer>(string value)
+        where TLayer : ILayer =>
+        ErrorBuilder.New()
+            .WithLayer<TLayer>()
+            .WithMessage(SuspiciousContentMessage(value))
+            .WithErrorCode(StatusCodes.Status400BadRequest)
+            .WithField(typeof(TEntity).Name.ToLowerInvariant())
+            .WithErrorCodeString("FORBIDDEN_CONTENT")
+            .WithRejectedValue(value)
+            .Build();
+
+    // ========================================
+    // JSON/Deserialization Errors
+    // ========================================
+
+    public static Error InvalidJson<TLayer>(string? details = null)
+        where TLayer : ILayer =>
+        ErrorBuilder.New()
+            .WithLayer<TLayer>()
+            .WithMessage(InvalidJsonMessage(details))
+            .WithErrorCode(StatusCodes.Status400BadRequest)
+            .WithErrorCodeString("INVALID_JSON")
+            .Build();
 }

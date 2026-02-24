@@ -20,6 +20,7 @@ public record DefaultValue : ValueObject<string?>, ICreatable<DefaultValue, stri
         var result = WorkflowPipeline
             .Empty()
             .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength)
+            .IfContainsSuspiciousContent<DomainLayer, DefaultValue>(value)
             .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
             .MapResult<DefaultValue>();
 

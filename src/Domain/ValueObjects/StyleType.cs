@@ -18,9 +18,7 @@ public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<DomainLayer, StyleType>(value)
-            .CongregateErrors(
-                pipeline => pipeline.IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength),
-                pipeline => pipeline.IfStyleTypeNotInclude<DomainLayer>(value))
+            .IfStyleTypeNotInclude<DomainLayer>(value)
             .ExecuteIfNoErrors<StyleType>(() => new StyleType(value!))
             .MapResult<StyleType>();
 

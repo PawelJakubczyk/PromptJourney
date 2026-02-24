@@ -20,6 +20,7 @@ public record Description : ValueObject<string?>, ICreatable<Description?, strin
         var result = WorkflowPipeline
             .Empty()
             .IfLengthTooLong<DomainLayer, Description>(value, MaxLength)
+            .IfContainsSuspiciousContent<DomainLayer, Description>(value)
             .ExecuteIfNoErrors<Description>(() => new Description(value))
             .MapResult<Description?>();
 

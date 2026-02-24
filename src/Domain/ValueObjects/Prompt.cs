@@ -19,6 +19,7 @@ public record Prompt : ValueObject<string>, ICreatable<Prompt, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfLengthTooLong<DomainLayer, Prompt>(value, MaxLength)
+            .IfContainsSuspiciousContent<DomainLayer, Prompt>(value)
             .ExecuteIfNoErrors<Prompt>(() => new Prompt(value))
             .MapResult<Prompt>();
 

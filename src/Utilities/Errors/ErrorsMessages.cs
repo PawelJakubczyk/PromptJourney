@@ -47,4 +47,11 @@ public class ErrorsMessages
     public static string DateFormatInvalidMessage(string? value)
     => $"Date: '{value}' does not match the required format (expected ISO 8601, e.g. '2026-01-15').";
 
+    public static string SuspiciousContentMessage(string? value)
+    => $"{value} FORBIDDEN_CONTENT error is returned";
+
+    public static string InvalidJsonMessage(string? details = null)
+    => details is null
+        ? "Invalid JSON format: The request body contains malformed JSON."
+        : $"Invalid JSON format: {details}";
 }

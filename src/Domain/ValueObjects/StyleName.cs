@@ -18,6 +18,7 @@ public record StyleName : ValueObject<string>, ICreatable<StyleName, string?>
             .Empty()
             .IfNullOrWhitespace<DomainLayer, StyleName>(value)
             .IfLengthTooLong<DomainLayer, StyleName>(value, MaxLength)
+            .IfContainsSuspiciousContent<DomainLayer, StyleName>(value)
             .ExecuteIfNoErrors<StyleName>(() => new StyleName(value!))
             .MapResult<StyleName>();
 

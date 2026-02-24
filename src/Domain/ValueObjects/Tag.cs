@@ -18,6 +18,7 @@ public record Tag : ValueObject<string>, ICreatable<Tag, string?>
             .Empty()
             .IfNullOrWhitespace<DomainLayer, Tag>(value)
             .IfLengthTooLong<DomainLayer, Tag>(value, MaxLength)
+            .IfContainsSuspiciousContent<DomainLayer, Tag>(value)
             .ExecuteIfNoErrors<Tag>(() => new Tag(value!))
             .MapResult<Tag>();
 

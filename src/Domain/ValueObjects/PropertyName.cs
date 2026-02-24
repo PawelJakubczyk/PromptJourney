@@ -18,6 +18,7 @@ public record PropertyName : ValueObject<string>, ICreatable<PropertyName, strin
             .Empty()
             .IfNullOrWhitespace<DomainLayer, PropertyName>(value)
             .IfLengthTooLong<DomainLayer, PropertyName>(value, MaxLength)
+            .IfContainsSuspiciousContent<DomainLayer, PropertyName>(value)
             .ExecuteIfNoErrors<PropertyName>(() => new PropertyName(value!))
             .MapResult<PropertyName>();
 

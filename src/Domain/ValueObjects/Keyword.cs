@@ -18,6 +18,7 @@ public record Keyword : ValueObject<string>, ICreatable<Keyword, string?>
             .Empty()
             .IfNullOrWhitespace<DomainLayer, Keyword>(value)
             .IfLengthTooLong<DomainLayer, Keyword>(value!, MaxLength)
+            .IfContainsSuspiciousContent<DomainLayer, Keyword>(value)
             .ExecuteIfNoErrors<Keyword>(() => new Keyword(value!))
             .MapResult<Keyword>();
 
