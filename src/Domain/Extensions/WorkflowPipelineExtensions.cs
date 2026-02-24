@@ -27,25 +27,6 @@ public static class WorkflowPipelineExtensions
         return pipeline;
     }
 
-    public static WorkflowPipeline IfWhitespace<TLayer, TValue>(
-        this WorkflowPipeline pipeline,
-        string? value)
-        where TLayer : ILayer
-        where TValue : ValueObject<string?>?
-    {
-        if (pipeline.BreakOnError)
-            return pipeline;
-
-        if (value != null && string.IsNullOrWhiteSpace(value))
-        {
-            pipeline.Errors.Add(
-                ErrorFactories.Whitespace<TValue, TLayer>(value)
-            );
-        }
-
-        return pipeline;
-    }
-
     public static WorkflowPipeline IfLengthTooLong<TLayer, TValue>(
         this WorkflowPipeline pipeline,
         string? value,

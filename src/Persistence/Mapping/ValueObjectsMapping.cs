@@ -37,8 +37,39 @@ public static class ValueObjectsMapping
     public sealed class TagComparer : ValueObjectsMapping<Tag, string>.Comparer { }
     public sealed class TagListConverter : ValueObjectsMapping<Tag, string>.ListConverter { }
     public sealed class TagListComparer : ValueObjectsMapping<Tag, string>.ListComparer { }
-    public sealed class ReleaseDateConverter : ValueObjectsMapping<ReleaseDate, string?>.Converter { }
-    public sealed class ReleaseDateComparer : ValueObjectsMapping<ReleaseDate, string?>.Comparer { }
+
+    public sealed class ReleaseDateConverter
+        : ValueConverter<ReleaseDate, DateTimeOffset?>
+    {
+        public ReleaseDateConverter()
+            : base(
+
+                // Domain -> DB
+                releaseDate => releaseDate.Value,
+
+                // DB -> Domain
+                value => ToDomain(value)
+            )
+        {
+        }
+
+        private static ReleaseDate ToDomain(DateTimeOffset? input)
+        {
+            return ReleaseDate.Create(input?.ToString("yyyy-MM-dd")).Value;
+        }
+    }
+
+    public sealed class ReleaseDateComparer
+        : ValueComparer<ReleaseDate>
+    {
+        public ReleaseDateComparer()
+            : base(
+                (toCompare, compared) => toCompare!.Value.Equals(compared!.Value),
+
+                relaseDate => relaseDate.Value.GetHashCode()
+            )
+        {}
+    }
 }
 
 public static class ValueObjectsMapping<TValueObject, TValue>

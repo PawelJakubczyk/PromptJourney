@@ -58,6 +58,7 @@ public static class ListValidationExtension
         }
         return pipeline;
     }
+
     public static WorkflowPipeline IfListNotContain<TLayer, TValue>(
         this WorkflowPipeline pipeline,
         List<TValue>? items,
