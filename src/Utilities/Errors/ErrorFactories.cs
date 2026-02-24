@@ -203,6 +203,20 @@ public class ErrorFactories
             .WithErrorCode(StatusCodes.Status400BadRequest)
             .Build();
 
+    /// <summary>
+    /// Creates an error for values that don't match the required pattern.
+    /// </summary>
+    public static Error InvalidDateFormat<TEntity, TLayer>(string value)
+        where TLayer : ILayer =>
+        ErrorBuilder.New()
+            .WithLayer<TLayer>()
+            .WithMessage(DateFormatInvalidMessage(value))
+            .WithErrorCode(StatusCodes.Status400BadRequest)
+            .WithField(typeof(TEntity).Name.ToLowerInvariant())
+            .WithErrorCodeString("INVALID_DATE")
+            .WithRejectedValue(value)
+            .Build();
+
     // ========================================
     // Enum Errors
     // ========================================

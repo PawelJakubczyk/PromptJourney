@@ -63,11 +63,13 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         var description = Description.Create($"Test version {versionValue}").Value;
         var releaseDateResult = ReleaseDate.Create(DateTime.UtcNow.ToString()).Value;
 
-        var versionEntity = MidjourneyVersion.Create(
+        var versionEntity = MidjourneyVersion.Create
+        (
             Result.Ok(version),
             Result.Ok(parameter),
             Result.Ok(releaseDateResult),
-            Result.Ok<Description?>(description)).Value;
+            Result.Ok<Description?>(description)
+        ).Value;
 
         var result = await VersionsRepository.AddVersionAsync(versionEntity, CancellationToken);
 

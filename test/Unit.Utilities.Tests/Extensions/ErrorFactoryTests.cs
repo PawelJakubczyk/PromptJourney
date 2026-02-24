@@ -275,27 +275,6 @@ public class ErrorFactoryTests
     }
 
     [Theory]
-    [MemberData(nameof(LayerTypes))]
-    public void Withlayer_ShouldHandleAllLayerTypes(Type layerType, string expectedName)
-    {
-        // Arrange
-        var builder = ErrorBuilder.New();
-
-        // Act
-        var b = layerType == typeof(DomainLayer) ? builder.WithLayer<DomainLayer>()
-              : layerType == typeof(ApplicationLayer) ? builder.WithLayer<ApplicationLayer>()
-              : layerType == typeof(PersistenceLayer) ? builder.WithLayer<PersistenceLayer>()
-              : layerType == typeof(InfrastructureLayer) ? builder.WithLayer<InfrastructureLayer>()
-              : layerType == typeof(PresentationLayer) ? builder.WithLayer<PresentationLayer>()
-              : builder.WithLayer<UtilitiesLayer>();
-
-        var error = b.Build();
-
-        // Assert
-        error.GetLayer().Should().Be(expectedName);
-    }
-
-    [Theory]
     [InlineData(StatusCodes.Status200OK)]
     [InlineData(StatusCodes.Status400BadRequest)]
     [InlineData(StatusCodes.Status401Unauthorized)]

@@ -43,4 +43,8 @@ public class ErrorsMessages
     // Date Messages
     internal static string DateInFutureMessage(DateTime date) => $"Date '{date:yyyy-MM-dd}' cannot be in the future.";
     internal static string DateRangeNotChronologicalMessage(DateTime from, DateTime to) => $"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).";
+
+    public static string DateFormatInvalidMessage(string? value)
+    => $"Date: '{value}' does not match the required format (expected ISO 8601, e.g. '2026-01-15').";
+
 }

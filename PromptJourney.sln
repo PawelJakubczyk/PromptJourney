@@ -80,6 +80,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{B7D9D0
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Posman", "Posman", "{0ABFE061-5599-4E1C-851D-97ADB1F2FB49}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\pawel\Downloads\Versions Tests.postman_collection.json = C:\Users\pawel\Downloads\Versions Tests.postman_collection.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

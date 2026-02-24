@@ -6,7 +6,7 @@ namespace Utilities.Workflows;
 public static class WorkflowPipelineExtensions
 {
     // --- Congregate ---
-    public static WorkflowPipeline Congregate
+    public static WorkflowPipeline CongregateErrors
     (
         this WorkflowPipeline pipeline, 
         params Func<WorkflowPipeline, WorkflowPipeline>[] validationBlocks
