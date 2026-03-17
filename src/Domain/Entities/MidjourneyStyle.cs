@@ -1,8 +1,6 @@
 using Domain.Abstractions;
-using Domain.Extensions;
 using Domain.ValueObjects;
 using Utilities.Results;
-using Utilities.Constants;
 using Utilities.Workflows;
 
 namespace Domain.Entities;
@@ -13,7 +11,7 @@ public class MidjourneyStyle : IEntity
     public StyleName StyleName { get; set; }
     public StyleType Type { get; set; }
     public Description? Description { get; set; }
-    public List<Tag>? Tags { get; set; }
+    public TagsCollection Tags { get; set; }
 
     // Navigation properties
     private List<MidjourneyPromptHistory> PromptHistories { get; set; } = [];
@@ -33,7 +31,7 @@ public class MidjourneyStyle : IEntity
         StyleName name,
         StyleType type,
         Description? description,
-        List<Tag>? tags
+        TagsCollection tags
     )
     {
         StyleName = name;
@@ -46,27 +44,28 @@ public class MidjourneyStyle : IEntity
     (
         Result<StyleName> nameResult,
         Result<StyleType> typeResult,
-        Result<Description?>? descriptionResult = null,
-        List<Result<Tag>>? tagsResultsList = null
+        Result<Description>? descriptionResult = null,
+        Result<TagsCollection>? tagsResultsList = null
     )
     {
+        var descriptionResultNonNull = descriptionResult ?? Result<Description>.Ok(Description.None);
+        var tagsResultNonNull = tagsResultsList ?? Result<TagsCollection>.Ok(TagsCollection.None);
+
         var result = WorkflowPipeline
         .Empty()
         .CongregateErrors(
             pipeline => pipeline.CollectErrors(nameResult),
             pipeline => pipeline.CollectErrors(typeResult),
-            pipeline => pipeline.CollectErrors(descriptionResult),
-            pipeline => pipeline.CollectErrors(tagsResultsList?.ToArray() ?? []),
-            pipeline => pipeline.IfListIsEmpty<DomainLayer, Tag>(tagsResultsList?.ToValueList()),
-            pipeline => pipeline.IfListHasDuplicates<DomainLayer, Tag>(tagsResultsList?.ToValueList()))
+            pipeline => pipeline.CollectErrors(descriptionResultNonNull),
+            pipeline => pipeline.CollectErrors(tagsResultNonNull))
         .ExecuteIfNoErrors<MidjourneyStyle>(() =>
         {
             var style = new MidjourneyStyle
             (
                  nameResult.Value,
                  typeResult.Value,
-                 descriptionResult?.Value,
-                 tagsResultsList?.ToValueList() ?? null
+                 descriptionResultNonNull.Value,
+                 tagsResultNonNull.Value
             );
             return style;
         })
@@ -75,56 +74,19 @@ public class MidjourneyStyle : IEntity
         return result;
     }
 
-    public Result<Tag> AddTag(Result<Tag> tag)
+    public void AddTag(Result<Tag> tag)
     {
-        var result = WorkflowPipeline
-            .Empty()
-            .CongregateErrors(
-                pipeline => pipeline.CollectErrors(tag),
-                pipeline => pipeline.IfListContain<DomainLayer, Tag>(Tags, tag.Value))
-            .ExecuteIfNoErrors<Tag>(() =>
-            {
-                Tags ??= [];
-                Tags.Add(tag.Value);
-                return tag;
-            })
-            .MapResult<Tag>();
-
-        return result;
+        TagsCollection.AddTag(Tags, tag.Value);
     }
 
-    public Result<Tag> RemoveTag(Result<Tag> tag)
+    public void RemoveTag(Result<Tag> tag)
     {
-        var result = WorkflowPipeline
-            .Empty()
-            .CongregateErrors(
-                pipeline => pipeline.CollectErrors(tag),
-                pipeline => pipeline.IfListIsNull<DomainLayer, Tag>(Tags),
-                pipeline => pipeline.IfListIsEmpty<DomainLayer, Tag>(Tags),
-                pipeline => pipeline.IfListNotContain<DomainLayer, Tag>(Tags, tag.Value))
-            .ExecuteIfNoErrors(() =>
-            {
-                Tags!.RemoveAll(t => t.Equals(tag.Value));
-                return tag;
-            })
-            .MapResult<Tag>();
-
-        return result;
+        TagsCollection.RemoveTag(Tags, tag.Value);
     }
 
-    public Result<Description> EditDescription(Result<Description?>? description)
+    public void UpdateDescription(Result<Description> newDescription)
     {
-        var result = WorkflowPipeline
-            .Empty()
-            .CollectErrors(description)
-            .ExecuteIfNoErrors<Description>(() =>
-            {
-                Description = description?.Value;
-                return description?.Value;
-            })
-            .MapResult<Description>();
-
-        return result;
+        Description.Update(newDescription.Value);
     }
 }
 

@@ -27,7 +27,7 @@ public static class GetAllProperties
                 .EmptyAsync()
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .GetAllPropertiesAsync(cancellationToken))
-                .MapResult<List<MidjourneyProperties>, List<PropertyQueryResponse>>
+                .MapResult<List<MidjourneyProperty>, List<PropertyQueryResponse>>
                     (propertiesList => [.. propertiesList.Select(PropertyQueryResponse.FromDomain)]);
 
             return result;

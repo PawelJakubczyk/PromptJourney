@@ -17,7 +17,8 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
         builder
             .Property(history => history.HistoryId)
             .HasColumnName("history_id")
-            .HasColumnType(ColumnType.Uuid);
+            .HasColumnType(ColumnType.Uuid)
+            .IsRequired();
 
         builder
             .Property(history => history.Prompt)

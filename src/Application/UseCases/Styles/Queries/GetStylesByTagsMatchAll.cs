@@ -1,11 +1,11 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.Extensions;
 using Application.UseCases.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using Utilities.Results;
 using Utilities.Workflows;
+using Application.Extensions;
 
 namespace Application.UseCases.Styles.Queries;
 
@@ -19,14 +19,14 @@ public static class GetStylesByTagsMatchAll
 
         public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var tags = query.Tags?.Select(Tag.Create).ToList();
+            var tags = TagsCollection.Create(query.Tags);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .IfListIsNullOrEmpty(query.Tags)
-                .CollectErrors(tags?.ToArray() ?? [])
+                .CollectErrors(tags)
                 .ExecuteIfNoErrors(() => _styleRepository
-                    .GetStylesByTagsMatchAllAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
+                    .GetStylesByTagsMatchAllAsync(tags.Value, cancellationToken))
                 .MapResult<List<MidjourneyStyle>, List<StyleResponse>>
                     (styleList => [.. styleList.Select(StyleResponse.FromDomain)]);
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence.Context;
@@ -11,9 +12,11 @@ using Persistence.Context;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(MidjourneyDbContext))]
-    partial class MidjourneyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260226094909_migration_update3")]
+    partial class migration_update3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +58,7 @@ namespace Persistence.Migrations
                     b.ToTable("midjourney_prompt_history", "public");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperty", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyProperties", b =>
                 {
                     b.Property<string>("PropertyName")
                         .HasColumnType("varchar(25)")
@@ -82,6 +85,7 @@ namespace Persistence.Migrations
                         .HasColumnName("min_value");
 
                     b.Property<string[]>("Parameters")
+                        .IsRequired()
                         .HasColumnType("Text[]")
                         .HasColumnName("parameters");
 
@@ -174,7 +178,7 @@ namespace Persistence.Migrations
                         .HasColumnType("varchar(12)")
                         .HasColumnName("parameter");
 
-                    b.Property<DateTimeOffset>("ReleaseDate")
+                    b.Property<DateTimeOffset?>("ReleaseDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("release_date");
 
@@ -212,7 +216,7 @@ namespace Persistence.Migrations
                     b.Navigation("MidjourneyVersion");
                 });
 
-            modelBuilder.Entity("Domain.Entities.MidjourneyProperty", b =>
+            modelBuilder.Entity("Domain.Entities.MidjourneyProperties", b =>
                 {
                     b.HasOne("Domain.Entities.MidjourneyVersion", "MidjourneyVersion")
                         .WithMany("MidjourneyProperties")

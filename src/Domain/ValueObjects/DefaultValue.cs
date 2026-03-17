@@ -1,26 +1,32 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using Utilities.Results;
-using Utilities.Constants;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record DefaultValue : ValueObject<string?>, ICreatable<DefaultValue, string?>
+public record DefaultValue : ValueObject<string>, ICreatable<DefaultValue, string>
 {
     public const int MaxLength = 50;
+    public static readonly DefaultValue None = new(string.Empty);
+    public override bool IsNone => this == None;
 
-    private DefaultValue(string? value) : base(value) { }
+    private DefaultValue(string value) :
+        base(value)
+    { }
 
     public static Result<DefaultValue> Create(string? value)
     {
+
         if (string.IsNullOrWhiteSpace(value))
-            value = null;
+            return Result.Ok(None);
+
+        value = value.Trim().ToLower();
 
         var result = WorkflowPipeline
             .Empty()
-            .IfLengthTooLong<DomainLayer, DefaultValue>(value, MaxLength)
-            .IfContainsSuspiciousContent<DomainLayer, DefaultValue>(value)
+            .IfLengthTooLong<DefaultValue>(value, MaxLength)
+            .IfContainsSuspiciousContent<DefaultValue>(value)
             .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
             .MapResult<DefaultValue>();
 

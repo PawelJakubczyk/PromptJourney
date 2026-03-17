@@ -6,18 +6,18 @@ public sealed record PropertyQueryResponse
 (
     string PropertyName,
     string Version,
-    List<string>? Parameters,
+    List<string>? ParamsCollection,
     string? DefaultValue,
     string? MinValue,
     string? MaxValue,
     string? Description
 )
 {
-    public static PropertyQueryResponse FromDomain(MidjourneyProperties property) => new
+    public static PropertyQueryResponse FromDomain(MidjourneyProperty property) => new
         (
             property.PropertyName.Value,
             property.Version.Value,
-            property.Parameters?.Select(p => p.Value).ToList(),
+            [.. property.Parameters.Value.Select(p => p.Value)],
             property.DefaultValue?.Value,
             property.MinValue?.Value,
             property.MaxValue?.Value,

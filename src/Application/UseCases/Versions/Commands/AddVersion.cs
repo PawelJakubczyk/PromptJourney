@@ -16,7 +16,7 @@ public static class AddVersion
     (
         string Version,
         string Parameter,
-        string? ReleaseDate = null,
+        string ReleaseDate,
         string? Description = null
     ) : ICommand<VersionResponse>;
 
@@ -29,21 +29,20 @@ public static class AddVersion
             var version = ModelVersion.Create(command.Version);
             var parameter = Param.Create(command.Parameter);
             var releaseDate = ReleaseDate.Create(command.ReleaseDate);
-            var description = command.Description is not null ? Description.Create(command.Description) : null;
-
+            var description = command.Description is not null ? Description.Create(command.Description) : Result.Ok(Description.None);
             var midjourneyVersion = MidjourneyVersion.Create
             (
                 version,
                 parameter,
                 releaseDate,
-                description!
+                description
             );
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(midjourneyVersion)
-                .IfVersionAlreadyExists(version.ValueOr(null!), _versionRepository, cancellationToken)
-                .IfParamterAlreadyExists(parameter.ValueOr(null!), _versionRepository, cancellationToken)
+                .IfVersionAlreadyExists(version.Value, _versionRepository, cancellationToken)
+                .IfParamterAlreadyExists(parameter.Value, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository
                     .AddVersionAsync(midjourneyVersion.Value, cancellationToken))
                 .MapResult(() => VersionResponse.FromDomain(midjourneyVersion.Value));

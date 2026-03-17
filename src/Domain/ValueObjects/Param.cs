@@ -1,27 +1,28 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using System.Text.RegularExpressions;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record Param : ValueObject<string>, ICreatable<Param, string?>
+public record Param : ValueObject<string>, ICreatable<Param, string>
 {
     public const int MaxLength = 12;
-
+    public override bool IsNone => false;
     private Param(string value) : base(value) { }
 
-    public static Result<Param> Create(string? value)
+    public static Result<Param> Create(string value)
     {
+        value = value?.Trim().ToLower();
+
         var result = WorkflowPipeline
             .Empty()
-            .IfNullOrWhitespace<DomainLayer, Param>(value)
+            .IfNullOrWhitespace<Param>(value)
             .CongregateErrors(
-                 pipeline => pipeline.IfLengthTooLong<DomainLayer, Param>(value, MaxLength),
-                 pipeline => pipeline.IfNotStartsWithDoubleDash<DomainLayer>(value))
+                 pipeline => pipeline.IfLengthTooLong<Param>(value, MaxLength),
+                 pipeline => pipeline.IfNotStartsWithDoubleDash(value))
             .ExecuteIfNoErrors<Param>(() => new Param(value))
             .MapResult<Param>();
 
@@ -34,12 +35,11 @@ internal static partial class ParamErrorsExtensions
     internal const string InvalidParamFormatMessage =
         $"Invalid Param format. Param must start with '--'.";
 
-    internal static WorkflowPipeline IfNotStartsWithDoubleDash<TLayer>
+    internal static WorkflowPipeline IfNotStartsWithDoubleDash
     (
         this WorkflowPipeline pipeline,
         string? value
     )
-        where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -53,7 +53,7 @@ internal static partial class ParamErrorsExtensions
         {
             pipeline.Errors.Add
             (
-                ErrorFactories.InvalidPattern<Param, TLayer>(value, InvalidParamFormatMessage)
+                ErrorFactories.InvalidPattern<Param>(value, InvalidParamFormatMessage)
             );
         }
 

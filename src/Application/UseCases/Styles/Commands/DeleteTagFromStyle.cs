@@ -24,10 +24,10 @@ public static class DeleteTagFromStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(
+                .CongregateErrors(
                     pipeline => pipeline.CollectErrors(styleName),
                     pipeline => pipeline.CollectErrors(tag))
-                .Congregate(
+                .CongregateErrors(
                     pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
                     pipeline => pipeline.IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository.DeleteTagFromStyleAsync(styleName.Value, tag.Value, cancellationToken))

@@ -7,9 +7,9 @@ using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 
-public class MidjourneyPropertiesConfiguration : IEntityTypeConfiguration<MidjourneyProperties>
+public class MidjourneyPropertiesConfiguration : IEntityTypeConfiguration<MidjourneyProperty>
 {
-    public virtual void Configure(EntityTypeBuilder<MidjourneyProperties> builder)
+    public virtual void Configure(EntityTypeBuilder<MidjourneyProperty> builder)
     {
         builder.ToTable("midjourney_properties", schema: "public");
 
@@ -31,30 +31,34 @@ public class MidjourneyPropertiesConfiguration : IEntityTypeConfiguration<Midjou
             .IsRequired();
 
         builder.Property(property => property.Parameters)
-            .HasConversion<ParamListConverter, ParamListComparer>()
+            .HasConversion<ParamsCollectionConverter, ParamsCollectionComparer>()
             .HasColumnName("parameters")
             .HasColumnType(ColumnType.TextArray)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(property => property.DefaultValue)
             .HasConversion<DefaultValueConverter, DefaultValueComparer>()
             .HasColumnName("default_value")
-            .HasColumnType(ColumnType.VarChar(DefaultValue.MaxLength));
+            .HasColumnType(ColumnType.VarChar(DefaultValue.MaxLength))
+            .IsRequired(false);
 
         builder.Property(property => property.MinValue)
             .HasConversion<MinValueConverter, MinValueComparer>()
             .HasColumnName("min_value")
-            .HasColumnType(ColumnType.VarChar(MinValue.MaxLength));
+            .HasColumnType(ColumnType.VarChar(MinValue.MaxLength))
+            .IsRequired(false);
 
         builder.Property(property => property.MaxValue)
             .HasConversion<MaxValueConverter, MaxValueComparer>()
             .HasColumnName("max_value")
-            .HasColumnType(ColumnType.VarChar(MaxValue.MaxLength));
+            .HasColumnType(ColumnType.VarChar(MaxValue.MaxLength))
+            .IsRequired(false);
 
         builder.Property(property => property.Description)
             .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
-            .HasColumnType(ColumnType.Text);
+            .HasColumnType(ColumnType.Text)
+            .IsRequired(false);
 
         // Foreign key relationship
         builder

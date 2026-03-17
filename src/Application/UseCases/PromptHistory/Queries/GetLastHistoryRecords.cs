@@ -23,8 +23,8 @@ public static class GetLastHistoryRecords
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(
-                    pipeline => pipeline.IfHistoryLimitNotGreaterThanZero(query.Count),
+                .CongregateErrors(
+                    pipeline => pipeline.IfHistoryRecordsLimitNotGreaterThanZero(query.Count),
                     pipeline => pipeline.IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _promptHistoryRepository
                     .GetLastHistoryRecordsAsync(query.Count, cancellationToken))

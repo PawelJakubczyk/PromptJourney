@@ -39,7 +39,7 @@ public static class AddExampleLink
             var result = await WorkflowPipeline
                 .EmptyAsync()
                     .CollectErrors(linkResult)
-                    .Congregate(
+                    .CongregateErrors(
                         pipeline => pipeline.IfVersionNotExists(version.Value, _versionRepository, cancellationToken),
                         pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
                         pipeline => pipeline.IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))

@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
 using Utilities.Errors;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Persistence.Repositories;
@@ -64,7 +63,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         if (allVersions.Count is 0) 
             return Result.Fail<MidjourneyVersion>
             (
-                ErrorFactories.NoAvailableExist<MidjourneyVersion, PersistenceLayer>()
+                ErrorFactories.NoAvailableExist<MidjourneyVersion>()
             );
 
         var latest = allVersions

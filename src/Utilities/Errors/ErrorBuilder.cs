@@ -1,5 +1,3 @@
-using Utilities.Constants;
-
 namespace Utilities.Errors;
 
 /// <summary>
@@ -9,7 +7,6 @@ public sealed class ErrorBuilder
 {
     private string _message = ErrorsMessages.ErrorBuilderBaseMessage;
     private int? _errorCode;
-    private string? _layer;
     private string? _fieldName;
     private string? _errorCodeString;
     private object? _rejectedValue;
@@ -20,15 +17,6 @@ public sealed class ErrorBuilder
     /// Creates a new ErrorBuilder instance.
     /// </summary>
     public static ErrorBuilder New() => new();
-
-    /// <summary>
-    /// Sets the layer where the error occurred.
-    /// </summary>
-    public ErrorBuilder WithLayer<TLayer>() where TLayer : ILayer 
-    {
-        _layer = typeof(TLayer).Name;
-        return this;
-    }
 
     /// <summary>
     /// Sets the HTTP status code for the error.
@@ -99,9 +87,6 @@ public sealed class ErrorBuilder
     {
         var error = new Error(_message);
 
-        if (_layer is not null)
-            error.Metadata["Layer"] = _layer;
-
         if (_errorCode is not null)
             error.Metadata["ErrorCode"] = _errorCode;
 
@@ -129,14 +114,6 @@ public static class ErrorExtensions
     {
         if (error.Metadata.TryGetValue("ErrorCode", out var code) && code is int intCode)
             return intCode;
-
-        return null;
-    }
-
-    public static string? GetLayer(this Error error)
-    {
-        if (error.Metadata.TryGetValue("Layer", out var layer) && layer is string ilayer)
-            return ilayer;
 
         return null;
     }

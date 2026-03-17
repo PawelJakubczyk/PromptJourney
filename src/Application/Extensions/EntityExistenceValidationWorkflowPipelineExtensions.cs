@@ -1,7 +1,6 @@
 using Application.Abstractions.IRepository;
 using Domain.ValueObjects;
 using Utilities.Workflows;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Results;
 
@@ -269,16 +268,16 @@ public static class EntityExistenceValidationWorkflowPipelineExtensions
 
         if (result.IsFailed)
         {
-            errors.Add(ErrorFactories.DatabaseConnectionFailed<PersistenceLayer>(name));
+            errors.Add(ErrorFactories.DatabaseConnectionFailed(name));
 
             return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
         }
 
         var exists = result.Value;
 
-        if (shouldExist && !exists) errors.Add(ErrorFactories.NotFound<TType, ApplicationLayer>(item!));
+        if (shouldExist && !exists) errors.Add(ErrorFactories.NotFound<TType>(item!));
 
-        if (!shouldExist && exists) errors.Add(ErrorFactories.AlreadyExist<TType, ApplicationLayer>(item!));
+        if (!shouldExist && exists) errors.Add(ErrorFactories.AlreadyExist<TType>(item!));
         
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }

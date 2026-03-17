@@ -1,6 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using Utilities.Constants;
+﻿using Microsoft.AspNetCore.Mvc;
 using Utilities.Errors;
 using Utilities.Results;
 
@@ -26,7 +24,7 @@ internal static class PrepareErrorResponsePipelineExtensions
 
         var mainError = errors.Count != 0
             ? Pipeline<TResponse>.PickHighestPriorityErrorInternal(errors)
-            : ErrorFactories.Unknown<PresentationLayer>();
+            : ErrorFactories.Unknown();
 
         var errorMessages = errors.Select(error => error.Message).ToList();
 
@@ -38,7 +36,6 @@ internal static class PrepareErrorResponsePipelineExtensions
                 {
                     code = mainError.GetErrorCode(),
                     message = mainError.Message,
-                    layer = mainError.GetLayer()
                 },
                 errors = errorMessages
             })

@@ -16,7 +16,7 @@ public static class PatchProperty
         string Version,
         string PropertyName,
         string CharacteristicToUpdate,
-        string? NewValue
+        string? NewValue = null
     ) : ICommand<PropertyCommandResponse>;
 
     public sealed class Handler(
@@ -34,10 +34,10 @@ public static class PatchProperty
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .Congregate(
+                    .CongregateErrors(
                         pipeline => pipeline.CollectErrors(versionResult),
                         pipeline => pipeline.CollectErrors(propertyNameResult))
-                    .Congregate(
+                    .CongregateErrors(
                         pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
                         pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _propertiesRepository
@@ -46,10 +46,10 @@ public static class PatchProperty
                             versionResult.Value,
                             propertyNameResult.Value,
                             command.CharacteristicToUpdate,
-                            command.NewValue,
+                            command.NewValue ?? string.Empty,
                             cancellationToken
                         ))
-                    .MapResult<MidjourneyProperties, PropertyCommandResponse>
+                    .MapResult<MidjourneyProperty, PropertyCommandResponse>
                         (property => PropertyCommandResponse.FromDomain(property));
 
             return result;

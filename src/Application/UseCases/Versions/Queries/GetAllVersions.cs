@@ -25,7 +25,7 @@ public static class GetAllVersions
                 .ExecuteIfNoErrors(() => _versionRepository
                     .GetAllVersionsAsync(cancellationToken))
                 .MapResult<List<MidjourneyVersion>, List<VersionResponse>>
-                    (versions => [.. versions.Select(VersionResponse.FromDomain)]);
+                    (versions => [.. versions.Select(VersionResponse.FromDomain).OrderBy(v => v.ReleaseDate)]);
 
             return result;
         }

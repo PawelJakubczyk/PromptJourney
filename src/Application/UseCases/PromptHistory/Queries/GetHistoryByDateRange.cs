@@ -2,8 +2,8 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.PromptHistory.Responses;
-using Utilities.Results;
 using Domain.Entities;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Queries;
@@ -23,7 +23,7 @@ public static class GetHistoryByDateRange
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(
+                .CongregateErrors(
                     pipeline => pipeline.IfDateInFuture(query.From),
                     pipeline => pipeline.IfDateInFuture(query.To),
                     pipeline => pipeline.IfDateRangeNotChronological(query.From, query.To))

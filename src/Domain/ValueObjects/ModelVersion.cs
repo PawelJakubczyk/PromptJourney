@@ -1,26 +1,28 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using System.Text.RegularExpressions;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Workflows;
 using Utilities.Results;
 
 namespace Domain.ValueObjects;
 
-public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, string?>
+public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, string>
 {
     public const int MaxLength = 10;
+    public override bool IsNone => false;
     private ModelVersion(string value) : base(value) { }
 
-    public static Result<ModelVersion> Create(string? value)
+    public static Result<ModelVersion> Create(string value)
     {
+        value = value?.Trim();
+
         var result = WorkflowPipeline
             .Empty()
-            .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
+            .IfNullOrWhitespace<ModelVersion>(value)
             .CongregateErrors(
-                pipeline => pipeline.IfLengthTooLong<DomainLayer, ModelVersion>(value!, MaxLength),
-                pipeline => pipeline.IfVersionFormatInvalid<DomainLayer>(value!))
+                pipeline => pipeline.IfLengthTooLong<ModelVersion>(value!, MaxLength),
+                pipeline => pipeline.IfVersionFormatInvalid(value!))
             .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value!))
             .MapResult<ModelVersion>();
 
@@ -33,12 +35,11 @@ internal static partial class ModelVersionErrorsExtensions
     internal const string InvalidVersionFormatMessage =
         $"Invalid version format. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')";
 
-    internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>
+    internal static WorkflowPipeline IfVersionFormatInvalid
     (
         this WorkflowPipeline pipeline,
         string? value
     )
-        where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -54,7 +55,7 @@ internal static partial class ModelVersionErrorsExtensions
         {
             pipeline.Errors.Add
             (
-                ErrorFactories.InvalidPattern<ModelVersion, TLayer>(value, InvalidVersionFormatMessage)
+                ErrorFactories.InvalidPattern<ModelVersion>(value, InvalidVersionFormatMessage)
             );
         }
 

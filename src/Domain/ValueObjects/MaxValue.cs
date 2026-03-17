@@ -1,25 +1,28 @@
 using Domain.Abstractions;
 using Domain.Extensions;
 using Utilities.Results;
-using Utilities.Constants;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record MaxValue : ValueObject<string?>, ICreatable<MaxValue, string?>
+public record MaxValue : ValueObject<string>, ICreatable<MaxValue, string>
 {
     public const int MaxLength = 50;
+    public static readonly MaxValue None = new(string.Empty);
+    public override bool IsNone => this == None;
 
-    private MaxValue(string? value) : base(value) { }
+    private MaxValue(string value) : base(value) { }
 
-    public static Result<MaxValue> Create(string? value)
+    public static Result<MaxValue> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            value = null;
+            return Result.Ok(None);
+
+        value = value?.Trim();
 
         var result = WorkflowPipeline
             .Empty()
-            .IfLengthTooLong<DomainLayer, MaxValue>(value, MaxLength)
+            .IfLengthTooLong<MaxValue>(value, MaxLength)
             .ExecuteIfNoErrors<MaxValue>(() => new MaxValue(value))
             .MapResult<MaxValue>();
 

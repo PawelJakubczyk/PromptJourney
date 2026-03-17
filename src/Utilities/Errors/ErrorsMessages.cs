@@ -14,6 +14,10 @@ public class ErrorsMessages
     public static string WhitespaceMessage<TType>() =>  $"{typeof(TType).Name}: value cannot be whitespace.";
     public static string TooLongMessage<TType>(string? value, int maxLength) => $"{typeof(TType).Name}: '{value}' cannot be longer than {maxLength} characters.";
 
+    // Numeric Errors
+    public static string MustBeGreaterThanZeroMessage<TType>(int value) => $"{typeof(TType).Name} must be greater than zero. Provided: {value}.";
+    public static string ExceedsAvailableMessage<TType>(int requested, int available) => $"{typeof(TType).Name} requested {requested}, but only {available} available.";
+
     // Collection Messages
     public static string EmptyCollectionMessage<TType>() => $"{typeof(TType).Name}: cannot be empty.";
     public static string EmptyOrNullCollectionMessage<TType>() => $"{typeof(TType).Name}: cannot be null or empty.";

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Presentation.Models;
-using Utilities.Constants;
 using Utilities.Errors;
 
 namespace Presentation.Controllers.Pipeline;
@@ -17,7 +16,7 @@ public static class ToResultsPipelineExtensions
         var list = errors.ToList();
         var mainError = list.Count != 0
             ? Pipeline<object>.PickHighestPriorityErrorInternal(list)
-            : ErrorFactories.Unknown<PresentationLayer>();
+            : ErrorFactories.Unknown();
 
         var status = mainError.GetErrorCode() ?? StatusCodes.Status500InternalServerError;
         

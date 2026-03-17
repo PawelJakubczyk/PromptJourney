@@ -1,25 +1,28 @@
 using Domain.Abstractions;
-using Domain.Extensions;
-using Utilities.Constants;
 using Utilities.Workflows;
 using Utilities.Results;
+using Domain.Extensions;
 
 namespace Domain.ValueObjects;
 
-public record MinValue : ValueObject<string?>, ICreatable<MinValue, string?>
+public record MinValue : ValueObject<string>, ICreatable<MinValue, string>
 {
     public const int MaxLength = 50;
+    public static readonly MinValue None = new(string.Empty);
+    public override bool IsNone => this == None;
 
-    private MinValue(string? value) : base(value) { }
+    private MinValue(string value) : base(value) { }
 
-    public static Result<MinValue> Create(string? value)
+    public static Result<MinValue> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            value = null;
+            return Result.Ok(None);
+
+        value = value.Trim();
 
         var result = WorkflowPipeline
             .Empty()
-            .IfLengthTooLong<DomainLayer, MinValue>(value, MaxLength)
+            .IfLengthTooLong<MinValue>(value, MaxLength)
             .ExecuteIfNoErrors<MinValue>(() => new MinValue(value))
             .MapResult<MinValue>();
 

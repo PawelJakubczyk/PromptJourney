@@ -31,10 +31,10 @@ public static class GetExampleLinksByStyleAndVersion
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(
+                .CongregateErrors(
                     pipeline => pipeline.CollectErrors(styleName),
                     pipeline => pipeline.CollectErrors(version))
-                .Congregate(
+                .CongregateErrors(
                     pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
                     pipeline => pipeline.IfVersionNotExists(version.Value, _versionRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _exampleLinksRepository

@@ -25,26 +25,6 @@ public class ValidationProblemDetailsExtended : ProblemDetails
     /// </summary>
     [JsonPropertyName("errors")]
     public Dictionary<string, List<GroupedValidationErrorDetail>> Errors { get; set; } = [];
-
-    /// <summary>
-    /// Groups the errors by field.
-    /// </summary>
-    /// <param name="errors">The flat list of validation errors.</param>
-    /// <returns>A dictionary where the key is the field name and the value is a list of grouped validation error details.</returns>
-    public static Dictionary<string, List<GroupedValidationErrorDetail>> GroupErrorsByField(List<ValidationErrorDetail> errors)
-    {
-        return errors
-            .GroupBy(e => e.Field)
-            .ToDictionary(
-                g => g.Key,
-                g => g.Select(e => new GroupedValidationErrorDetail
-                {
-                    Code = e.Code,
-                    Message = e.Message,
-                    RejectedValue = e.RejectedValue
-                }).ToList()
-            );
-    }
 }
 
 /// <summary>

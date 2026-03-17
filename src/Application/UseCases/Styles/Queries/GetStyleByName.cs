@@ -28,7 +28,7 @@ public static class GetStyleByName
                 .ExecuteIfNoErrors(() => _styleRepository
                     .GetStyleByNameAsync(styleName.Value, cancellationToken))
                 .MapResult<MidjourneyStyle, StyleResponse>
-                    (styleList => StyleResponse.FromDomain(styleList));
+                    (style => StyleResponse.FromDomain(style));
 
             return result;
         }

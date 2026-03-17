@@ -10,7 +10,7 @@ var logger = loggerFactory.CreateLogger<Program>();
 
 try
 {
-    Console.WriteLine("Starting the web host");
+    logger.LogInformation("Starting the web host");
 
     //Initial configuration
 
@@ -51,10 +51,10 @@ try
     webApplication.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
     webApplication
-        //.UseHttpsRedirection()
+        .UseHttpsRedirection()
         //.UseApplicationLayer()
         .UsePresentationLayer();
-    //.UsePersistenceLayer();
+        //.UsePersistenceLayer();
 
     webApplication.MapControllers();
 
@@ -76,7 +76,7 @@ catch (Exception exception)
 }
 finally
 {
-    Console.WriteLine("Ending the web host");
+    logger.LogInformation("Ending the web host");
     loggerFactory.Dispose();
 }
 

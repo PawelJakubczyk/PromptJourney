@@ -32,13 +32,15 @@ public class MidjourneyVersionConfiguration : IEntityTypeConfiguration<Midjourne
             .Property(master => master.ReleaseDate)
             .HasConversion<ReleaseDateConverter, ReleaseDateComparer>()
             .HasColumnName("release_date")
-            .HasColumnType(ColumnType.TimestampWithTimeZone());
+            .HasColumnType(ColumnType.TimestampWithTimeZone())
+            .IsRequired();
 
         builder
             .Property(master => master.Description)
             .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
-            .HasColumnType(ColumnType.Text);
+            .HasColumnType(ColumnType.Text)
+            .IsRequired(false);
 
         builder
             .HasMany(master => master.MidjourneyProperties)

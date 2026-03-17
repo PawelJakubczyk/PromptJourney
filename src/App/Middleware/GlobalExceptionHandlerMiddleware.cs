@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Utilities.Constants;
+using System.Net.Mime;
 using System.Text.Json;
 using Utilities.Errors;
 
@@ -11,14 +11,13 @@ internal sealed class GlobalExceptionHandlerMiddleware
     ILogger<GlobalExceptionHandlerMiddleware> logger
 )
 {
-    private const string _problemDetailsContentType = "application/problem+json";
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
             await next(context);
         }
+
         catch (Exception ex)
         {
             logger.LogError(ex, "Unhandled exception occurred");
@@ -31,55 +30,46 @@ internal sealed class GlobalExceptionHandlerMiddleware
         Error error = exception switch
         {
             ApplicationException appEx => ErrorBuilder.New()
-                .WithLayer<ApplicationLayer>()
                 .WithMessage(appEx.Message)
                 .WithErrorCode(StatusCodes.Status400BadRequest)
                 .Build(),
 
             ArgumentException argEx => ErrorBuilder.New()
-                .WithLayer<PersistenceLayer>()
                 .WithMessage(argEx.Message)
                 .WithErrorCode(StatusCodes.Status400BadRequest)
                 .Build(),
 
             InvalidOperationException invalidEx => ErrorBuilder.New()
-                .WithLayer<PersistenceLayer>()
                 .WithMessage(invalidEx.Message)
                 .WithErrorCode(StatusCodes.Status400BadRequest)
                 .Build(),
 
             NotSupportedException notSupportedEx => ErrorBuilder.New()
-                .WithLayer<PresentationLayer>()
                 .WithMessage(notSupportedEx.Message)
                 .WithErrorCode(StatusCodes.Status400BadRequest)
                 .Build(),
 
             UnauthorizedAccessException unauthorizedEx => ErrorBuilder.New()
-                .WithLayer<PresentationLayer>()
                 .WithMessage(unauthorizedEx.Message)
                 .WithErrorCode(StatusCodes.Status401Unauthorized)
                 .Build(),
 
             FileNotFoundException fileNotFoundEx => ErrorBuilder.New()
-                .WithLayer<InfrastructureLayer>()
                 .WithMessage(fileNotFoundEx.Message)
                 .WithErrorCode(StatusCodes.Status404NotFound)
                 .Build(),
 
             DirectoryNotFoundException dirNotFoundEx => ErrorBuilder.New()
-                .WithLayer<InfrastructureLayer>()
                 .WithMessage(dirNotFoundEx.Message)
                 .WithErrorCode(StatusCodes.Status404NotFound)
                 .Build(),
 
             TimeoutException timeoutEx => ErrorBuilder.New()
-                .WithLayer<PersistenceLayer>()
                 .WithMessage(timeoutEx.Message)
                 .WithErrorCode(StatusCodes.Status408RequestTimeout)
                 .Build(),
 
             _ => ErrorBuilder.New()
-                .WithLayer<PersistenceLayer>()
                 .WithMessage("An unexpected error occurred")
                 .WithErrorCode(StatusCodes.Status500InternalServerError)
                 .Build()
@@ -87,7 +77,7 @@ internal sealed class GlobalExceptionHandlerMiddleware
 
         var statusCode = error.GetErrorCode() ?? StatusCodes.Status500InternalServerError;
         context.Response.StatusCode = statusCode;
-        context.Response.ContentType = _problemDetailsContentType;
+        context.Response.ContentType = MediaTypeNames.Application.ProblemJson;
 
         var problemDetails = new ProblemDetails
         {

@@ -99,7 +99,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
         return exist;
     }
 
-    // GET api/versions/{parameter}/parameterexists
+    // GET api/versions/{parameter}/parrameterexists
     [HttpGet("{parameter}/parrameterexists")]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckParameterExists(string? parameter, CancellationToken cancellationToken)
     {
@@ -116,7 +116,11 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // POST api/versions
     [HttpPost]
-    public async Task<Results<Created<VersionResponse>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Created<VersionResponse>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create
+    (
+        [FromBody] CreateVersionRequest request, 
+        CancellationToken cancellationToken
+    )
     {
         var command = new AddVersion.Command
         (

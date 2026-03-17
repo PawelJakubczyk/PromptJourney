@@ -72,6 +72,26 @@ public static class WorkflowPipelineExtensions
         return WorkflowPipeline.Create(errorsCopy, pipeline.BreakOnError);
     }
 
+    public static WorkflowPipeline CollectErrorsFromList<TValue>
+    (
+        this WorkflowPipeline pipeline,
+        List<Result<TValue>> results
+    )
+    {
+        if (pipeline.BreakOnError)
+            return pipeline;
+
+        var errorsCopy = new List<Error>(pipeline.Errors);
+
+        foreach (var result in results ?? [])
+        {
+            if (result is not null && result.IsFailed)
+                errorsCopy.AddRange(result.Errors.OfType<Error>());
+        }
+
+        return WorkflowPipeline.Create(errorsCopy, pipeline.BreakOnError);
+    }
+
     public static async Task<WorkflowPipeline> CollectErrors<TValue>
     (
         this Task<WorkflowPipeline> pipelineTask,

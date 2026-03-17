@@ -26,7 +26,7 @@ public interface IStyleRepository
     
     Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync(CancellationToken cancellationToken);
 
-    Task<Result<List<MidjourneyStyle>>> GetStylesByTagsAsync(List<Tag> tags, CancellationToken cancellationToken);
+    Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAnyAsync(TagsCollection tags, CancellationToken cancellationToken);
 
     Task<Result<MidjourneyStyle>> GetStyleByNameAsync(StyleName name, CancellationToken cancellationToken);
 
@@ -34,7 +34,7 @@ public interface IStyleRepository
 
     Task<Result<List<Tag>>> GetAllStyleTagsAsync(CancellationToken cancellationToken);
 
-    Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAllAsync(List<Tag> tags, CancellationToken cancellationToken);
+    Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAllAsync(TagsCollection tags, CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyle>>> GetStylesByTypeAsync(StyleType type, CancellationToken cancellationToken);
 }

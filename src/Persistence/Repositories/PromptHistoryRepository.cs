@@ -6,7 +6,6 @@ using Domain.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Results;
 
@@ -76,7 +75,6 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         if (record is null)
         {
             var notFoundError = ErrorBuilder.New()
-                .WithLayer<DomainLayer>()
                 .WithMessage($"History record with ID {historyId} not found")
                 .WithErrorCode(StatusCodes.Status404NotFound)
                 .Build();

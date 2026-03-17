@@ -17,8 +17,8 @@ public class MidjourneyVersion : IEntity
     private List<MidjourneyPromptHistory> Histories { get; set; } = [];
     public IReadOnlyCollection<MidjourneyPromptHistory> MidjourneyHistories => Histories.AsReadOnly();
 
-    private List<MidjourneyProperties> Properties { get; set; } = [];
-    public IReadOnlyCollection<MidjourneyProperties> MidjourneyProperties => Properties.AsReadOnly();
+    private List<MidjourneyProperty> Properties { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyProperty> MidjourneyProperties => Properties.AsReadOnly();
 
     // Constructors
     private MidjourneyVersion
@@ -39,24 +39,26 @@ public class MidjourneyVersion : IEntity
     (
         Result<ModelVersion> versionResult,
         Result<Param> parameterResult,
-        Result<ReleaseDate?> releaseDate = null,
-        Result<Description?> descriptionResult = null
+        Result<ReleaseDate> releaseDate,
+        Result<Description>? descriptionResult = null
     )
     {
+        var descriptionResultNonNull = descriptionResult ?? Result<Description>.Ok(Description.None);
+
         var result = WorkflowPipeline
             .Empty()
             .CongregateErrors(
                 pipeline => pipeline.CollectErrors(versionResult),
                 pipeline => pipeline.CollectErrors(parameterResult),
                 pipeline => pipeline.CollectErrors(releaseDate),
-                pipeline => pipeline.CollectErrors(descriptionResult))
+                pipeline => pipeline.CollectErrors(descriptionResultNonNull))
             .ExecuteIfNoErrors<MidjourneyVersion>(() =>
             {
                 var midjourneyVersion = new MidjourneyVersion(
                     versionResult.Value,
                     parameterResult.Value,
-                    releaseDate.ValueOr(null),
-                    descriptionResult?.ValueOr(null)
+                    releaseDate.Value,
+                    descriptionResultNonNull.Value
                 );
 
                 return midjourneyVersion;

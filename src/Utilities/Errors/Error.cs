@@ -12,7 +12,7 @@ public sealed class Error
 
     /// <summary>
     /// Gets the metadata dictionary containing additional error information.
-    /// Key examples: "Layer", "ErrorCode", "Field", "ErrorCodeString", "RejectedValue"
+    /// Key examples: "ErrorCode", "Field", "ErrorCodeString", "RejectedValue"
     /// </summary>
     public Dictionary<string, object> Metadata { get; }
 

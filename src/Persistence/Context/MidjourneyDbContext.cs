@@ -6,7 +6,7 @@ namespace Persistence.Context;
 public class MidjourneyDbContext(DbContextOptions<MidjourneyDbContext> options) : DbContext(options)
 {
     public DbSet<MidjourneyVersion> MidjourneyVersions { get; set; }
-    public DbSet<MidjourneyProperties> MidjourneyProperties { get; set; }
+    public DbSet<MidjourneyProperty> MidjourneyProperties { get; set; }
 
     public DbSet<MidjourneyStyle> MidjourneyStyle { get; set; }
     public DbSet<MidjourneyPromptHistory> MidjourneyPromptHistory { get; set; }

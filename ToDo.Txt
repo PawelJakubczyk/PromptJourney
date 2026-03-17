@@ -6,48 +6,9 @@ add more tests
 repair current tests
 add authentication
 add authorization
+add pagination
 
 add signatures for controlers 500 errors
 
-group errors by entities
-exaple:
-
-{
-  "type": "https://api.promptjourney.com/errors/validation",
-  "title": "Validation failed",
-  "status": 400,
-  "detail": "One or more fields contain invalid values.",
-  "traceId": "0HNJC3BUTIK9R:00000001",
-  "instance": "/api/Versions",
-  "timestamp": "2026-02-14T23:47:00Z",
-  "request": {
-    "method": "POST",
-    "path": "api/Versions"
-    }
-  "errors": {
-    "modelVersion": [
-      {
-        "code": "TOO_LONG",
-        "message": "Value cannot be longer than 10 characters.",
-        "rejectedValue": "12345678901234567890.a"
-      },
-      {
-        "code": "INVALID_FORMAT",
-        "message": "Invalid version format. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5').",
-        "rejectedValue": "12345678901234567890.a"
-      }
-    ],
-    "param": [
-      {
-        "code": "INVALID_FORMAT",
-        "message": "Param must start with '--'.",
-        "rejectedValue": "12345678901234567890.a"
-      },
-      {
-        "code": "TOO_LONG",
-        "message": "Value cannot be longer than 12 characters.",
-        "rejectedValue": "12345678901234567890.a"
-      }
-    ]
-  }
-}
+add version validation higer wersion can not have lower date than lower wersion indepent for niji and version
+add validation for date 

@@ -42,9 +42,9 @@ public class MidjourneyStyleExampleLink : IEntity
 
     public static Result<MidjourneyStyleExampleLink> Create
     (
-        Result<ExampleLink>? linkResult,
-        Result<StyleName>? styleNameResult,
-        Result<ModelVersion>? versionResult
+        Result<ExampleLink> linkResult,
+        Result<StyleName> styleNameResult,
+        Result<ModelVersion> versionResult
     )
     {
         var result = WorkflowPipeline
@@ -56,9 +56,9 @@ public class MidjourneyStyleExampleLink : IEntity
             .ExecuteIfNoErrors<MidjourneyStyleExampleLink>(() =>
             {
                 var exampleLink = new MidjourneyStyleExampleLink(
-                    linkResult?.Value!,
-                    styleNameResult?.Value!,
-                    versionResult?.Value!
+                    linkResult.Value!,
+                    styleNameResult.Value!,
+                    versionResult.Value!
                 );
 
                 return exampleLink;
