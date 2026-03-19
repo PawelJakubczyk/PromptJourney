@@ -21,6 +21,8 @@ public sealed class MidjourneyVersion : IEntity
     public IReadOnlyCollection<MidjourneyProperty> MidjourneyProperties => Properties.AsReadOnly();
 
     // Constructors
+    private MidjourneyVersion() { } // parameterless constructor for EF Core
+
     private MidjourneyVersion
     (
         ModelVersion version,

@@ -2,6 +2,7 @@ using Domain.Entities;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Persistence.Mapping;
 using static Persistence.Constants.PersistenceConstants;
 using static Persistence.Mapping.ValueObjectsMapping;
 
@@ -17,6 +18,7 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
         builder.HasKey(link => link.Id);
 
         builder.Property(link => link.Id)
+            .HasConversion<LinkIDConverter, LinkIDComparer>()
             .HasColumnName("id")
             .HasColumnType(ColumnType.Uuid)
             .IsRequired();

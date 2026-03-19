@@ -169,7 +169,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .ElsePrepareCreateResponse()
             .ToResultsCreatedAsync<StyleResponse, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>
             (
-                locationFactory: style => $"/api/styles/{style.Name}",
+                locationFactory: style => $"/api/styles/{style?.Name}",
                 httpContext: HttpContext
             );
 
@@ -285,14 +285,14 @@ public sealed record CreateStyleRequest(
     string Name,
     string Type,
     string? Description = null,
-    List<string>? Tags = null
+    List<string?>? Tags = null
 );
 
 public sealed record UpdateStyleRequest(
     string Name,
     string Type,
     string? Description = null,
-    List<string>? Tags = null
+    List<string?>? Tags = null
 );
 
 public sealed record AddTagRequest(string Tag);

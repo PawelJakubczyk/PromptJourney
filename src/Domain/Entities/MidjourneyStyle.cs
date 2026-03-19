@@ -21,6 +21,7 @@ public sealed class MidjourneyStyle : IEntity
     public IReadOnlyCollection<MidjourneyStyleExampleLink> MidjourneyExampleLinks => ExampleLink.AsReadOnly();
 
     // Constructors
+    private MidjourneyStyle() { } // parameterless constructor for EF Core
     private MidjourneyStyle
     (
         StyleName name,

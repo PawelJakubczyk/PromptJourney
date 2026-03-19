@@ -136,7 +136,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .ElsePrepareCreateResponse()
             .ToResultsCreatedAsync<VersionResponse, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>
             (
-                locationFactory: version => $"/api/versions/{version.Version}",
+                locationFactory: version => $"/api/versions/{version?.Version}",
                 httpContext: HttpContext
             );
 

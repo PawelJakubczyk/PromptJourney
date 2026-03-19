@@ -17,7 +17,10 @@ public sealed class MidjourneyProperty : IEntity
     public Description Description { get; private set; }
     // Navigation
     public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
+
     // Constructors
+    private MidjourneyProperty() { } // parameterless constructor for EF Core
+
     private MidjourneyProperty
     (
         PropertyName propertyName,

@@ -22,6 +22,8 @@ public sealed class MidjourneyStyleExampleLink : IEntity
     public MidjourneyVersion MidjourneyMaster { get; private set; } = null!;
 
     // Constructors
+    private MidjourneyStyleExampleLink() { } // parameterless constructor for EF Core
+
     private MidjourneyStyleExampleLink
     (
         LinkID id,

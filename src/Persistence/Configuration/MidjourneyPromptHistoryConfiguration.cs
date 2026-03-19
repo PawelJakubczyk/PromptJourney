@@ -16,6 +16,7 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
 
         builder
             .Property(history => history.HistoryId)
+            .HasConversion<HistoryIDConverter, HistoryIDComparer>()
             .HasColumnName("history_id")
             .HasColumnType(ColumnType.Uuid)
             .IsRequired();
@@ -36,6 +37,7 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
 
         builder
             .Property(history => history.CreatedOn)
+            .HasConversion<CreatedOnConverter, CreatedOnComparer>()
             .HasColumnName("created_on")
             .HasColumnType(ColumnType.TimestampWithTimeZone())
             .HasDefaultValueSql("NOW()")

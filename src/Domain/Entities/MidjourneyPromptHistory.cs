@@ -19,6 +19,8 @@ public sealed class MidjourneyPromptHistory : IEntity
     public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles.AsReadOnly();
 
     // Constructors
+    private MidjourneyPromptHistory() { } // parameterless constructor for EF Core
+
     private MidjourneyPromptHistory
     (
         HistoryID historyId,

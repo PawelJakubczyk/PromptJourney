@@ -26,3 +26,4 @@ public record ReleaseDate : ValueObject<DateTimeOffset>, ICreatable<ReleaseDate,
         return result;
     }
 }
+
