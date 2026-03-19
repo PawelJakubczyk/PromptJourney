@@ -1,5 +1,6 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Utilities.Errors;
 using Utilities.Results;
@@ -50,7 +51,7 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
     public static WorkflowPipeline IfLengthTooLong<TValue>
     (
         this WorkflowPipeline pipeline,
-        string? value,
+        string value,
         int maxLength)
         where TValue : ValueObject<string>
     {

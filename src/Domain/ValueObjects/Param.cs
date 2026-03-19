@@ -7,13 +7,13 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record Param : ValueObject<string>, ICreatable<Param, string>
+public record Param : ValueObject<string>, ICreatable<Param, string?>
 {
     public const int MaxLength = 12;
     public override bool IsNone => false;
     private Param(string value) : base(value) { }
 
-    public static Result<Param> Create(string value)
+    public static Result<Param> Create(string? value)
     {
         value = value?.Trim().ToLower();
 
@@ -21,9 +21,9 @@ public record Param : ValueObject<string>, ICreatable<Param, string>
             .Empty()
             .IfNullOrWhitespace<Param>(value)
             .CongregateErrors(
-                 pipeline => pipeline.IfLengthTooLong<Param>(value, MaxLength),
-                 pipeline => pipeline.IfNotStartsWithDoubleDash(value))
-            .ExecuteIfNoErrors<Param>(() => new Param(value))
+                 pipeline => pipeline.IfLengthTooLong<Param>(value!, MaxLength),
+                 pipeline => pipeline.IfNotStartsWithDoubleDash(value!))
+            .ExecuteIfNoErrors<Param>(() => new Param(value!))
             .MapResult<Param>();
 
         return result;
@@ -38,13 +38,10 @@ internal static partial class ParamErrorsExtensions
     internal static WorkflowPipeline IfNotStartsWithDoubleDash
     (
         this WorkflowPipeline pipeline,
-        string? value
+        string value
     )
     {
         if (pipeline.BreakOnError)
-            return pipeline;
-
-        if (value is null)
             return pipeline;
 
         var isValid = ValidDoubleDash().IsMatch(value);

@@ -8,7 +8,7 @@ namespace Application.UseCases.Versions.Queries;
 
 public static class CheckParameterExists
 {
-    public sealed record Query(string Parameter) : IQuery<bool>;
+    public sealed record Query(string? Parameter) : IQuery<bool>;
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, bool>
     {

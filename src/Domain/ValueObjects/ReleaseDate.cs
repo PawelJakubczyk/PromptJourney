@@ -8,21 +8,21 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record ReleaseDate : ValueObject<DateTimeOffset>, ICreatable<ReleaseDate, string>
+public record ReleaseDate : ValueObject<DateTimeOffset>, ICreatable<ReleaseDate, string?>
 {
     public override bool IsNone => false;
     private ReleaseDate(DateTimeOffset value) : base(value) { }
 
-    public static Result<ReleaseDate> Create(string value)
+    public static Result<ReleaseDate> Create(string? value)
     {
         value = value?.Trim();
 
         var result = WorkflowPipeline
             .Empty()
             .IfReleaseDateNullOrWhitespace(value)
-            .IfDateFormatInvalid(value)
+            .IfDateFormatInvalid(value!)
             .ExecuteIfNoErrors<ReleaseDate>(() => new ReleaseDate(
-                DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal)))
+                DateTimeOffset.Parse(value!, null, DateTimeStyles.AssumeUniversal)))
             .MapResult<ReleaseDate>();
 
         return result;
@@ -34,7 +34,7 @@ internal static class ReleaseDateErrorsExtensions
     internal static WorkflowPipeline IfDateFormatInvalid
     (
         this WorkflowPipeline pipeline,
-        string? input
+        string input
     )
     {
         if (pipeline.BreakOnError)

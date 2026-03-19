@@ -22,11 +22,6 @@ public class MidjourneyStyleExampleLink : IEntity
     public MidjourneyVersion MidjourneyMaster { get; private set; } = null!;
 
     // Constructors
-    private MidjourneyStyleExampleLink()
-    {
-        // Parameterless constructor for EF Core
-    }
-
     private MidjourneyStyleExampleLink
     (
         ExampleLink link,

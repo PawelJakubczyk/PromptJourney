@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record DefaultValue : ValueObject<string>, ICreatable<DefaultValue, string?>
+public sealed record DefaultValue : ValueObject<string>, ICreatable<DefaultValue, string?>
 {
     public const int MaxLength = 50;
     public static readonly DefaultValue None = new(string.Empty);
@@ -25,8 +25,9 @@ public record DefaultValue : ValueObject<string>, ICreatable<DefaultValue, strin
 
         var result = WorkflowPipeline
             .Empty()
-            .IfLengthTooLong<DefaultValue>(value, MaxLength)
-            .IfContainsSuspiciousContent<DefaultValue>(value)
+            .CongregateErrors(
+                pipeline => pipeline.IfLengthTooLong<DefaultValue>(value!, MaxLength),
+                pipeline => pipeline.IfContainsSuspiciousContent<DefaultValue>(value))
             .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))
             .MapResult<DefaultValue>();
 

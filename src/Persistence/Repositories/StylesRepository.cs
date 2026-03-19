@@ -266,14 +266,14 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             {
                 var styles = await _midjourneyDbContext.MidjourneyStyle
                 .AsNoTracking()
-                .Select(s => new { s.StyleName, s.Tags })
+                .Select(style => new { style.StyleName, style.Tags })
                 .ToListAsync(ct);
 
                 var tags = styles
-                    .Where(s => !s.Tags.IsNone && s.Tags.Value.Any())
-                    .SelectMany(s => s.Tags.Value)
-                    .Select(t => t.Value)
-                    .Where(v => !string.IsNullOrEmpty(v))
+                    .Where(style => !style.Tags.IsNone && style.Tags.Value.Count != 0)
+                    .SelectMany(style => style.Tags.Value)
+                    .Select(tag => tag.Value)
+                    .Where(value => !string.IsNullOrEmpty(value))
                     .Distinct()
                     .ToList();
 

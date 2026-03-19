@@ -5,24 +5,18 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record ParamsCollection : ValueObject<List<Param>>, ICreatable<ParamsCollection, List<string>?>
+public record ParamsCollection : ValueObject<List<Param>>, ICreatable<ParamsCollection, List<string?>?>
 {
     private ParamsCollection(List<Param> value) : base(value) { }
 
     public static readonly ParamsCollection None = new([]);
     public override bool IsNone => this == None;
 
-    public static Result<ParamsCollection> Create(List<string>? @params)
+    public static Result<ParamsCollection> Create(List<string?>? @params)
     {
-
-        if (@params is null || @params.Count == 0)
-        {
-            return Result.Ok(None);
-        }
-
         var paramsCollection = new List<Result<Param>>();
 
-        foreach (string param in @params?.Select(p => p.Trim().ToLower()).Distinct() ?? [])
+        foreach (string? param in @params?.Select(param => param?.Trim().ToLower()).Distinct() ?? [])
         {
             if (!string.IsNullOrWhiteSpace(param))
             {
@@ -30,6 +24,10 @@ public record ParamsCollection : ValueObject<List<Param>>, ICreatable<ParamsColl
             }
         }
 
+        if (paramsCollection is null || paramsCollection.Count == 0)
+        {
+            return Result.Ok(None);
+        }
 
         var result = WorkflowPipeline
         .Empty()

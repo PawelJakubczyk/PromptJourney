@@ -16,7 +16,7 @@ public static class AddProperty
     (
         string Version,
         string PropertyName,
-        List<string> Parameters,
+        List<string?> Parameters,
         string? DefaultValue = null,
         string? MinValue = null,
         string? MaxValue = null,

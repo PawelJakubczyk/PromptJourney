@@ -5,7 +5,7 @@ using Domain.Extensions;
 
 namespace Domain.ValueObjects;
 
-public record MinValue : ValueObject<string>, ICreatable<MinValue, string>
+public record MinValue : ValueObject<string>, ICreatable<MinValue, string?>
 {
     public const int MaxLength = 50;
     public static readonly MinValue None = new(string.Empty);
@@ -13,7 +13,7 @@ public record MinValue : ValueObject<string>, ICreatable<MinValue, string>
 
     private MinValue(string value) : base(value) { }
 
-    public static Result<MinValue> Create(string value)
+    public static Result<MinValue> Create(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return Result.Ok(None);
@@ -22,7 +22,9 @@ public record MinValue : ValueObject<string>, ICreatable<MinValue, string>
 
         var result = WorkflowPipeline
             .Empty()
-            .IfLengthTooLong<MinValue>(value, MaxLength)
+            .CongregateErrors(
+                pipeline => pipeline.IfLengthTooLong<MinValue>(value, MaxLength),
+                pipeline => pipeline.IfContainsSuspiciousContent<MinValue>(value))
             .ExecuteIfNoErrors<MinValue>(() => new MinValue(value))
             .MapResult<MinValue>();
 

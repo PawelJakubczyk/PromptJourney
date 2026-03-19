@@ -8,10 +8,10 @@ namespace Domain.Entities;
 public class MidjourneyVersion : IEntity
 {
     // Columns
-    public ModelVersion Version { get; set; }
-    public Param Parameter { get; set; }
-    public ReleaseDate? ReleaseDate { get; set; }
-    public Description? Description { get; set; }
+    public ModelVersion Version { get; private set; }
+    public Param Parameter { get; private set; }
+    public ReleaseDate? ReleaseDate { get; private set; }
+    public Description? Description { get; private set; }
 
     // Navigation
     private List<MidjourneyPromptHistory> Histories { get; set; } = [];

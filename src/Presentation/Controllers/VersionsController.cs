@@ -86,7 +86,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // GET api/versions/{version}/exists
     [HttpGet("{version}/exists")]
-    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckExists(string? version, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckExists(string version, CancellationToken cancellationToken)
     {
         var query = new CheckVersionExists.Query(version);
 
@@ -101,7 +101,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // GET api/versions/{parameter}/parrameterexists
     [HttpGet("{parameter}/parrameterexists")]
-    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckParameterExists(string? parameter, CancellationToken cancellationToken)
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckParameterExists(string parameter, CancellationToken cancellationToken)
     {
         var query = new CheckParameterExists.Query(parameter);
 

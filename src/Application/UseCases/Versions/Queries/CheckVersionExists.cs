@@ -8,7 +8,7 @@ namespace Application.UseCases.Versions.Queries;
 
 public static class CheckVersionExists
 {
-    public sealed record Query(string Version) : IQuery<bool>;
+    public sealed record Query(string? Version) : IQuery<bool>;
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, bool>
     {

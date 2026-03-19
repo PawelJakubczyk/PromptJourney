@@ -6,7 +6,7 @@ using Domain.Extensions;
 
 namespace Domain.ValueObjects;
 
-public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string>
+public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?>
 {
     public const int MaxLength = 200;
     public override bool IsNone => false;
@@ -14,7 +14,7 @@ public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string>
     private ExampleLink(string value) : base(value) { }
 
 
-    public static Result<ExampleLink> Create(string value)
+    public static Result<ExampleLink> Create(string? value)
     {
         value = value?.Trim();
 

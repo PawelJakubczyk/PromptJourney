@@ -11,7 +11,7 @@ namespace Application.UseCases.Styles.Queries;
 
 public static class GetStylesByTagsMatchAny
 {
-    public sealed record Query(List<string>? Tags) : IQuery<List<StyleResponse>>;
+    public sealed record Query(List<string?>? Tags) : IQuery<List<StyleResponse>>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<StyleResponse>>
     {

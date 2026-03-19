@@ -17,7 +17,7 @@ public static class UpdateProperty
     (
         string Version,
         string PropertyName,
-        List<string>? Parameters = null,
+        List<string?>? Parameters = null,
         string? DefaultValue = null,
         string? MinValue = null,
         string? MaxValue = null,

@@ -7,21 +7,21 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record StyleType : ValueObject<string>, ICreatable<StyleType, string>
+public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
 {
     public const int MaxLength = 16;
     public override bool IsNone => false;
 
     private StyleType(string value) : base(value) { }
 
-    public static Result<StyleType> Create(string value)
+    public static Result<StyleType> Create(string? value)
     {
         value = value?.Trim();
 
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<StyleType>(value)
-            .IfStyleTypeNotInclude(value)
+            .IfStyleTypeNotInclude(value!)
             .ExecuteIfNoErrors<StyleType>(() => new StyleType(value!))
             .MapResult<StyleType>();
 
@@ -33,7 +33,7 @@ internal static class StyleTypeErrorsExtensions
 {
     internal static WorkflowPipeline IfStyleTypeNotInclude(
         this WorkflowPipeline pipeline,
-        string? value)
+        string value)
     {
         if (pipeline.BreakOnError)
             return pipeline;

@@ -16,7 +16,7 @@ public class MidjourneyProperty : IEntity
     public MaxValue MaxValue { get; private set; }
     public Description Description { get; private set; }
     // Navigation
-    public MidjourneyVersion MidjourneyVersion { get; private set; }
+    public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
     // Constructors
     private MidjourneyProperty
     (

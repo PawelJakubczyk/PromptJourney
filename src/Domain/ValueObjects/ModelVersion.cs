@@ -7,13 +7,13 @@ using Utilities.Results;
 
 namespace Domain.ValueObjects;
 
-public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, string>
+public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, string?>
 {
     public const int MaxLength = 10;
     public override bool IsNone => false;
     private ModelVersion(string value) : base(value) { }
 
-    public static Result<ModelVersion> Create(string value)
+    public static Result<ModelVersion> Create(string? value)
     {
         value = value?.Trim();
 

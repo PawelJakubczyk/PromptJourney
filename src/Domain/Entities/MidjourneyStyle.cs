@@ -8,10 +8,10 @@ namespace Domain.Entities;
 public class MidjourneyStyle : IEntity
 {
     // Columns
-    public StyleName StyleName { get; set; }
-    public StyleType Type { get; set; }
-    public Description? Description { get; set; }
-    public TagsCollection Tags { get; set; }
+    public StyleName StyleName { get; private set; }
+    public StyleType Type { get; private set; }
+    public Description? Description { get; private set; }
+    public TagsCollection Tags { get; private set; }
 
     // Navigation properties
     private List<MidjourneyPromptHistory> PromptHistories { get; set; } = [];
@@ -21,11 +21,6 @@ public class MidjourneyStyle : IEntity
     public IReadOnlyCollection<MidjourneyStyleExampleLink> MidjourneyExampleLinks => ExampleLink.AsReadOnly();
 
     // Constructors
-    private MidjourneyStyle()
-    {
-        // Parameterless constructor for EF Core
-    }
-
     private MidjourneyStyle
     (
         StyleName name,

@@ -65,33 +65,39 @@ public static class ValueObjectsMapping
     // ======================================================
 
     public sealed class ReleaseDateConverter
-        : ValueConverter<ReleaseDate?, DateTimeOffset?>
+        : ValueConverter<ReleaseDate, DateTimeOffset>
     {
+        // Factory delegate to create objects outside of expression trees
+        private static readonly Func<string, ReleaseDate> Factory = value =>
+        {
+            var result = ReleaseDate.Create(value);
+            return result.IsSuccess ? result.Value : throw new InvalidOperationException("Failed to create value object.");
+        };
+
         public ReleaseDateConverter()
             : base(
                 // Domain -> DB
-                releaseDate => releaseDate == null ? null : releaseDate.Value,
+                releaseDate => releaseDate.Value,
 
                 // DB -> Domain
-                value => value == null ? null : ReleaseDate.Create(value.Value.ToUniversalTime().ToString("O")).Value
+                value => Factory(value.ToString("O"))
             )
         { }
     }
 
     public sealed class ReleaseDateComparer
-        : ValueComparer<ReleaseDate?>
+        : ValueComparer<ReleaseDate>
     {
         public ReleaseDateComparer()
             : base(
                 // Equality comparison
-                (a, b) => (a == null && b == null) ||
-                          (a != null && b != null && a.Value.Equals(b.Value)),
+                (a, b) => (a != null && b != null && a.Value.Equals(b.Value)),
 
                 // GetHashCode
-                releaseDate => releaseDate == null ? 0 : releaseDate.Value.GetHashCode(),
+                releaseDate => releaseDate.Value.GetHashCode(),
 
                 // Snapshot (deep copy)
-                releaseDate => releaseDate == null ? null : ReleaseDate.Create(releaseDate.Value.ToString("O")).Value
+                releaseDate => ReleaseDate.Create(releaseDate.Value.ToString("O")).Value
             )
         { }
     }
@@ -102,33 +108,31 @@ public static class ValueObjectsMapping
 // ======================================================
 
 public static class ValueObjectsMapping<TValueObject, TValue>
-    where TValueObject : ValueObject<TValue>, ICreatable<TValueObject, TValue>
+    where TValueObject : notnull, ValueObject<TValue>, ICreatable<TValueObject, TValue?>
     where TValue : notnull
 {
     // Factory delegate to create objects outside of expression trees
-    private static readonly Func<TValue, TValueObject?> Factory = value =>
+    private static readonly Func<TValue?, TValueObject> Factory = value =>
     {
         var result = TValueObject.Create(value);
-        return result.IsSuccess ? result.Value : null;
+        return result.IsSuccess ? result.Value : throw new InvalidOperationException("Failed to create value object.");
     };
 
-    public class Converter : ValueConverter<TValueObject?, TValue?>
+    public class Converter : ValueConverter<TValueObject, TValue?>
     {
         public Converter()
             : base
             (
                 // To database: extract primitive value, handle None pattern
-                vo => vo == null || vo.IsNone ? default : vo.Value,
+                vo => vo.IsNone || vo == null ? default : vo.Value,
 
                 // From database: use factory method to avoid expression tree limitations
-                value => value == null || EqualityComparer<TValue>.Default.Equals(value, default) 
-                    ? null 
-                    : Factory(value)
+                value => Factory(value)
             )
         { }
     }
 
-    public class Comparer : ValueComparer<TValueObject?>
+    public class Comparer : ValueComparer<TValueObject>
     {
         public Comparer()
             : base
@@ -142,7 +146,7 @@ public static class ValueObjectsMapping<TValueObject, TValue>
                 vo => vo == null || vo.IsNone ? 0 : EqualityComparer<TValue>.Default.GetHashCode(vo.Value),
 
                 // Snapshot (deep copy)
-                vo => vo == null || vo.IsNone ? null : Factory(vo.Value)
+                vo => vo == null || vo.IsNone ? Factory(default) : Factory(vo.Value)
             )
         { }
     }
@@ -153,31 +157,29 @@ public static class ValueObjectsMapping<TValueObject, TValue>
 // ======================================================
 
 public static class CollectionValueObjectMapping<TCollectionValueObject, TItemValueObject, TItemValue>
-    where TCollectionValueObject : ValueObject<List<TItemValueObject>>, ICreatable<TCollectionValueObject, List<TItemValue>>
-    where TItemValueObject : ValueObject<TItemValue>, ICreatable<TItemValueObject, TItemValue>
+    where TCollectionValueObject : notnull, ValueObject<List<TItemValueObject>>, ICreatable<TCollectionValueObject, List<TItemValue?>?>
+    where TItemValueObject : notnull, ValueObject<TItemValue>, ICreatable<TItemValueObject, TItemValue?>
     where TItemValue : notnull
 {
     // Factory for collection - creates collection from list of primitive values
-    private static readonly Func<TItemValue[], TCollectionValueObject?> CollectionFactory = values =>
+    private static readonly Func<TItemValue[]?, TCollectionValueObject> CollectionFactory = values =>
     {
-        var result = TCollectionValueObject.Create(new List<TItemValue>(values));
-        return result.IsSuccess ? result.Value : null;
+        var result = TCollectionValueObject.Create([.. values ?? []]);
+        return result.IsSuccess ? result.Value : throw new InvalidOperationException("Failed to create value object.");
     };
 
-    public class Converter : ValueConverter<TCollectionValueObject?, TItemValue[]?>
+    public class Converter : ValueConverter<TCollectionValueObject, TItemValue[]?>
     {
         public Converter()
             : base
             (
                 // To database: convert ValueObject<List<ItemValueObject>> to TItemValue[]
-                collection => collection == null || collection.IsNone
+                collection => collection.IsNone
                     ? null
                     : collection.Value.Select(item => item.Value).ToArray(),
 
                 // From database: convert TItemValue[] to ValueObject<List<ItemValueObject>>
-                values => values == null || values.Length == 0
-                    ? null
-                    : CollectionFactory(values)
+                values => CollectionFactory(values)
             )
         { }
     }

@@ -6,7 +6,7 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record TagsCollection : ValueObject<List<Tag>>, ICreatable<TagsCollection, List<string>>
+public record TagsCollection : ValueObject<List<Tag>>, ICreatable<TagsCollection, List<string?>?>
 {
     public const int MaxLength = 50;
 
@@ -15,20 +15,20 @@ public record TagsCollection : ValueObject<List<Tag>>, ICreatable<TagsCollection
 
     private TagsCollection(List<Tag> value) : base(value) { }
 
-    public static Result<TagsCollection> Create(List<string> tags)
+    public static Result<TagsCollection> Create(List<string?>? tags)
     {
-        if (tags is null || tags.Count == 0)
-            return Result.Ok(None);
-
         var tagsCollection = new List<Result<Tag>>();
 
-        foreach (string tag in tags.Select(t => t?.Trim().ToLower()).Distinct())
+        foreach (string? tag in tags?.Select(tag => tag?.Trim().ToLower()).Distinct() ?? [])
         {
             if (!string.IsNullOrWhiteSpace(tag))
             {
                 tagsCollection.Add(Tag.Create(tag));
             }
         }
+
+        if (tagsCollection is null || tagsCollection.Count == 0)
+            return Result.Ok(None);
 
         var result = WorkflowPipeline
             .Empty()

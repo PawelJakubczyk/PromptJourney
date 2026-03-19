@@ -72,7 +72,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     [HttpGet("by-tags")]
     public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByTags
     (
-        [FromQuery] List<string> tags, 
+        [FromQuery] List<string?> tags, 
         CancellationToken cancellationToken
     ) 
     {
@@ -262,7 +262,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // PUT api/styles/{name}/description
     [HttpPut("{name}/description")]
-    public async Task<Results<Ok<string>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateDescription
+    public async Task<Results<Ok<string?>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateDescription
     (
         string name, 
         [FromBody] UpdateDescriptionRequest request, 
@@ -275,8 +275,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(new { description = payload }))
-            .ToResultsOkAsync<string, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(HttpContext);
-
+            .ToResultsOkAsync<string?, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(HttpContext);
         return result;
     }
 }
@@ -298,4 +297,4 @@ public sealed record UpdateStyleRequest(
 
 public sealed record AddTagRequest(string Tag);
 
-public sealed record UpdateDescriptionRequest(string Description);
+public sealed record UpdateDescriptionRequest(string? Description);

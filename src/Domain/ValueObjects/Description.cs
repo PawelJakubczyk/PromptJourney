@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record Description : ValueObject<string>, ICreatable<Description, string>
+public record Description : ValueObject<string>, ICreatable<Description, string?>
 {
     public const int MaxLength = 500;
     public static readonly Description None = new(string.Empty);
@@ -15,7 +15,7 @@ public record Description : ValueObject<string>, ICreatable<Description, string>
         base(value)
     { }
 
-    public static Result<Description> Create(string value)
+    public static Result<Description> Create(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return Result.Ok(None);
@@ -24,10 +24,11 @@ public record Description : ValueObject<string>, ICreatable<Description, string>
 
         var result = WorkflowPipeline
             .Empty()
-            .IfLengthTooLong<Description>(value, MaxLength)
-            .IfContainsSuspiciousContent<Description>(value)
+            .CongregateErrors(
+                pipeline => pipeline.IfLengthTooLong<Description>(value, MaxLength),
+                pipeline => pipeline.IfContainsSuspiciousContent<Description>(value))
             .ExecuteIfNoErrors<Description>(() => new Description(value))
-            .MapResult<Description?>();
+            .MapResult<Description>();
 
         return result;
     }

@@ -96,7 +96,7 @@ public sealed class ErrorBuilder
         if (_errorCodeString is not null)
             error.Metadata["ErrorCodeString"] = _errorCodeString;
 
-        error.Metadata["RejectedValue"] = _rejectedValue;
+        error.Metadata["RejectedValue"] = _rejectedValue ?? string.Empty;
 
         // Add custom metadata
         foreach (var kvp in _customMetadata)

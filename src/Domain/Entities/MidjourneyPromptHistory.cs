@@ -8,13 +8,13 @@ namespace Domain.Entities;
 public class MidjourneyPromptHistory : IEntity
 {
     // Columns
-    public Guid HistoryId { get; }
-    public Prompt Prompt { get; }
-    public ModelVersion Version { get; }
-    public DateTimeOffset CreatedOn { get; }
+    public Guid HistoryId { get; private set; }
+    public Prompt Prompt { get; private set; }
+    public ModelVersion Version { get; private set; }
+    public DateTimeOffset CreatedOn { get; private set; }
 
     // Navigation
-    public MidjourneyVersion MidjourneyVersion { get; set; }
+    public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
     private List<MidjourneyStyle> Styles { get; set; } = [];
     public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles.AsReadOnly();
 

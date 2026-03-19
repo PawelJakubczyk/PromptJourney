@@ -114,7 +114,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
     }
 
     // Helper methods
-    private async Task<List<string?>> GetOrCreateCachedSupportedVersionsAsync(CancellationToken cancellationToken)
+    private async Task<List<string>> GetOrCreateCachedSupportedVersionsAsync(CancellationToken cancellationToken)
     {
         return await _cache.GetOrCreateAsync
         (
@@ -132,7 +132,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         );
     }
 
-    private async Task<List<string?>> GetOrCreateCachedSupportedParametersAsync(CancellationToken cancellationToken)
+    private async Task<List<string>> GetOrCreateCachedSupportedParametersAsync(CancellationToken cancellationToken)
     {
         return await _cache.GetOrCreateAsync
         (

@@ -16,7 +16,7 @@ public static class AddStyle
         string Name,
         string Type,
         string? Description = null,
-        List<string>? Tags = null
+        List<string?>? Tags = null
     ) : ICommand<StyleResponse>;
 
     public sealed class Handler(IStyleRepository styleRepository) : ICommandHandler<Command, StyleResponse>
