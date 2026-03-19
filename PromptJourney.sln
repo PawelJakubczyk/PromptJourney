@@ -52,10 +52,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit.Utilities.Tests", "tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8C5969E2-1B15-4061-9C52-D337A6584AE9}"
 	ProjectSection(SolutionItems) = preProject
-		MIGRATION_GUIDE.md = MIGRATION_GUIDE.md
 		docs\MIGRATION_GUIDE.md = docs\MIGRATION_GUIDE.md
-		Paramiters.txt = Paramiters.txt
-		PosgresPasswordSuperUser.txt = PosgresPasswordSuperUser.txt
 		docs\PosgresPasswordSuperUser.txt = docs\PosgresPasswordSuperUser.txt
 		PostgresSQLConfigurationManual.md = PostgresSQLConfigurationManual.md
 		README.md = README.md
@@ -74,7 +71,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{B7D9D0
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2E.Postman.Tests", "E2E.Postman.Tests\E2E.Postman.Tests.csproj", "{B441F2EF-13A2-4C9A-A376-0485B7CD10CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2E.Postman.Tests", "test\E2E.Postman.Tests\E2E.Postman.Tests.csproj", "{8C30208D-9266-45E1-91EA-C8F93BE648A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,10 +127,10 @@ Global
 		{87D26F5B-66C5-422F-A2F4-0E9E5219902A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87D26F5B-66C5-422F-A2F4-0E9E5219902A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87D26F5B-66C5-422F-A2F4-0E9E5219902A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B441F2EF-13A2-4C9A-A376-0485B7CD10CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B441F2EF-13A2-4C9A-A376-0485B7CD10CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B441F2EF-13A2-4C9A-A376-0485B7CD10CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B441F2EF-13A2-4C9A-A376-0485B7CD10CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C30208D-9266-45E1-91EA-C8F93BE648A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C30208D-9266-45E1-91EA-C8F93BE648A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C30208D-9266-45E1-91EA-C8F93BE648A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C30208D-9266-45E1-91EA-C8F93BE648A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,7 +148,7 @@ Global
 		{36452F66-49BE-4491-A2E6-19127A5C44C6} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{8462EBD2-385B-457B-BB86-87639EFF9B3C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{87D26F5B-66C5-422F-A2F4-0E9E5219902A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{B441F2EF-13A2-4C9A-A376-0485B7CD10CA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{8C30208D-9266-45E1-91EA-C8F93BE648A7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {135FE4B0-9973-4B33-AFCB-BA5DD045EF3C}
