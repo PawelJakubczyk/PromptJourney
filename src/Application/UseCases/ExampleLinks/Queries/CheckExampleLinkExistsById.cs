@@ -1,6 +1,6 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.Entities;
+using Domain.ValueObjects;
 using Utilities.Results;
 using Utilities.Workflows;
 
@@ -8,7 +8,7 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class CheckExampleLinkExistsById
 {
-    public sealed record Query(string Id) : IQuery<bool>;
+    public sealed record Query(string? Id) : IQuery<bool>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
         : IQueryHandler<Query, bool>
@@ -17,8 +17,7 @@ public static class CheckExampleLinkExistsById
 
         public async Task<Result<bool>> Handle(Query query, CancellationToken cancellationToken)
         {
-
-            var linkId = MidjourneyStyleExampleLink.ParseLinkId(query.Id);
+            var linkId = LinkID.Create(query.Id);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()

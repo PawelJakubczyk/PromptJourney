@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
@@ -18,8 +17,8 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new(CorrectUrl, CorrectStyleName, CorrectVersion),
-            new("http://example2.com/image2.png", CorrectStyleName, CorrectVersion)
+            new(Guid.NewGuid(), CorrectUrl, CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example2.com/image2.png", CorrectStyleName, CorrectVersion)
         };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyleAndVersion.Query, List<ExampleLinkResponse>>(Result.Ok(list));
@@ -58,7 +57,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenStyleNameIsInvalid()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
         var senderMock = CreateSenderMock();
@@ -79,7 +78,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenVersionIsInvalid()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
         var senderMock = CreateSenderMock();
@@ -100,7 +99,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenBothParametersAreInvalid()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Style name and version cannot be empty");
         var senderMock = CreateSenderMock();
@@ -121,7 +120,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsNotFound_WhenStyleDoesNotExist()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status404NotFound,
             $"Style '{NonExistStyleName}' not found");
         var senderMock = CreateSenderMock();
@@ -142,7 +141,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsNotFound_WhenVersionDoesNotExist()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status404NotFound,
             ErrorMessageVersionNotFound);
         var senderMock = CreateSenderMock();
@@ -163,7 +162,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsNotFound_WhenBothStyleAndVersionDoNotExist()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status404NotFound,
             ErrorMessageStyleAndVersionNotFound);
         var senderMock = CreateSenderMock();
@@ -184,7 +183,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenStyleNameIsWhitespace()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
         var senderMock = CreateSenderMock();
@@ -205,7 +204,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenVersionIsWhitespace()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
         var senderMock = CreateSenderMock();
@@ -226,7 +225,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, DomainLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             ErrorMessageStyleNameTooLong);
         var senderMock = CreateSenderMock();
@@ -247,7 +246,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
         var senderMock = CreateSenderMock();
@@ -268,7 +267,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_VerifiesQueryIsCalledWithCorrectParameters()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, CorrectStyleName, CorrectVersion) };
         var senderMock = CreateSenderMock();
         GetExampleLinksByStyleAndVersion.Query? captured = null;
         senderMock
@@ -333,7 +332,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var list = Enumerable.Range(1, count)
-            .Select(i => new ExampleLinkResponse($"http://example{i}.com/image.jpg", styleName, version))
+            .Select(i => new ExampleLinkResponse(Guid.NewGuid(), $"http://example{i}.com/image.jpg", styleName, version))
             .ToList();
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyleAndVersion.Query, List<ExampleLinkResponse>>(Result.Ok(list));
@@ -353,7 +352,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsConsistentResults_ForSameParameters()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, CorrectStyleName, CorrectVersion) };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyleAndVersion.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
@@ -379,7 +378,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var styleName = "Modern-Art_2024";
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, styleName, CorrectVersion) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, styleName, CorrectVersion) };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyleAndVersion.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
@@ -403,7 +402,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsOk_ForVariousValidInputs(string styleName, string version)
     {
         // Arrange
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, styleName, version) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, styleName, version) };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyleAndVersion.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
@@ -422,7 +421,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error");
         var senderMock = CreateSenderMock();
@@ -443,7 +442,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     public async Task GetByStyleAndVersion_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failure = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
+        var failure = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
         var senderMock = CreateSenderMock();
@@ -465,7 +464,7 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var styleName = "modernart";
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, styleName, CorrectVersion) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, styleName, CorrectVersion) };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyleAndVersion.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
@@ -486,10 +485,10 @@ public sealed class GetByStyleAndVersionTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
-            new("http://example2.com/image2.png", CorrectStyleName, CorrectVersion),
-            new("http://example3.com/image3.jpeg", CorrectStyleName, CorrectVersion),
-            new("http://example4.com/image4.webp", CorrectStyleName, CorrectVersion)
+            new(Guid.NewGuid(), "http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example2.com/image2.png", CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example3.com/image3.jpeg", CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example4.com/image4.webp", CorrectStyleName, CorrectVersion)
         };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetExampleLinksByStyleAndVersion.Query, List<ExampleLinkResponse>>(Result.Ok(list));

@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -26,7 +25,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -51,7 +50,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(emptyList);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -69,13 +68,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var emptyTags = new List<string>();
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tags list cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
@@ -95,13 +94,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         List<string>? nullTags = null;
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tags list cannot be null");
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
@@ -121,13 +120,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidTags = new List<string> { "valid", "" };
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be empty");
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
@@ -147,13 +146,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidTags = new List<string> { "valid", "   " };
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be whitespace");
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
@@ -173,13 +172,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidTags = new List<string> { new('a', 256) };
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tag exceeds maximum length");
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
@@ -206,7 +205,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -232,7 +231,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -261,7 +260,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -282,13 +281,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var styles = new List<StyleResponse>();
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
-        GetStylesByTags.Query? capturedQuery = null;
+        GetStylesByTagsMatchAny.Query? capturedQuery = null;
 
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .Callback<IRequest<Result<List<StyleResponse>>>, CancellationToken>((query, ct) =>
             {
-                capturedQuery = query as GetStylesByTags.Query;
+                capturedQuery = query as GetStylesByTagsMatchAny.Query;
             })
             .ReturnsAsync(result);
 
@@ -312,7 +311,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new OperationCanceledException());
 
         var controller = CreateController(senderMock);
@@ -333,7 +332,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -343,7 +342,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         // Assert
         senderMock.Verify(
-            s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()),
+            s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -364,7 +363,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -389,7 +388,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -417,7 +416,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -443,7 +442,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -468,7 +467,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -493,7 +492,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -518,7 +517,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -545,7 +544,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -563,13 +562,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var tags = new List<string> { "test" };
-        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status500InternalServerError,
             "Repository error during tag search");
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
@@ -590,13 +589,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var tags = new List<string> { "test" };
-        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
@@ -623,7 +622,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -648,7 +647,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -670,7 +669,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
@@ -696,7 +695,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);

@@ -99,23 +99,7 @@ public static class EntityExistenceValidationWorkflowPipelineExtensions
         return pipelineTask.IfNotExist
         (
             link,
-            repository.CheckExampleLinkExistsByLinkAsync,
-            cancellationToken
-        );
-    }
-
-    public static Task<WorkflowPipeline> IfLinkNotExists
-    (
-        this Task<WorkflowPipeline> pipelineTask,
-        Guid Id,
-        IExampleLinksRepository repository,
-        CancellationToken cancellationToken
-    )
-    {
-        return pipelineTask.IfNotExist
-        (
-            Id,
-            repository.CheckExampleLinkExistsByIdAsync,
+            (l, ct) => repository.CheckExampleLinkExistsByLinkAsync(l, ct),
             cancellationToken
         );
     }
@@ -131,7 +115,39 @@ public static class EntityExistenceValidationWorkflowPipelineExtensions
         return pipelineTask.IfAlreadyExist
         (
             link,
-            repository.CheckExampleLinkExistsByLinkAsync,
+            (l, ct) => repository.CheckExampleLinkExistsByLinkAsync(l, ct),
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfLinkNotExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        LinkID Id,
+        IExampleLinksRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfNotExist
+        (
+            Id,
+            (id, ct) => repository.CheckExampleLinkExistsByIdAsync(id, ct),
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfLinkAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        LinkID id,
+        IExampleLinksRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfAlreadyExist
+        (
+            id,
+            (id, ct) => repository.CheckExampleLinkExistsByIdAsync(id, ct),
             cancellationToken
         );
     }

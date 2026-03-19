@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
@@ -60,7 +59,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsNotFound_WhenStyleDoesNotExist()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status404NotFound,
             $"Style '{NonExistStyleName}' not found");
         var senderMock = CreateSenderMock();
@@ -81,7 +80,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_WhenStyleNameIsEmpty()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
         var senderMock = CreateSenderMock();
@@ -102,7 +101,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_WhenStyleNameIsWhitespace()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
         var senderMock = CreateSenderMock();
@@ -123,7 +122,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status400BadRequest,
             ErrorMessageStyleNameTooLong);
         var senderMock = CreateSenderMock();
@@ -144,7 +143,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_WhenStyleNameIsNull()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
         var senderMock = CreateSenderMock();
@@ -165,7 +164,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
         var senderMock = CreateSenderMock();
@@ -271,7 +270,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_ForInvalidStyleNames(string invalidStyleName)
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid style name");
         var senderMock = CreateSenderMock();
@@ -332,7 +331,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Repository error during deletion");
         var senderMock = CreateSenderMock();
@@ -399,7 +398,7 @@ public sealed class DeleteAllByStyleTests : ExampleLinksControllerTestsBase
     public async Task DeleteAllByStyle_ReturnsBadRequest_WhenCommandHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<BulkDeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<BulkDeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
         var senderMock = CreateSenderMock();

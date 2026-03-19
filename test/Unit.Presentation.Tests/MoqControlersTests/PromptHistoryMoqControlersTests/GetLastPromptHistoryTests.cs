@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests;
@@ -73,7 +72,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var count = 0;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "History count must be greater than zero");
 
@@ -99,7 +98,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var invalidCount = -1;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "History count must be greater than zero");
 
@@ -125,7 +124,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var count = 100;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Requested 100 records, but only 50 are available");
 
@@ -151,7 +150,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var count = 5;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -382,7 +381,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var count = 5;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -408,7 +407,7 @@ public sealed class GetLastPromptHistoryTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var count = 5;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

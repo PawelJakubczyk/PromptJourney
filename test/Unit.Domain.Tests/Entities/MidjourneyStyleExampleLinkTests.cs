@@ -17,6 +17,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             styleNameResult,
             versionResult
@@ -42,6 +43,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             invalidLinkResult,
             styleNameResult,
             versionResult
@@ -64,6 +66,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             invalidStyleNameResult,
             versionResult
@@ -86,6 +89,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             styleNameResult,
             invalidVersionResult
@@ -108,6 +112,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             invalidLinkResult,
             invalidStyleNameResult,
             invalidVersionResult
@@ -135,6 +140,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             styleNameResult,
             versionResult
@@ -167,6 +173,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             styleNameResult,
             versionResult
@@ -192,6 +199,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             styleNameResult,
             versionResult
@@ -219,6 +227,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             styleNameResult,
             versionResult
@@ -248,6 +257,7 @@ public class MidjourneyStyleExampleLinkTests
         // Act
         var result = MidjourneyStyleExampleLink.Create
         (
+            LinkID.Create(),
             linkResult,
             styleNameResult,
             versionResult

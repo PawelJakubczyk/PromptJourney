@@ -10,7 +10,7 @@ namespace Application.UseCases.PromptHistory.Commands;
 
 public static class AddPromptToHistory
 {
-    public sealed record Command(string Prompt, string Version) : ICommand<string>;
+    public sealed record Command(string? HistoryId, string? Prompt, string? Version) : ICommand<string>;
 
     public sealed class Handler
     (
@@ -23,10 +23,12 @@ public static class AddPromptToHistory
 
         public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var historyId = command.HistoryId == null ? HistoryID.Create() : HistoryID.Create(command.HistoryId);
             var prompt = Prompt.Create(command.Prompt);
             var version = ModelVersion.Create(command.Version);
+            var createdOn = CreatedOn.Create(DateTime.UtcNow.ToString());
 
-            var promptHistory = MidjourneyPromptHistory.Create(prompt, version);
+            var promptHistory = MidjourneyPromptHistory.Create(historyId, prompt, version, createdOn);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()

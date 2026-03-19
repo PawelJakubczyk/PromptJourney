@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
@@ -119,63 +118,63 @@ public class ExampleLinksControllerTestsBase : ControllerTestsBase
 
     // Failure results for AddExampleLink scenarios
     protected static readonly Result<string> failureInvalidLinkFormat = 
-        CreateFailureResult<string, DomainLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageInvalidLinkFormat
         );
 
     protected static readonly Result<string> failureStyleNameTooLong = 
-        CreateFailureResult<string, DomainLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageStyleNameTooLong
         );
 
     protected static readonly Result<string> failureInvalidVersionFormat = 
-        CreateFailureResult<string, DomainLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageInvalidVersionFormat
         );
 
     protected static readonly Result<string> failureAllFieldsRequired = 
-        CreateFailureResult<string, DomainLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageAllFieldsRequired
         );
 
     protected static readonly Result<string> failureInvalidInputData = 
-        CreateFailureResult<string, DomainLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageInvalidInputData
         );
 
     protected static readonly Result<string> failureLinkAlreadyExists = 
-        CreateFailureResult<string, ApplicationLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status409Conflict,
             ErrorMessageLinkAlreadyExists
         );
 
     protected static readonly Result<string> failureStyleNotFound = 
-        CreateFailureResult<string, ApplicationLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status409Conflict,
             ErrorMessageStyleNotFound
         );
 
     protected static readonly Result<string> failureVersionNotFound = 
-        CreateFailureResult<string, ApplicationLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status404NotFound,
             ErrorMessageVersionNotFound
         );
 
     protected static readonly Result<string> failureStyleAndVersionNotFound = 
-        CreateFailureResult<string, ApplicationLayer>
+        CreateFailureResult<string>
         (
             StatusCodes.Status404NotFound,
             ErrorMessageStyleAndVersionNotFound

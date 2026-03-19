@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -87,7 +86,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             []
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid property data");
 
@@ -119,7 +118,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             ["--s"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status404NotFound,
             "Version not found");
 

@@ -3,7 +3,6 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using Utilities.Constants;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Results;
 
@@ -68,7 +67,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var invalidVersion = "";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -94,7 +93,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         string? nullVersion = null;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version cannot be null");
 
@@ -120,7 +119,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var whitespaceVersion = "   ";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -146,7 +145,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var invalidVersion = "invalid.version.format";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -172,7 +171,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var tooLongVersion = new string('1', 256);
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version exceeds maximum length");
 
@@ -198,7 +197,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Database error");
 
@@ -412,7 +411,7 @@ public sealed class CheckVersionExistsTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<bool, ApplicationLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

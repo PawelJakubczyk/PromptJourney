@@ -125,7 +125,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
     [HttpDelete("{link}")]
     public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> DeleteExampleLink(string link, CancellationToken cancellationToken)
     {
-        var command = new DeleteExampleLink.Command(link);
+        var command = new DeleteExampleLinkByName.Command(link);
 
         var result = await Sender
             .Send(command, cancellationToken)

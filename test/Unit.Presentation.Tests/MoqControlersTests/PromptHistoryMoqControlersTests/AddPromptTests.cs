@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests;
@@ -17,6 +16,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "A beautiful mountain landscape at sunset",
             "1.0"
         );
@@ -46,11 +46,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var invalidRequest = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             string.Empty,
             "1.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Prompt cannot be empty");
 
@@ -76,11 +77,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var invalidRequest = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "Test prompt",
             string.Empty
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -106,11 +108,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var invalidRequest = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             string.Empty,
             string.Empty
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Prompt and version cannot be empty");
 
@@ -136,11 +139,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "Test prompt",
             "99.0"
         );
 
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status409Conflict,
             "Version '99.0' not found");
 
@@ -166,11 +170,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             new string('a', 10000), // Very long prompt
             "1.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Prompt exceeds maximum length");
 
@@ -196,11 +201,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "   ",
             "1.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Prompt cannot be whitespace");
 
@@ -226,11 +232,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "Test prompt",
             "   "
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -256,11 +263,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             null!,
             "1.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Prompt cannot be null");
 
@@ -286,11 +294,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "Test prompt",
             null!
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Version cannot be null");
 
@@ -316,11 +325,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "Test prompt",
             "invalid-version"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -346,11 +356,12 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(),
             "Test prompt",
             "1.0"
         );
 
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -376,7 +387,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_VerifiesCommandIsCalledWithCorrectParameters()
     {
         // Arrange
-        var request = new AddPromptRequest("Test prompt", "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), "Test prompt", "1.0");
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
         var senderMock = new Mock<ISender>();
@@ -405,7 +417,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_HandlesCancellationToken()
     {
         // Arrange
-        var request = new AddPromptRequest("Test prompt", "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), "Test prompt", "1.0");
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
@@ -427,7 +440,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_VerifiesSenderIsCalledOnce()
     {
         // Arrange
-        var request = new AddPromptRequest("Test prompt", "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), "Test prompt", "1.0");
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
         var senderMock = new Mock<ISender>();
@@ -454,7 +468,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_ReturnsCreated_ForVariousValidInputs(string prompt, string version)
     {
         // Arrange
-        var request = new AddPromptRequest(prompt, version);
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), prompt, version);
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
         var senderMock = new Mock<ISender>();
@@ -480,7 +495,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var longPrompt = new string('a', 2000); // Long but valid prompt
-        var request = new AddPromptRequest(longPrompt, "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), longPrompt, "1.0");
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
         var senderMock = new Mock<ISender>();
@@ -506,7 +522,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var promptWithSpecialChars = "A @#$% beautiful !@# landscape & sunset";
-        var request = new AddPromptRequest(promptWithSpecialChars, "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), promptWithSpecialChars, "1.0");
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
         var senderMock = new Mock<ISender>();
@@ -531,7 +548,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_ReturnsConsistentResults_ForSameInput()
     {
         // Arrange
-        var request = new AddPromptRequest("Test prompt", "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), "Test prompt", "1.0");
         var historyId1 = Guid.NewGuid().ToString();
         var historyId2 = Guid.NewGuid().ToString();
         var senderMock = new Mock<ISender>();
@@ -565,8 +583,9 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var request = new AddPromptRequest("Test prompt", "1.0");
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), "Test prompt", "1.0");
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -591,8 +610,9 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_ReturnsBadRequest_WhenCommandHandlerFails()
     {
         // Arrange
-        var request = new AddPromptRequest("Test prompt", "1.0");
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), "Test prompt", "1.0");
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
 
@@ -618,7 +638,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     {
         // Arrange
         var promptWithUnicode = "A beautiful ñ landscape ü ö";
-        var request = new AddPromptRequest(promptWithUnicode, "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), promptWithUnicode, "1.0");
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
         var senderMock = new Mock<ISender>();
@@ -643,7 +664,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
     public async Task AddPrompt_RespondsQuickly_ForPerformanceTest()
     {
         // Arrange
-        var request = new AddPromptRequest("Test prompt", "1.0");
+        var request = new AddPromptRequest(
+            Guid.NewGuid().ToString(), "Test prompt", "1.0");
         var historyId = Guid.NewGuid().ToString();
         var result = Result.Ok(historyId);
         var senderMock = new Mock<ISender>();

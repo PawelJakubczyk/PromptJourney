@@ -10,7 +10,7 @@ namespace Application.UseCases.ExampleLinks.Commands;
 
 public static class DeleteAllExampleLinksByStyle
 {
-    public sealed record Command(string StyleName) : ICommand<BulkDeleteResponse>;
+    public sealed record Command(string? StyleName) : ICommand<BulkDeleteResponse>;
 
     public sealed class Handler
     (

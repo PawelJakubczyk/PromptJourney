@@ -10,7 +10,7 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class GetExampleLinksByLink
 {
-    public sealed record Query(string Link) : IQuery<List<ExampleLinkResponse>>;
+    public sealed record Query(string? Link) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler(IExampleLinksRepository exampleLinksRepository)
         : IQueryHandler<Query, List<ExampleLinkResponse>>

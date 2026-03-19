@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -43,7 +42,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "nonexistent";
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status404NotFound,
             $"Property '{propertyName}' not found for version '{version}'");
 
@@ -70,7 +69,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var emptyVersion = string.Empty;
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -97,7 +96,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var emptyPropertyName = string.Empty;
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be empty");
 
@@ -124,7 +123,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var emptyVersion = string.Empty;
         var emptyPropertyName = string.Empty;
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Version and property name cannot be empty");
 
@@ -151,7 +150,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var nonExistentVersion = "99.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status404NotFound,
             $"Version '{nonExistentVersion}' not found");
 
@@ -178,7 +177,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var whitespaceVersion = "   ";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -205,7 +204,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var whitespacePropertyName = "   ";
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be whitespace");
 
@@ -232,7 +231,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         string? nullVersion = null;
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be null");
 
@@ -259,7 +258,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         string? nullPropertyName = null;
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be null");
 
@@ -286,7 +285,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var invalidVersion = "invalid-version";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -313,7 +312,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var tooLongPropertyName = new string('a', 256);
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Property name exceeds maximum length");
 
@@ -340,7 +339,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -503,7 +502,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var nonExistentProperty = "nonexistent";
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status404NotFound,
             $"Property '{nonExistentProperty}' not found for version '{version}'");
 
@@ -555,7 +554,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Repository error during deletion");
 
@@ -582,7 +581,7 @@ public sealed class DeletePropertyTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
 

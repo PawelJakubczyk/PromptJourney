@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyProperty : IEntity
+public sealed class MidjourneyProperty : IEntity
 {
     // Columns
     public PropertyName PropertyName { get; private set; }
@@ -49,33 +49,27 @@ public class MidjourneyProperty : IEntity
         Result<Description> descriptionResult
     )
     {
-        var paramsCollectionResultNonNull = paramsCollectionResult ?? Result<ParamsCollection>.Ok(ParamsCollection.None);
-        var defaultValueResultNonNull = defaultValueResult ?? Result<DefaultValue>.Ok(DefaultValue.None);
-        var minValueResultNonNull = minValueResult ?? Result<MinValue>.Ok(MinValue.None);
-        var maxValueResultNonNull = maxValueResult ?? Result<MaxValue>.Ok(MaxValue.None);
-        var descriptionResultNonNull = descriptionResult ?? Result<Description>.Ok(Description.None);
-
         var result = WorkflowPipeline
         .Empty()
         .CongregateErrors(
             pipeline => pipeline.CollectErrors(propertyNameResult),
             pipeline => pipeline.CollectErrors(versionResult),
-            pipeline => pipeline.CollectErrors(paramsCollectionResultNonNull),
-            pipeline => pipeline.CollectErrors(defaultValueResultNonNull),
-            pipeline => pipeline.CollectErrors(minValueResultNonNull),
-            pipeline => pipeline.CollectErrors(maxValueResultNonNull),
-            pipeline => pipeline.CollectErrors(descriptionResultNonNull))
+            pipeline => pipeline.CollectErrors(paramsCollectionResult),
+            pipeline => pipeline.CollectErrors(defaultValueResult),
+            pipeline => pipeline.CollectErrors(minValueResult),
+            pipeline => pipeline.CollectErrors(maxValueResult),
+            pipeline => pipeline.CollectErrors(descriptionResult))
         .ExecuteIfNoErrors(() =>
         {
             var versionBase = new MidjourneyProperty
             (
                 propertyNameResult.Value,
                 versionResult.Value,
-                paramsCollectionResultNonNull.Value,
-                defaultValueResultNonNull.Value,
-                minValueResultNonNull.Value,
-                maxValueResultNonNull.Value,
-                descriptionResultNonNull.Value
+                paramsCollectionResult.Value,
+                defaultValueResult.Value,
+                minValueResult.Value,
+                maxValueResult.Value,
+                descriptionResult.Value
             );
 
             return Result.Ok(versionBase);

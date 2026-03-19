@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -66,7 +65,7 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidType = "";
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Style type cannot be empty");
 
@@ -92,7 +91,7 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         string? nullType = null;
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Style type cannot be null");
 
@@ -118,7 +117,7 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         var whitespaceType = "   ";
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Style type cannot be whitespace");
 
@@ -144,7 +143,7 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         var tooLongType = new string('a', 256);
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Style type exceeds maximum length");
 
@@ -532,7 +531,7 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         var styleType = "ErrorType";
-        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status500InternalServerError,
             "Repository error during type search");
 
@@ -559,7 +558,7 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
     {
         // Arrange
         var styleType = "HandlerFailType";
-        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

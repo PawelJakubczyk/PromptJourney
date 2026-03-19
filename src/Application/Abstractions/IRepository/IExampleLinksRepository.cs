@@ -12,13 +12,13 @@ public interface IExampleLinksRepository
 
     Task<Result<BulkDeleteResponse>> DeleteAllExampleLinksByStyleAsync(StyleName style, CancellationToken cancellationToken);
 
-    Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(Guid Id, CancellationToken cancellationToken);
+    Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkByNameAsync(ExampleLink link, CancellationToken cancellationToken);
 
     // For Queries
 
     Task<Result<bool>> CheckAnyExampleLinksExistAsync(CancellationToken cancellationToken);
 
-    Task<Result<bool>> CheckExampleLinkExistsByIdAsync(Guid Id, CancellationToken cancellationToken);
+    Task<Result<bool>> CheckExampleLinkExistsByIdAsync(LinkID Id, CancellationToken cancellationToken);
 
     Task<Result<bool>> CheckExampleLinkExistsByLinkAsync(ExampleLink link, CancellationToken cancellationToken);
 
@@ -26,7 +26,7 @@ public interface IExampleLinksRepository
 
     Task<Result<List<MidjourneyStyleExampleLink>>> GetAllExampleLinksAsync(CancellationToken cancellationToken);
 
-    Task<Result<MidjourneyStyleExampleLink>> GetExampleLinkByIdAsync(Guid Id, CancellationToken cancellationToken);
+    Task<Result<MidjourneyStyleExampleLink>> GetExampleLinkByIdAsync(LinkID Id, CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyleExampleLink>>> GetExampleLinkByLinkAsync(ExampleLink link, CancellationToken cancellationToken);
 

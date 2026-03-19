@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests;
@@ -61,7 +60,7 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
     public async Task GetRecordCount_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<int, PersistenceLayer>(
+        var failureResult = CreateFailureResult<int>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -297,7 +296,7 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
     public async Task GetRecordCount_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failureResult = CreateFailureResult<int, PersistenceLayer>(
+        var failureResult = CreateFailureResult<int>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -322,7 +321,7 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
     public async Task GetRecordCount_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<int, ApplicationLayer>(
+        var failureResult = CreateFailureResult<int>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

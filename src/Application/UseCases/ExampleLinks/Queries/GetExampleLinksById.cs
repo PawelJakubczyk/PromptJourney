@@ -2,6 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.UseCases.ExampleLinks.Responses;
 using Domain.Entities;
+using Domain.ValueObjects;
 using Utilities.Results;
 using Utilities.Workflows;
 
@@ -17,13 +18,13 @@ public static class GetExampleLinksById
 
         public async Task<Result<ExampleLinkResponse>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var LinkId = MidjourneyStyleExampleLink.ParseLinkId(query.Id);
+            var linkId = LinkID.Create(query.Id);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CollectErrors(LinkId)
+                .CollectErrors(linkId)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
-                    .GetExampleLinkByIdAsync(LinkId.Value, cancellationToken))
+                    .GetExampleLinkByIdAsync(linkId.Value, cancellationToken))
                 .MapResult<MidjourneyStyleExampleLink, ExampleLinkResponse>
                     (link => ExampleLinkResponse.FromDomain(link));
 

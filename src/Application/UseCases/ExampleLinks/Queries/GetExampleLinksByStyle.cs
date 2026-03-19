@@ -11,7 +11,7 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyle
 {
-    public sealed record Query(string StyleName) : IQuery<List<ExampleLinkResponse>>;
+    public sealed record Query(string? StyleName) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler
     (

@@ -109,6 +109,8 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
     {
         var command = new AddPromptToHistory.Command
         (
+
+            request.historyId,
             request.Prompt,
             request.Version
         );
@@ -127,6 +129,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
 // Request DTOs
 public sealed record AddPromptRequest(
+    string historyId,
     string Prompt,
     string Version
 );

@@ -5,10 +5,10 @@ using Utilities.Results;
 
 namespace Domain.Entities;
 
-public class MidjourneyStyleExampleLink : IEntity
+public sealed class MidjourneyStyleExampleLink : IEntity
 {
     // Primary key
-    public Guid Id { get; private set; }
+    public LinkID Id { get; private set; }
 
     // Value
     public ExampleLink Link { get; private set; }
@@ -24,12 +24,13 @@ public class MidjourneyStyleExampleLink : IEntity
     // Constructors
     private MidjourneyStyleExampleLink
     (
+        LinkID id,
         ExampleLink link,
         StyleName styleName,
         ModelVersion version
     )
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Link = link;
         StyleName = styleName;
         Version = version;
@@ -37,6 +38,7 @@ public class MidjourneyStyleExampleLink : IEntity
 
     public static Result<MidjourneyStyleExampleLink> Create
     (
+        Result<LinkID> idResult,
         Result<ExampleLink> linkResult,
         Result<StyleName> styleNameResult,
         Result<ModelVersion> versionResult
@@ -45,15 +47,17 @@ public class MidjourneyStyleExampleLink : IEntity
         var result = WorkflowPipeline
             .Empty()
             .CongregateErrors(
+                pipeline => pipeline.CollectErrors(idResult),
                 pipeline => pipeline.CollectErrors(linkResult),
                 pipeline => pipeline.CollectErrors(styleNameResult),
                 pipeline => pipeline.CollectErrors(versionResult))
             .ExecuteIfNoErrors<MidjourneyStyleExampleLink>(() =>
             {
                 var exampleLink = new MidjourneyStyleExampleLink(
-                    linkResult.Value!,
-                    styleNameResult.Value!,
-                    versionResult.Value!
+                    idResult.Value,
+                    linkResult.Value,
+                    styleNameResult.Value,
+                    versionResult.Value
                 );
 
                 return exampleLink;

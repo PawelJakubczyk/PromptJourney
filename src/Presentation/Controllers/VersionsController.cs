@@ -167,6 +167,6 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 public sealed record CreateVersionRequest(
     string Version,
     string Parameter,
-    string? ReleaseDate = null,
+    string ReleaseDate,
     string? Description = null
 );

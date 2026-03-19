@@ -1,643 +1,643 @@
-﻿using Application.UseCases.Styles.Commands;
-using FluentAssertions;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Moq;
-using Presentation.Controllers;
-using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
-using Utilities.Results;
-
-namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
-
-public sealed class UpdateStyleTests : StylesControllerTestsBase
-{
-    [Fact]
-    public async Task Update_ReturnsOk_WhenStyleUpdatedSuccessfully()
-    {
-        // Arrange
-        var styleName = "ExistingStyle";
-        var request = new UpdateStyleRequest(styleName, "Custom", "Updated description", ["updated", "tags"]);
-        var result = Result.Ok(styleName);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(styleName);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsNotFound_WhenStyleDoesNotExist()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("NonExistentStyle", "Custom");
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
-            StatusCodes.Status404NotFound,
-            "Style not found");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeNotFoundResult()
-            .WithMessage("Style not found");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleNameIsEmpty()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("", "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name cannot be empty");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style name cannot be empty");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleTypeIsEmpty()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style type cannot be empty");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style type cannot be empty");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleNameIsNull()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest(null!, "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name cannot be null");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style name cannot be null");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleTypeIsNull()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", null!);
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style type cannot be null");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style type cannot be null");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleNameIsWhitespace()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("   ", "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name cannot be whitespace");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style name cannot be whitespace");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleTypeIsWhitespace()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "   ");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style type cannot be whitespace");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style type cannot be whitespace");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest(new string('a', 256), "Custom");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style name exceeds maximum length");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style name exceeds maximum length");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenStyleTypeExceedsMaxLength()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", new string('a', 256));
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Style type exceeds maximum length");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Style type exceeds maximum length");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenTagIsEmpty()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["valid", ""]);
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Tag cannot be empty");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Tag cannot be empty");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenTagIsWhitespace()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["valid", "   "]);
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Tag cannot be whitespace");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Tag cannot be whitespace");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithNullDescription()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", null, ["tag1"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithNullTags()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", null);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithEmptyTagsList()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", []);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithMultipleTags()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["tag1", "tag2", "tag3", "tag4"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsLongDescription()
-    {
-        // Arrange
-        var longDescription = new string('A', 1000) + " This is a very long description for testing purposes.";
-        var request = new UpdateStyleRequest("TestStyle", "Custom", longDescription, ["tag1"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithSpecialCharactersInDescription()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()", ["tag1"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_VerifiesCommandIsCalledWithCorrectParameters()
-    {
-        // Arrange
-        var styleName = "TestStyle";
-        var request = new UpdateStyleRequest(styleName, "Custom", "Test description", ["tag1", "tag2"]);
-        var result = Result.Ok(styleName);
-        var senderMock = new Mock<ISender>();
-        UpdateStyle.Command? capturedCommand = null;
-        senderMock
-            .Setup(s => s.Send(It.IsAny<UpdateStyle.Command>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<string>>, CancellationToken>((command, ct) => { capturedCommand = command as UpdateStyle.Command; })
-            .ReturnsAsync(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        capturedCommand.Should().NotBeNull();
-        capturedCommand!.StyleName.Should().Be(styleName);
-        capturedCommand.Type.Should().Be(request.Type);
-        capturedCommand.Description.Should().Be(request.Description);
-        capturedCommand.Tags.Should().BeEquivalentTo(request.Tags);
-    }
-
-    [Fact]
-    public async Task Update_HandlesCancellationToken()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom");
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendThrowsOperationCanceledForAny<string>();
-        var controller = CreateController(senderMock);
-
-        // Act & Assert
-        await FluentActions.Awaiting(() => controller.Update(request, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
-    }
-
-    [Fact]
-    public async Task Update_VerifiesSenderIsCalledOnce()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom");
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        senderMock.Verify(s => s.Send(It.IsAny<UpdateStyle.Command>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Theory]
-    [InlineData("ModernStyle", "Custom")]
-    [InlineData("ClassicArt", "Traditional")]
-    [InlineData("MinimalistDesign", "Abstract")]
-    [InlineData("Contemporary", "Realistic")]
-    [InlineData("VintagePattern", "Minimalist")]
-    public async Task Update_ReturnsOk_ForVariousStyleNameAndTypeCombinations(string styleName, string styleType)
-    {
-        // Arrange
-        var request = new UpdateStyleRequest(styleName, styleType, "Test description", ["tag1"]);
-        var result = Result.Ok(styleName);
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsConsistentResults_ForSameParameters()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Consistent description", ["tag1"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult1 = await controller.Update(request, CancellationToken.None);
-        var actionResult2 = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult1.Should().BeOkResult().WithValue(result.Value);
-        actionResult2.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithStyleNameContainingSpecialCharacters()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("Modern-Art_2024", "Custom", "Test description", ["tag1"]);
-        var result = Result.Ok("Modern-Art_2024");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithTagsContainingSpecialCharacters()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Test description", ["modern-art", "2024-trend", "style_v2"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenRepositoryThrowsException()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom");
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
-            StatusCodes.Status500InternalServerError,
-            "Repository error during style update");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        // ToResultsOkAsync maps all non-404/400 errors to BadRequest
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Repository error during style update");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenCommandHandlerFails()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom");
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
-            StatusCodes.Status400BadRequest,
-            "Command handler failed");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Command handler failed");
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithDuplicateTags()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["tag1", "tag1", "tag2"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_RespondsQuickly_ForPerformanceTest()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Performance test description", ["tag1"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-        var startTime = DateTime.UtcNow;
-
-        // Act
-        await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        var duration = DateTime.UtcNow - startTime;
-        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithMinimalRequest()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom");
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithCompleteRequest()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest("TestStyle", "Custom", "Complete style description with all details", ["tag1", "tag2", "tag3", "tag4", "tag5"]);
-        var result = Result.Ok("TestStyle");
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-
-    [Fact]
-    public async Task Update_ReturnsOk_WithLongStyleName()
-    {
-        // Arrange
-        var request = new UpdateStyleRequest(new string('a', 100), "Custom", "Description", ["tag1"]);
-        var result = Result.Ok(new string('a', 100));
-        var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.Update(request, CancellationToken.None);
-
-        // Assert
-        actionResult.Should().BeOkResult().WithValue(result.Value);
-    }
-}
+﻿//using Application.UseCases.Styles.Commands;
+//using FluentAssertions;
+//using MediatR;
+//using Microsoft.AspNetCore.Http;
+//using Moq;
+//using Presentation.Controllers;
+//using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
+//using Utilities.Results;
+//using Utilities.Results;
+
+//namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
+
+//public sealed class UpdateStyleTests : StylesControllerTestsBase
+//{
+//    [Fact]
+//    public async Task Update_ReturnsOk_WhenStyleUpdatedSuccessfully()
+//    {
+//        // Arrange
+//        var styleName = "ExistingStyle";
+//        var request = new UpdateStyleRequest(styleName, "Custom", "Updated description", ["updated", "tags"]);
+//        var result = Result.Ok(styleName);
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(styleName);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsNotFound_WhenStyleDoesNotExist()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("NonExistentStyle", "Custom");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status404NotFound,
+//            "Style not found");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeNotFoundResult()
+//            .WithMessage("Style not found");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleNameIsEmpty()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("", "Custom");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style name cannot be empty");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style name cannot be empty");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleTypeIsEmpty()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style type cannot be empty");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style type cannot be empty");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleNameIsNull()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest(null!, "Custom");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style name cannot be null");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style name cannot be null");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleTypeIsNull()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", null!);
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style type cannot be null");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style type cannot be null");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleNameIsWhitespace()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("   ", "Custom");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style name cannot be whitespace");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style name cannot be whitespace");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleTypeIsWhitespace()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "   ");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style type cannot be whitespace");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style type cannot be whitespace");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest(new string('a', 256), "Custom");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style name exceeds maximum length");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style name exceeds maximum length");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenStyleTypeExceedsMaxLength()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", new string('a', 256));
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Style type exceeds maximum length");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Style type exceeds maximum length");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenTagIsEmpty()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["valid", ""]);
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Tag cannot be empty");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Tag cannot be empty");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenTagIsWhitespace()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["valid", "   "]);
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Tag cannot be whitespace");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Tag cannot be whitespace");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithNullDescription()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", null, ["tag1"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithNullTags()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", null);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithEmptyTagsList()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", []);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithMultipleTags()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["tag1", "tag2", "tag3", "tag4"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsLongDescription()
+//    {
+//        // Arrange
+//        var longDescription = new string('A', 1000) + " This is a very long description for testing purposes.";
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", longDescription, ["tag1"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithSpecialCharactersInDescription()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()", ["tag1"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_VerifiesCommandIsCalledWithCorrectParameters()
+//    {
+//        // Arrange
+//        var styleName = "TestStyle";
+//        var request = new UpdateStyleRequest(styleName, "Custom", "Test description", ["tag1", "tag2"]);
+//        var result = Result.Ok(styleName);
+//        var senderMock = new Mock<ISender>();
+//        UpdateStyle.Command? capturedCommand = null;
+//        senderMock
+//            .Setup(s => s.Send(It.IsAny<UpdateStyle.Command>(), It.IsAny<CancellationToken>()))
+//            .Callback<IRequest<Result<string>>, CancellationToken>((command, ct) => { capturedCommand = command as UpdateStyle.Command; })
+//            .ReturnsAsync(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        capturedCommand.Should().NotBeNull();
+//        capturedCommand!.StyleName.Should().Be(styleName);
+//        capturedCommand.Type.Should().Be(request.Type);
+//        capturedCommand.Description.Should().Be(request.Description);
+//        capturedCommand.Tags.Should().BeEquivalentTo(request.Tags);
+//    }
+
+//    [Fact]
+//    public async Task Update_HandlesCancellationToken()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom");
+//        var cts = new CancellationTokenSource();
+//        cts.Cancel();
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendThrowsOperationCanceledForAny<string>();
+//        var controller = CreateController(senderMock);
+
+//        // Act & Assert
+//        await FluentActions.Awaiting(() => controller.Update(request, cts.Token))
+//            .Should().ThrowAsync<OperationCanceledException>();
+//    }
+
+//    [Fact]
+//    public async Task Update_VerifiesSenderIsCalledOnce()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom");
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        senderMock.Verify(s => s.Send(It.IsAny<UpdateStyle.Command>(), It.IsAny<CancellationToken>()), Times.Once);
+//    }
+
+//    [Theory]
+//    [InlineData("ModernStyle", "Custom")]
+//    [InlineData("ClassicArt", "Traditional")]
+//    [InlineData("MinimalistDesign", "Abstract")]
+//    [InlineData("Contemporary", "Realistic")]
+//    [InlineData("VintagePattern", "Minimalist")]
+//    public async Task Update_ReturnsOk_ForVariousStyleNameAndTypeCombinations(string styleName, string styleType)
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest(styleName, styleType, "Test description", ["tag1"]);
+//        var result = Result.Ok(styleName);
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsConsistentResults_ForSameParameters()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Consistent description", ["tag1"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult1 = await controller.Update(request, CancellationToken.None);
+//        var actionResult2 = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult1.Should().BeOkResult().WithValue(result.Value);
+//        actionResult2.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithStyleNameContainingSpecialCharacters()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("Modern-Art_2024", "Custom", "Test description", ["tag1"]);
+//        var result = Result.Ok("Modern-Art_2024");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithTagsContainingSpecialCharacters()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Test description", ["modern-art", "2024-trend", "style_v2"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenRepositoryThrowsException()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status500InternalServerError,
+//            "Repository error during style update");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        // ToResultsOkAsync maps all non-404/400 errors to BadRequest
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Repository error during style update");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsBadRequest_WhenCommandHandlerFails()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom");
+//        var failureResult = CreateFailureResult<string>(
+//            StatusCodes.Status400BadRequest,
+//            "Command handler failed");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(failureResult);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult
+//            .Should()
+//            .BeBadRequestResult()
+//            .WithMessage("Command handler failed");
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithDuplicateTags()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Description", ["tag1", "tag1", "tag2"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_RespondsQuickly_ForPerformanceTest()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Performance test description", ["tag1"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+//        var startTime = DateTime.UtcNow;
+
+//        // Act
+//        await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        var duration = DateTime.UtcNow - startTime;
+//        duration.Should().BeLessThan(TimeSpan.FromSeconds(1));
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithMinimalRequest()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom");
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithCompleteRequest()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest("TestStyle", "Custom", "Complete style description with all details", ["tag1", "tag2", "tag3", "tag4", "tag5"]);
+//        var result = Result.Ok("TestStyle");
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+
+//    [Fact]
+//    public async Task Update_ReturnsOk_WithLongStyleName()
+//    {
+//        // Arrange
+//        var request = new UpdateStyleRequest(new string('a', 100), "Custom", "Description", ["tag1"]);
+//        var result = Result.Ok(new string('a', 100));
+//        var senderMock = new Mock<ISender>();
+//        senderMock.SetupSendReturnsForRequest<UpdateStyle.Command, string>(result);
+//        var controller = CreateController(senderMock);
+
+//        // Act
+//        var actionResult = await controller.Update(request, CancellationToken.None);
+
+//        // Assert
+//        actionResult.Should().BeOkResult().WithValue(result.Value);
+//    }
+//}

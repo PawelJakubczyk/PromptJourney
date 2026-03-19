@@ -20,7 +20,7 @@ public static class AddVersion
         string? Description = null
     ) : ICommand<VersionResponse>;
 
-    public sealed class Handler(IVersionRepository versionRepository, HybridCache cache) : ICommandHandler<Command, VersionResponse>
+    public sealed class Handler(IVersionRepository versionRepository) : ICommandHandler<Command, VersionResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
 

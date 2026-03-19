@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests;
@@ -70,7 +69,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var emptyKeyword = string.Empty;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword cannot be empty");
 
@@ -96,7 +95,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var whitespaceKeyword = "   ";
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword cannot be whitespace");
 
@@ -122,7 +121,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         string? nullKeyword = null;
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword cannot be null");
 
@@ -148,7 +147,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var tooLongKeyword = new string('a', 256);
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword exceeds maximum length");
 
@@ -174,7 +173,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var keyword = "landscape";
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -507,7 +506,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var keyword = "landscape";
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -533,7 +532,7 @@ public sealed class GetByKeywordPromptHistoryTests : PromptHistoryControllerTest
     {
         // Arrange
         var keyword = "landscape";
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

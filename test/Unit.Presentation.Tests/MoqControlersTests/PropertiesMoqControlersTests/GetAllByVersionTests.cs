@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -70,7 +69,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var emptyVersion = string.Empty;
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -96,7 +95,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var nonExistentVersion = "99.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status404NotFound,
             $"Version '{nonExistentVersion}' not found");
 
@@ -122,7 +121,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var whitespaceVersion = "   ";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -148,7 +147,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         string? nullVersion = null;
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be null");
 
@@ -174,7 +173,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var invalidVersion = "invalid-version";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -200,7 +199,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -428,7 +427,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -454,7 +453,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PropertyQueryResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

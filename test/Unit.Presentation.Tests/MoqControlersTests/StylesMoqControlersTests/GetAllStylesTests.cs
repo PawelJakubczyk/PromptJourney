@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -67,7 +66,7 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -87,31 +86,6 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
             .Should()
             .BeBadRequestResult()
             .WithMessage("Database connection failed");
-    }
-
-    [Fact]
-    public async Task GetAll_ReturnsBadRequest_WhenApplicationLayerErrorOccurs()
-    {
-        // Arrange
-        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
-            StatusCodes.Status400BadRequest,
-            "Application layer error");
-
-        var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetAllStyles.Query>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(failureResult);
-
-        var controller = CreateController(senderMock);
-
-        // Act
-        var actionResult = await controller.GetAll(CancellationToken.None);
-
-        // Assert
-        actionResult
-            .Should()
-            .BeBadRequestResult()
-            .WithMessage("Application layer error");
     }
 
     [Fact]
@@ -484,7 +458,7 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error during retrieval");
 
@@ -509,7 +483,7 @@ public sealed class GetAllStylesTests : StylesControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

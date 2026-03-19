@@ -14,9 +14,9 @@ public static class AddProperty
 {
     public sealed record Command
     (
-        string Version,
-        string PropertyName,
-        List<string?> Parameters,
+        string? Version,
+        string? PropertyName,
+        List<string?>? Parameters,
         string? DefaultValue = null,
         string? MinValue = null,
         string? MaxValue = null,
@@ -36,7 +36,7 @@ public static class AddProperty
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
-            var parametersResult = ParamsCollection.Create(command.Parameters);
+            var parametersResult = command.Parameters is not null ? ParamsCollection.Create(command.Parameters) : ParamsCollection.None;
             var defaultValueResult = command.DefaultValue is not null ? DefaultValue.Create(command.DefaultValue) : DefaultValue.None;
             var minValueResult = command.MinValue is not null ? MinValue.Create(command.MinValue) : MinValue.None;
             var maxValueResult = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : MaxValue.None;

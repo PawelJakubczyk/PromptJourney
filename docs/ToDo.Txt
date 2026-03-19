@@ -12,3 +12,5 @@ add signatures for controlers 500 errors
 
 add version validation higer wersion can not have lower date than lower wersion indepent for niji and version
 add validation for date 
+
+remove domainerror

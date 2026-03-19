@@ -1,5 +1,8 @@
-﻿namespace Domain.Abstractions;
+﻿using System.Diagnostics;
 
+namespace Domain.Abstractions;
+
+[DebuggerDisplay("{Value}")]
 public abstract record ValueObject<TType> : IValueObject<TType>
     where TType : notnull
 {

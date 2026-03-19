@@ -5,6 +5,7 @@ using Domain.Errors;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
+using Utilities.Errors;
 using Utilities.Results;
 
 namespace Persistence.Repositories;
@@ -41,7 +42,6 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         if (styleExists.Value is false)
             return Result.Fail<BulkDeleteResponse>(DomainErrors.StyleNotFound(styleName));
 
-
         var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Where(exampleLink => exampleLink.StyleName == styleName)
             .ToListAsync(cancellationToken);
@@ -51,12 +51,12 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return Result.Ok(BulkDeleteResponse.Success(deletedCount, $"Exaple links: '{exampleLinks}' was successfully deleted"));
     }
 
-    public async Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyStyleExampleLink>> DeleteExampleLinkByNameAsync(ExampleLink link, CancellationToken cancellationToken)
     {
         var exampleLink = await _midjourneyDbContext.MidjourneyStyleExampleLinks
-            .FirstOrDefaultAsync(exampleLink => exampleLink.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(exampleLink => exampleLink.Link == link, cancellationToken);
 
-        if (exampleLink is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExampleLinkNotFound(id));
+        if (exampleLink is null) return Result.Fail<MidjourneyStyleExampleLink>(ErrorFactories.NotFound<ExampleLink>(link));
 
         _midjourneyDbContext.MidjourneyStyleExampleLinks.Remove(exampleLink);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -72,7 +72,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return Result.Ok(exist);
     }
 
-    public async Task<Result<bool>> CheckExampleLinkExistsByIdAsync(Guid Id, CancellationToken cancellationToken)
+    public async Task<Result<bool>> CheckExampleLinkExistsByIdAsync(LinkID Id, CancellationToken cancellationToken)
     {
         var exist = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .AnyAsync(exampleLink => exampleLink.Id == Id, cancellationToken);
@@ -106,14 +106,14 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         return Result.Ok(links);
     }
 
-    public async Task<Result<MidjourneyStyleExampleLink>> GetExampleLinkByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyStyleExampleLink>> GetExampleLinkByIdAsync(LinkID id, CancellationToken cancellationToken)
     {
         var item = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Include(exampleLink => exampleLink.MidjuorneyStyle)
             .Include(exampleLink => exampleLink.MidjourneyMaster)
             .FirstOrDefaultAsync(exampleLink => exampleLink.Id == id, cancellationToken);
 
-        if (item is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExampleLinkNotFound(id));
+        if (item is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExampleLinkNotFound(id.Value));
         
 
         return Result.Ok(item);

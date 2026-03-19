@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Utilities.Constants;
 using Utilities.Errors;
 
 namespace Unit.Utilities.Tests.Extensions;
@@ -17,22 +16,6 @@ public class ErrorFactoryTests
         error.Should().NotBeNull();
         error.Message.Should().Be("An error occurred");
         error.Metadata.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void Withlayer_ShouldAddLayerToMetadata_AndReturnSameBuilder()
-    {
-        // Arrange
-        var builder = ErrorBuilder.New();
-
-        // Act
-        var returned = builder.WithLayer<DomainLayer>();
-        var error = returned.Build();
-
-        // Assert
-        returned.Should().BeSameAs(builder);
-        error.Metadata.Should().ContainKey("Layer");
-        error.Metadata["Layer"].Should().Be("DomainLayer");
     }
 
     [Fact]
@@ -88,7 +71,6 @@ public class ErrorFactoryTests
     {
         // Arrange
         var builder = ErrorBuilder.New()
-            .WithLayer<ApplicationLayer>()
             .WithErrorCode(StatusCodes.Status500InternalServerError);
         var newMessage = "Updated message";
 
@@ -97,9 +79,7 @@ public class ErrorFactoryTests
 
         // Assert
         result.Message.Should().Be(newMessage);
-        result.Metadata.Should().ContainKey("Layer");
         result.Metadata.Should().ContainKey("ErrorCode");
-        result.Metadata["Layer"].Should().Be("ApplicationLayer");
         result.Metadata["ErrorCode"].Should().Be(StatusCodes.Status500InternalServerError);
     }
 
@@ -138,46 +118,6 @@ public class ErrorFactoryTests
 
         // Act
         var result = error.GetErrorCode();
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Fact]
-    public void GetLayer_ShouldReturnLayer_WhenExists()
-    {
-        // Arrange
-        var error = ErrorBuilder.New().WithLayer<PersistenceLayer>().Build();
-
-        // Act
-        var result = error.GetLayer();
-
-        // Assert
-        result.Should().Be("PersistenceLayer");
-    }
-
-    [Fact]
-    public void GetLayer_ShouldReturnNull_WhenNotExists()
-    {
-        // Arrange
-        var error = ErrorBuilder.New().Build();
-
-        // Act
-        var result = error.GetLayer();
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Fact]
-    public void GetLayer_ShouldReturnNull_WhenValueIsNotString()
-    {
-        // Arrange
-        var error = ErrorBuilder.New().Build();
-        error.Metadata.Add("Layer", 123);
-
-        // Act
-        var result = error.GetLayer();
 
         // Assert
         result.Should().BeNull();
@@ -248,7 +188,6 @@ public class ErrorFactoryTests
         // Act
         var error = ErrorBuilder.New()
             .WithMessage("Chained error")
-            .WithLayer<PresentationLayer>()
             .WithErrorCode(StatusCodes.Status422UnprocessableEntity)
             .WithField("testField")
             .WithErrorCodeString("TEST_ERROR")
@@ -257,21 +196,10 @@ public class ErrorFactoryTests
 
         // Assert
         error.Message.Should().Be("Chained error");
-        error.GetLayer().Should().Be("PresentationLayer");
         error.GetErrorCode().Should().Be(StatusCodes.Status422UnprocessableEntity);
         error.GetField().Should().Be("testField");
         error.GetErrorCodeString().Should().Be("TEST_ERROR");
         error.GetRejectedValue().Should().Be("test");
-    }
-
-    public static IEnumerable<object?[]> LayerTypes()
-    {
-        yield return new object[] { typeof(DomainLayer), "DomainLayer" };
-        yield return new object[] { typeof(ApplicationLayer), "ApplicationLayer" };
-        yield return new object[] { typeof(PersistenceLayer), "PersistenceLayer" };
-        yield return new object[] { typeof(InfrastructureLayer), "InfrastructureLayer" };
-        yield return new object[] { typeof(PresentationLayer), "PresentationLayer" };
-        yield return new object[] { typeof(UtilitiesLayer), "UtilitiesLayer" };
     }
 
     [Theory]
@@ -344,7 +272,6 @@ public class ErrorFactoryTests
         // Arrange & Act
         var error = ErrorBuilder.New()
             .WithMessage("Version is too long")
-            .WithLayer<DomainLayer>()
             .WithErrorCode(StatusCodes.Status400BadRequest)
             .WithField("version")
             .WithErrorCodeString("TOO_LONG")
@@ -353,7 +280,6 @@ public class ErrorFactoryTests
 
         // Assert
         error.Message.Should().Be("Version is too long");
-        error.GetLayer().Should().Be("DomainLayer");
         error.GetErrorCode().Should().Be(400);
         error.GetField().Should().Be("version");
         error.GetErrorCodeString().Should().Be("TOO_LONG");

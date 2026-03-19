@@ -10,7 +10,7 @@ namespace Application.UseCases.PromptHistory.Queries;
 
 public static class GetHistoryRecordsByPromptKeyword
 {
-    public sealed record Query(string Keyword) : IQuery<List<PromptHistoryResponse>>;
+    public sealed record Query(string? Keyword) : IQuery<List<PromptHistoryResponse>>;
 
     public sealed class Handler
     (

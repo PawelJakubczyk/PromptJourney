@@ -5,7 +5,7 @@ using Utilities.Results;
 
 namespace Domain.Entities;
 
-public class MidjourneyVersion : IEntity
+public sealed class MidjourneyVersion : IEntity
 {
     // Columns
     public ModelVersion Version { get; private set; }

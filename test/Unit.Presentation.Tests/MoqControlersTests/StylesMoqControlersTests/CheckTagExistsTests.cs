@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -65,7 +64,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var emptyStyleName = string.Empty;
         var tag = "abstract";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
 
@@ -92,7 +91,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "ModernArt";
         var emptyTag = string.Empty;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be empty");
 
@@ -119,7 +118,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var emptyStyleName = string.Empty;
         var emptyTag = string.Empty;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name and tag cannot be empty");
 
@@ -146,7 +145,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var whitespaceStyleName = "   ";
         var tag = "abstract";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
 
@@ -173,7 +172,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "ModernArt";
         var whitespaceTag = "   ";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be whitespace");
 
@@ -200,7 +199,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         string? nullStyleName = null;
         var tag = "abstract";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
 
@@ -227,7 +226,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "ModernArt";
         string? nullTag = null;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be null");
 
@@ -254,7 +253,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var tooLongStyleName = new string('a', 256);
         var tag = "abstract";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
 
@@ -281,7 +280,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "ModernArt";
         var tooLongTag = new string('a', 256);
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Tag exceeds maximum length");
 
@@ -308,7 +307,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "testtag";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -659,7 +658,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "testtag";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Repository error during tag existence check");
 
@@ -686,7 +685,7 @@ public sealed class CheckTagExistsTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "testtag";
-        var failureResult = CreateFailureResult<bool, ApplicationLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

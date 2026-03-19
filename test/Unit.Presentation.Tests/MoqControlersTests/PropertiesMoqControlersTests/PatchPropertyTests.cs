@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -58,7 +57,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "2:1"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status404NotFound,
             $"Property '{propertyName}' not found for version '{version}'");
 
@@ -92,7 +91,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Characteristic cannot be empty");
 
@@ -126,7 +125,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Characteristic 'UnsupportedCharacteristic' is not supported for patching");
 
@@ -160,7 +159,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -194,7 +193,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be empty");
 
@@ -228,7 +227,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             string.Empty // Empty new value
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "New value cannot be empty");
 
@@ -262,7 +261,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -296,7 +295,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be whitespace");
 
@@ -330,7 +329,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Characteristic cannot be whitespace");
 
@@ -364,7 +363,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -398,7 +397,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status404NotFound,
             $"Version '{nonExistentVersion}' not found");
 
@@ -432,7 +431,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -708,7 +707,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Repository error during patching");
 
@@ -742,7 +741,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyCommandResponse>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
 

@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
@@ -18,7 +17,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         // Arrange
         var deleteResponse = DeleteResponse.Success($"Example link with ID '{CorrectId}' was successfully deleted.");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(Result.Ok(deleteResponse));
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(Result.Ok(deleteResponse));
         var controller = CreateController(senderMock);
 
         // Act
@@ -32,11 +31,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsNotFound_WhenLinkDoesNotExist()
     {
         // Arrange
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status404NotFound, 
             $"Link '{CorrectId}' not found");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -50,11 +49,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_WhenLinkIdIsInvalid()
     {
         // Arrange
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Invalid link ID format");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -68,11 +67,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_WhenLinkIdIsEmpty()
     {
         // Arrange
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Link ID cannot be empty");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -86,11 +85,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_WhenLinkIdIsWhitespace()
     {
         // Arrange
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Link ID cannot be whitespace");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -104,11 +103,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_WhenLinkIdIsNull()
     {
         // Arrange
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Link ID cannot be null");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -122,11 +121,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<DeleteResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status500InternalServerError, 
             "Database connection failed");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -142,10 +141,10 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         // Arrange
         var deleteResponse = DeleteResponse.Success($"Deleted link {CorrectId}");
         var senderMock = CreateSenderMock();
-        DeleteExampleLink.Command? captured = null;
+        DeleteExampleLinkByName.Command? captured = null;
         senderMock
-            .Setup(s => s.Send(It.IsAny<DeleteExampleLink.Command>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<DeleteResponse>>, CancellationToken>((cmd, ct) => { captured = cmd as DeleteExampleLink.Command; })
+            .Setup(s => s.Send(It.IsAny<DeleteExampleLinkByName.Command>(), It.IsAny<CancellationToken>()))
+            .Callback<IRequest<Result<DeleteResponse>>, CancellationToken>((cmd, ct) => { captured = cmd as DeleteExampleLinkByName.Command; })
             .ReturnsAsync(Result.Ok(deleteResponse));
         var controller = CreateController(senderMock);
 
@@ -154,7 +153,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
 
         // Assert
         captured.Should().NotBeNull();
-        captured!.Id.Should().Be(CorrectId);
+        captured!.Name.Should().Be(CorrectId);
     }
 
     [Fact]
@@ -180,7 +179,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(
             Result.Ok(DeleteResponse.Success("Deleted")));
         var controller = CreateController(senderMock);
 
@@ -189,7 +188,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
 
         // Assert
         senderMock.Verify(
-            s => s.Send(It.IsAny<DeleteExampleLink.Command>(), It.IsAny<CancellationToken>()), 
+            s => s.Send(It.IsAny<DeleteExampleLinkByName.Command>(), It.IsAny<CancellationToken>()), 
             Times.Once);
     }
 
@@ -202,7 +201,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         // Arrange
         var senderMock = CreateSenderMock();
         var deleteResponse = DeleteResponse.Success($"Deleted {linkId}");
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(
             Result.Ok(deleteResponse));
         var controller = CreateController(senderMock);
 
@@ -223,11 +222,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_ForInvalidInputs(string invalidLinkId)
     {
         // Arrange
-        var failure = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failure = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Invalid link ID");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failure);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failure);
         var controller = CreateController(senderMock);
 
         // Act
@@ -242,11 +241,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var malformedGuid = "12345678-1234-1234-1234-12345678";
-        var failure = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failure = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Malformed GUID format");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failure);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failure);
         var controller = CreateController(senderMock);
 
         // Act
@@ -262,7 +261,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         // Arrange
         var senderMock = CreateSenderMock();
         var response = DeleteResponse.Success($"Deleted {CorrectId}");
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(Result.Ok(response));
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(Result.Ok(response));
         var controller = CreateController(senderMock);
 
         // Act
@@ -278,11 +277,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failure = CreateFailureResult<DeleteResponse, PersistenceLayer>(
+        var failure = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Repository error during deletion");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failure);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failure);
         var controller = CreateController(senderMock);
 
         // Act
@@ -299,7 +298,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var lowercaseGuid = "a1b2c3d4-e5f6-7890-abcd-1234567890ef";
         var deleteResponse = DeleteResponse.Success($"Deleted {lowercaseGuid}");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(Result.Ok(deleteResponse));
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(Result.Ok(deleteResponse));
         var controller = CreateController(senderMock);
 
         // Act
@@ -313,11 +312,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     public async Task DeleteExampleLink_ReturnsBadRequest_WhenCommandHandlerFails()
     {
         // Arrange
-        var failure = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failure = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest, 
             "Command handler failed");
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(failure);
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(failure);
         var controller = CreateController(senderMock);
 
         // Act
@@ -332,7 +331,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(
             Result.Ok(DeleteResponse.Success("Deleted")));
         var controller = CreateController(senderMock);
         var start = DateTime.UtcNow;
@@ -351,7 +350,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var expectedMessage = $"Example link with ID '{CorrectId}' was successfully deleted.";
         var deleteResponse = DeleteResponse.Success(expectedMessage);
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<DeleteExampleLink.Command, DeleteResponse>(
+        senderMock.SetupSendReturnsForRequest<DeleteExampleLinkByName.Command, DeleteResponse>(
             Result.Ok(deleteResponse));
         var controller = CreateController(senderMock);
 

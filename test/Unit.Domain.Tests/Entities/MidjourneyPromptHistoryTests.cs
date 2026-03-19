@@ -17,8 +17,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         var afterCreation = DateTime.UtcNow.AddSeconds(1);
@@ -29,8 +31,8 @@ public class MidjourneyPromptHistoryTests
         result.Value.Should().NotBeNull();
         result.Value.Prompt.Value.Should().Be("A beautiful landscape with mountains");
         result.Value.Version.Value.Should().Be("6.0");
-        result.Value.CreatedOn.Should().BeAfter(beforeCreation);
-        result.Value.CreatedOn.Should().BeBefore(afterCreation);
+        result.Value.CreatedOn.Value.Should().BeAfter(beforeCreation);
+        result.Value.CreatedOn.Value.Should().BeBefore(afterCreation);
         result.Value.HistoryId.Should().NotBe(Guid.Empty);
     }
 
@@ -45,8 +47,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         var afterCreation = DateTime.UtcNow;
@@ -55,8 +59,8 @@ public class MidjourneyPromptHistoryTests
         result.Should().NotBeNull();
         result.ShouldBeSuccess();
         result.Value.Should().NotBeNull();
-        result.Value.CreatedOn.Should().BeAfter(beforeCreation.AddSeconds(-1));
-        result.Value.CreatedOn.Should().BeBefore(afterCreation.AddSeconds(1));
+        result.Value.CreatedOn.Value.Should().BeAfter(beforeCreation.AddSeconds(-1));
+        result.Value.CreatedOn.Value.Should().BeBefore(afterCreation.AddSeconds(1));
     }
 
     [Fact]
@@ -69,8 +73,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -92,8 +98,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             invalidPromptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -111,8 +119,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            invalidVersionResult
+            invalidVersionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -130,8 +140,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             invalidPromptResult,
-            invalidVersionResult
+            invalidVersionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -158,8 +170,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -180,8 +194,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -208,8 +224,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -229,8 +247,10 @@ public class MidjourneyPromptHistoryTests
         // Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             promptResult,
-            versionResult
+            versionResult,
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -248,8 +268,8 @@ public class MidjourneyPromptHistoryTests
         var versionResult = ModelVersion.Create("6.0");
 
         // Act
-        var result1 = MidjourneyPromptHistory.Create(promptResult, versionResult);
-        var result2 = MidjourneyPromptHistory.Create(promptResult, versionResult);
+        var result1 = MidjourneyPromptHistory.Create(HistoryID.Create(), promptResult, versionResult, CreatedOn.Create(DateTime.UtcNow.ToString()));
+        var result2 = MidjourneyPromptHistory.Create(HistoryID.Create(), promptResult, versionResult, CreatedOn.Create(DateTime.UtcNow.ToString()));
 
         // Assert
         result1.Value.HistoryId.Should().NotBe(result2.Value.HistoryId);
@@ -261,8 +281,10 @@ public class MidjourneyPromptHistoryTests
         // Arrange & Act
         var result = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             Prompt.Create("Test prompt"),
-            ModelVersion.Create("6.0")
+            ModelVersion.Create("6.0"),
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         );
 
         // Assert
@@ -276,8 +298,10 @@ public class MidjourneyPromptHistoryTests
         // Arrange & Act
         var history = MidjourneyPromptHistory.Create
         (
+            HistoryID.Create(),
             Prompt.Create("Test prompt"),
-            ModelVersion.Create("6.0")
+            ModelVersion.Create("6.0"),
+            CreatedOn.Create(DateTime.UtcNow.ToString())
         ).Value;
 
         // Assert
