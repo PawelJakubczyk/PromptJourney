@@ -1,15 +1,18 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Versions.Queries;
 
 public sealed class CheckIfAnyVersionExists
 {
-    public sealed record Query() : IQuery<bool>;
+    public sealed record Query() : IQuery<bool>
+    {
+        public static readonly Query Singleton = new();
+    };
 
-    public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, bool>
+public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, bool>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
 

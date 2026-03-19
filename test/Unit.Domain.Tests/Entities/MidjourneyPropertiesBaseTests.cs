@@ -1,7 +1,7 @@
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
-using FluentResults;
+using Utilities.Results;
 
 namespace Unit.Domain.Tests.Entities;
 

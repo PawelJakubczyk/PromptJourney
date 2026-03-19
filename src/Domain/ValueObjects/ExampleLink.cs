@@ -1,27 +1,30 @@
 using Domain.Abstractions;
-using Domain.Extensions;
-using FluentResults;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Workflows;
+using Utilities.Results;
+using Domain.Extensions;
 
 namespace Domain.ValueObjects;
 
 public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?>
 {
     public const int MaxLength = 200;
+    public override bool IsNone => false;
 
     private ExampleLink(string value) : base(value) { }
 
+
     public static Result<ExampleLink> Create(string? value)
     {
+        value = value?.Trim();
+
         var result = WorkflowPipeline
             .Empty()
-            .IfNullOrWhitespace<DomainLayer, ExampleLink>(value)
-            .Congregate(pipeline => pipeline
-                .IfLengthTooLong<DomainLayer, ExampleLink>(value, MaxLength)
-                .IfLinkFormatInvalid<DomainLayer>(value))
-            .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value))
+            .IfNullOrWhitespace<ExampleLink>(value)
+            .CongregateErrors(
+                pipeline => pipeline.IfLengthTooLong<ExampleLink>(value!, MaxLength),
+                pipeline => pipeline.IfLinkFormatInvalid(value!))
+            .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value!))
             .MapResult<ExampleLink>();
 
         return result;
@@ -32,10 +35,9 @@ internal static class ExampleLinkErrorsExtensions
 {
     internal const string InvalidUrlFormatMessage = $"Invalid URL format";
 
-    internal static WorkflowPipeline IfLinkFormatInvalid<TLayer>(
+    internal static WorkflowPipeline IfLinkFormatInvalid(
         this WorkflowPipeline pipeline,
         string? value)
-        where TLayer : ILayer
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -51,7 +53,7 @@ internal static class ExampleLinkErrorsExtensions
         if (!isValid)
         {
             pipeline.Errors.Add(
-                ErrorFactories.InvalidPattern<string, TLayer>(value, InvalidUrlFormatMessage)
+                ErrorFactories.InvalidPattern<string>(value, InvalidUrlFormatMessage)
             );
         }
 

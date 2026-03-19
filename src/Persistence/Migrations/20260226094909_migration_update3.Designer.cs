@@ -12,8 +12,8 @@ using Persistence.Context;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(MidjourneyDbContext))]
-    [Migration("20251024063725_migration_update2")]
-    partial class migration_update2
+    [Migration("20260226094909_migration_update3")]
+    partial class migration_update3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,7 @@ namespace Persistence.Migrations
                         .HasColumnType("Uuid")
                         .HasColumnName("history_id");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTimeOffset>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_on")
@@ -116,7 +116,7 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("varchar(30)")
+                        .HasColumnType("varchar(16)")
                         .HasColumnName("type");
 
                     b.HasKey("StyleName");
@@ -175,14 +175,17 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Parameter")
                         .IsRequired()
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("varchar(12)")
                         .HasColumnName("parameter");
 
-                    b.Property<DateTime?>("ReleaseDate")
+                    b.Property<DateTimeOffset?>("ReleaseDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("release_date");
 
                     b.HasKey("Version");
+
+                    b.HasIndex("Parameter")
+                        .IsUnique();
 
                     b.ToTable("midjourney_versions", "public");
                 });

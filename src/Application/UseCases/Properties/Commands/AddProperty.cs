@@ -3,8 +3,9 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
+using Utilities.Results;
 using Domain.ValueObjects;
-using FluentResults;
+
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Commands;
@@ -15,11 +16,11 @@ public static class AddProperty
     (
         string Version,
         string PropertyName,
-        List<string> Parameters,
-        string? DefaultValue,
-        string? MinValue,
-        string? MaxValue,
-        string? Description
+        List<string?> Parameters,
+        string? DefaultValue = null,
+        string? MinValue = null,
+        string? MaxValue = null,
+        string? Description = null
     ) : ICommand<PropertyCommandResponse>;
 
     public sealed class Handler
@@ -35,13 +36,13 @@ public static class AddProperty
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
-            var parametersResult = command.Parameters.Select(Param.Create).ToList();
-            var defaultValueResult = command.DefaultValue is not null ? DefaultValue.Create(command.DefaultValue) : null;
-            var minValueResult = command.MinValue is not null ? MinValue.Create(command.MinValue) : null;
-            var maxValueResult = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : null;
-            var descriptionResult = command.Description is not null ? Description.Create(command.Description) : null;
+            var parametersResult = ParamsCollection.Create(command.Parameters);
+            var defaultValueResult = command.DefaultValue is not null ? DefaultValue.Create(command.DefaultValue) : DefaultValue.None;
+            var minValueResult = command.MinValue is not null ? MinValue.Create(command.MinValue) : MinValue.None;
+            var maxValueResult = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : MaxValue.None;
+            var descriptionResult = command.Description is not null ? Description.Create(command.Description) : Description.None;
 
-            var property = MidjourneyProperties.Create
+            var property = MidjourneyProperty.Create
             (
                 propertyNameResult,
                 versionResult,
@@ -55,12 +56,12 @@ public static class AddProperty
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                .Congregate(pipeline => pipeline
-                    .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
-                    .IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                .CongregateErrors(
+                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .AddPropertyAsync(property.Value, cancellationToken))
-                .MapResult<MidjourneyProperties, PropertyCommandResponse>
+                .MapResult<MidjourneyProperty, PropertyCommandResponse>
                     (property => PropertyCommandResponse.FromDomain(property));
 
             return result;

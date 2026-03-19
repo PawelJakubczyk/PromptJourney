@@ -4,7 +4,7 @@ using Application.Extensions;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Queries;
@@ -32,7 +32,7 @@ public static class GetPropertiesByVersion
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .GetAllPropertiesByVersionAsync(version.Value, cancellationToken))
-                .MapResult<List<MidjourneyProperties>, List<PropertyQueryResponse>>
+                .MapResult<List<MidjourneyProperty>, List<PropertyQueryResponse>>
                     (propertiesList => [.. propertiesList.Select(PropertyQueryResponse.FromDomain)]);
 
             return result;

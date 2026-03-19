@@ -1,18 +1,14 @@
-﻿using FluentResults;
-using Microsoft.AspNetCore.Mvc;
-using Utilities.Constants;
+﻿using Microsoft.AspNetCore.Mvc;
 using Utilities.Errors;
+using Utilities.Results;
 
 namespace Presentation.Controllers.Pipeline;
 
 internal static class PrepareErrorResponsePipelineExtensions
 {
-    public static async Task<Pipeline<TResponse>> IfErrorsPrepareErrorResponse<TResponse>
-(
-    this Task<Result<TResponse>> sourceTask,
-    Func<Error, IEnumerable<object>,
-    IActionResult>? bodyFactory = null
-)
+    public static async Task<Pipeline<TResponse>> IfErrorsPrepareErrorResponse<TResponse>(
+        this Task<Result<TResponse>> sourceTask,
+        Func<Error, IEnumerable<string>, IActionResult>? bodyFactory = null)
     {
         ArgumentNullException.ThrowIfNull(sourceTask);
 
@@ -28,16 +24,20 @@ internal static class PrepareErrorResponsePipelineExtensions
 
         var mainError = errors.Count != 0
             ? Pipeline<TResponse>.PickHighestPriorityErrorInternal(errors)
-            : ErrorFactories.Unknown<PresentationLayer>();
+            : ErrorFactories.Unknown();
 
-        var details = errors.Select(error => error.GetDetail()).ToList();
+        var errorMessages = errors.Select(error => error.Message).ToList();
 
         pipeline.SetResponse(bodyFactory != null
-            ? bodyFactory(mainError, details)
+            ? bodyFactory(mainError, errorMessages)
             : new ObjectResult(new
             {
-                mainError = new { code = mainError.GetErrorCode(), message = mainError.Message },
-                details
+                mainError = new
+                {
+                    code = mainError.GetErrorCode(),
+                    message = mainError.Message,
+                },
+                errors = errorMessages
             })
             {
                 StatusCode = mainError.GetErrorCode()

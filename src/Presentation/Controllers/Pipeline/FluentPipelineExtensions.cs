@@ -1,7 +1,7 @@
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Utilities.Errors;
+using Utilities.Results;
 using static Presentation.Constants.StatusPriority;
 
 namespace Presentation.Controllers.Pipeline;
@@ -51,7 +51,7 @@ public sealed class Pipeline<TResponse>
         var mainErrorCode = errors
             .Select(er => er.GetErrorCode())
             .Where(code => code.HasValue)
-            .OrderBy(code => StatusPriorityDict.GetValueOrDefault(code!.Value, int.MaxValue))
+            .OrderBy(code => GetPriorityOrDefault(code!.Value, int.MaxValue))
             .FirstOrDefault() ?? StatusCodes.Status500InternalServerError;
 
         var mainError = errors

@@ -1,14 +1,14 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Versions.Queries;
 
 public static class CheckVersionExists
 {
-    public sealed record Query(string Version) : IQuery<bool>;
+    public sealed record Query(string? Version) : IQuery<bool>;
 
     public sealed class Handler(IVersionRepository versionRepository) : IQueryHandler<Query, bool>
     {

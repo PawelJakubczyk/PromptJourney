@@ -1,34 +1,12 @@
 using Application.Abstractions.IRepository;
-using FluentResults;
-using Microsoft.AspNetCore.Http;
-using Utilities.Constants;
+using Application.Errors;
 using Utilities.Errors;
 using Utilities.Workflows;
 
 namespace Application.Extensions;
 
-public static class HistoryValidationExtensions
+public static class HistoryValidationWorkflowPipelineExtensions
 {
-    internal static string HistoryLimitNotGreaterThanZeroMessage(int count) =>
-        $"History count must be greater than zero. Provided: {count}.";
-    internal static string HistoryRequestedExceedsAvailableMessage(int requested, int available) =>
-        $"Requested {requested} records, but only {available} are available.";
-
-    public static Error HistoryLimitNotGreaterThanZero(int count) =>
-        ErrorBuilder.New()
-            .WithLayer<ApplicationLayer>()
-            .WithMessage(HistoryLimitNotGreaterThanZeroMessage(count))
-            .WithErrorCode(StatusCodes.Status400BadRequest)
-            .Build();
-
-    public static Error HistoryRequestedExceedsAvailable(int requested, int available) =>
-        ErrorBuilder.New()
-            .WithLayer<ApplicationLayer>()
-            .WithMessage(HistoryRequestedExceedsAvailableMessage(requested, available))
-            .WithErrorCode(StatusCodes.Status400BadRequest)
-            .Build();
-
-
     public static async Task<WorkflowPipeline> IfDateInFuture
     (
         this Task<WorkflowPipeline> pipelineTask,
@@ -42,7 +20,7 @@ public static class HistoryValidationExtensions
 
         if (date > DateTime.UtcNow)
         {
-            errors.Add(ErrorFactories.DateInFuture(date));
+            errors.Add(ApplicationErrors.HistoryDateInFuture(date));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -63,13 +41,13 @@ public static class HistoryValidationExtensions
 
         if (from > to)
         {
-            errors.Add(ErrorFactories.DateRangeNotChronological(from, to));
+            errors.Add(ApplicationErrors.HistoryDateRangeNotChronological(from, to));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }
 
-    public static async Task<WorkflowPipeline> IfHistoryLimitNotGreaterThanZero
+    public static async Task<WorkflowPipeline> IfHistoryRecordsLimitNotGreaterThanZero
     (
         this Task<WorkflowPipeline> pipelineTask,
         int count
@@ -83,7 +61,7 @@ public static class HistoryValidationExtensions
 
         if (count <= 0)
         {
-            errors.Add(HistoryLimitNotGreaterThanZero(count));
+            errors.Add(ApplicationErrors.HistoryRequestedCountMustBeGreaterThanZero(count));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
@@ -113,7 +91,7 @@ public static class HistoryValidationExtensions
 
         if (requestedCount > availableCountResult.Value)
         {
-            errors.Add(HistoryRequestedExceedsAvailable(requestedCount, availableCountResult.Value));
+            errors.Add(ApplicationErrors.HistoryRequestedExceedsAvailableRecords(requestedCount, availableCountResult.Value));
         }
 
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);

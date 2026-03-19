@@ -1,27 +1,29 @@
 using Domain.Abstractions;
 using Domain.Extensions;
-using FluentResults;
 using System.Text.RegularExpressions;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.ValueObjects;
 
 public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, string?>
 {
     public const int MaxLength = 10;
+    public override bool IsNone => false;
     private ModelVersion(string value) : base(value) { }
 
     public static Result<ModelVersion> Create(string? value)
     {
+        value = value?.Trim();
+
         var result = WorkflowPipeline
             .Empty()
-            .IfNullOrWhitespace<DomainLayer, ModelVersion>(value)
-            .Congregate(pipeline => pipeline
-                .IfLengthTooLong<DomainLayer, ModelVersion>(value, MaxLength)
-                .IfVersionFormatInvalid<DomainLayer>(value))
-            .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value))
+            .IfNullOrWhitespace<ModelVersion>(value)
+            .CongregateErrors(
+                pipeline => pipeline.IfLengthTooLong<ModelVersion>(value!, MaxLength),
+                pipeline => pipeline.IfVersionFormatInvalid(value!))
+            .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value!))
             .MapResult<ModelVersion>();
 
         return result;
@@ -33,10 +35,11 @@ internal static partial class ModelVersionErrorsExtensions
     internal const string InvalidVersionFormatMessage =
         $"Invalid version format. Expected numeric (e.g., '5', '5.1') or niji format (e.g., 'niji 5')";
 
-    internal static WorkflowPipeline IfVersionFormatInvalid<TLayer>(
+    internal static WorkflowPipeline IfVersionFormatInvalid
+    (
         this WorkflowPipeline pipeline,
-        string? value)
-        where TLayer : ILayer
+        string? value
+    )
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -50,17 +53,18 @@ internal static partial class ModelVersionErrorsExtensions
 
         if (!isValid)
         {
-            pipeline.Errors.Add(
-                ErrorFactories.InvalidPattern<string, TLayer>(value, InvalidVersionFormatMessage)
+            pipeline.Errors.Add
+            (
+                ErrorFactories.InvalidPattern<ModelVersion>(value, InvalidVersionFormatMessage)
             );
         }
 
         return pipeline;
     }
 
-
     [GeneratedRegex(@"^[1-9][0-9]*(\.[0-9])?$", RegexOptions.Compiled)]
     private static partial Regex ValidNumericRegex();
+    
     [GeneratedRegex(@"^niji [1-9][0-9]*$", RegexOptions.Compiled)]
     private static partial Regex ValidNijiRegex();
 }

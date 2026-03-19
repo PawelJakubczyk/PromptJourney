@@ -1,6 +1,6 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Versions.Queries;

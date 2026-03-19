@@ -1,9 +1,9 @@
 using Application.UseCases.Versions.Queries;
 using FluentAssertions;
-using FluentResults;
 using MediatR;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
+using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
 

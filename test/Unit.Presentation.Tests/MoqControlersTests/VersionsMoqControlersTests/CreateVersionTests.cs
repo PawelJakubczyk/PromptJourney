@@ -1,12 +1,11 @@
 ﻿using Application.UseCases.Versions.Commands;
+using Application.UseCases.Versions.Responses;
 using FluentAssertions;
-using FluentResults;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
-using Utilities.Constants;
+using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
 
@@ -19,11 +18,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow,
+            DateTime.UtcNow.ToString("o"),
             "New version 7.0"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -53,10 +53,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Version cannot be empty");
-
+        var failureResult = Result.Fail<VersionResponse>("Version cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -83,10 +80,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             ""
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Parameter cannot be empty");
-
+        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -113,10 +107,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Version cannot be null");
-
+        var failureResult = Result.Fail<VersionResponse>("Version cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -143,10 +134,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             null!
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Parameter cannot be null");
-
+        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -173,10 +161,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Version cannot be whitespace");
-
+        var failureResult = Result.Fail<VersionResponse>("Version cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -203,10 +188,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "   "
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Parameter cannot be whitespace");
-
+        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -233,10 +215,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 1.0"
         );
 
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
-            StatusCodes.Status400BadRequest,
-            "Version already exists");
-
+        var failureResult = Result.Fail<VersionResponse>("Version already exists");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -264,10 +243,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Version exceeds maximum length");
-
+        var failureResult = Result.Fail<VersionResponse>("Version exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -295,10 +271,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             tooLongParameter
         );
 
-        var failureResult = CreateFailureResult<string, DomainLayer>(
-            StatusCodes.Status400BadRequest,
-            "Parameter exceeds maximum length");
-
+        var failureResult = Result.Fail<VersionResponse>("Parameter exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -325,7 +298,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, null, null);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -350,7 +324,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithCompleteRequest()
     {
         // Arrange
-        var releaseDate = new DateTime(2024, 1, 15, 0, 0, 0, DateTimeKind.Utc);
+        var releaseDate = DateTime.UtcNow.ToString("o");
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
@@ -358,7 +332,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Complete version with all details"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -386,11 +361,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow,
+            DateTime.UtcNow.ToString("o"),
             null
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), null);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -422,7 +398,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Version without release date"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, null, request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -450,11 +427,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "niji 7",
             "--niji 7",
-            DateTime.UtcNow,
+            DateTime.UtcNow.ToString("o"),
             "Niji version 7"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -488,11 +466,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             version,
             parameter,
-            DateTime.UtcNow,
+            DateTime.UtcNow.ToString("o"),
             $"Test version {version}"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -517,7 +496,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_VerifiesCommandIsCalledWithCorrectParameters()
     {
         // Arrange
-        var releaseDate = DateTime.UtcNow;
+        var releaseDate = DateTime.UtcNow.ToString("o");
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
@@ -525,13 +504,14 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Test description"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         AddVersion.Command? capturedCommand = null;
 
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<string>>, CancellationToken>((command, ct) =>
+            .Callback<IRequest<Result<VersionResponse>>, CancellationToken>((command, ct) =>
             {
                 capturedCommand = command as AddVersion.Command;
             })
@@ -585,7 +565,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, null, null);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -610,11 +591,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow,
+            DateTime.UtcNow.ToString("o"),
             longDescription
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -642,11 +624,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow,
+            DateTime.UtcNow.ToString("o"),
             "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -676,10 +659,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
-            StatusCodes.Status500InternalServerError,
-            "Repository error during version creation");
-
+        var failureResult = Result.Fail<VersionResponse>("Repository error during version creation");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -706,10 +686,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "--v 7.0"
         );
 
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
-            StatusCodes.Status400BadRequest,
-            "Command handler failed");
-
+        var failureResult = Result.Fail<VersionResponse>("Command handler failed");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -734,11 +711,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow,
+            DateTime.UtcNow.ToString("o"),
             "Performance test version"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -759,7 +737,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithFutureReleaseDate()
     {
         // Arrange
-        var futureDate = DateTime.UtcNow.AddMonths(3);
+        var futureDate = DateTime.UtcNow.AddMonths(3).ToString("o");
         var request = new CreateVersionRequest(
             "8.0",
             "--v 8.0",
@@ -767,7 +745,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Future version"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(futureDate), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -792,7 +771,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithPastReleaseDate()
     {
         // Arrange
-        var pastDate = DateTime.UtcNow.AddYears(-1);
+        var pastDate = DateTime.UtcNow.AddYears(-1).ToString("o");
         var request = new CreateVersionRequest(
             "6.5",
             "--v 6.5",
@@ -800,7 +779,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Past version"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(pastDate), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -825,14 +805,16 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithVersionContainingDash()
     {
         // Arrange
+        var releaseDate = DateTimeOffset.UtcNow.ToString("o");
         var request = new CreateVersionRequest(
             "7.0-beta",
             "--v 7.0",
-            DateTime.UtcNow,
+            releaseDate,
             "Beta version"
         );
 
-        var result = Result.Ok(request.Version);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
+        var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))

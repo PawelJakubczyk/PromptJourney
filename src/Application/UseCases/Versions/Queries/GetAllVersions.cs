@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.UseCases.Versions.Responses;
 using Domain.Entities;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Versions.Queries;
@@ -25,7 +25,7 @@ public static class GetAllVersions
                 .ExecuteIfNoErrors(() => _versionRepository
                     .GetAllVersionsAsync(cancellationToken))
                 .MapResult<List<MidjourneyVersion>, List<VersionResponse>>
-                    (versions => [.. versions.Select(VersionResponse.FromDomain)]);
+                    (versions => [.. versions.Select(VersionResponse.FromDomain).OrderBy(v => v.ReleaseDate)]);
 
             return result;
         }

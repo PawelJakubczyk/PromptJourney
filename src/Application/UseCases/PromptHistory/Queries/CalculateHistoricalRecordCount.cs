@@ -1,6 +1,6 @@
 using Application.Abstractions;
+using Utilities.Results;
 using Application.Abstractions.IRepository;
-using FluentResults;
 
 namespace Application.UseCases.PromptHistory.Queries;
 

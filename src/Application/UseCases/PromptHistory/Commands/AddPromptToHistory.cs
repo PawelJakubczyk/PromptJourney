@@ -3,7 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Commands;

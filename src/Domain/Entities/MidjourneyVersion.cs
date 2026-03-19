@@ -1,36 +1,33 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
-using FluentResults;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.Entities;
 
 public class MidjourneyVersion : IEntity
 {
     // Columns
-    public ModelVersion Version { get; set; }
-    public Param Parameter { get; set; }
-    public DateTime? ReleaseDate { get; set; }
-    public Description? Description { get; set; }
+    public ModelVersion Version { get; private set; }
+    public Param Parameter { get; private set; }
+    public ReleaseDate? ReleaseDate { get; private set; }
+    public Description? Description { get; private set; }
 
     // Navigation
     private List<MidjourneyPromptHistory> Histories { get; set; } = [];
     public IReadOnlyCollection<MidjourneyPromptHistory> MidjourneyHistories => Histories.AsReadOnly();
 
-    private List<MidjourneyProperties> Properties { get; set; } = [];
-    public IReadOnlyCollection<MidjourneyProperties> MidjourneyProperties => Properties.AsReadOnly();
+    private List<MidjourneyProperty> Properties { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyProperty> MidjourneyProperties => Properties.AsReadOnly();
 
     // Constructors
-    private MidjourneyVersion()
-    {
-        // Parameterless constructor for EF Core
-    }
-
-    private MidjourneyVersion(
+    private MidjourneyVersion
+    (
         ModelVersion version,
         Param parameter,
-        DateTime? releaseDate = null,
-        Description? description = null)
+        ReleaseDate? releaseDate,
+        Description? description
+    )
     {
         Version = version;
         Parameter = parameter;
@@ -42,23 +39,26 @@ public class MidjourneyVersion : IEntity
     (
         Result<ModelVersion> versionResult,
         Result<Param> parameterResult,
-        DateTime? releaseDate = null,
-        Result<Description?>? descriptionResult = null
+        Result<ReleaseDate> releaseDate,
+        Result<Description>? descriptionResult = null
     )
     {
+        var descriptionResultNonNull = descriptionResult ?? Result<Description>.Ok(Description.None);
+
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(versionResult)
-                .CollectErrors(parameterResult)
-                .CollectErrors(descriptionResult))
+            .CongregateErrors(
+                pipeline => pipeline.CollectErrors(versionResult),
+                pipeline => pipeline.CollectErrors(parameterResult),
+                pipeline => pipeline.CollectErrors(releaseDate),
+                pipeline => pipeline.CollectErrors(descriptionResultNonNull))
             .ExecuteIfNoErrors<MidjourneyVersion>(() =>
             {
                 var midjourneyVersion = new MidjourneyVersion(
                     versionResult.Value,
                     parameterResult.Value,
-                    releaseDate,
-                    descriptionResult?.Value
+                    releaseDate.Value,
+                    descriptionResultNonNull.Value
                 );
 
                 return midjourneyVersion;

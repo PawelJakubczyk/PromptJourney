@@ -65,8 +65,8 @@ public sealed class GetAllByVersionTests(MidjourneyTestWebApplicationFactory fac
                 var firstProperty = properties.First();
                 firstProperty.Version.Should().NotBeNullOrEmpty();
                 firstProperty.PropertyName.Should().NotBeNullOrEmpty();
-                firstProperty.Parameters.Should().NotBeNull();
-                firstProperty.Parameters.Should().NotBeEmpty();
+                firstProperty.ParamsCollection.Should().NotBeNull();
+                firstProperty.ParamsCollection.Should().NotBeEmpty();
             }
         }
     }

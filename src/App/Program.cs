@@ -1,14 +1,16 @@
 using Application.Registrations;
 using Persistence.Registrations;
 using App.Middleware;
+using App.Configuration;
 using Presentation.Registrations;
+using System.Text.Json.Serialization;
 
 var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 var logger = loggerFactory.CreateLogger<Program>();
 
 try
 {
-    Console.WriteLine("Starting the web host");
+    logger.LogInformation("Starting the web host");
 
     //Initial configuration
 
@@ -29,6 +31,16 @@ try
         //.RegisterInfrastructureLayer()
         .RegisterPresentationLayer();
 
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        })
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.ConfigureCustomModelStateValidation();
+        });
+
     //Build the application
 
     WebApplication webApplication = builder.Build();
@@ -39,10 +51,10 @@ try
     webApplication.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
     webApplication
-        //.UseHttpsRedirection()
+        .UseHttpsRedirection()
         //.UseApplicationLayer()
         .UsePresentationLayer();
-    //.UsePersistenceLayer();
+        //.UsePersistenceLayer();
 
     webApplication.MapControllers();
 
@@ -64,7 +76,7 @@ catch (Exception exception)
 }
 finally
 {
-    Console.WriteLine("Ending the web host");
+    logger.LogInformation("Ending the web host");
     loggerFactory.Dispose();
 }
 

@@ -1,26 +1,27 @@
 using Domain.Abstractions;
+using Domain.Errors;
 using Domain.Extensions;
-using FluentResults;
-using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
 public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
 {
-    public const int MaxLength = 30;
+    public const int MaxLength = 16;
+    public override bool IsNone => false;
 
     private StyleType(string value) : base(value) { }
 
     public static Result<StyleType> Create(string? value)
     {
+        value = value?.Trim();
+
         var result = WorkflowPipeline
             .Empty()
-            .IfNullOrWhitespace<DomainLayer, StyleType>(value)
-            .Congregate(pipeline => pipeline
-                .IfLengthTooLong<DomainLayer, StyleType>(value, MaxLength)
-                .IfStyleTypeNotInclude<DomainLayer>(value))
+            .IfNullOrWhitespace<StyleType>(value)
+            .IfStyleTypeNotInclude(value!)
             .ExecuteIfNoErrors<StyleType>(() => new StyleType(value!))
             .MapResult<StyleType>();
 
@@ -30,22 +31,20 @@ public record StyleType : ValueObject<string>, ICreatable<StyleType, string?>
 
 internal static class StyleTypeErrorsExtensions
 {
-    internal static WorkflowPipeline IfStyleTypeNotInclude<TLayer>(
+    internal static WorkflowPipeline IfStyleTypeNotInclude(
         this WorkflowPipeline pipeline,
-        string? value)
-        where TLayer : ILayer
+        string value)
     {
         if (pipeline.BreakOnError)
             return pipeline;
 
         if (!Enum.TryParse<StyleTypeEnum>(value, true, out var _))
         {
-            pipeline.Errors.Add(ErrorFactories.OptionNotAllowed<StyleTypeEnum, TLayer>(value, typeof(StyleTypeEnum)));
+            pipeline.Errors.Add(DomainErrors.InvalidStyleTypeNotAllowed(value, typeof(StyleTypeEnum)));
         }
 
         return pipeline;
     }
-
 }
 
 public enum StyleTypeEnum

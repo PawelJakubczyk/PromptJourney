@@ -14,6 +14,10 @@ public class ErrorsMessages
     public static string WhitespaceMessage<TType>() =>  $"{typeof(TType).Name}: value cannot be whitespace.";
     public static string TooLongMessage<TType>(string? value, int maxLength) => $"{typeof(TType).Name}: '{value}' cannot be longer than {maxLength} characters.";
 
+    // Numeric Errors
+    public static string MustBeGreaterThanZeroMessage<TType>(int value) => $"{typeof(TType).Name} must be greater than zero. Provided: {value}.";
+    public static string ExceedsAvailableMessage<TType>(int requested, int available) => $"{typeof(TType).Name} requested {requested}, but only {available} available.";
+
     // Collection Messages
     public static string EmptyCollectionMessage<TType>() => $"{typeof(TType).Name}: cannot be empty.";
     public static string EmptyOrNullCollectionMessage<TType>() => $"{typeof(TType).Name}: cannot be null or empty.";
@@ -43,4 +47,15 @@ public class ErrorsMessages
     // Date Messages
     internal static string DateInFutureMessage(DateTime date) => $"Date '{date:yyyy-MM-dd}' cannot be in the future.";
     internal static string DateRangeNotChronologicalMessage(DateTime from, DateTime to) => $"Date range is not chronological: 'From' ({from:yyyy-MM-dd}) is after 'To' ({to:yyyy-MM-dd}).";
+
+    public static string DateFormatInvalidMessage(string? value)
+    => $"Date: '{value}' does not match the required format (expected ISO 8601, e.g. '2026-01-15').";
+
+    public static string SuspiciousContentMessage(string? value)
+    => $"{value} FORBIDDEN_CONTENT error is returned";
+
+    public static string InvalidJsonMessage(string? details = null)
+    => details is null
+        ? "Invalid JSON format: The request body contains malformed JSON."
+        : $"Invalid JSON format: {details}";
 }

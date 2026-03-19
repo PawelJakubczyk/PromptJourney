@@ -1,5 +1,5 @@
-﻿using FluentResults;
-using MediatR;
+﻿using MediatR;
+using Utilities.Results;
 
 namespace Application.Abstractions;
 

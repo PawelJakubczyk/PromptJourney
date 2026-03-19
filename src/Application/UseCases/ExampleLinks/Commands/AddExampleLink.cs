@@ -3,7 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.ExampleLinks.Commands;
@@ -39,10 +39,10 @@ public static class AddExampleLink
             var result = await WorkflowPipeline
                 .EmptyAsync()
                     .CollectErrors(linkResult)
-                    .Congregate(pipeline => pipeline
-                        .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                        .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                        .IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
+                    .CongregateErrors(
+                        pipeline => pipeline.IfVersionNotExists(version.Value, _versionRepository, cancellationToken),
+                        pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
+                        pipeline => pipeline.IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _exampleLinkRepository
                         .AddExampleLinkAsync(linkResult.Value, cancellationToken))
                     .MapResult(() => linkResult.Value.Id.ToString());

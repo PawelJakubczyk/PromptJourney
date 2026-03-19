@@ -78,7 +78,7 @@ public class ErrorFactoryTests
         var result = ErrorBuilder.New().WithMessage(newMessage).Build();
 
         // Assert
-        result.Should().NotBeSameAs(originalError); // different instances
+        result.Should().NotBeSameAs(originalError);
         result.Message.Should().Be(newMessage);
         result.Metadata.Should().BeEquivalentTo(originalError.Metadata);
     }
@@ -184,41 +184,62 @@ public class ErrorFactoryTests
     }
 
     [Fact]
-    public void GetDetail_ShouldReturnCorrectDictionary_WithAllValues()
+    public void GetField_ShouldReturnField_WhenExists()
     {
         // Arrange
         var error = ErrorBuilder.New()
-            .WithMessage("Test error")
-            .WithLayer<InfrastructureLayer>()
-            .WithErrorCode(StatusCodes.Status403Forbidden)
+            .WithField("testField")
             .Build();
 
         // Act
-        var result = error.GetDetail();
+        var result = error.GetField();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(3);
-        result["ErrorCode"].Should().Be(StatusCodes.Status403Forbidden.ToString());
-        result["Message"].Should().Be("Test error");
-        result["Layer"].Should().Be("InfrastructureLayer");
+        result.Should().Be("testField");
     }
 
     [Fact]
-    public void GetDetail_ShouldReturnDefaults_WhenValuesNotSet()
+    public void GetField_ShouldReturnNull_WhenNotExists()
     {
         // Arrange
-        var error = ErrorBuilder.New().WithMessage("Simple error").Build();
+        var error = ErrorBuilder.New().Build();
 
         // Act
-        var result = error.GetDetail();
+        var result = error.GetField();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(3);
-        result["ErrorCode"].Should().Be(StatusCodes.Status500InternalServerError.ToString());
-        result["Message"].Should().Be("Simple error");
-        result["Layer"].Should().Be("UnknownLayer");
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public void GetErrorCodeString_ShouldReturnCode_WhenExists()
+    {
+        // Arrange
+        var error = ErrorBuilder.New()
+            .WithErrorCodeString("INVALID_FORMAT")
+            .Build();
+
+        // Act
+        var result = error.GetErrorCodeString();
+
+        // Assert
+        result.Should().Be("INVALID_FORMAT");
+    }
+
+    [Fact]
+    public void GetRejectedValue_ShouldReturnValue_WhenExists()
+    {
+        // Arrange
+        var rejectedValue = "invalid_value";
+        var error = ErrorBuilder.New()
+            .WithRejectedValue(rejectedValue)
+            .Build();
+
+        // Act
+        var result = error.GetRejectedValue();
+
+        // Assert
+        result.Should().Be(rejectedValue);
     }
 
     [Fact]
@@ -229,12 +250,18 @@ public class ErrorFactoryTests
             .WithMessage("Chained error")
             .WithLayer<PresentationLayer>()
             .WithErrorCode(StatusCodes.Status422UnprocessableEntity)
+            .WithField("testField")
+            .WithErrorCodeString("TEST_ERROR")
+            .WithRejectedValue("test")
             .Build();
 
         // Assert
         error.Message.Should().Be("Chained error");
         error.GetLayer().Should().Be("PresentationLayer");
         error.GetErrorCode().Should().Be(StatusCodes.Status422UnprocessableEntity);
+        error.GetField().Should().Be("testField");
+        error.GetErrorCodeString().Should().Be("TEST_ERROR");
+        error.GetRejectedValue().Should().Be("test");
     }
 
     public static IEnumerable<object?[]> LayerTypes()
@@ -245,28 +272,6 @@ public class ErrorFactoryTests
         yield return new object[] { typeof(InfrastructureLayer), "InfrastructureLayer" };
         yield return new object[] { typeof(PresentationLayer), "PresentationLayer" };
         yield return new object[] { typeof(UtilitiesLayer), "UtilitiesLayer" };
-    }
-
-    [Theory]
-    [MemberData(nameof(LayerTypes))
-    ]
-    public void Withlayer_ShouldHandleAllLayerTypes(Type layerType, string expectedName)
-    {
-        // Arrange
-        var builder = ErrorBuilder.New();
-
-        // Act - call the appropriate generic overload based on the provided Type
-        var b = layerType == typeof(DomainLayer) ? builder.WithLayer<DomainLayer>()
-              : layerType == typeof(ApplicationLayer) ? builder.WithLayer<ApplicationLayer>()
-              : layerType == typeof(PersistenceLayer) ? builder.WithLayer<PersistenceLayer>()
-              : layerType == typeof(InfrastructureLayer) ? builder.WithLayer<InfrastructureLayer>()
-              : layerType == typeof(PresentationLayer) ? builder.WithLayer<PresentationLayer>()
-              : builder.WithLayer<UtilitiesLayer>();
-
-        var error = b.Build();
-
-        // Assert
-        error.GetLayer().Should().Be(expectedName);
     }
 
     [Theory]
@@ -285,5 +290,73 @@ public class ErrorFactoryTests
 
         // Assert
         result.Should().Be(statusCode);
+    }
+
+    [Fact]
+    public void WithField_ShouldAddFieldToMetadata()
+    {
+        // Arrange
+        var error = ErrorBuilder.New()
+            .WithField("version")
+            .Build();
+
+        // Act
+        var result = error.GetField();
+
+        // Assert
+        result.Should().Be("version");
+    }
+
+    [Fact]
+    public void WithErrorCodeString_ShouldAddCodeToMetadata()
+    {
+        // Arrange
+        var error = ErrorBuilder.New()
+            .WithErrorCodeString("TOO_LONG")
+            .Build();
+
+        // Act
+        var result = error.GetErrorCodeString();
+
+        // Assert
+        result.Should().Be("TOO_LONG");
+    }
+
+    [Fact]
+    public void WithRejectedValue_ShouldAddValueToMetadata()
+    {
+        // Arrange
+        var value = 42;
+        var error = ErrorBuilder.New()
+            .WithRejectedValue(value)
+            .Build();
+
+        // Act
+        var result = error.GetRejectedValue();
+
+        // Assert
+        result.Should().Be(value);
+    }
+
+    [Fact]
+    public void CompleteValidationError_ShouldContainAllMetadata()
+    {
+        // Arrange & Act
+        var error = ErrorBuilder.New()
+            .WithMessage("Version is too long")
+            .WithLayer<DomainLayer>()
+            .WithErrorCode(StatusCodes.Status400BadRequest)
+            .WithField("version")
+            .WithErrorCodeString("TOO_LONG")
+            .WithRejectedValue("1234567890123456")
+            .Build();
+
+        // Assert
+        error.Message.Should().Be("Version is too long");
+        error.GetLayer().Should().Be("DomainLayer");
+        error.GetErrorCode().Should().Be(400);
+        error.GetField().Should().Be("version");
+        error.GetErrorCodeString().Should().Be("TOO_LONG");
+        error.GetRejectedValue().Should().Be("1234567890123456");
     }
 }

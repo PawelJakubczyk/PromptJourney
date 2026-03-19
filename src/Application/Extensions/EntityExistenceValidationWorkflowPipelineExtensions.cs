@@ -1,13 +1,12 @@
 using Application.Abstractions.IRepository;
 using Domain.ValueObjects;
-using FluentResults;
-using Utilities.Constants;
-using Utilities.Errors;
 using Utilities.Workflows;
+using Utilities.Errors;
+using Utilities.Results;
 
 namespace Application.Extensions;
 
-public static class EntityExistenceValidationExtensions
+public static class EntityExistenceValidationWorkflowPipelineExtensions
 {
     public static Task<WorkflowPipeline> IfVersionNotExists
     (
@@ -37,6 +36,22 @@ public static class EntityExistenceValidationExtensions
         (
             version,
             repository.CheckVersionExistsAsync,
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfParamterAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Param parameter,
+        IVersionRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfAlreadyExist
+        (
+            parameter,
+            repository.CheckParameterExistsAsync,
             cancellationToken
         );
     }
@@ -245,7 +260,7 @@ public static class EntityExistenceValidationExtensions
     {
         var pipeline = await pipelineTask.ConfigureAwait(false);
 
-        if (pipeline.BreakOnError)
+        if (pipeline.BreakOnError || pipeline.Errors.Count > 0)
             return pipeline;
 
         var result = await existsFunc(item, cancellationToken).ConfigureAwait(false);
@@ -253,16 +268,16 @@ public static class EntityExistenceValidationExtensions
 
         if (result.IsFailed)
         {
-            errors.Add(ErrorFactories.DatabaseConnectionFailed<PersistenceLayer>(name));
+            errors.Add(ErrorFactories.DatabaseConnectionFailed(name));
 
             return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
         }
 
         var exists = result.Value;
 
-        if (shouldExist && !exists) errors.Add(ErrorFactories.NotFound<TType, ApplicationLayer>(item!));
+        if (shouldExist && !exists) errors.Add(ErrorFactories.NotFound<TType>(item!));
 
-        if (!shouldExist && exists) errors.Add(ErrorFactories.AlreadyExist<TType, ApplicationLayer>(item!));
+        if (!shouldExist && exists) errors.Add(ErrorFactories.AlreadyExist<TType>(item!));
         
         return WorkflowPipeline.Create(errors, pipeline.BreakOnError);
     }

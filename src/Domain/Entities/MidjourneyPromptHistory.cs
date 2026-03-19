@@ -1,6 +1,6 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Domain.Entities;
@@ -8,22 +8,17 @@ namespace Domain.Entities;
 public class MidjourneyPromptHistory : IEntity
 {
     // Columns
-    public Guid HistoryId { get; }
-    public Prompt Prompt { get; }
-    public ModelVersion Version { get; }
-    public DateTime CreatedOn { get; }
+    public Guid HistoryId { get; private set; }
+    public Prompt Prompt { get; private set; }
+    public ModelVersion Version { get; private set; }
+    public DateTimeOffset CreatedOn { get; private set; }
 
     // Navigation
-    public MidjourneyVersion MidjourneyVersion { get; set; }
+    public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
     private List<MidjourneyStyle> Styles { get; set; } = [];
     public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles.AsReadOnly();
 
     // Constructors
-    private MidjourneyPromptHistory()
-    {
-        // Parameterless constructor for EF Core
-    }
-
     private MidjourneyPromptHistory
     (
         Prompt prompt,
@@ -33,7 +28,7 @@ public class MidjourneyPromptHistory : IEntity
         HistoryId = Guid.NewGuid();
         Prompt = prompt;
         Version = version;
-        CreatedOn = DateTime.UtcNow;
+        CreatedOn = DateTimeOffset.UtcNow;
     }
 
     public static Result<MidjourneyPromptHistory> Create
@@ -44,9 +39,9 @@ public class MidjourneyPromptHistory : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(prompt)
-                .CollectErrors(version))
+            .CongregateErrors(
+                pipeline => pipeline.CollectErrors(prompt),
+                pipeline => pipeline.CollectErrors(version))
             .ExecuteIfNoErrors<MidjourneyPromptHistory>(() => new MidjourneyPromptHistory
             (
                 prompt.Value,

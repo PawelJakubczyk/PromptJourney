@@ -1,7 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Queries;
@@ -21,9 +21,9 @@ public class CheckTagExistsInStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .CollectErrors(styleName)
-                    .CollectErrors(tag))
+                .CongregateErrors(
+                    pipeline => pipeline.CollectErrors(styleName),
+                    pipeline => pipeline.CollectErrors(tag))
                 .ExecuteIfNoErrors(() => _styleRepository
                     .CheckTagExistsInStyleAsync(styleName.Value, tag.Value, cancellationToken))
                 .MapResult<bool>();

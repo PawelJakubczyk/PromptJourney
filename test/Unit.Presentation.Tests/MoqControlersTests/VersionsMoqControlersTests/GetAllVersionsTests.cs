@@ -1,12 +1,12 @@
 ﻿using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
 using FluentAssertions;
-using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Constants;
+using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
 

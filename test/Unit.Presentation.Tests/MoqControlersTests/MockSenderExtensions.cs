@@ -1,6 +1,6 @@
-using FluentResults;
 using MediatR;
 using Moq;
+using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests
 {

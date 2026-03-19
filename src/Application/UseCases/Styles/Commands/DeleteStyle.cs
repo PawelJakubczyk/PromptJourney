@@ -3,7 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.Common.Responses;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Commands;

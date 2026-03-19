@@ -3,7 +3,7 @@ using Application.Abstractions.IRepository;
 using Application.Extensions;
 using Application.UseCases.Common.Responses;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Workflows;
 
@@ -16,12 +16,10 @@ public static class DeleteVersion
     public sealed class Handler
     (
         IVersionRepository versionRepository,
-        IPropertiesRepository propertiesRepository,
         HybridCache cache
     ) : ICommandHandler<Command, DeleteResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
-        private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
         private readonly HybridCache _cache = cache;
 
         public async Task<Result<DeleteResponse>> Handle(Command command, CancellationToken cancellationToken)
@@ -32,8 +30,7 @@ public static class DeleteVersion
                 .EmptyAsync()
                 .CollectErrors(version)
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
-                .ExecuteIfNoErrors(() => _versionRepository
-                    .DeleteVersionAsync(version.Value, cancellationToken))
+                .ExecuteIfNoErrors(() => _versionRepository.DeleteVersionAsync(version.Value, cancellationToken))
                 .MapResult(() => DeleteResponse.Success
                     ($"Version '{version.Value.Value}' was successfully deleted."));
 

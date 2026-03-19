@@ -1,3 +1,4 @@
+﻿using Application.UseCases.Common.Responses;
 using Application.UseCases.Versions.Commands;
 using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
@@ -21,7 +22,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(GetAllVersions.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<VersionResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<VersionResponse>, BadRequest<ProblemDetails>>(HttpContext);
 
         return versions;
     }
@@ -34,14 +35,43 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(GetAllSupportedVersions.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<string>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<string>, BadRequest<ProblemDetails>>(HttpContext);
 
         return versions;
     }
 
+    // GET api/versions/no-empty
+    [HttpGet("no-empty")]
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckAnyExists(CancellationToken cancellationToken)
+    {
+        var exists = await Sender
+            .Send(CheckIfAnyVersionExists.Query.Singleton, cancellationToken)
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>(HttpContext);
+
+        return exists;
+    }
+
+    // ✅ GET api/versions/latest
+    [HttpGet("latest")]
+    public async Task<Results<Ok<VersionResponse>, NotFound<ProblemDetails>>> GetLatest(
+        CancellationToken cancellationToken)
+    {
+        var latestVersion = await Sender
+            .Send(GetLatestVersion.Query.Singleton, cancellationToken)
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync<VersionResponse, NotFound<ProblemDetails>>(HttpContext);
+
+        return latestVersion;
+    }
+
     // GET api/versions/{version}
     [HttpGet("{version}")]
-    public async Task<Results<Ok<VersionResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByVersion(string version, CancellationToken cancellationToken)
+    public async Task<Results<Ok<VersionResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByVersion(
+        string version, 
+        CancellationToken cancellationToken)
     {
         var query = new GetVersion.Query(version);
 
@@ -49,7 +79,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<VersionResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<VersionResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(HttpContext);
 
         return versionInfo;
     }
@@ -64,14 +94,33 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>(HttpContext);
+
+        return exist;
+    }
+
+    // GET api/versions/{parameter}/parrameterexists
+    [HttpGet("{parameter}/parrameterexists")]
+    public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckParameterExists(string parameter, CancellationToken cancellationToken)
+    {
+        var query = new CheckParameterExists.Query(parameter);
+
+        var exist = await Sender
+            .Send(query, cancellationToken)
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse(payload => Ok(payload))
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>(HttpContext);
 
         return exist;
     }
 
     // POST api/versions
     [HttpPost]
-    public async Task<Results<Created<string>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create([FromBody] CreateVersionRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Created<VersionResponse>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create
+    (
+        [FromBody] CreateVersionRequest request, 
+        CancellationToken cancellationToken
+    )
     {
         var command = new AddVersion.Command
         (
@@ -84,15 +133,31 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
         var result = await Sender
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
-            .ElsePrepareCreateResponse(payload => 
-                CreatedAtAction
-                (
-                    nameof(GetByVersion), 
-                    new { version = payload }, 
-                    new { version = payload }
-                )
-            )
-            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ElsePrepareCreateResponse()
+            .ToResultsCreatedAsync<VersionResponse, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>
+            (
+                locationFactory: version => $"/api/versions/{version.Version}",
+                httpContext: HttpContext
+            );
+
+        return result;
+    }
+
+    // DELETE api/versions/{version}
+    [HttpDelete("{version}")]
+    public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Delete
+    (
+        string version,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new DeleteVersion.Command(version);
+
+        var result = await Sender
+            .Send(command, cancellationToken)
+            .IfErrorsPrepareErrorResponse()
+            .ElsePrepareOKResponse()
+            .ToResultsOkAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(HttpContext);
 
         return result;
     }
@@ -102,6 +167,6 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 public sealed record CreateVersionRequest(
     string Version,
     string Parameter,
-    DateTime? ReleaseDate = null,
+    string? ReleaseDate = null,
     string? Description = null
 );

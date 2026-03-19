@@ -8,7 +8,7 @@ public sealed record PropertyCommandResponse
     string Version
 )
 {
-    public static PropertyCommandResponse FromDomain(MidjourneyProperties property) => new
+    public static PropertyCommandResponse FromDomain(MidjourneyProperty property) => new
     (
         property.PropertyName.Value,
         property.Version.Value

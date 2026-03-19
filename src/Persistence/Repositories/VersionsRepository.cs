@@ -2,16 +2,18 @@ using Application.Abstractions.IRepository;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.ValueObjects;
-using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
+using Utilities.Errors;
+using Utilities.Results;
 
 namespace Persistence.Repositories;
 
 public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCache cache) : IVersionRepository
 {
     private const string _supportedVersionsCacheKey = "supported_versions";
+    private const string _supportedParametersCacheKey = "supported_parameters";
     private const string _allVersionsCacheKey = "all_versions";
 
     private readonly MidjourneyDbContext _dbContext = dbContext;
@@ -27,6 +29,13 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
     {
         var supportedVersions = await GetOrCreateCachedSupportedVersionsAsync(cancellationToken);
         var exists = supportedVersions.Contains(modelVersion.Value);
+        return Result.Ok(exists);
+    }
+
+    public async Task<Result<bool>> CheckParameterExistsAsync(Param parameter, CancellationToken cancellationToken)
+    {
+        var supportedParameters = await GetOrCreateCachedSupportedParametersAsync(cancellationToken);
+        var exists = supportedParameters.Contains(parameter.Value);
         return Result.Ok(exists);
     }
 
@@ -52,10 +61,13 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         var allVersions = await GetOrCreateCachedVersionsAsync(cancellationToken);
 
         if (allVersions.Count is 0) 
-            return Result.Fail<MidjourneyVersion>(DomainErrors.NoAvailableVersionFound());
+            return Result.Fail<MidjourneyVersion>
+            (
+                ErrorFactories.NoAvailableExist<MidjourneyVersion>()
+            );
 
         var latest = allVersions
-            .OrderByDescending(version => version.ReleaseDate ?? DateTime.MinValue)
+            .OrderByDescending(version => version.ReleaseDate?.Value ?? DateTimeOffset.MinValue)
             .First();
 
         return Result.Ok(latest);
@@ -102,7 +114,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
     }
 
     // Helper methods
-    private async Task<List<string?>> GetOrCreateCachedSupportedVersionsAsync(CancellationToken cancellationToken)
+    private async Task<List<string>> GetOrCreateCachedSupportedVersionsAsync(CancellationToken cancellationToken)
     {
         return await _cache.GetOrCreateAsync
         (
@@ -114,6 +126,24 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
                     .ToListAsync(ct) ?? [];
 
                 return versions;
+            },
+            _cacheOptions,
+            cancellationToken: cancellationToken
+        );
+    }
+
+    private async Task<List<string>> GetOrCreateCachedSupportedParametersAsync(CancellationToken cancellationToken)
+    {
+        return await _cache.GetOrCreateAsync
+        (
+            _supportedParametersCacheKey,
+            async (ct) =>
+            {
+                var parameters = await _dbContext.MidjourneyVersions
+                    .Select(Version => Version.Parameter.Value)
+                    .ToListAsync(ct) ?? [];
+
+                return parameters;
             },
             _cacheOptions,
             cancellationToken: cancellationToken
@@ -141,5 +171,6 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
     {
         await _cache.RemoveAsync(_allVersionsCacheKey, cancellationToken);
         await _cache.RemoveAsync(_supportedVersionsCacheKey, cancellationToken);
+        await _cache.RemoveAsync(_supportedParametersCacheKey, cancellationToken);
     }
 }

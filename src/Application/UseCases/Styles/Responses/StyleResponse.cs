@@ -15,6 +15,6 @@ public sealed record StyleResponse
         style.StyleName.Value,
         style.Type.Value,
         style.Description?.Value,
-        style.Tags?.Select(t => t.Value).ToList()
+        [.. style.Tags.Value.Select(tag => tag.Value)]
     );
 }

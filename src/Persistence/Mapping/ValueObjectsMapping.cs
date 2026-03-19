@@ -7,120 +7,206 @@ namespace Persistence.Mapping;
 
 public static class ValueObjectsMapping
 {
-    public sealed class DefaultValueConverter : ValueObjectsMapping<DefaultValue, string?>.Converter { }
-    public sealed class DefaultValueComparer : ValueObjectsMapping<DefaultValue, string?>.Comparer { }
-    public sealed class DescriptionConverter : ValueObjectsMapping<Description, string?>.Converter { }
-    public sealed class DescriptionComparer : ValueObjectsMapping<Description, string?>.Comparer { }
+    // ======================================================
+    // SIMPLE VALUE OBJECT CONVERTERS & COMPARERS
+    // ======================================================
+
+    public sealed class DefaultValueConverter : ValueObjectsMapping<DefaultValue, string>.Converter { }
+    public sealed class DefaultValueComparer : ValueObjectsMapping<DefaultValue, string>.Comparer { }
+
+    public sealed class DescriptionConverter : ValueObjectsMapping<Description, string>.Converter { }
+    public sealed class DescriptionComparer : ValueObjectsMapping<Description, string>.Comparer { }
+
     public sealed class LinkConverter : ValueObjectsMapping<ExampleLink, string>.Converter { }
     public sealed class LinkComparer : ValueObjectsMapping<ExampleLink, string>.Comparer { }
+
     public sealed class KeywordConverter : ValueObjectsMapping<Keyword, string>.Converter { }
     public sealed class KeywordComparer : ValueObjectsMapping<Keyword, string>.Comparer { }
-    public sealed class MaxValueConverter : ValueObjectsMapping<MaxValue, string?>.Converter { }
-    public sealed class MaxValueComparer : ValueObjectsMapping<MaxValue, string?>.Comparer { }
-    public sealed class MinValueConverter : ValueObjectsMapping<MinValue, string?>.Converter { }
-    public sealed class MinValueComparer : ValueObjectsMapping<MinValue, string?>.Comparer { }
+
+    public sealed class MaxValueConverter : ValueObjectsMapping<MaxValue, string>.Converter { }
+    public sealed class MaxValueComparer : ValueObjectsMapping<MaxValue, string>.Comparer { }
+
+    public sealed class MinValueConverter : ValueObjectsMapping<MinValue, string>.Converter { }
+    public sealed class MinValueComparer : ValueObjectsMapping<MinValue, string>.Comparer { }
+
     public sealed class ModelVersionConverter : ValueObjectsMapping<ModelVersion, string>.Converter { }
     public sealed class ModelVersionComparer : ValueObjectsMapping<ModelVersion, string>.Comparer { }
+
     public sealed class ParamConverter : ValueObjectsMapping<Param, string>.Converter { }
     public sealed class ParamComparer : ValueObjectsMapping<Param, string>.Comparer { }
-    public sealed class ParamListConverter : ValueObjectsMapping<Param, string>.ListConverter { }
-    public sealed class ParamListComparer : ValueObjectsMapping<Param, string>.ListComparer { }
+
     public sealed class PromptConverter : ValueObjectsMapping<Prompt, string>.Converter { }
     public sealed class PromptComparer : ValueObjectsMapping<Prompt, string>.Comparer { }
+
     public sealed class PropertyNameConverter : ValueObjectsMapping<PropertyName, string>.Converter { }
     public sealed class PropertyNameComparer : ValueObjectsMapping<PropertyName, string>.Comparer { }
+
     public sealed class StyleNameConverter : ValueObjectsMapping<StyleName, string>.Converter { }
     public sealed class StyleNameComparer : ValueObjectsMapping<StyleName, string>.Comparer { }
+
     public sealed class StyleTypeConverter : ValueObjectsMapping<StyleType, string>.Converter { }
     public sealed class StyleTypeComparer : ValueObjectsMapping<StyleType, string>.Comparer { }
+
     public sealed class TagConverter : ValueObjectsMapping<Tag, string>.Converter { }
     public sealed class TagComparer : ValueObjectsMapping<Tag, string>.Comparer { }
-    public sealed class TagListConverter : ValueObjectsMapping<Tag, string>.ListConverter { }
-    public sealed class TagListComparer : ValueObjectsMapping<Tag, string>.ListComparer { }
+
+    // ======================================================
+    // COLLECTION VALUE OBJECT CONVERTERS & COMPARERS
+    // ======================================================
+
+    public sealed class ParamsCollectionConverter : CollectionValueObjectMapping<ParamsCollection, Param, string>.Converter { }
+    public sealed class ParamsCollectionComparer : CollectionValueObjectMapping<ParamsCollection, Param, string>.Comparer { }
+
+    public sealed class TagsCollectionConverter : CollectionValueObjectMapping<TagsCollection, Tag, string>.Converter { }
+    public sealed class TagsCollectionComparer : CollectionValueObjectMapping<TagsCollection, Tag, string>.Comparer { }
+
+    // ======================================================
+    // SPECIAL CONVERTER FOR RELEASEDATE (DateTimeOffset)
+    // ======================================================
+
+    public sealed class ReleaseDateConverter
+        : ValueConverter<ReleaseDate, DateTimeOffset>
+    {
+        // Factory delegate to create objects outside of expression trees
+        private static readonly Func<string, ReleaseDate> Factory = value =>
+        {
+            var result = ReleaseDate.Create(value);
+            return result.IsSuccess ? result.Value : throw new InvalidOperationException("Failed to create value object.");
+        };
+
+        public ReleaseDateConverter()
+            : base(
+                // Domain -> DB
+                releaseDate => releaseDate.Value,
+
+                // DB -> Domain
+                value => Factory(value.ToString("O"))
+            )
+        { }
+    }
+
+    public sealed class ReleaseDateComparer
+        : ValueComparer<ReleaseDate>
+    {
+        public ReleaseDateComparer()
+            : base(
+                // Equality comparison
+                (a, b) => (a != null && b != null && a.Value.Equals(b.Value)),
+
+                // GetHashCode
+                releaseDate => releaseDate.Value.GetHashCode(),
+
+                // Snapshot (deep copy)
+                releaseDate => ReleaseDate.Create(releaseDate.Value.ToString("O")).Value
+            )
+        { }
+    }
 }
 
+// ======================================================
+// GENERIC MAPPING FOR SIMPLE VALUE OBJECTS
+// ======================================================
+
 public static class ValueObjectsMapping<TValueObject, TValue>
-    where TValueObject : class, IValueObject<TValue>, ICreatable<TValueObject, TValue>
+    where TValueObject : notnull, ValueObject<TValue>, ICreatable<TValueObject, TValue?>
+    where TValue : notnull
 {
     // Factory delegate to create objects outside of expression trees
-    private static readonly Func<TValue, TValueObject?> Factory = value =>
+    private static readonly Func<TValue?, TValueObject> Factory = value =>
     {
         var result = TValueObject.Create(value);
-        return result.IsSuccess ? result.Value : null;
+        return result.IsSuccess ? result.Value : throw new InvalidOperationException("Failed to create value object.");
     };
 
-    public class Converter : ValueConverter<TValueObject?, TValue?>
+    public class Converter : ValueConverter<TValueObject, TValue?>
     {
         public Converter()
             : base
             (
-                // To database: extract primitive value
-                vo => vo == null ? default : vo.Value,
+                // To database: extract primitive value, handle None pattern
+                vo => vo.IsNone || vo == null ? default : vo.Value,
 
                 // From database: use factory method to avoid expression tree limitations
-                value => value == null ? null : Factory(value)
+                value => Factory(value)
             )
         { }
     }
 
-    public class Comparer : ValueComparer<TValueObject?>
+    public class Comparer : ValueComparer<TValueObject>
     {
         public Comparer()
             : base
             (
-                // Equality comparison
+                // Equality comparison - handle None and null cases
                 (a, b) => (a == null && b == null) ||
-                          (a != null && b != null && EqualityComparer<TValue>.Default.Equals(a.Value, b.Value)),
+                          (a != null && b != null && 
+                           ((a.IsNone && b.IsNone) || EqualityComparer<TValue>.Default.Equals(a.Value, b.Value))),
 
-                // GetHashCode
-                vo => vo == null ? 0 : EqualityComparer<TValue>.Default.GetHashCode(vo.Value!),
+                // GetHashCode - handle None and null
+                vo => vo == null || vo.IsNone ? 0 : EqualityComparer<TValue>.Default.GetHashCode(vo.Value),
 
                 // Snapshot (deep copy)
-                vo => vo == null ? null : Factory(vo.Value)
+                vo => vo == null || vo.IsNone ? Factory(default) : Factory(vo.Value)
             )
         { }
     }
+}
 
-    public class ListConverter : ValueConverter<List<TValueObject?>?, TValue[]?>
+// ======================================================
+// GENERIC MAPPING FOR COLLECTION VALUE OBJECTS
+// ======================================================
+
+public static class CollectionValueObjectMapping<TCollectionValueObject, TItemValueObject, TItemValue>
+    where TCollectionValueObject : notnull, ValueObject<List<TItemValueObject>>, ICreatable<TCollectionValueObject, List<TItemValue?>?>
+    where TItemValueObject : notnull, ValueObject<TItemValue>, ICreatable<TItemValueObject, TItemValue?>
+    where TItemValue : notnull
+{
+    // Factory for collection - creates collection from list of primitive values
+    private static readonly Func<TItemValue[]?, TCollectionValueObject> CollectionFactory = values =>
     {
-        public ListConverter()
+        var result = TCollectionValueObject.Create([.. values ?? []]);
+        return result.IsSuccess ? result.Value : throw new InvalidOperationException("Failed to create value object.");
+    };
+
+    public class Converter : ValueConverter<TCollectionValueObject, TItemValue[]?>
+    {
+        public Converter()
             : base
             (
-                // To database: convert List<TValueObject> to array of primitive values
-                list => list == null ? null : list.Select(vo => vo!.Value).ToArray(),
-
-                // From database: convert array of primitive values to List<TValueObject>
-                values => values == null
+                // To database: convert ValueObject<List<ItemValueObject>> to TItemValue[]
+                collection => collection.IsNone
                     ? null
-                    : values
-                        .Select(v => v != null ? Factory(v) : null)
-                        .Where(vo => vo != null)
-                        .ToList()
+                    : collection.Value.Select(item => item.Value).ToArray(),
+
+                // From database: convert TItemValue[] to ValueObject<List<ItemValueObject>>
+                values => CollectionFactory(values)
             )
         { }
     }
 
-    public class ListComparer : ValueComparer<List<TValueObject?>?>
+    public class Comparer : ValueComparer<TCollectionValueObject?>
     {
-        public ListComparer()
+        public Comparer()
             : base
             (
-                // Equality comparison - compare lists by their values using SequenceEqual
+                // Equality comparison - compare collections by their values using SequenceEqual
                 (a, b) => (a == null && b == null) ||
                           (a != null && b != null &&
-                           a.Count == b.Count &&
-                           a.Select(x => x!.Value).SequenceEqual(b.Select(y => y!.Value))),
+                           ((a.IsNone && b.IsNone) ||
+                            (a.Value.Count == b.Value.Count &&
+                             a.Value.Select(x => x.Value).SequenceEqual(b.Value.Select(y => y.Value))))),
 
                 // GetHashCode - combine hash codes of all elements
-                list => list == null ? 0 : list
-                    .Select(vo => vo == null ? 0 : (vo.Value == null ? 0 : EqualityComparer<TValue>.Default.GetHashCode(vo.Value)))
-                    .Aggregate(17, (hash, next) => hash * 31 + next),
+                collection => collection == null || collection.IsNone
+                    ? 0
+                    : collection.Value
+                        .Select(item => EqualityComparer<TItemValue>.Default.GetHashCode(item.Value))
+                        .Aggregate(17, (hash, next) => hash * 31 + next),
 
-                // Snapshot (deep copy) - create new list with copied elements
-                list => list == null ? null :
-                    list.Select(vo => vo == null ? null : Factory(vo.Value))
-                        .Where(vo => vo != null)
-                        .ToList()
+                // Snapshot (deep copy) - create new collection with copied elements
+                collection => collection == null || collection.IsNone
+                    ? null
+                    : CollectionFactory(collection.Value.Select(item => item.Value).ToArray())
             )
         { }
     }

@@ -4,7 +4,8 @@ using Application.Extensions;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
+
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Commands;
@@ -15,7 +16,7 @@ public static class PatchProperty
         string Version,
         string PropertyName,
         string CharacteristicToUpdate,
-        string? NewValue
+        string? NewValue = null
     ) : ICommand<PropertyCommandResponse>;
 
     public sealed class Handler(
@@ -33,22 +34,22 @@ public static class PatchProperty
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .Congregate(pipeline => pipeline
-                        .CollectErrors(versionResult)
-                        .CollectErrors(propertyNameResult))
-                    .Congregate(pipeline => pipeline
-                        .IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken)
-                        .IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                    .CongregateErrors(
+                        pipeline => pipeline.CollectErrors(versionResult),
+                        pipeline => pipeline.CollectErrors(propertyNameResult))
+                    .CongregateErrors(
+                        pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
+                        pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _propertiesRepository
                         .PatchPropertyAsync
                         (
                             versionResult.Value,
                             propertyNameResult.Value,
                             command.CharacteristicToUpdate,
-                            command.NewValue,
+                            command.NewValue ?? string.Empty,
                             cancellationToken
                         ))
-                    .MapResult<MidjourneyProperties, PropertyCommandResponse>
+                    .MapResult<MidjourneyProperty, PropertyCommandResponse>
                         (property => PropertyCommandResponse.FromDomain(property));
 
             return result;

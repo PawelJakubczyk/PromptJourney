@@ -1,9 +1,9 @@
 using FluentAssertions;
-using FluentResults;
+using Utilities.Results;
 
 namespace Unit.Domain.Tests;
 
-public static class FluentResultAssertions
+public static class ResultAssertions
 {
     public static void ShouldBeSuccess<T>(this Result<T> result)
     {

@@ -4,7 +4,7 @@ using Application.Extensions;
 using Application.UseCases.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Commands;
@@ -24,12 +24,12 @@ public static class DeleteTagFromStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .Congregate(pipeline => pipeline
-                    .CollectErrors(styleName)
-                    .CollectErrors(tag))
-                .Congregate(pipeline => pipeline
-                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
-                    .IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken))
+                .CongregateErrors(
+                    pipeline => pipeline.CollectErrors(styleName),
+                    pipeline => pipeline.CollectErrors(tag))
+                .CongregateErrors(
+                    pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
+                    pipeline => pipeline.IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository.DeleteTagFromStyleAsync(styleName.Value, tag.Value, cancellationToken))
                 .MapResult<MidjourneyStyle, StyleResponse>
                     (style => StyleResponse.FromDomain(style));

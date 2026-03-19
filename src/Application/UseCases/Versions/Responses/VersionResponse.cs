@@ -6,15 +6,15 @@ public sealed record VersionResponse
 (
     string Version,
     string Parameter,
-    DateTime? ReleaseDate,
+    DateTimeOffset? ReleaseDate,
     string? Description
 )
 {
     public static VersionResponse FromDomain(MidjourneyVersion version) =>
         new(
-            version.Version.Value,
-            version.Parameter.Value,
-            version.ReleaseDate,
+            version.Version.Value!,
+            version.Parameter.Value!,
+            version.ReleaseDate?.Value,
             version.Description?.Value
         );
 }

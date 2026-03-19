@@ -2,13 +2,12 @@ using Application.Abstractions.IRepository;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.ValueObjects;
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
-using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Results;
 
 namespace Persistence.Repositories;
 
@@ -27,7 +26,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     };
 
     // For Queries
-    public async Task<Result<List<MidjourneyProperties>>> GetAllPropertiesByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
+    public async Task<Result<List<MidjourneyProperty>>> GetAllPropertiesByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
         var propertiesByVersion = properties
@@ -37,18 +36,18 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         return Result.Ok(propertiesByVersion);
     }
 
-    public async Task<Result<MidjourneyProperties>> GetPropertyByNameAndVersionAsync(PropertyName propertyName, ModelVersion version, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperty>> GetPropertyByNameAndVersionAsync(PropertyName propertyName, ModelVersion version, CancellationToken cancellationToken)
     {
         var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
         var property = properties
             .FirstOrDefault(p => p.PropertyName == propertyName && p.Version == version);
 
-        if (property is null) return Result.Fail<MidjourneyProperties>(DomainErrors.PropertyNotFound(propertyName));
+        if (property is null) return Result.Fail<MidjourneyProperty>(DomainErrors.PropertyNotFound(propertyName));
 
         return Result.Ok(property);
     }
 
-    public async Task<Result<List<MidjourneyProperties>>> GetAllPropertiesAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<MidjourneyProperty>>> GetAllPropertiesAsync(CancellationToken cancellationToken)
     {
         var properties = await GetOrCreateCachedAllPropertiesAsync(cancellationToken);
         return Result.Ok(properties);
@@ -62,7 +61,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     }
 
     // For Commands
-    public async Task<Result<MidjourneyProperties>> AddPropertyAsync(MidjourneyProperties property, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperty>> AddPropertyAsync(MidjourneyProperty property, CancellationToken cancellationToken)
     {
         await _midjourneyDbContext.AddAsync(property, cancellationToken);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -72,7 +71,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         return Result.Ok(property);
     }
 
-    public async Task<Result<MidjourneyProperties>> UpdatePropertyAsync(MidjourneyProperties property, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperty>> UpdatePropertyAsync(MidjourneyProperty property, CancellationToken cancellationToken)
     {
         var entry = _midjourneyDbContext.Entry(property);
         if (entry.State == EntityState.Detached)
@@ -85,7 +84,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         return Result.Ok(property);
     }
 
-    public async Task<Result<MidjourneyProperties>> PatchPropertyAsync
+    public async Task<Result<MidjourneyProperty>> PatchPropertyAsync
     (
         ModelVersion version,
         PropertyName propertyName,
@@ -100,12 +99,11 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         if (parameter == null)
         {
             var notFoundError = ErrorBuilder.New()
-                .WithLayer<DomainLayer>()
                 .WithMessage($"Property '{propertyName.Value}' not found for version '{version.Value}'")
                 .WithErrorCode(StatusCodes.Status404NotFound)
                 .Build();
 
-            return Result.Fail<MidjourneyProperties>(notFoundError);
+            return Result.Fail<MidjourneyProperty>(notFoundError);
         }
 
         UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
@@ -121,7 +119,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         return Result.Ok(parameter);
     }
 
-    public async Task<Result<MidjourneyProperties>> DeletePropertyAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken)
+    public async Task<Result<MidjourneyProperty>> DeletePropertyAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken)
     {
         var parameter = await _midjourneyDbContext.MidjourneyProperties
             .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
@@ -129,12 +127,11 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         if (parameter == null)
         {
             var notFoundError = ErrorBuilder.New()
-                .WithLayer<DomainLayer>()
                 .WithMessage($"Property '{propertyName.Value}' not found for version '{version.Value}'")
                 .WithErrorCode(StatusCodes.Status404NotFound)
                 .Build();
 
-            return Result.Fail<MidjourneyProperties>(notFoundError);
+            return Result.Fail<MidjourneyProperty>(notFoundError);
         }
 
         _midjourneyDbContext.Remove(parameter);
@@ -163,7 +160,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     }
 
     // Helper methods for caching
-    private async Task<List<MidjourneyProperties>> GetOrCreateCachedAllPropertiesAsync(CancellationToken cancellationToken)
+    private async Task<List<MidjourneyProperty>> GetOrCreateCachedAllPropertiesAsync(CancellationToken cancellationToken)
     {
         return await _cache.GetOrCreateAsync(
             allPropertiesCacheKey,
@@ -196,30 +193,24 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     }
 
     // Helpers
-    private static void UpdateParameterProperty(MidjourneyProperties parameter, string propertyToUpdate, string? newValue)
+    private static void UpdateParameterProperty(MidjourneyProperty property, string propertyToUpdate, string? newValue)
     {
+
         switch (propertyToUpdate.ToLowerInvariant()) {
             case "defaultvalue":
-                parameter.DefaultValue = newValue != null ? DefaultValue.Create(newValue).Value : null;
+                property.UpdateDefaultValue(newValue != null ? DefaultValue.Create(newValue) : Result.Fail<DefaultValue>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
                 break;
 
             case "minvalue":
-                parameter.MinValue = newValue != null ? MinValue.Create(newValue).Value : null;
+                property.UpdateMinValue(newValue != null ? MinValue.Create(newValue) : Result.Fail<MinValue>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
                 break;
 
             case "maxvalue":
-                parameter.MaxValue = newValue != null ? MaxValue.Create(newValue).Value : null;
+                property.UpdateMaxValue(newValue != null ? MaxValue.Create(newValue) : Result.Fail<MaxValue>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
                 break;
 
             case "description":
-                parameter.Description = newValue != null ? Description.Create(newValue).Value : null;
-                break;
-
-            case "parameters":
-                parameter.Parameters = newValue?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(p => Param.Create(p.Trim()).Value)
-                    .Where(p => p != null)
-                    .ToList();
+                property.UpdateDescription(newValue != null ? Description.Create(newValue) : Result.Fail<Description>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
                 break;
 
             default:

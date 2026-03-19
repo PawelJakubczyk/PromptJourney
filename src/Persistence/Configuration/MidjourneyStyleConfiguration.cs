@@ -29,12 +29,14 @@ public class MidjourneyStyleConfiguration : IEntityTypeConfiguration<MidjourneyS
         builder.Property(style => style.Description)
             .HasConversion<DescriptionConverter, DescriptionComparer>()
             .HasColumnName("description")
-            .HasColumnType(ColumnType.VarChar(Description.MaxLength));
+            .HasColumnType(ColumnType.VarChar(Description.MaxLength))
+            .IsRequired(false);
 
         builder.Property(style => style.Tags)
-            .HasConversion<TagListConverter, TagListComparer>()
+            .HasConversion<TagsCollectionConverter, TagsCollectionComparer>()
             .HasColumnName("tags")
-            .HasColumnType(ColumnType.TextArray);
+            .HasColumnType(ColumnType.TextArray)
+            .IsRequired(false);
 
         // Navigation properties
         builder

@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.UseCases.Properties.Responses;
 using Domain.Entities;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Properties.Queries;
@@ -27,7 +27,7 @@ public static class GetAllProperties
                 .EmptyAsync()
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .GetAllPropertiesAsync(cancellationToken))
-                .MapResult<List<MidjourneyProperties>, List<PropertyQueryResponse>>
+                .MapResult<List<MidjourneyProperty>, List<PropertyQueryResponse>>
                     (propertiesList => [.. propertiesList.Select(PropertyQueryResponse.FromDomain)]);
 
             return result;

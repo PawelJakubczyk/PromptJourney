@@ -1,7 +1,7 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
-using FluentResults;
 using Utilities.Workflows;
+using Utilities.Results;
 
 namespace Domain.Entities;
 
@@ -22,11 +22,6 @@ public class MidjourneyStyleExampleLink : IEntity
     public MidjourneyVersion MidjourneyMaster { get; private set; } = null!;
 
     // Constructors
-    private MidjourneyStyleExampleLink()
-    {
-        // Parameterless constructor for EF Core
-    }
-
     private MidjourneyStyleExampleLink
     (
         ExampleLink link,
@@ -40,23 +35,25 @@ public class MidjourneyStyleExampleLink : IEntity
         Version = version;
     }
 
-    public static Result<MidjourneyStyleExampleLink> Create(
-        Result<ExampleLink>? linkResult,
-        Result<StyleName>? styleNameResult,
-        Result<ModelVersion>? versionResult)
+    public static Result<MidjourneyStyleExampleLink> Create
+    (
+        Result<ExampleLink> linkResult,
+        Result<StyleName> styleNameResult,
+        Result<ModelVersion> versionResult
+    )
     {
         var result = WorkflowPipeline
             .Empty()
-            .Congregate(pipeline => pipeline
-                .CollectErrors(linkResult)
-                .CollectErrors(styleNameResult)
-                .CollectErrors(versionResult))
+            .CongregateErrors(
+                pipeline => pipeline.CollectErrors(linkResult),
+                pipeline => pipeline.CollectErrors(styleNameResult),
+                pipeline => pipeline.CollectErrors(versionResult))
             .ExecuteIfNoErrors<MidjourneyStyleExampleLink>(() =>
             {
                 var exampleLink = new MidjourneyStyleExampleLink(
-                    linkResult?.Value!,
-                    styleNameResult?.Value!,
-                    versionResult?.Value!
+                    linkResult.Value!,
+                    styleNameResult.Value!,
+                    versionResult.Value!
                 );
 
                 return exampleLink;

@@ -4,7 +4,7 @@ using Application.Extensions;
 using Application.UseCases.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
 
 namespace Application.UseCases.Styles.Queries;
@@ -28,7 +28,7 @@ public static class GetStyleByName
                 .ExecuteIfNoErrors(() => _styleRepository
                     .GetStyleByNameAsync(styleName.Value, cancellationToken))
                 .MapResult<MidjourneyStyle, StyleResponse>
-                    (styleList => StyleResponse.FromDomain(styleList));
+                    (style => StyleResponse.FromDomain(style));
 
             return result;
         }

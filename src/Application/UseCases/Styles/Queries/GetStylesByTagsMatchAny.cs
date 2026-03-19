@@ -1,17 +1,17 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Domain.Extensions;
 using Application.UseCases.Styles.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using FluentResults;
+using Utilities.Results;
 using Utilities.Workflows;
+using Application.Extensions;
 
 namespace Application.UseCases.Styles.Queries;
 
-public static class GetStylesByTags
+public static class GetStylesByTagsMatchAny
 {
-    public sealed record Query(List<string>? Tags) : IQuery<List<StyleResponse>>;
+    public sealed record Query(List<string?>? Tags) : IQuery<List<StyleResponse>>;
 
     public sealed class Handler(IStyleRepository styleRepository) : IQueryHandler<Query, List<StyleResponse>>
     {
@@ -19,14 +19,16 @@ public static class GetStylesByTags
 
         public async Task<Result<List<StyleResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
-            var tags = query.Tags?.Select(Tag.Create).ToList();
+            var tags = TagsCollection.Create(query.Tags);
+
+            var tagslist = query.Tags;
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .IfListIsNullOrEmpty(query.Tags)
-                .CollectErrors(tags!)
+                .CollectErrors(tags)
                 .ExecuteIfNoErrors(() => _styleRepository
-                    .GetStylesByTagsAsync(tags?.Select(t => t.Value).ToList() ?? [], cancellationToken))
+                    .GetStylesByTagsMatchAnyAsync(tags.Value, cancellationToken))
                 .MapResult<List<MidjourneyStyle>, List<StyleResponse>>
                     (styleList => [.. styleList.Select(StyleResponse.FromDomain)]);
 

@@ -1,9 +1,9 @@
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Results;
 using HttpJsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
 
 namespace Unit.Presentation.Tests.MoqControlersTests;

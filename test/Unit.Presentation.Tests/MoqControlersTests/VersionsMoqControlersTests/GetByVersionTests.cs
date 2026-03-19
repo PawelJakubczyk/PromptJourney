@@ -2,7 +2,6 @@
 using Application.UseCases.Versions.Responses;
 using Domain.ValueObjects;
 using FluentAssertions;
-using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -10,6 +9,7 @@ using System.Globalization;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
 using Utilities.Constants;
 using Utilities.Errors;
+using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
 
@@ -41,7 +41,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var result = Result.Ok(versionResponse);
 
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse> (result);
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(result);
         var controller = CreateController(senderMock);
 
         // Act
@@ -158,7 +158,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Arrange
         var tooLongVersion = new string('1', 256);
         var tooLongVersionMessage = ErrorsMessages.TooLongMessage<ModelVersion>(tooLongVersion, ModelVersion.MaxLength);
-        
+
         var failureResult = CreateFailureResult<VersionResponse, DomainLayer>
         (
             StatusCodes.Status400BadRequest,

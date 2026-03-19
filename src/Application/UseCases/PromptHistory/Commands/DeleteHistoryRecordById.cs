@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
+using Utilities.Results;
 using Application.UseCases.Common.Responses;
-using FluentResults;
 using Utilities.Workflows;
 
 namespace Application.UseCases.PromptHistory.Commands;
