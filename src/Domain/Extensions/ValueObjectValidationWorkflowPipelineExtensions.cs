@@ -13,7 +13,7 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
     (
         this WorkflowPipeline pipeline,
         string? value)
-        where TValue : ValueObject<string?>
+        where TValue : ValueObject<string>
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -52,7 +52,7 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
         this WorkflowPipeline pipeline,
         string? value,
         int maxLength)
-        where TValue : ValueObject<string?>
+        where TValue : ValueObject<string>
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -70,9 +70,9 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
     public static WorkflowPipeline IfContainsSuspiciousContent<TValue>
     (
         this WorkflowPipeline pipeline,
-        string? value
+        string value
     )
-        where TValue : ValueObject<string?>
+        where TValue : ValueObject<string>
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -80,7 +80,7 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
         if (XssPatternRegex().IsMatch(value ?? string.Empty))
         {
             pipeline.Errors.Add(
-                ErrorFactories.SuspiciousContent<TValue>(value)
+                ErrorFactories.SuspiciousContent<TValue>(value!)
             );
         }
 

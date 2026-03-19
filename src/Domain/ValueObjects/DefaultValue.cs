@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record DefaultValue : ValueObject<string>, ICreatable<DefaultValue, string>
+public record DefaultValue : ValueObject<string>, ICreatable<DefaultValue, string?>
 {
     public const int MaxLength = 50;
     public static readonly DefaultValue None = new(string.Empty);
