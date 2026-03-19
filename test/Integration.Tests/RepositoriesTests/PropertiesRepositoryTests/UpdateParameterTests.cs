@@ -30,7 +30,7 @@ public class UpdateParameterTests(MidjourneyDbFixture fixture) : RepositoryTests
         result.Value.MinValue?.Value.Should().Be("UpdatedMin");
         result.Value.MaxValue?.Value.Should().Be("UpdatedMax");
         result.Value.Description?.Value.Should().Be("Updated description");
-        result.Value.Parameters.Should().HaveCount(2);
+        result.Value.Parameters.Value.Should().HaveCount(2);
     }
 
     [Fact]

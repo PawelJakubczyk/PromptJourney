@@ -14,11 +14,14 @@ public sealed class AddStyleTests(MidjourneyDbFixture fixture) : RepositoryTests
         var styleName = StyleName.Create("NewStyle").Value;
         var styleType = StyleType.Create("Custom").Value;
         var description = Description.Create("Test description").Value;
+        var tags = TagsCollection.Create([]);
+        
 
         var style = MidjourneyStyle.Create(
             Result.Ok(styleName),
             Result.Ok(styleType),
-            Result.Ok<Description?>(description)).Value;
+            Result.Ok<Description?>(description),
+            tags).Value;
 
         // Act
         var result = await StylesRepository.AddStyleAsync(style, CancellationToken);
@@ -36,11 +39,7 @@ public sealed class AddStyleTests(MidjourneyDbFixture fixture) : RepositoryTests
         // Arrange
         var styleName = StyleName.Create("StyledStyle").Value;
         var styleType = StyleType.Create("Custom").Value;
-        var tags = new List<Result<Tag>?>
-        {
-            Tag.Create("modern"),
-            Tag.Create("abstract")
-        };
+        var tags = TagsCollection.Create(["modern", "abstract"]);
 
         var style = MidjourneyStyle.Create(
             Result.Ok(styleName),
@@ -54,9 +53,9 @@ public sealed class AddStyleTests(MidjourneyDbFixture fixture) : RepositoryTests
         // Assert
         AssertSuccessResult(result);
         result.Value.StyleName.Value.Should().Be("StyledStyle");
-        result.Value.Tags.Should().HaveCount(2);
-        result.Value.Tags.Should().Contain(t => t.Value == "modern");
-        result.Value.Tags.Should().Contain(t => t.Value == "abstract");
+        result.Value.Tags.Value.Should().HaveCount(2);
+        result.Value.Tags.Value.Should().Contain(t => t.Value == "modern");
+        result.Value.Tags.Value.Should().Contain(t => t.Value == "abstract");
     }
 
     [Fact]
@@ -65,13 +64,17 @@ public sealed class AddStyleTests(MidjourneyDbFixture fixture) : RepositoryTests
         // Arrange
         var styleName = StyleName.Create("MinimalStyle").Value;
         var styleType = StyleType.Create("Basic").Value;
+        var description = Description.None;
+        var tags = TagsCollection.None;
 
         var style = MidjourneyStyle.Create(
             Result.Ok(styleName),
-            Result.Ok(styleType)).Value;
+            Result.Ok(styleType),
+            Result.Ok<Description?>(description),
+            Result.Ok(tags));
 
         // Act
-        var result = await StylesRepository.AddStyleAsync(style, CancellationToken);
+        var result = await StylesRepository.AddStyleAsync(style.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -92,7 +95,9 @@ public sealed class AddStyleTests(MidjourneyDbFixture fixture) : RepositoryTests
 
         var style = MidjourneyStyle.Create(
             Result.Ok(styleName),
-            Result.Ok(styleType)).Value;
+            Result.Ok(styleType),
+            Result.Ok<Description?>(Description.None),
+            Result.Ok(TagsCollection.None)).Value;
 
         // Act & Assert
         // This test depends on repository implementation - it might fail or succeed

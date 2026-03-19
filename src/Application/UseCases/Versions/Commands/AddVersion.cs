@@ -4,7 +4,6 @@ using Application.Extensions;
 using Application.UseCases.Versions.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Results;
 using Utilities.Workflows;
 

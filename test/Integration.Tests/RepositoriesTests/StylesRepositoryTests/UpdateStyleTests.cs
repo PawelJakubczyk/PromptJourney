@@ -14,7 +14,7 @@ public sealed class UpdateStyleTests(MidjourneyDbFixture fixture) : RepositoryTe
 
         // Update description
         var newDescription = Description.Create("Updated description").Value;
-        originalStyle.EditDescription(Result.Ok<Description?>(newDescription));
+        originalStyle.UpdateDescription(Result.Ok<Description?>(newDescription));
 
         // Act
         var result = await StylesRepository.UpdateStyleAsync(originalStyle, CancellationToken);
@@ -40,9 +40,9 @@ public sealed class UpdateStyleTests(MidjourneyDbFixture fixture) : RepositoryTe
 
         // Assert
         AssertSuccessResult(result);
-        result.Value.Tags.Should().HaveCount(2);
-        result.Value.Tags.Should().Contain(t => t.Value == "modern");
-        result.Value.Tags.Should().Contain(t => t.Value == "abstract");
+        result.Value.Tags.Value.Should().HaveCount(2);
+        result.Value.Tags.Value.Should().Contain(t => t.Value == "modern");
+        result.Value.Tags.Value.Should().Contain(t => t.Value == "abstract");
     }
 
     [Fact]
@@ -53,8 +53,12 @@ public sealed class UpdateStyleTests(MidjourneyDbFixture fixture) : RepositoryTe
         var styleType = StyleType.Create("Custom").Value;
 
         var style = Domain.Entities.MidjourneyStyle.Create(
+
             Result.Ok(styleName),
-            Result.Ok(styleType)).Value;
+            Result.Ok(styleType),
+            Result.Ok<Description?>(Description.None),
+            Result.Ok(TagsCollection.None)
+            ).Value;
 
         // Act
         var result = await StylesRepository.UpdateStyleAsync(style, CancellationToken);

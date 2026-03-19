@@ -83,9 +83,9 @@ public class AddParameterToVersionTests(MidjourneyDbFixture fixture) : Repositor
 
         // Assert
         AssertSuccessResult(result);
-        result.Value.Parameters.Should().HaveCount(3);
-        result.Value.Parameters.Should().Contain(p => p.Value == TestParam1);
-        result.Value.Parameters.Should().Contain(p => p.Value == "--aspect");
-        result.Value.Parameters.Should().Contain(p => p.Value == "--a");
+        result.Value.Parameters.Value.Should().HaveCount(3);
+        result.Value.Parameters.Value.Should().Contain(p => p.Value == TestParam1);
+        result.Value.Parameters.Value.Should().Contain(p => p.Value == "--aspect");
+        result.Value.Parameters.Value.Should().Contain(p => p.Value == "--a");
     }
 }

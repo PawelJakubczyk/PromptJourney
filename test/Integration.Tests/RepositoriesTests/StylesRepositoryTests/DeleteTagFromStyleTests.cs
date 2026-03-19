@@ -24,8 +24,8 @@ public sealed class DeleteTagFromStyleTests(MidjourneyDbFixture fixture) : Repos
 
         // Assert
         AssertSuccessResult(result);
-        result.Value.Tags.Should().NotContain(t => t.Value == TestTag1);
-        result.Value.Tags.Should().Contain(t => t.Value == TestTag2);
+        result.Value.Tags.Value.Should().NotContain(t => t.Value == TestTag1);
+        result.Value.Tags.Value.Should().Contain(t => t.Value == TestTag2);
     }
 
     [Fact]
@@ -85,6 +85,6 @@ public sealed class DeleteTagFromStyleTests(MidjourneyDbFixture fixture) : Repos
 
         // Assert
         AssertSuccessResult(result);
-        result.Value.Tags.Should().BeNullOrEmpty();
+        result.Value.Tags.Value.Should().BeNullOrEmpty();
     }
 }

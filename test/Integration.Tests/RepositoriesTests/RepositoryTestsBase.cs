@@ -93,13 +93,19 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         var name = StyleName.Create(styleName).Value;
         var type = StyleType.Create(styleType).Value;
         var description = Description.Create($"Test style {styleName}").Value;
+        var tags = TagsCollection.Create(
+        [
+             $"TestTagFor{styleName}",
+             $"TestTagFor{styleName}2"
+        ]);
 
         var style = MidjourneyStyle.Create(
             Result.Ok(name),
             Result.Ok(type),
-            Result.Ok<Description?>(description)).Value;
+            Result.Ok(description),
+            tags);
 
-        var result = await StylesRepository.AddStyleAsync(style, CancellationToken);
+        var result = await StylesRepository.AddStyleAsync(style.Value, CancellationToken);
         AssertSuccessResult(result);
         return result.Value;
     }
@@ -133,14 +139,17 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         string styleName,
         string versionValue)
     {
-        var link = ExampleLink.Create(linkUrl).Value;
-        var styleNameVo = StyleName.Create(styleName).Value;
-        var versionVo = ModelVersion.Create(versionValue).Value;
+        var linkIdResult = Result.Ok(LinkID.Create().Value);
+        var linkResult = ExampleLink.Create(linkUrl);
+        var styleNameResult = StyleName.Create(styleName);
+        var versionResult = ModelVersion.Create(versionValue);
 
         var exampleLink = MidjourneyStyleExampleLink.Create(
-            Result.Ok(link),
-            Result.Ok(styleNameVo),
-            Result.Ok(versionVo)).Value;
+            linkIdResult,
+            linkResult,
+            styleNameResult,
+            versionResult
+        ).Value;
 
         var result = await ExampleLinkRepository.AddExampleLinkAsync(exampleLink, CancellationToken);
         AssertSuccessResult(result);
@@ -164,10 +173,16 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         MidjourneyVersion version,
         List<MidjourneyStyle> styles)
     {
-        var prompt = Prompt.Create(promptText).Value;
+        var promptResult = Prompt.Create(promptText);
+        var versionResult = ModelVersion.Create(version.Version.Value); // lub odpowiednia wartość
+        var createdOnResult = CreatedOn.Create(DateTime.UtcNow.ToString("O"));
+
         var promptHistory = MidjourneyPromptHistory.Create(
-            Result.Ok(prompt),
-            Result.Ok(version.Version)).Value;
+            Result.Ok(HistoryID.Create().Value),
+            promptResult,
+            versionResult,
+            createdOnResult
+        ).Value;
 
         // Add styles if provided
         foreach (var style in styles)
@@ -178,7 +193,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
             }
         }
 
-            var result = await PromptHistoryRepository.AddPromptToHistoryAsync(promptHistory, CancellationToken);
+        var result = await PromptHistoryRepository.AddPromptToHistoryAsync(promptHistory, CancellationToken);
         AssertSuccessResult(result);
         return result.Value;
     }
@@ -188,10 +203,17 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         MidjourneyVersion version,
         List<MidjourneyStyle> styles)
     {
-        var prompt = Prompt.Create(promptText).Value;
+        var historyIdResult = Result.Ok(HistoryID.Create().Value);
+        var promptResult = Prompt.Create(promptText);
+        var versionResult = ModelVersion.Create(version.Version.Value); // lub odpowiednia wartość
+        var createdOnResult = CreatedOn.Create(DateTime.UtcNow.ToString("O"));
+
         var promptHistory = MidjourneyPromptHistory.Create(
-            Result.Ok(prompt),
-            Result.Ok(version.Version)).Value;
+            historyIdResult,
+            promptResult,
+            versionResult,
+            createdOnResult
+        ).Value;
 
         // Add styles if provided
         foreach (var style in styles)
@@ -205,8 +227,8 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
             return Task.FromResult(promptHistory);
     }
 
-    // Properties Helper Methods - POPRAWKA BŁĘDU KONWERSJI
-    protected static async Task<MidjourneyProperties> CreateTestPropertyAsync(
+    // Properties Helper Methods
+    protected static async Task<MidjourneyProperty> CreateTestPropertyAsync(
         string version,
         string propertyName,
         List<string> parameters,
@@ -218,18 +240,17 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         var propertyNameVo = PropertyName.Create(propertyName).Value;
         var versionVo = ModelVersion.Create(version).Value;
 
-        // POPRAWKA: Konwertuj na List<Result<Param>>
-        var parametersResults = parameters.Select(p => Param.Create(p)).ToList();
+        var parametersResult = ParamsCollection.Create(parameters);
 
         var defaultValueResult = defaultValue != null ? DefaultValue.Create(defaultValue) : Result.Ok<DefaultValue?>(null);
         var minValueResult = minValue != null ? MinValue.Create(minValue) : Result.Ok<MinValue?>(null);
         var maxValueResult = maxValue != null ? MaxValue.Create(maxValue) : Result.Ok<MaxValue?>(null);
         var descriptionResult = description != null ? Description.Create(description) : Result.Ok<Description?>(null);
 
-        var property = MidjourneyProperties.Create(
+        var property = MidjourneyProperty.Create(
             Result.Ok(propertyNameVo),
             Result.Ok(versionVo),
-            parametersResults,
+            parametersResult,
             defaultValueResult,
             minValueResult,
             maxValueResult,
@@ -238,7 +259,7 @@ public abstract class RepositoryTestsBase : BaseTransactionIntegrationTest
         return property;
     }
 
-    protected async Task<MidjourneyProperties> CreateAndSaveTestPropertyAsync(
+    protected async Task<MidjourneyProperty> CreateAndSaveTestPropertyAsync(
         string version,
         string propertyName,
         List<string> parameters,
