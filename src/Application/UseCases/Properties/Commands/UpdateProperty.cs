@@ -60,8 +60,8 @@ public static class UpdateProperty
                 .EmptyAsync()
                 .CollectErrors(propertyResult)
                 .CongregateErrors(
-                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
-                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                    pipeline => pipeline.IfVersionNotExists(versionResult, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult, versionResult, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .UpdatePropertyAsync(propertyResult.Value, cancellationToken))
                 .MapResult<MidjourneyProperty, PropertyResponse>

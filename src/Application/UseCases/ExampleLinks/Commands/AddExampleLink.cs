@@ -42,9 +42,9 @@ public static class AddExampleLink
                 .EmptyAsync()
                     .CollectErrors(linkResult)
                     .CongregateErrors(
-                        pipeline => pipeline.IfVersionNotExists(version.Value, _versionRepository, cancellationToken),
-                        pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
-                        pipeline => pipeline.IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
+                        pipeline => pipeline.IfVersionNotExists(version, _versionRepository, cancellationToken),
+                        pipeline => pipeline.IfStyleNotExists(styleName, _styleRepository, cancellationToken),
+                        pipeline => pipeline.IfLinkAlreadyExists(link, _exampleLinkRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _exampleLinkRepository
                         .AddExampleLinkAsync(linkResult.Value, cancellationToken))
                     .MapResult(() => linkResult.Value.Id.ToString());

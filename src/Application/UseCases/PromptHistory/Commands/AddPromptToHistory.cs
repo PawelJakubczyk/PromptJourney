@@ -33,7 +33,7 @@ public static class AddPromptToHistory
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(promptHistory)
-                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .IfVersionNotExists(version, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _promptHistoryRepository
                     .AddPromptToHistoryAsync(promptHistory.Value, cancellationToken))
                 .MapResult<MidjourneyPromptHistory, string>

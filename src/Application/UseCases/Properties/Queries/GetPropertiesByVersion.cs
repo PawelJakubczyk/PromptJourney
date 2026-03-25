@@ -29,7 +29,7 @@ public static class GetPropertiesByVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .IfVersionNotExists(version, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .GetAllPropertiesByVersionAsync(version.Value, cancellationToken))
                 .MapResult<List<MidjourneyProperty>, List<PropertyResponse>>
