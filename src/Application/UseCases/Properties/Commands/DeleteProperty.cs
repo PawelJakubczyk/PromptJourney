@@ -36,8 +36,8 @@ public static class DeleteProperty
                     pipeline => pipeline.CollectErrors(versionResult),
                     pipeline => pipeline.CollectErrors(propertyNameResult))
                 .CongregateErrors(
-                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
-                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                    pipeline => pipeline.IfVersionNotExists(versionResult, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult, versionResult, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .DeletePropertyAsync(versionResult.Value, propertyNameResult.Value, cancellationToken))
                 .MapResult(() => DeleteResponse.Success

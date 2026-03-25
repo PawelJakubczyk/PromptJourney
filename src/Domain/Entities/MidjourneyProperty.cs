@@ -19,7 +19,9 @@ public sealed class MidjourneyProperty : IEntity
     public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
 
     // Constructors
+    #pragma warning disable CS8618
     private MidjourneyProperty() { } // parameterless constructor for EF Core
+    #pragma warning restore CS8618
 
     private MidjourneyProperty
     (

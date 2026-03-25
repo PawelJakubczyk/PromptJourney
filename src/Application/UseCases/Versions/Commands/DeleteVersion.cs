@@ -29,7 +29,7 @@ public static class DeleteVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .IfVersionNotExists(version, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository.DeleteVersionAsync(version.Value, cancellationToken))
                 .MapResult(() => DeleteResponse.Success
                     ($"Version '{version.Value.Value}' was successfully deleted."));

@@ -122,7 +122,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     public async Task<Result<MidjourneyProperty>> DeletePropertyAsync(ModelVersion version, PropertyName propertyName, CancellationToken cancellationToken)
     {
         var parameter = await _midjourneyDbContext.MidjourneyProperties
-            .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
+            .FirstOrDefaultAsync(p => p.PropertyName == propertyName && p.Version == version, cancellationToken);
 
         if (parameter == null)
         {

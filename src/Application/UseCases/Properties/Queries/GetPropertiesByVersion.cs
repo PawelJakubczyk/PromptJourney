@@ -11,18 +11,18 @@ namespace Application.UseCases.Properties.Queries;
 
 public static class GetPropertiesByVersion
 {
-    public sealed record Query(string Version) : IQuery<List<PropertyQueryResponse>>;
+    public sealed record Query(string Version) : IQuery<List<PropertyResponse>>;
 
     public sealed class Handler
     (
         IPropertiesRepository propertiesRepository,
         IVersionRepository versionRepository
-    ) : IQueryHandler<Query, List<PropertyQueryResponse>>
+    ) : IQueryHandler<Query, List<PropertyResponse>>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<List<PropertyQueryResponse>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<PropertyResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
             var version = ModelVersion.Create(query.Version);
 
@@ -32,8 +32,8 @@ public static class GetPropertiesByVersion
                 .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .GetAllPropertiesByVersionAsync(version.Value, cancellationToken))
-                .MapResult<List<MidjourneyProperty>, List<PropertyQueryResponse>>
-                    (propertiesList => [.. propertiesList.Select(PropertyQueryResponse.FromDomain)]);
+                .MapResult<List<MidjourneyProperty>, List<PropertyResponse>>
+                    (propertiesList => [.. propertiesList.Select(PropertyResponse.FromDomain)]);
 
             return result;
         }

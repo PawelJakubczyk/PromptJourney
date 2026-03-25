@@ -27,7 +27,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             "Stylization parameter"
         );
 
-        var response = new PropertyCommandResponse(request.PropertyName, request.Version);
+        var response = new PropertyResponse(request.PropertyName, request.Version, request.Parameters, request.DefaultValue, request.MinValue, request.MaxValue, request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -57,8 +57,8 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             ["--s"]
         );
 
-        PropertyCommandResponse? nullResponse = null;
-        var result = Result.Ok<PropertyCommandResponse?>(nullResponse);
+        PropertyResponse? nullResponse = null;
+        var result = Result.Ok<PropertyResponse?>(nullResponse);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddProperty.Command>(), It.IsAny<CancellationToken>()))
@@ -86,7 +86,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             []
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid property data");
 
@@ -118,7 +118,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             ["--s"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status404NotFound,
             "Version not found");
 

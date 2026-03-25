@@ -35,7 +35,7 @@ public static class UpdateStyle
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(midjourneyStyle)
-                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                .IfStyleNotExists(styleName, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository
                     .UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
                 .MapResult(() => StyleResponse.FromDomain(midjourneyStyle.Value));

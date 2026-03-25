@@ -21,12 +21,15 @@ public sealed class MidjourneyStyle : IEntity
     public IReadOnlyCollection<MidjourneyStyleExampleLink> MidjourneyExampleLinks => ExampleLink.AsReadOnly();
 
     // Constructors
+    #pragma warning disable CS8618
     private MidjourneyStyle() { } // parameterless constructor for EF Core
+    #pragma warning restore CS8618
+
     private MidjourneyStyle
     (
         StyleName name,
         StyleType type,
-        Description? description,
+        Description description,
         TagsCollection tags
     )
     {
@@ -44,7 +47,6 @@ public sealed class MidjourneyStyle : IEntity
         Result<TagsCollection> tagsResultsList
     )
     {
-
         var result = WorkflowPipeline
         .Empty()
         .CongregateErrors(

@@ -21,7 +21,9 @@ public sealed class MidjourneyVersion : IEntity
     public IReadOnlyCollection<MidjourneyProperty> MidjourneyProperties => Properties.AsReadOnly();
 
     // Constructors
+    #pragma warning disable CS8618
     private MidjourneyVersion() { } // parameterless constructor for EF Core
+    #pragma warning restore CS8618
 
     private MidjourneyVersion
     (
@@ -42,25 +44,23 @@ public sealed class MidjourneyVersion : IEntity
         Result<ModelVersion> versionResult,
         Result<Param> parameterResult,
         Result<ReleaseDate> releaseDate,
-        Result<Description>? descriptionResult = null
+        Result<Description> descriptionResult
     )
     {
-        var descriptionResultNonNull = descriptionResult ?? Result<Description>.Ok(Description.None);
-
         var result = WorkflowPipeline
             .Empty()
             .CongregateErrors(
                 pipeline => pipeline.CollectErrors(versionResult),
                 pipeline => pipeline.CollectErrors(parameterResult),
                 pipeline => pipeline.CollectErrors(releaseDate),
-                pipeline => pipeline.CollectErrors(descriptionResultNonNull))
+                pipeline => pipeline.CollectErrors(descriptionResult))
             .ExecuteIfNoErrors<MidjourneyVersion>(() =>
             {
                 var midjourneyVersion = new MidjourneyVersion(
                     versionResult.Value,
                     parameterResult.Value,
                     releaseDate.Value,
-                    descriptionResultNonNull.Value
+                    descriptionResult.Value
                 );
 
                 return midjourneyVersion;

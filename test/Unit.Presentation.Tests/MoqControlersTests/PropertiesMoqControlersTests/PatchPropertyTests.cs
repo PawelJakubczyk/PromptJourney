@@ -25,7 +25,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "2:1"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -57,7 +57,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "2:1"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status404NotFound,
             $"Property '{propertyName}' not found for version '{version}'");
 
@@ -91,7 +91,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Characteristic cannot be empty");
 
@@ -125,7 +125,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Characteristic 'UnsupportedCharacteristic' is not supported for patching");
 
@@ -159,7 +159,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -193,7 +193,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be empty");
 
@@ -227,7 +227,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             string.Empty // Empty new value
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "New value cannot be empty");
 
@@ -261,7 +261,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -295,7 +295,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be whitespace");
 
@@ -329,7 +329,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Characteristic cannot be whitespace");
 
@@ -363,7 +363,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -397,7 +397,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status404NotFound,
             $"Version '{nonExistentVersion}' not found");
 
@@ -431,7 +431,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -468,14 +468,14 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             newValue
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         PatchProperty.Command? capturedCommand = null;
 
         senderMock
             .Setup(s => s.Send(It.IsAny<PatchProperty.Command>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<PropertyCommandResponse>>, CancellationToken>((cmd, ct) =>
+            .Callback<IRequest<Result<PropertyResponse>>, CancellationToken>((cmd, ct) =>
             {
                 capturedCommand = cmd as PatchProperty.Command;
             })
@@ -536,7 +536,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -569,7 +569,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             newValue
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -601,7 +601,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "16:9"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -643,7 +643,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "new-value"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -675,7 +675,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "New description with special chars: @#$% & symbols"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -707,7 +707,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Repository error during patching");
 
@@ -741,7 +741,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "value"
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
 
@@ -775,7 +775,7 @@ public sealed class PatchPropertyTests : PropertiesControllerTestsBase
             "16:9"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock

@@ -22,7 +22,9 @@ public sealed class MidjourneyStyleExampleLink : IEntity
     public MidjourneyVersion MidjourneyMaster { get; private set; } = null!;
 
     // Constructors
+    #pragma warning disable CS8618
     private MidjourneyStyleExampleLink() { } // parameterless constructor for EF Core
+    #pragma warning restore CS8618
 
     private MidjourneyStyleExampleLink
     (

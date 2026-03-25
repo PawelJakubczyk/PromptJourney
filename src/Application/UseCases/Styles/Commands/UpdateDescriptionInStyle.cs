@@ -25,7 +25,7 @@ public static class UpdateDescriptionInStyle
                 .CongregateErrors(
                     pipeline => pipeline.CollectErrors(styleName),
                     pipeline => pipeline.CollectErrors(description))
-                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                .IfStyleNotExists(styleName, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository
                     .UpdateStyleDescriptionAsync(styleName.Value, description.Value, cancellationToken))
                 .MapResult(() => command.NewDescription);

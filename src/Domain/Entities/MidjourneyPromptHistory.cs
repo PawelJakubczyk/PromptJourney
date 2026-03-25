@@ -19,7 +19,9 @@ public sealed class MidjourneyPromptHistory : IEntity
     public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles.AsReadOnly();
 
     // Constructors
+    #pragma warning disable CS8618
     private MidjourneyPromptHistory() { } // parameterless constructor for EF Core
+    #pragma warning restore CS8618
 
     private MidjourneyPromptHistory
     (

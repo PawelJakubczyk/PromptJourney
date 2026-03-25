@@ -14,8 +14,9 @@ public abstract record ValueObject<TType> : IValueObject<TType>
         Value = value;
     }
 
-    public override string ToString() =>
+    public sealed override string ToString() =>
         IsNone ? string.Empty : Value.ToString() ?? string.Empty;
+
     public override int GetHashCode() =>
         IsNone ? 0 : Value.GetHashCode();
 }

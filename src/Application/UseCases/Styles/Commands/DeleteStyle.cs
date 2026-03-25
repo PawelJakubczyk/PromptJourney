@@ -27,7 +27,7 @@ public static class DeleteStyle
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                .IfStyleNotExists(styleName, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository

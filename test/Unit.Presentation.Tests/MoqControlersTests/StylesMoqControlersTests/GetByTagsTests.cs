@@ -31,7 +31,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -56,7 +56,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -80,7 +80,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(emptyTags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(emptyTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -106,7 +106,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(nullTags!, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(nullTags!, CancellationToken.None);
 
         // Assert
         actionResult
@@ -132,7 +132,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(invalidTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -158,7 +158,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(invalidTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -184,7 +184,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(invalidTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -211,7 +211,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -237,7 +237,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -266,7 +266,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -294,7 +294,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetByTags(tags, CancellationToken.None);
+        await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         capturedQuery.Should().NotBeNull();
@@ -318,7 +318,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         // Act & Assert
         await FluentActions
-            .Awaiting(() => controller.GetByTags(tags, cts.Token))
+            .Awaiting(() => controller.GetByTagsAny(tags, cts.Token))
             .Should()
             .ThrowAsync<OperationCanceledException>();
     }
@@ -338,7 +338,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetByTags(tags, CancellationToken.None);
+        await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         senderMock.Verify(
@@ -369,7 +369,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -394,8 +394,8 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.GetByTags(tags, CancellationToken.None);
-        var actionResult2 = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult1 = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult2 = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult1.Should().NotBeNull();
@@ -422,7 +422,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -448,7 +448,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -473,7 +473,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -498,7 +498,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -523,7 +523,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -550,7 +550,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -574,7 +574,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
@@ -601,7 +601,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -628,7 +628,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -653,7 +653,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -676,7 +676,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var startTime = DateTime.UtcNow;
 
         // Act
-        await controller.GetByTags(tags, CancellationToken.None);
+        await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         var duration = DateTime.UtcNow - startTime;
@@ -701,7 +701,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();

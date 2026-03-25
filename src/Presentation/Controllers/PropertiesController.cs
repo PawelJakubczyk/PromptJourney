@@ -18,7 +18,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // GET api/properties/{version}
     [HttpGet("{version}")]
-    public async Task<Results<Ok<List<PropertyQueryResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAllPropertiesByVersion
+    public async Task<Results<Ok<List<PropertyResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAllPropertiesByVersion
     (
         string version,
         CancellationToken cancellationToken
@@ -30,21 +30,21 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<PropertyQueryResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PropertyResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return properties;
     }
 
-    // GET api/properties//
+    // GET api/properties
     [HttpGet]
-    public async Task<Results<Ok<List<PropertyQueryResponse>>, BadRequest<ProblemDetails>>> GetAll
+    public async Task<Results<Ok<List<PropertyResponse>>, BadRequest<ProblemDetails>>> GetAll
         (CancellationToken cancellationToken)
     {
         var properties = await Sender
             .Send(GetAllProperties.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<PropertyQueryResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PropertyResponse>, BadRequest<ProblemDetails>>();
 
         return properties;
     }
@@ -69,9 +69,9 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
         return exist;
     }
 
-    // POST api/properties/
+    // POST api/properties
     [HttpPost]
-    public async Task<Results<Created<PropertyCommandResponse>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
+    public async Task<Results<Created<PropertyResponse>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
     (
         [FromBody] PropertyRequest request,
         CancellationToken cancellationToken
@@ -102,14 +102,14 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
                         payload
                     )
             )
-            .ToResultsCreatedAsync<PropertyCommandResponse, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsCreatedAsync<PropertyResponse, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
 
-    // PUT api/properties/
+    // PUT api/properties
     [HttpPut]
-    public async Task<Results<Ok<PropertyCommandResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateProperty
+    public async Task<Results<Ok<PropertyResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateProperty
     (
         [FromBody] PropertyRequest request,
         CancellationToken cancellationToken
@@ -130,14 +130,14 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<PropertyCommandResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<PropertyResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
 
     // PATCH api/properties
     [HttpPatch]
-    public async Task<Results<Ok<PropertyCommandResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> PatchProperty
+    public async Task<Results<Ok<PropertyResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> PatchProperty
     (
         [FromBody] PatchPropertyRequest request,
         CancellationToken cancellationToken
@@ -155,13 +155,13 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<PropertyCommandResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<PropertyResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
 
         return result;
     }
 
-    // DELETE api/properties/version/{version}/{propertyName}
-    [HttpDelete("version/{version}/{propertyName}")]
+    // DELETE api/properties/{version}/{propertyName}
+    [HttpDelete("{version}/{propertyName}")]
     public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> DeleteProperty(string version, string propertyName, CancellationToken cancellationToken)
     {
         var result = await Sender

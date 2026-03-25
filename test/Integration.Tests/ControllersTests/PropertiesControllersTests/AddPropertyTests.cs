@@ -35,9 +35,9 @@ public sealed class AddPropertyTests(MidjourneyTestWebApplicationFactory factory
 
         if (response.StatusCode == HttpStatusCode.Created)
         {
-            AssertCreatedResponse<PropertyQueryResponse>(response);
+            AssertCreatedResponse<PropertyResponse>(response);
 
-            var createdProperty = await DeserializeResponse<PropertyQueryResponse>(response);
+            var createdProperty = await DeserializeResponse<PropertyResponse>(response);
             createdProperty.Should().NotBeNull();
             createdProperty!.PropertyName.Should().Be(request.PropertyName);
             createdProperty.Version.Should().Be(version);

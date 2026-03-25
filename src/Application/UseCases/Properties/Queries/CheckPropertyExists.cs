@@ -29,7 +29,7 @@ public static class CheckPropertyExists
                 .CongregateErrors(
                     pipeline => pipeline.CollectErrors(version),
                     pipeline => pipeline.CollectErrors(propertyName))
-                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .IfVersionNotExists(version, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .CheckPropertyExistsInVersionAsync(version.Value, propertyName.Value, cancellationToken))
                 .MapResult<bool>();

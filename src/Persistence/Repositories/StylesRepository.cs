@@ -66,9 +66,8 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
         var styles = partial
             .Where(s => s.Tags != null
-                        && tagValues.All(tv => s.Tags.Value.Any(t => t.Value == tv)))
+                        && tagValues.Any(tv => s.Tags.Value.Any(t => t.Value == tv)))
             .ToList();
-
 
         return Result.Ok(styles);
     }

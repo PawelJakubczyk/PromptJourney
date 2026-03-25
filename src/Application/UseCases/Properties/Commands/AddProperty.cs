@@ -21,18 +21,18 @@ public static class AddProperty
         string? MinValue = null,
         string? MaxValue = null,
         string? Description = null
-    ) : ICommand<PropertyCommandResponse>;
+    ) : ICommand<PropertyResponse>;
 
     public sealed class Handler
     (
         IVersionRepository versionRepository,
         IPropertiesRepository propertiesRepository
-    ) : ICommandHandler<Command, PropertyCommandResponse>
+    ) : ICommandHandler<Command, PropertyResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
-        public async Task<Result<PropertyCommandResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
@@ -57,12 +57,12 @@ public static class AddProperty
                 .EmptyAsync()
                 .CollectErrors(property)
                 .CongregateErrors(
-                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
-                    pipeline => pipeline.IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                    pipeline => pipeline.IfVersionNotExists(versionResult, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyAlreadyExists(propertyNameResult, versionResult, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .AddPropertyAsync(property.Value, cancellationToken))
-                .MapResult<MidjourneyProperty, PropertyCommandResponse>
-                    (property => PropertyCommandResponse.FromDomain(property));
+                .MapResult<MidjourneyProperty, PropertyResponse>
+                    (property => PropertyResponse.FromDomain(property));
 
             return result;
         }

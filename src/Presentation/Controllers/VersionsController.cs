@@ -99,8 +99,8 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
         return exist;
     }
 
-    // GET api/versions/{parameter}/parrameterexists
-    [HttpGet("{parameter}/parrameterexists")]
+    // GET api/versions/{parameter}/parameterexists
+    [HttpGet("{parameter}/parameterexists")]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckParameterExists(string parameter, CancellationToken cancellationToken)
     {
         var query = new CheckParameterExists.Query(parameter);
