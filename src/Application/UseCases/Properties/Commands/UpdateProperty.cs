@@ -47,13 +47,13 @@ public static class UpdateProperty
 
             var propertyResult = MidjourneyProperty.Create
             (
-                propertyNameResult.Value,
-                versionResult.Value,
-                parametersResult.Value,
-                defaultValueResult.Value,
-                minValueResult.Value,
-                maxValueResult.Value,
-                descriptionResult.Value
+                propertyNameResult,
+                versionResult,
+                parametersResult,
+                defaultValueResult,
+                minValueResult,
+                maxValueResult,
+                descriptionResult
             );
 
             var result = await WorkflowPipeline

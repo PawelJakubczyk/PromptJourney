@@ -141,7 +141,7 @@ public static class ValueObjectsMapping<TValueObject, TValue>
 // ================================================================
 
 public static class CollectionValueObjectMapping<TCollectionValueObject, TItemValueObject, TItemValue>
-    where TCollectionValueObject : notnull, ValueObject<List<TItemValueObject>>, ICreatable<TCollectionValueObject, List<TItemValue?>?>
+    where TCollectionValueObject : notnull, ValueObject<List<TItemValueObject>>, ICreatable<TCollectionValueObject, List<TItemValue?>?>, IValueObjectCollection<TItemValue>
     where TItemValueObject : notnull, ValueObject<TItemValue>, ICreatable<TItemValueObject, TItemValue?>
     where TItemValue : notnull
     {
@@ -160,7 +160,7 @@ public static class CollectionValueObjectMapping<TCollectionValueObject, TItemVa
                     // To database: convert ValueObject<List<ItemValueObject>> to TItemValue[]
                     collection => collection.IsNone
                         ? null
-                        : collection.Value.Select(item => item.Value).ToArray(),
+                        : collection.CollectionValues.ToArray(),
 
                     // From database: convert TItemValue[] to ValueObject<List<ItemValueObject>>
                     values => CollectionFactory(values)
@@ -177,20 +177,20 @@ public static class CollectionValueObjectMapping<TCollectionValueObject, TItemVa
                     (a, b) => (a == null && b == null) ||
                               (a != null && b != null &&
                                ((a.IsNone && b.IsNone) ||
-                                (a.Value.Count == b.Value.Count &&
-                                 a.Value.Select(x => x.Value).SequenceEqual(b.Value.Select(y => y.Value))))),
+                                (a.CollectionValues.Count == b.CollectionValues.Count &&
+                                 a.CollectionValues.SequenceEqual(b.CollectionValues)))),
 
                     // GetHashCode - combine hash codes of all elements
                     collection => collection == null || collection.IsNone
                         ? 0
-                        : collection.Value
-                            .Select(item => EqualityComparer<TItemValue>.Default.GetHashCode(item.Value))
+                        : collection.CollectionValues
+                            .Select(item => EqualityComparer<TItemValue>.Default.GetHashCode(item))
                             .Aggregate(17, (hash, next) => hash * 31 + next),
 
-                    // Snapshot (deep copy) - create new collection with copied elements
+                    // Snapshot (deep copy) - create new collection with copied primitive elements
                     collection => collection == null || collection.IsNone
                         ? null
-                        : CollectionFactory(collection.Value.Select(item => item.Value).ToArray())
+                        : CollectionFactory(collection.CollectionValues.ToArray())
                 )
             { }
         }

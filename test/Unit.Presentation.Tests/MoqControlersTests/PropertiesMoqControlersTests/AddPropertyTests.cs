@@ -37,7 +37,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(request, CancellationToken.None);
+        var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -67,7 +67,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(request, CancellationToken.None);
+        var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -98,7 +98,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(invalidRequest, CancellationToken.None);
+        var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
         actionResult
@@ -130,7 +130,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(request, CancellationToken.None);
+        var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
         actionResult

@@ -23,7 +23,7 @@ public sealed class GetStylesByTagsMatchAllTests(MidjourneyDbFixture fixture) : 
         var tags = TagsCollection.Create([TestTag2]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsMatchAllAsync(tags.Value, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -43,7 +43,7 @@ public sealed class GetStylesByTagsMatchAllTests(MidjourneyDbFixture fixture) : 
         var tags = TagsCollection.Create([TestTag1, TestTag3]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsMatchAllAsync(tags.Value, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -61,7 +61,7 @@ public sealed class GetStylesByTagsMatchAllTests(MidjourneyDbFixture fixture) : 
         var tags = TagsCollection.Create(["nonexistent"]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsMatchAllAsync(tags.Value, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -77,7 +77,7 @@ public sealed class GetStylesByTagsMatchAllTests(MidjourneyDbFixture fixture) : 
         var tags = TagsCollection.Create([]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsMatchAllAsync(tags.Value, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -94,7 +94,7 @@ public sealed class GetStylesByTagsMatchAllTests(MidjourneyDbFixture fixture) : 
         var tags = TagsCollection.Create([TestTag1]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsMatchAllAsync(tags.Value, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);

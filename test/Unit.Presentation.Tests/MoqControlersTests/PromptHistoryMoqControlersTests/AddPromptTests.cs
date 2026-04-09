@@ -31,7 +31,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -63,7 +63,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(invalidRequest, CancellationToken.None);
+        var actionResult = await controller.create(invalidRequest, CancellationToken.None);
 
         // Assert
         actionResult
@@ -94,7 +94,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(invalidRequest, CancellationToken.None);
+        var actionResult = await controller.create(invalidRequest, CancellationToken.None);
 
         // Assert
         actionResult
@@ -125,7 +125,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(invalidRequest, CancellationToken.None);
+        var actionResult = await controller.create(invalidRequest, CancellationToken.None);
 
         // Assert
         actionResult
@@ -156,7 +156,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -187,7 +187,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -218,7 +218,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -249,7 +249,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -280,7 +280,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -311,7 +311,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -342,7 +342,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -373,7 +373,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         // ToResultsCreatedAsync maps all non-409/400 errors to BadRequest
@@ -405,7 +405,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.AddPrompt(request, CancellationToken.None);
+        await controller.create(request, CancellationToken.None);
 
         // Assert
         capturedCommand.Should().NotBeNull();
@@ -431,7 +431,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
 
         // Act & Assert
         await FluentActions
-            .Awaiting(() => controller.AddPrompt(request, cts.Token))
+            .Awaiting(() => controller.create(request, cts.Token))
             .Should()
             .ThrowAsync<OperationCanceledException>();
     }
@@ -452,7 +452,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.AddPrompt(request, CancellationToken.None);
+        await controller.create(request, CancellationToken.None);
 
         // Assert
         senderMock.Verify(
@@ -480,7 +480,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -507,7 +507,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -534,7 +534,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -562,8 +562,8 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.AddPrompt(request, CancellationToken.None);
-        var actionResult2 = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult1 = await controller.create(request, CancellationToken.None);
+        var actionResult2 = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult1
@@ -597,7 +597,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -624,7 +624,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -650,7 +650,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddPrompt(request, CancellationToken.None);
+        var actionResult = await controller.create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -677,7 +677,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         var startTime = DateTime.UtcNow;
 
         // Act
-        await controller.AddPrompt(request, CancellationToken.None);
+        await controller.create(request, CancellationToken.None);
 
         // Assert
         var duration = DateTime.UtcNow - startTime;

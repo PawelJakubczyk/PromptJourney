@@ -30,7 +30,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<PropertyResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PropertyResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return properties;
     }
@@ -44,7 +44,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(GetAllProperties.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<PropertyResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<PropertyResponse>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return properties;
     }
@@ -64,14 +64,14 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return exist;
     }
 
     // POST api/properties
     [HttpPost]
-    public async Task<Results<Created<PropertyResponse>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddProperty
+    public async Task<Results<Created<PropertyResponse>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Create
     (
         [FromBody] PropertyRequest request,
         CancellationToken cancellationToken
@@ -102,7 +102,11 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
                         payload
                     )
             )
-            .ToResultsCreatedAsync<PropertyResponse, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsCreatedAsync<PropertyResponse, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>
+            (
+                httpContext: HttpContext,
+                locationFactory: version => $"/api/properties/{version?.Version}/{request.PropertyName}"
+            );
 
         return result;
     }
@@ -130,7 +134,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<PropertyResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<PropertyResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return result;
     }
@@ -145,8 +149,8 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     {
         var command = new PatchProperty.Command
         (
-            request.PropertyName,
             request.Version,
+            request.PropertyName,
             request.CharacteristicToUpdate,
             request.NewValue
         );
@@ -155,7 +159,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<PropertyResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<PropertyResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return result;
     }
@@ -168,7 +172,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
             .Send(new DeleteProperty.Command(version, propertyName), cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return result;
     }

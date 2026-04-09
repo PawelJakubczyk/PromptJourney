@@ -25,13 +25,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -50,13 +50,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(emptyList);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -74,13 +74,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(emptyTags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(emptyTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -100,13 +100,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(nullTags!, CancellationToken.None);
+        var actionResult = await controller.GetByTags(nullTags!, CancellationToken.None);
 
         // Assert
         actionResult
@@ -126,13 +126,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(invalidTags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -152,13 +152,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(invalidTags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -178,13 +178,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(invalidTags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(invalidTags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -205,13 +205,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -231,13 +231,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -260,13 +260,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -281,20 +281,20 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var styles = new List<StyleResponse>();
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
-        GetStylesByTagsMatchAny.Query? capturedQuery = null;
+        GetStylesByTags.Query? capturedQuery = null;
 
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .Callback<IRequest<Result<List<StyleResponse>>>, CancellationToken>((query, ct) =>
             {
-                capturedQuery = query as GetStylesByTagsMatchAny.Query;
+                capturedQuery = query as GetStylesByTags.Query;
             })
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetByTagsAny(tags, CancellationToken.None);
+        await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         capturedQuery.Should().NotBeNull();
@@ -311,14 +311,14 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new OperationCanceledException());
 
         var controller = CreateController(senderMock);
 
         // Act & Assert
         await FluentActions
-            .Awaiting(() => controller.GetByTagsAny(tags, cts.Token))
+            .Awaiting(() => controller.GetByTags(tags, cts.Token))
             .Should()
             .ThrowAsync<OperationCanceledException>();
     }
@@ -332,17 +332,17 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.GetByTagsAny(tags, CancellationToken.None);
+        await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         senderMock.Verify(
-            s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()),
+            s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -363,13 +363,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -388,14 +388,14 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.GetByTagsAny(tags, CancellationToken.None);
-        var actionResult2 = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult1 = await controller.GetByTags(tags, CancellationToken.None);
+        var actionResult2 = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult1.Should().NotBeNull();
@@ -416,13 +416,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -442,13 +442,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -467,13 +467,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -492,13 +492,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -517,13 +517,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -544,13 +544,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -568,13 +568,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         // ToResultsOkAsync maps all non-404/400 errors to BadRequest
@@ -595,13 +595,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
 
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(failureResult);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult
@@ -622,13 +622,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -647,13 +647,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();
@@ -669,14 +669,14 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
         var startTime = DateTime.UtcNow;
 
         // Act
-        await controller.GetByTagsAny(tags, CancellationToken.None);
+        await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         var duration = DateTime.UtcNow - startTime;
@@ -695,13 +695,13 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         var result = Result.Ok(styles);
         var senderMock = new Mock<ISender>();
         senderMock
-            .Setup(s => s.Send(It.IsAny<GetStylesByTagsMatchAny.Query>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetStylesByTags.Query>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.GetByTagsAny(tags, CancellationToken.None);
+        var actionResult = await controller.GetByTags(tags, CancellationToken.None);
 
         // Assert
         actionResult.Should().NotBeNull();

@@ -1,4 +1,5 @@
 using Application.Abstractions.IRepository;
+using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.ValueObjects;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
 using Utilities.Errors;
 using Utilities.Results;
+using static Domain.Entities.MidjourneyProperty;
 
 namespace Persistence.Repositories;
 
@@ -94,7 +96,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     )
     {
         var parameter = await _midjourneyDbContext.MidjourneyProperties
-            .FirstOrDefaultAsync(p => p.PropertyName.Value == propertyName.Value && p.Version.Value == version.Value, cancellationToken);
+            .FirstOrDefaultAsync(p => p.PropertyName == propertyName && p.Version == version, cancellationToken);
 
         if (parameter == null)
         {
@@ -106,11 +108,11 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
             return Result.Fail<MidjourneyProperty>(notFoundError);
         }
 
-        UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
+        var updateResult = UpdateParameterProperty(parameter, characteristicToUpdate, newValue);
+        if (updateResult.IsFailed)
+            return Result.Fail<MidjourneyProperty>(updateResult.Errors);
 
-        var entry = _midjourneyDbContext.Entry(parameter);
-        if (entry.State == EntityState.Detached)
-            _midjourneyDbContext.Attach(parameter).State = EntityState.Modified;
+        _midjourneyDbContext.Entry(parameter).State = EntityState.Modified;
 
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
@@ -127,7 +129,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         if (parameter == null)
         {
             var notFoundError = ErrorBuilder.New()
-                .WithMessage($"Property '{propertyName.Value}' not found for version '{version.Value}'")
+                .WithMessage($"Property '{propertyName}' not found for version '{version}'")
                 .WithErrorCode(StatusCodes.Status404NotFound)
                 .Build();
 
@@ -145,7 +147,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     public async Task<Result<int>> DeleteAllPropertiesByVersionAsync(ModelVersion version, CancellationToken cancellationToken)
     {
         var properties = await _midjourneyDbContext.MidjourneyProperties
-            .Where(p => p.Version.Value == version.Value)
+            .Where(p => p.Version == version)
             .ToListAsync(cancellationToken);
 
         if (properties.Count == 0)
@@ -193,28 +195,29 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
     }
 
     // Helpers
-    private static void UpdateParameterProperty(MidjourneyProperty property, string propertyToUpdate, string? newValue)
+    private static Result UpdateParameterProperty(MidjourneyProperty property, string propertyToUpdate, string? newValue)
     {
+        return propertyToUpdate.ToLowerInvariant().Trim() switch
+        {
+            "defaultvalue" => ToResult(property.UpdateDefaultValue(DefaultValue.Create(newValue))),
+            "minvalue"     => ToResult(property.UpdateMinValue(MinValue.Create(newValue))),
+            "maxvalue"     => ToResult(property.UpdateMaxValue(MaxValue.Create(newValue))),
+            "description"  => ToResult(property.UpdateDescription(Description.Create(newValue))),
+            _              => Result.Fail(ErrorFactories.OptionNotAllowed<PropertyField>(
+                                 propertyToUpdate,
+                                 typeof(PropertyField)))
+        };
+    }
 
-        switch (propertyToUpdate.ToLowerInvariant()) {
-            case "defaultvalue":
-                property.UpdateDefaultValue(newValue != null ? DefaultValue.Create(newValue) : Result.Fail<DefaultValue>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
-                break;
+    private static Result ToResult<T>(Result<T> result) =>
+        result.IsFailed ? Result.Fail(result.Errors) : Result.Ok();
 
-            case "minvalue":
-                property.UpdateMinValue(newValue != null ? MinValue.Create(newValue) : Result.Fail<MinValue>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
-                break;
-
-            case "maxvalue":
-                property.UpdateMaxValue(newValue != null ? MaxValue.Create(newValue) : Result.Fail<MaxValue>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
-                break;
-
-            case "description":
-                property.UpdateDescription(newValue != null ? Description.Create(newValue) : Result.Fail<Description>(ErrorBuilder.New().WithMessage("Invalid value").Build()));
-                break;
-
-            default:
-                throw new ArgumentException($"Unknown property to update: '{propertyToUpdate}'");
-        }
+    public enum PropertyField
+    {
+        ParamsCollection,
+        DefaultValue,
+        MinValue,
+        MaxValue,
+        Description
     }
 }

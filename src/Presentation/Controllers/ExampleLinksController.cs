@@ -116,7 +116,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareCreateResponse(payload =>
                 CreatedAtAction(nameof(CheckLinkExists), new { link = payload }, payload))
-            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>
+            (
+                httpContext: HttpContext,
+                locationFactory: version => $"/api/examplelinks/{request.Style}"
+            );
 
         return result;
     }

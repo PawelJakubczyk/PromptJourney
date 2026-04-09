@@ -12,6 +12,7 @@ namespace Persistence.Repositories;
 public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache cache) : IStyleRepository
 {
     private const string _tagCacheKey = "tag";
+    private const string _StyleCacheKey = "style";
     private const string _tagSupportedCacheKey = "supported_tag";
 
     private readonly MidjourneyDbContext _midjourneyDbContext = dbContext;
@@ -26,9 +27,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     // Query Methods
     public async Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync(CancellationToken cancellationToken)
     {
-        var styles = await _midjourneyDbContext.MidjourneyStyle
-            .Include(s => s.MidjourneyExampleLinks)
-            .ToListAsync(cancellationToken);
+        var styles = await _midjourneyDbContext.MidjourneyStyle.ToListAsync(cancellationToken);
 
         return Result.Ok(styles);
     }
@@ -54,34 +53,17 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         return Result.Ok(styles);
     }
 
-    public async Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAnyAsync(TagsCollection tags, CancellationToken cancellationToken)
+    public async Task<Result<List<MidjourneyStyle>>> GetStylesByTags(TagsCollection tags, CancellationToken cancellationToken)
     {
         if (tags.IsNone) return Result.Ok(new List<MidjourneyStyle>());
 
-        var tagValues = tags.Value.Select(t => t.Value).ToList();
-
-        var partial = await _midjourneyDbContext.MidjourneyStyle
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-
-        var styles = partial
-            .Where(s => s.Tags != null
-                        && tagValues.Any(tv => s.Tags.Value.Any(t => t.Value == tv)))
-            .ToList();
-
-        return Result.Ok(styles);
-    }
-
-    public async Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAllAsync(TagsCollection tags, CancellationToken cancellationToken)
-    {
-        if (tags.IsNone) return Result.Ok(new List<MidjourneyStyle>());
-
-        var tagValues = tags.Value.Select(t => t.Value).ToList();
-
-        var styles = await _midjourneyDbContext.MidjourneyStyle
+        var tagValues = tags.CollectionValues.ToArray();
+       
+        var styles = _midjourneyDbContext.MidjourneyStyle
             .Include(s => s.MidjourneyExampleLinks)
-            .Where(s => s.Tags != null && tagValues.All(tv => s.Tags.Value.Any(t => t.Value == tv)))
-            .ToListAsync(cancellationToken);
+            .AsEnumerable()
+            .Where(s => s.Tags != null && s.Tags.CollectionValues.Any(t => tagValues.Contains(t)))
+            .ToList();
 
         return Result.Ok(styles);
     }
@@ -242,7 +224,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             async (ct) =>
             {
                 var tags = await _midjourneyDbContext.MidjourneyStyle
-                    .Where(style => !style.Tags.IsNone && style.Tags.Value.Any())
+                    .Where(style => style.Tags != null && !style.Tags.IsNone && style.Tags.Value.Count != 0)
                     .SelectMany(style => style.Tags.Value)
                     .Select(tag => tag)
                     .Where(value => value != null)

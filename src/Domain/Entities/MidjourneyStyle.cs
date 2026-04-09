@@ -10,7 +10,7 @@ public sealed class MidjourneyStyle : IEntity
     // Columns
     public StyleName StyleName { get; private set; }
     public StyleType Type { get; private set; }
-    public Description? Description { get; private set; }
+    public Description Description { get; private set; }
     public TagsCollection Tags { get; private set; }
 
     // Navigation properties

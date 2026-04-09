@@ -5,12 +5,13 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record ParamsCollection : ValueObject<List<Param>>, ICreatable<ParamsCollection, List<string?>?>
+public record ParamsCollection : ValueObject<List<Param>>, IValueObjectCollection<string>, ICreatable<ParamsCollection, List<string?>?>
 {
     private ParamsCollection(List<Param> value) : base(value) { }
 
     public static readonly ParamsCollection None = new([]);
     public override bool IsNone => this == None;
+    public List<string> CollectionValues => [.. Value.Select(t => t.Value)];
 
     public static Result<ParamsCollection> Create(List<string?>? @params)
     {

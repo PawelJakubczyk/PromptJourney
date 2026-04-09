@@ -85,29 +85,30 @@ public sealed class MidjourneyProperty : IEntity
     }
 
     public Result<ParamsCollection> UpdateParamsCollection(Result<ParamsCollection> paramsCollection) =>
-        UpdateValue(paramsCollection);
+        UpdateValue(paramsCollection, v => Parameters = v);
 
     public Result<DefaultValue> UpdateDefaultValue(Result<DefaultValue> defaultValue) =>
-        UpdateValue(defaultValue);
+        UpdateValue(defaultValue, v => DefaultValue = v);
 
     public Result<MinValue> UpdateMinValue(Result<MinValue> minValue) =>
-        UpdateValue(minValue);
+        UpdateValue(minValue, v => MinValue = v);
 
     public Result<MaxValue> UpdateMaxValue(Result<MaxValue> maxValue) =>
-        UpdateValue(maxValue);
+        UpdateValue(maxValue, v => MaxValue = v);
 
     public Result<Description> UpdateDescription(Result<Description> description) =>
-        UpdateValue(description);
+        UpdateValue(description, v => Description = v);
 
-    private Result<TValue> UpdateValue<TValue>(Result<TValue> valueResult)
+    private Result<TValue> UpdateValue<TValue>(
+        Result<TValue> valueResult,
+        Action<TValue> setter)
     {
-        var result = WorkflowPipeline
-            .Empty()
-            .CollectErrors(valueResult)
-            .ExecuteIfNoErrors<TValue>(() => valueResult.Value)
-            .MapResult<TValue>();
+        if (valueResult.IsFailed)
+            return Result.Fail<TValue>(valueResult.Errors);
 
-        return result;
+        setter(valueResult.Value);
+
+        return Result.Ok(valueResult.Value);
     }
 }
 
