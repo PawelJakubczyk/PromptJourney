@@ -2,7 +2,7 @@ using Domain.Entities;
 
 namespace Application.UseCases.Properties.Responses;
 
-public sealed record PropertyQueryResponse
+public sealed record PropertyResponse
 (
     string PropertyName,
     string Version,
@@ -13,11 +13,11 @@ public sealed record PropertyQueryResponse
     string? Description
 )
 {
-    public static PropertyQueryResponse FromDomain(MidjourneyProperty property) => new
+    public static PropertyResponse FromDomain(MidjourneyProperty property) => new
         (
             property.PropertyName.Value,
             property.Version.Value,
-            [.. property.Parameters.Value.Select(p => p.Value)],
+            property.Parameters?.Value.Select(param => param.Value).ToList() ?? null,
             property.DefaultValue?.Value,
             property.MinValue?.Value,
             property.MaxValue?.Value,

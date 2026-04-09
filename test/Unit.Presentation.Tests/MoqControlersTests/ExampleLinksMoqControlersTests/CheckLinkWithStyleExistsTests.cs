@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
@@ -45,7 +44,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameIsEmpty()
     {
         // Arrange
-        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be empty");
+        var failure = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Style name cannot be empty");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
@@ -61,7 +60,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameIsWhitespace()
     {
         // Arrange
-        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be whitespace");
+        var failure = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Style name cannot be whitespace");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
@@ -77,7 +76,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
     {
         // Arrange
-        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, ErrorMessageStyleNameTooLong);
+        var failure = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, ErrorMessageStyleNameTooLong);
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
@@ -93,7 +92,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenStyleNameIsNull()
     {
         // Arrange
-        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Style name cannot be null");
+        var failure = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Style name cannot be null");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
@@ -109,7 +108,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failure = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status500InternalServerError, "Database connection failed");
+        var failure = CreateFailureResult<bool>(StatusCodes.Status500InternalServerError, "Database connection failed");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
@@ -203,7 +202,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_ForInvalidStyleNames(string invalidStyleName)
     {
         // Arrange
-        var failure = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Invalid style name");
+        var failure = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Invalid style name");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
@@ -237,7 +236,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failure = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status400BadRequest, "Repository error");
+        var failure = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Repository error");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);
@@ -318,7 +317,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
     public async Task CheckLinkWithStyleExists_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failure = CreateFailureResult<bool, ApplicationLayer>(StatusCodes.Status400BadRequest, "Query handler failed");
+        var failure = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Query handler failed");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsByStyle.Query, bool>(failure);
         var controller = CreateController(senderMock);

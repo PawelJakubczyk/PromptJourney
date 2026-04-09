@@ -76,7 +76,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
         CancellationToken cancellationToken
     ) 
     {
-        var query = new GetStylesByTagsMatchAny.Query(tags);
+        var query = new GetStylesByTags.Query(tags);
 
         var styles = await Sender
             .Send(query, cancellationToken)
@@ -169,7 +169,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .ElsePrepareCreateResponse()
             .ToResultsCreatedAsync<StyleResponse, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>
             (
-                locationFactory: style => $"/api/styles/{style.Name}",
+                locationFactory: version => $"/api/styles/{request.Name}",
                 httpContext: HttpContext
             );
 
@@ -196,7 +196,10 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<StyleResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(HttpContext);
+            .ToResultsOkAsync<StyleResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>
+            (
+                HttpContext
+            );
 
         return result;
     }
@@ -285,14 +288,14 @@ public sealed record CreateStyleRequest(
     string Name,
     string Type,
     string? Description = null,
-    List<string>? Tags = null
+    List<string?>? Tags = null
 );
 
 public sealed record UpdateStyleRequest(
     string Name,
     string Type,
     string? Description = null,
-    List<string>? Tags = null
+    List<string?>? Tags = null
 );
 
 public sealed record AddTagRequest(string Tag);

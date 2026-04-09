@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -17,7 +16,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyQueryResponse>
+        var properties = new List<PropertyResponse>
         {
             new("1.0", "aspect", ["--ar", "--aspect"], "16:9", "1:1", "32:1", "Aspect ratio parameter"),
             new("1.0", "quality", ["--q", "--quality"], "1", "0.25", "2", "Quality parameter")
@@ -46,7 +45,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var emptyList = new List<PropertyQueryResponse>();
+        var emptyList = new List<PropertyResponse>();
         var result = Result.Ok(emptyList);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -70,7 +69,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var emptyVersion = string.Empty;
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -96,7 +95,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var nonExistentVersion = "99.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status404NotFound,
             $"Version '{nonExistentVersion}' not found");
 
@@ -122,7 +121,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var whitespaceVersion = "   ";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -148,7 +147,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         string? nullVersion = null;
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status400BadRequest,
             "Version cannot be null");
 
@@ -174,7 +173,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var invalidVersion = "invalid-version";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -200,7 +199,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -227,14 +226,14 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "2.0";
-        var properties = new List<PropertyQueryResponse>();
+        var properties = new List<PropertyResponse>();
         var result = Result.Ok(properties);
         var senderMock = new Mock<ISender>();
         GetPropertiesByVersion.Query? capturedQuery = null;
 
         senderMock
             .Setup(s => s.Send(It.IsAny<GetPropertiesByVersion.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<List<PropertyQueryResponse>>>, CancellationToken>((query, ct) =>
+            .Callback<IRequest<Result<List<PropertyResponse>>>, CancellationToken>((query, ct) =>
             {
                 capturedQuery = query as GetPropertiesByVersion.Query;
             })
@@ -277,7 +276,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyQueryResponse>();
+        var properties = new List<PropertyResponse>();
         var result = Result.Ok(properties);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -304,7 +303,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var properties = Enumerable.Range(1, count)
-            .Select(i => new PropertyQueryResponse(
+            .Select(i => new PropertyResponse(
                 version,
                 $"property{i}",
                 [$"--p{i}"],
@@ -337,7 +336,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyQueryResponse>
+        var properties = new List<PropertyResponse>
         {
             new("1.0", "aspect", ["--ar"], "16:9", "1:1", "32:1", "Aspect ratio")
         };
@@ -370,7 +369,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyQueryResponse>
+        var properties = new List<PropertyResponse>
         {
             new("1.0", "aspect", ["--ar", "--aspect", "-a"], "16:9", "1:1", "32:1", "Aspect ratio with multiple params"),
             new("1.0", "quality", ["--q", "--quality"], "1", "0.25", "2", "Quality parameter")
@@ -399,7 +398,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyQueryResponse>
+        var properties = new List<PropertyResponse>
         {
             new("1.0", "property1", ["--p1"], "default", "min", "max", null),
             new("1.0", "property2", ["--p2"], "default", "min", "max", "Has description")
@@ -428,7 +427,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -454,7 +453,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<List<PropertyQueryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PropertyResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 
@@ -481,7 +480,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var largeList = Enumerable.Range(1, 50)
-            .Select(i => new PropertyQueryResponse(
+            .Select(i => new PropertyResponse(
                 version,
                 $"property{i}",
                 [$"--p{i}"],
@@ -517,7 +516,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
 
         foreach (var version in versions)
         {
-            var properties = new List<PropertyQueryResponse>
+            var properties = new List<PropertyResponse>
             {
                 new(version, "property", ["--p"], "default", "min", "max", "Description")
             };
@@ -546,7 +545,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyQueryResponse>
+        var properties = new List<PropertyResponse>
         {
             new("1.0", "aspect-ratio", ["--ar"], "16:9", "1:1", "32:1", "Aspect with hyphen"),
             new("1.0", "quality_level", ["--q"], "1", "0.25", "2", "Quality with underscore")
@@ -575,7 +574,7 @@ public sealed class GetAllByVersionTests : PropertiesControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var properties = new List<PropertyQueryResponse>();
+        var properties = new List<PropertyResponse>();
         var result = Result.Ok(properties);
         var senderMock = new Mock<ISender>();
         senderMock

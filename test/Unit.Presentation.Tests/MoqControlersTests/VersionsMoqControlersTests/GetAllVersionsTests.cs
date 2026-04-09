@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
@@ -73,7 +72,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenRepositoryFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<VersionResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<VersionResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database error");
 
@@ -407,7 +406,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<VersionResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<VersionResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -65,7 +64,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var emptyVersion = string.Empty;
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -92,7 +91,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var emptyPropertyName = string.Empty;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be empty");
 
@@ -119,7 +118,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var emptyVersion = string.Empty;
         var emptyPropertyName = string.Empty;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version and property name cannot be empty");
 
@@ -146,7 +145,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var whitespaceVersion = "   ";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -173,7 +172,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var whitespacePropertyName = "   ";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be whitespace");
 
@@ -200,7 +199,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         string? nullVersion = null;
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Version cannot be null");
 
@@ -227,7 +226,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         string? nullPropertyName = null;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be null");
 
@@ -254,7 +253,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var invalidVersion = "invalid-version";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -281,7 +280,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var tooLongPropertyName = new string('a', 256);
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Property name exceeds maximum length");
 
@@ -308,7 +307,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -467,7 +466,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var nonExistentVersion = "99.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, ApplicationLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             $"Version '{nonExistentVersion}' not found");
 
@@ -542,7 +541,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -569,7 +568,7 @@ public sealed class CheckPropertyExistsTests : PropertiesControllerTestsBase
         // Arrange
         var version = "1.0";
         var propertyName = "aspect";
-        var failureResult = CreateFailureResult<bool, ApplicationLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

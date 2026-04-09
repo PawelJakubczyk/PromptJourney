@@ -1,6 +1,6 @@
 using Domain.Abstractions;
 using Domain.ValueObjects;
-using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Utilities.Errors;
 using Utilities.Results;
@@ -10,11 +10,12 @@ namespace Domain.Extensions;
 
 public static partial class ValueObjectValidationWorkflowPipelineExtensions
 {
-    public static WorkflowPipeline IfNullOrWhitespace<TValue>
+
+    internal static WorkflowPipeline IfNullOrWhitespace<TValue>
     (
         this WorkflowPipeline pipeline,
-        string? value)
-        where TValue : ValueObject<string>
+        string? value
+    )
     {
         if (pipeline.BreakOnError)
             return pipeline;
@@ -29,7 +30,7 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
         return pipeline;
     }
 
-    internal static WorkflowPipeline IfReleaseDateNullOrWhitespace
+    public static WorkflowPipeline IfGuidFormatInvalid
     (
         this WorkflowPipeline pipeline,
         string? value
@@ -38,13 +39,37 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
         if (pipeline.BreakOnError)
             return pipeline;
 
-        if (string.IsNullOrWhiteSpace(value))
+        if (value is null)
+            return pipeline;
+
+        if (!Guid.TryParse(value, out _))
         {
-            pipeline.Errors.Add(
-                ErrorFactories.NullOrWhitespace<ReleaseDate>(value)
+            pipeline.Errors.Add
+            (
+                ErrorFactories.InvalidPattern<HistoryID>(value, "Invalid GUID format.")
             );
         }
 
+        return pipeline;
+    }
+
+    public static WorkflowPipeline IfLengthNotExact<TValue>
+    (
+        this WorkflowPipeline pipeline,
+        string value,
+        int exactLength
+    )
+    {
+        if (pipeline.BreakOnError)
+            return pipeline;
+
+        if (value.Length != exactLength)
+        {
+            pipeline.Errors.Add
+            (
+                ErrorFactories.InvalidLength<TValue>(value, exactLength)
+            );
+        }
         return pipeline;
     }
 
@@ -83,6 +108,30 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
             pipeline.Errors.Add(
                 ErrorFactories.SuspiciousContent<TValue>(value!)
             );
+        }
+
+        return pipeline;
+    }
+
+    internal static WorkflowPipeline IfDateFormatInvalid<TValue>
+(
+    this WorkflowPipeline pipeline,
+    string input
+)
+    {
+        if (pipeline.BreakOnError)
+            return pipeline;
+
+        var isValid = DateTimeOffset.TryParse(
+            input,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AdjustToUniversal,
+            out _
+        );
+
+        if (!isValid)
+        {
+            pipeline.Errors.Add(ErrorFactories.InvalidDateFormat<TValue>(input));
         }
 
         return pipeline;

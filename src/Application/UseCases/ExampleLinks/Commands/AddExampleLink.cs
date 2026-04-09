@@ -10,7 +10,7 @@ namespace Application.UseCases.ExampleLinks.Commands;
 
 public static class AddExampleLink
 {
-    public sealed record Command(string Link, string StyleName, string Version) : ICommand<string>;
+    public sealed record Command(string? Link, string? StyleName, string? Version) : ICommand<string>;
 
     public sealed class Handler
     (
@@ -25,12 +25,14 @@ public static class AddExampleLink
 
         public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
         {
+            var linkId = command.Link == null ? LinkID.Create() : LinkID.Create(command.Link);
             var link = ExampleLink.Create(command.Link);
             var styleName = StyleName.Create(command.StyleName);
             var version = ModelVersion.Create(command.Version);
 
             var linkResult = MidjourneyStyleExampleLink.Create
             (
+                linkId,
                 link,
                 styleName,
                 version
@@ -40,9 +42,9 @@ public static class AddExampleLink
                 .EmptyAsync()
                     .CollectErrors(linkResult)
                     .CongregateErrors(
-                        pipeline => pipeline.IfVersionNotExists(version.Value, _versionRepository, cancellationToken),
-                        pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
-                        pipeline => pipeline.IfLinkAlreadyExists(link.Value, _exampleLinkRepository, cancellationToken))
+                        pipeline => pipeline.IfVersionNotExists(version, _versionRepository, cancellationToken),
+                        pipeline => pipeline.IfStyleNotExists(styleName, _styleRepository, cancellationToken),
+                        pipeline => pipeline.IfLinkAlreadyExists(link, _exampleLinkRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _exampleLinkRepository
                         .AddExampleLinkAsync(linkResult.Value, cancellationToken))
                     .MapResult(() => linkResult.Value.Id.ToString());

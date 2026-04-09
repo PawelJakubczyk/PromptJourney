@@ -26,8 +26,8 @@ public static class AddTagToStyle
                     pipeline => pipeline.CollectErrors(styleName),
                     pipeline => pipeline.CollectErrors(tag))
                 .CongregateErrors(
-                    pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
-                    pipeline => pipeline.IfTagAlreadyExists(styleName.Value, tag.Value, _styleRepository, cancellationToken))
+                    pipeline => pipeline.IfStyleNotExists(styleName, _styleRepository, cancellationToken),
+                    pipeline => pipeline.IfTagAlreadyExists(styleName, tag, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository
                     .AddTagToStyleAsync(styleName.Value, tag.Value, cancellationToken))
                 .MapResult(() => command.Tag);

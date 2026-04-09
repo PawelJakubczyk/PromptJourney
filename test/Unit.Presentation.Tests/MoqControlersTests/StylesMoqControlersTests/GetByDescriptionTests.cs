@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -76,7 +75,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var emptyKeyword = string.Empty;
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword cannot be empty");
 
@@ -102,7 +101,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var whitespaceKeyword = "   ";
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword cannot be whitespace");
 
@@ -128,7 +127,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         string? nullKeyword = null;
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword cannot be null");
 
@@ -154,7 +153,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var tooLongKeyword = new string('a', 256);
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Keyword exceeds maximum length");
 
@@ -180,7 +179,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var keyword = "test";
-        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -630,7 +629,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var keyword = "test";
-        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error during keyword search");
 
@@ -656,7 +655,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
     {
         // Arrange
         var keyword = "test";
-        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

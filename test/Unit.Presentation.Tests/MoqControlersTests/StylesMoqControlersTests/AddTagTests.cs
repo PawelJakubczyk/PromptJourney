@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -34,7 +33,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsNotFound_WhenStyleDoesNotExist()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status404NotFound,
             "Style 'NonExistentStyle' not found");
         var senderMock = new Mock<ISender>();
@@ -55,7 +54,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenTagIsEmpty()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be empty");
         var senderMock = new Mock<ISender>();
@@ -76,7 +75,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenTagAlreadyExists()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Tag 'existingtag' already exists in style 'TestStyle'");
         var senderMock = new Mock<ISender>();
@@ -97,7 +96,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenStyleNameIsEmpty()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
         var senderMock = new Mock<ISender>();
@@ -118,7 +117,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenTagIsWhitespace()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be whitespace");
         var senderMock = new Mock<ISender>();
@@ -139,7 +138,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenStyleNameIsWhitespace()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
         var senderMock = new Mock<ISender>();
@@ -160,7 +159,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenTagIsNull()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be null");
         var senderMock = new Mock<ISender>();
@@ -181,7 +180,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenStyleNameIsNull()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
         var senderMock = new Mock<ISender>();
@@ -202,7 +201,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenTagExceedsMaxLength()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Tag exceeds maximum length");
         var senderMock = new Mock<ISender>();
@@ -223,7 +222,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenStyleNameExceedsMaxLength()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
         var senderMock = new Mock<ISender>();
@@ -244,7 +243,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
         var senderMock = new Mock<ISender>();
@@ -486,7 +485,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Repository error during tag addition");
         var senderMock = new Mock<ISender>();
@@ -507,7 +506,7 @@ public sealed class AddTagTests : StylesControllerTestsBase
     public async Task AddTag_ReturnsBadRequest_WhenCommandHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
         var senderMock = new Mock<ISender>();

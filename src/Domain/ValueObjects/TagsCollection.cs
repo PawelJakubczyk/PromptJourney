@@ -6,13 +6,13 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record TagsCollection : ValueObject<List<Tag>>, ICreatable<TagsCollection, List<string?>?>
+public record TagsCollection : ValueObject<List<Tag>>, IValueObjectCollection<string>, ICreatable<TagsCollection, List<string?>?>
 {
     public const int MaxLength = 50;
 
     public static readonly TagsCollection None = new([]);
     public override bool IsNone => this == None;
-
+    public List<string> CollectionValues => [.. Value.Select(t => t.Value)];
     private TagsCollection(List<Tag> value) : base(value) { }
 
     public static Result<TagsCollection> Create(List<string?>? tags)

@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
@@ -45,7 +44,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
     public async Task CheckLinksEmpty_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status500InternalServerError, "Database connection failed");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status500InternalServerError, "Database connection failed");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckAnyExampleLinksExist.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -143,7 +142,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
     public async Task CheckLinksEmpty_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status400BadRequest, "Repository error");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Repository error");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckAnyExampleLinksExist.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -233,7 +232,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
     public async Task CheckLinksEmpty_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, ApplicationLayer>(StatusCodes.Status400BadRequest, "Query handler failed");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Query handler failed");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckAnyExampleLinksExist.Query, bool>(failureResult);
         var controller = CreateController(senderMock);

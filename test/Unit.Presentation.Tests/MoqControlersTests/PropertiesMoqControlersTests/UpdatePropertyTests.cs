@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -29,7 +28,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             "Updated aspect ratio parameter"
         );
 
-        var response = new PropertyCommandResponse(request.PropertyName, request.Version);
+        var response = new PropertyResponse(propertyName, version, [], null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -60,7 +59,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ne"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status404NotFound,
             $"Property '{propertyName}' not found for version '{version}'");
 
@@ -93,7 +92,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             [] // Empty parameters invalid
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Parameters cannot be empty");
 
@@ -126,7 +125,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be empty");
 
@@ -159,7 +158,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be empty");
 
@@ -192,7 +191,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Version cannot be whitespace");
 
@@ -225,7 +224,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Property name cannot be whitespace");
 
@@ -258,7 +257,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid version format");
 
@@ -291,7 +290,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status404NotFound,
             $"Version '{nonExistentVersion}' not found");
 
@@ -324,7 +323,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["invalid-param"] // Parameters should start with --
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid parameter format");
 
@@ -357,7 +356,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -401,14 +400,14 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             description
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         UpdateProperty.Command? capturedCommand = null;
 
         senderMock
             .Setup(s => s.Send(It.IsAny<UpdateProperty.Command>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<PropertyCommandResponse>>, CancellationToken>((cmd, ct) =>
+            .Callback<IRequest<Result<PropertyResponse>>, CancellationToken>((cmd, ct) =>
             {
                 capturedCommand = cmd as UpdateProperty.Command;
             })
@@ -470,7 +469,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -502,7 +501,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             [.. parameters]
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -537,7 +536,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             "Aspect ratio"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -578,7 +577,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             null  // Description
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -613,7 +612,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             "Aspect ratio parameter"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -644,7 +643,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar", "--aspect", "-a", "--ratio"]
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -679,7 +678,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             "Description with special chars: @#$% & symbols (test)"
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -710,7 +709,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Repository error during update");
 
@@ -743,7 +742,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
 
@@ -776,7 +775,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
             ["--ar", "--aspect"]
         );
 
-        var response = new PropertyCommandResponse(propertyName, version);
+        var response = new PropertyResponse(propertyName, version, new List<string>(), null, null, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock

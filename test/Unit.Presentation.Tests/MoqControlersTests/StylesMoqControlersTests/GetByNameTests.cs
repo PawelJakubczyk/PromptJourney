@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -41,7 +40,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "NonExistentStyle";
-        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status404NotFound,
             "Style not found");
 
@@ -67,7 +66,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidName = "";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
 
@@ -93,7 +92,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
     {
         // Arrange
         string? nullName = null;
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
 
@@ -119,7 +118,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
     {
         // Arrange
         var whitespaceName = "   ";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
 
@@ -145,7 +144,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
     {
         // Arrange
         var tooLongName = new string('a', 256);
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
 
@@ -449,7 +448,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "ErrorStyle";
-        var failureResult = CreateFailureResult<StyleResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status500InternalServerError,
             "Repository error occurred");
 
@@ -476,7 +475,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "HandlerFailStyle";
-        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

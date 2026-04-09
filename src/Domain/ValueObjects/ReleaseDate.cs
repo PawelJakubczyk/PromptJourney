@@ -1,8 +1,6 @@
 using Domain.Abstractions;
-using Domain.Errors;
 using Domain.Extensions;
 using System.Globalization;
-using Utilities.Errors;
 using Utilities.Results;
 using Utilities.Workflows;
 
@@ -19,8 +17,8 @@ public record ReleaseDate : ValueObject<DateTimeOffset>, ICreatable<ReleaseDate,
 
         var result = WorkflowPipeline
             .Empty()
-            .IfReleaseDateNullOrWhitespace(value)
-            .IfDateFormatInvalid(value!)
+            .IfNullOrWhitespace<ReleaseDate>(value)
+            .IfDateFormatInvalid<ReleaseDate>(value!)
             .ExecuteIfNoErrors<ReleaseDate>(() => new ReleaseDate(
                 DateTimeOffset.Parse(value!, null, DateTimeStyles.AssumeUniversal)))
             .MapResult<ReleaseDate>();
@@ -29,29 +27,3 @@ public record ReleaseDate : ValueObject<DateTimeOffset>, ICreatable<ReleaseDate,
     }
 }
 
-internal static class ReleaseDateErrorsExtensions
-{
-    internal static WorkflowPipeline IfDateFormatInvalid
-    (
-        this WorkflowPipeline pipeline,
-        string input
-    )
-    {
-        if (pipeline.BreakOnError)
-            return pipeline;
-
-        var isValid = DateTimeOffset.TryParse(
-            input,
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.AdjustToUniversal,
-            out _
-        );
-
-        if (!isValid)
-        {
-            pipeline.Errors.Add(DomainErrors.InvalidReleaseDateFormat(input));
-        }
-
-        return pipeline;
-    }
-}

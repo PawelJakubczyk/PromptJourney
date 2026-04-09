@@ -14,29 +14,29 @@ public static class AddProperty
 {
     public sealed record Command
     (
-        string Version,
-        string PropertyName,
-        List<string?> Parameters,
+        string? Version,
+        string? PropertyName,
+        List<string?>? Parameters,
         string? DefaultValue = null,
         string? MinValue = null,
         string? MaxValue = null,
         string? Description = null
-    ) : ICommand<PropertyCommandResponse>;
+    ) : ICommand<PropertyResponse>;
 
     public sealed class Handler
     (
         IVersionRepository versionRepository,
         IPropertiesRepository propertiesRepository
-    ) : ICommandHandler<Command, PropertyCommandResponse>
+    ) : ICommandHandler<Command, PropertyResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
-        public async Task<Result<PropertyCommandResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
-            var parametersResult = ParamsCollection.Create(command.Parameters);
+            var parametersResult = command.Parameters is not null ? ParamsCollection.Create(command.Parameters) : ParamsCollection.None;
             var defaultValueResult = command.DefaultValue is not null ? DefaultValue.Create(command.DefaultValue) : DefaultValue.None;
             var minValueResult = command.MinValue is not null ? MinValue.Create(command.MinValue) : MinValue.None;
             var maxValueResult = command.MaxValue is not null ? MaxValue.Create(command.MaxValue) : MaxValue.None;
@@ -57,12 +57,12 @@ public static class AddProperty
                 .EmptyAsync()
                 .CollectErrors(property)
                 .CongregateErrors(
-                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
-                    pipeline => pipeline.IfPropertyAlreadyExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                    pipeline => pipeline.IfVersionNotExists(versionResult, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyAlreadyExists(propertyNameResult, versionResult, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .AddPropertyAsync(property.Value, cancellationToken))
-                .MapResult<MidjourneyProperty, PropertyCommandResponse>
-                    (property => PropertyCommandResponse.FromDomain(property));
+                .MapResult<MidjourneyProperty, PropertyResponse>
+                    (property => PropertyResponse.FromDomain(property));
 
             return result;
         }

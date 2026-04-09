@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Globalization;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Results;
 
@@ -64,7 +63,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Arrange
         var noFoundMessage = ErrorsMessages.NotFoundMessage(version);
 
-        var failureResult = CreateFailureResult<VersionResponse, ApplicationLayer>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status404NotFound,
             noFoundMessage
@@ -93,7 +92,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Arrange
         var nullOrWhitespaceVersionMessage = ErrorsMessages.NullOrWhitespaceMessage<ModelVersion>();
 
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status400BadRequest,
             nullOrWhitespaceVersionMessage
@@ -132,7 +131,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Arrange
         var invalidFormatVersionMessage = ModelVersionErrorsExtensions.InvalidVersionFormatMessage;
 
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status400BadRequest,
             invalidFormatVersionMessage
@@ -159,7 +158,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var tooLongVersion = new string('1', 256);
         var tooLongVersionMessage = ErrorsMessages.TooLongMessage<ModelVersion>(tooLongVersion, ModelVersion.MaxLength);
 
-        var failureResult = CreateFailureResult<VersionResponse, DomainLayer>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status400BadRequest,
             tooLongVersionMessage
@@ -261,7 +260,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<VersionResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<VersionResponse>(
             StatusCodes.Status500InternalServerError,
             "Repository error during version retrieval");
 

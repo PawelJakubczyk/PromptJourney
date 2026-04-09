@@ -29,14 +29,14 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
 
     public async Task<Result<DeleteResponse>> DeleteHistoryRecordByIdAsync
     (
-        Guid historyId,
+        HistoryID historyId,
         CancellationToken cancellationToken
     )
     {
         var historyRecord = await _midjourneyDbContext.MidjourneyPromptHistory
             .FirstOrDefaultAsync(history => history.HistoryId == historyId, cancellationToken);
 
-        if (historyRecord is null) return Result.Fail<DeleteResponse>(DomainErrors.HistoryNotFoundError(historyId));
+        if (historyRecord is null) return Result.Fail<DeleteResponse>(DomainErrors.HistoryNotFoundError(historyId.Value));
 
         _midjourneyDbContext.MidjourneyPromptHistory.Remove(historyRecord);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -63,7 +63,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
 
     public async Task<Result<MidjourneyPromptHistory>> GetHistoryRecordByIdAsync
     (
-        Guid historyId,
+        HistoryID historyId,
         CancellationToken cancellationToken
     )
     {
@@ -95,7 +95,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         var records = await _midjourneyDbContext.MidjourneyPromptHistory
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
-            .Where(history => history.CreatedOn >= dateFrom && history.CreatedOn <= dateTo)
+            .Where(history => history.CreatedOn.Value >= dateFrom && history.CreatedOn.Value <= dateTo)
             .OrderByDescending(history => history.CreatedOn)
             .ToListAsync(cancellationToken);
 

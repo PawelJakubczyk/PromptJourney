@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -69,7 +68,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var emptyTags = new List<string>();
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tags list cannot be empty");
 
@@ -95,7 +94,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         List<string>? nullTags = null;
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tags list cannot be null");
 
@@ -121,7 +120,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidTags = new List<string> { "valid", "" };
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be empty");
 
@@ -147,7 +146,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidTags = new List<string> { "valid", "   " };
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be whitespace");
 
@@ -173,7 +172,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var invalidTags = new List<string> { new('a', 256) };
-        var failureResult = CreateFailureResult<List<StyleResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Tag exceeds maximum length");
 
@@ -563,7 +562,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var tags = new List<string> { "test" };
-        var failureResult = CreateFailureResult<List<StyleResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status500InternalServerError,
             "Repository error during tag search");
 
@@ -590,7 +589,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
     {
         // Arrange
         var tags = new List<string> { "test" };
-        var failureResult = CreateFailureResult<List<StyleResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<StyleResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

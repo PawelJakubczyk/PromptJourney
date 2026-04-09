@@ -9,7 +9,7 @@ namespace Application.UseCases.Properties.Queries;
 
 public static class GetAllProperties
 {
-    public sealed record Query : IQuery<List<PropertyQueryResponse>>
+    public sealed record Query : IQuery<List<PropertyResponse>>
     {
         public static readonly Query Singleton = new();
     };
@@ -17,18 +17,18 @@ public static class GetAllProperties
     public sealed class Handler
     (
         IPropertiesRepository propertiesRepository
-    ) : IQueryHandler<Query, List<PropertyQueryResponse>>
+    ) : IQueryHandler<Query, List<PropertyResponse>>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
 
-        public async Task<Result<List<PropertyQueryResponse>>> Handle(Query _, CancellationToken cancellationToken)
+        public async Task<Result<List<PropertyResponse>>> Handle(Query _, CancellationToken cancellationToken)
         {
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .GetAllPropertiesAsync(cancellationToken))
-                .MapResult<List<MidjourneyProperty>, List<PropertyQueryResponse>>
-                    (propertiesList => [.. propertiesList.Select(PropertyQueryResponse.FromDomain)]);
+                .MapResult<List<MidjourneyProperty>, List<PropertyResponse>>
+                    (propertiesList => [.. propertiesList.Select(PropertyResponse.FromDomain)]);
 
             return result;
         }

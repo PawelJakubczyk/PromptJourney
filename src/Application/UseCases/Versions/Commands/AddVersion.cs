@@ -4,7 +4,6 @@ using Application.Extensions;
 using Application.UseCases.Versions.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
-using Microsoft.Extensions.Caching.Hybrid;
 using Utilities.Results;
 using Utilities.Workflows;
 
@@ -20,7 +19,7 @@ public static class AddVersion
         string? Description = null
     ) : ICommand<VersionResponse>;
 
-    public sealed class Handler(IVersionRepository versionRepository, HybridCache cache) : ICommandHandler<Command, VersionResponse>
+    public sealed class Handler(IVersionRepository versionRepository) : ICommandHandler<Command, VersionResponse>
     {
         private readonly IVersionRepository _versionRepository = versionRepository;
 
@@ -41,8 +40,8 @@ public static class AddVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(midjourneyVersion)
-                .IfVersionAlreadyExists(version.Value, _versionRepository, cancellationToken)
-                .IfParamterAlreadyExists(parameter.Value, _versionRepository, cancellationToken)
+                .IfVersionAlreadyExists(version, _versionRepository, cancellationToken)
+                .IfParamterAlreadyExists(parameter, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository
                     .AddVersionAsync(midjourneyVersion.Value, cancellationToken))
                 .MapResult(() => VersionResponse.FromDomain(midjourneyVersion.Value));

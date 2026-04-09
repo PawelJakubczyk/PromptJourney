@@ -17,6 +17,7 @@ public class ErrorsMessages
     // Numeric Errors
     public static string MustBeGreaterThanZeroMessage<TType>(int value) => $"{typeof(TType).Name} must be greater than zero. Provided: {value}.";
     public static string ExceedsAvailableMessage<TType>(int requested, int available) => $"{typeof(TType).Name} requested {requested}, but only {available} available.";
+    public static string MustHaveExactLengthMessage<TType>(int requested, int available) => $"{typeof(TType).Name} must have exact length of {available}. Provided: {requested}.";
 
     // Collection Messages
     public static string EmptyCollectionMessage<TType>() => $"{typeof(TType).Name}: cannot be empty.";

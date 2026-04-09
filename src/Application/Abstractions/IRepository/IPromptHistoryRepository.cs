@@ -10,7 +10,7 @@ public interface IPromptHistoryRepository
     // For Commands
     Task<Result<MidjourneyPromptHistory>> AddPromptToHistoryAsync(MidjourneyPromptHistory history, CancellationToken cancellationToken);
     
-    Task<Result<DeleteResponse>> DeleteHistoryRecordByIdAsync(Guid historyId, CancellationToken cancellationToken);
+    Task<Result<DeleteResponse>> DeleteHistoryRecordByIdAsync(HistoryID historyId, CancellationToken cancellationToken);
 
     // For Queries
     Task<Result<int>> CalculateHistoricalRecordCountAsync(CancellationToken cancellationToken);

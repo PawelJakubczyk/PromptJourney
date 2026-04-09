@@ -5,12 +5,12 @@ using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyStyle : IEntity
+public sealed class MidjourneyStyle : IEntity
 {
     // Columns
     public StyleName StyleName { get; private set; }
     public StyleType Type { get; private set; }
-    public Description? Description { get; private set; }
+    public Description Description { get; private set; }
     public TagsCollection Tags { get; private set; }
 
     // Navigation properties
@@ -21,11 +21,15 @@ public class MidjourneyStyle : IEntity
     public IReadOnlyCollection<MidjourneyStyleExampleLink> MidjourneyExampleLinks => ExampleLink.AsReadOnly();
 
     // Constructors
+    #pragma warning disable CS8618
+    private MidjourneyStyle() { } // parameterless constructor for EF Core
+    #pragma warning restore CS8618
+
     private MidjourneyStyle
     (
         StyleName name,
         StyleType type,
-        Description? description,
+        Description description,
         TagsCollection tags
     )
     {
@@ -39,28 +43,25 @@ public class MidjourneyStyle : IEntity
     (
         Result<StyleName> nameResult,
         Result<StyleType> typeResult,
-        Result<Description>? descriptionResult = null,
-        Result<TagsCollection>? tagsResultsList = null
+        Result<Description> descriptionResult,
+        Result<TagsCollection> tagsResultsList
     )
     {
-        var descriptionResultNonNull = descriptionResult ?? Result<Description>.Ok(Description.None);
-        var tagsResultNonNull = tagsResultsList ?? Result<TagsCollection>.Ok(TagsCollection.None);
-
         var result = WorkflowPipeline
         .Empty()
         .CongregateErrors(
             pipeline => pipeline.CollectErrors(nameResult),
             pipeline => pipeline.CollectErrors(typeResult),
-            pipeline => pipeline.CollectErrors(descriptionResultNonNull),
-            pipeline => pipeline.CollectErrors(tagsResultNonNull))
+            pipeline => pipeline.CollectErrors(descriptionResult),
+            pipeline => pipeline.CollectErrors(tagsResultsList))
         .ExecuteIfNoErrors<MidjourneyStyle>(() =>
         {
             var style = new MidjourneyStyle
             (
                  nameResult.Value,
                  typeResult.Value,
-                 descriptionResultNonNull.Value,
-                 tagsResultNonNull.Value
+                 descriptionResult.Value,
+                 tagsResultsList.Value
             );
             return style;
         })

@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace Integration.Tests.RepositoriesTests.StylesRepositoryTests;
 
-public sealed class GetStylesByTagsTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
+public sealed class GetStylesByTagsMatchAllTests(MidjourneyDbFixture fixture) : RepositoryTestsBase(fixture)
 {
 
     // Test Constants
@@ -13,17 +13,17 @@ public sealed class GetStylesByTagsTests(MidjourneyDbFixture fixture) : Reposito
     private const string TestTag3 = "colorful";
 
     [Fact]
-    public async Task GetStylesByTagsAsync_WithMatchingTags_ShouldReturnMatchingStyles()
+    public async Task GetStylesByTagsMatchAllAsync_WithMatchingTags_ShouldReturnMatchingStyles()
     {
         // Arrange
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName1, TestTag1, TestTag2);
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName2, TestTag2, TestTag3);
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName3, TestTag3);
 
-        var tags = new List<Tag> { Tag.Create(TestTag2).Value };
+        var tags = TagsCollection.Create([TestTag2]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsAsync(tags, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -33,21 +33,17 @@ public sealed class GetStylesByTagsTests(MidjourneyDbFixture fixture) : Reposito
     }
 
     [Fact]
-    public async Task GetStylesByTagsAsync_WithMultipleTags_ShouldReturnStylesWithAnyTag()
+    public async Task GetStylesByTagsMatchAllAsync_WithMultipleTags_ShouldReturnStylesWithAnyTag()
     {
         // Arrange
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName1, TestTag1);
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName2, TestTag2);
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName3, TestTag3);
 
-        var tags = new List<Tag>
-        {
-            Tag.Create(TestTag1).Value,
-            Tag.Create(TestTag3).Value
-        };
+        var tags = TagsCollection.Create([TestTag1, TestTag3]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsAsync(tags, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -57,15 +53,15 @@ public sealed class GetStylesByTagsTests(MidjourneyDbFixture fixture) : Reposito
     }
 
     [Fact]
-    public async Task GetStylesByTagsAsync_WithNonExistentTags_ShouldReturnEmptyList()
+    public async Task GetStylesByTagsMatchAllAsync_WithNonExistentTags_ShouldReturnEmptyList()
     {
         // Arrange
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName1, TestTag1);
 
-        var tags = new List<Tag> { Tag.Create("nonexistent").Value };
+        var tags = TagsCollection.Create(["nonexistent"]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsAsync(tags, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -73,15 +69,15 @@ public sealed class GetStylesByTagsTests(MidjourneyDbFixture fixture) : Reposito
     }
 
     [Fact]
-    public async Task GetStylesByTagsAsync_WithEmptyTagsList_ShouldReturnEmptyList()
+    public async Task GetStylesByTagsMatchAllAsync_WithEmptyTagsList_ShouldReturnEmptyList()
     {
         // Arrange
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName1, TestTag1);
 
-        var tags = new List<Tag>();
+        var tags = TagsCollection.Create([]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsAsync(tags, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);
@@ -89,16 +85,16 @@ public sealed class GetStylesByTagsTests(MidjourneyDbFixture fixture) : Reposito
     }
 
     [Fact]
-    public async Task GetStylesByTagsAsync_WithStylesWithoutTags_ShouldNotReturnThose()
+    public async Task GetStylesByTagsMatchAllAsync_WithStylesWithoutTags_ShouldNotReturnThose()
     {
         // Arrange
         await CreateAndSaveTestStyleAsync(DefaultTestStyleName1); // Style without tags
         await CreateAndSaveTestStyleWithTagsAsync(DefaultTestStyleName2, TestTag1);
 
-        var tags = new List<Tag> { Tag.Create(TestTag1).Value };
+        var tags = TagsCollection.Create([TestTag1]);
 
         // Act
-        var result = await StylesRepository.GetStylesByTagsAsync(tags, CancellationToken);
+        var result = await StylesRepository.GetStylesByTags(tags.Value, CancellationToken);
 
         // Assert
         AssertSuccessResult(result);

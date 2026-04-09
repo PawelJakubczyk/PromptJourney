@@ -50,7 +50,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "",
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Version cannot be empty");
@@ -77,7 +78,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            ""
+            "",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Parameter cannot be empty");
@@ -104,7 +106,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             null!,
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Version cannot be null");
@@ -131,7 +134,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            null!
+            null!,
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Parameter cannot be null");
@@ -158,7 +162,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "   ",
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Version cannot be whitespace");
@@ -185,7 +190,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            "   "
+            "   ",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Parameter cannot be whitespace");
@@ -212,7 +218,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "1.0",
-            "--v 1.0"
+            "--v 1.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Version already exists");
@@ -240,7 +247,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var tooLongVersion = new string('1', 256);
         var request = new CreateVersionRequest(
             tooLongVersion,
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Version exceeds maximum length");
@@ -268,7 +276,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var tooLongParameter = new string('v', 256);
         var request = new CreateVersionRequest(
             "7.0",
-            tooLongParameter
+            tooLongParameter,
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Parameter exceeds maximum length");
@@ -295,7 +304,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var response = new VersionResponse(request.Version, request.Parameter, null, null);
@@ -536,7 +546,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var cts = new CancellationTokenSource();
@@ -562,7 +573,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var response = new VersionResponse(request.Version, request.Parameter, null, null);
@@ -656,7 +668,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Repository error during version creation");
@@ -683,7 +696,8 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Arrange
         var request = new CreateVersionRequest(
             "7.0",
-            "--v 7.0"
+            "--v 7.0",
+            DateTime.UtcNow.ToString("o")
         );
 
         var failureResult = Result.Fail<VersionResponse>("Command handler failed");

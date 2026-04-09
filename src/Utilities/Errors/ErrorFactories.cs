@@ -46,6 +46,18 @@ public class ErrorFactories
             .Build();
 
     /// <summary>
+    /// Creates an error for values that are too long.
+    /// </summary>
+    public static Error InvalidLength<TEntity>(string? value, int exactLength) =>
+        ErrorBuilder.New()
+            .WithMessage(MustHaveExactLengthMessage<TEntity>(value?.Length ?? 0, exactLength))
+            .WithErrorCode(StatusCodes.Status400BadRequest)
+            .WithField(typeof(TEntity).Name.ToLowerInvariant())
+            .WithErrorCodeString("TOO_LONG")
+            .WithRejectedValue(value)
+            .Build();
+
+    /// <summary>
     /// Creates an error for values that don't match the required pattern.
     /// </summary>
     public static Error InvalidPattern<TEntity>(string value, string patternDescription) =>

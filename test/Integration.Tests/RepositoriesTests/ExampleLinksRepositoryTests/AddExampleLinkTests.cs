@@ -15,6 +15,7 @@ public class AddExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTestsB
         await CreateBasicTestDataAsync();
 
         var exampleLink = MidjourneyStyleExampleLink.Create(
+            LinkID.Create().Value,
             ExampleLink.Create(DefaultTestLink1),
             StyleName.Create(DefaultTestStyleName1),
             ModelVersion.Create(DefaultTestVersion1)
@@ -38,6 +39,7 @@ public class AddExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTestsB
         await CreateAndSaveTestExampleLinkAsync(DefaultTestLink1, DefaultTestStyleName1, DefaultTestVersion1);
 
         var duplicateExampleLink = MidjourneyStyleExampleLink.Create(
+            LinkID.Create().Value,
             ExampleLink.Create(DefaultTestLink1),
             StyleName.Create(DefaultTestStyleName1),
             ModelVersion.Create(DefaultTestVersion1)
@@ -63,6 +65,7 @@ public class AddExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTestsB
         await CreateAndSaveTestStyleAsync(uniqueStyleName);
 
         var exampleLink = MidjourneyStyleExampleLink.Create(
+            LinkID.Create().Value,
             ExampleLink.Create(url),
             StyleName.Create(uniqueStyleName),
             ModelVersion.Create("6.0")
@@ -84,6 +87,7 @@ public class AddExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTestsB
         await CreateAndSaveTestStyleAsync(styleName);
 
         var exampleLink = MidjourneyStyleExampleLink.Create(
+            LinkID.Create().Value,
             ExampleLink.Create("https://example.com/test.jpg"),
             StyleName.Create(styleName),
             ModelVersion.Create("999.0")
@@ -104,6 +108,7 @@ public class AddExampleLinkTests(MidjourneyDbFixture fixture) : RepositoryTestsB
         await CreateAndSaveTestVersionAsync(modelVersion);
 
         var exampleLink = MidjourneyStyleExampleLink.Create(
+            LinkID.Create().Value,
             ExampleLink.Create("https://example.com/test.jpg"),
             StyleName.Create("NonExistentStyle"),
             ModelVersion.Create(modelVersion)

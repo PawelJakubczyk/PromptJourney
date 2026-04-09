@@ -24,7 +24,7 @@ public static class GetVersion
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(version)
-                .IfVersionNotExists(version.Value, _versionRepository, cancellationToken)
+                .IfVersionNotExists(version, _versionRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _versionRepository
                     .GetVersionAsync(version.Value, cancellationToken))
                 .MapResult<MidjourneyVersion, VersionResponse>

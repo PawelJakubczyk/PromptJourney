@@ -36,7 +36,7 @@ public sealed class UpdatePropertyTests(MidjourneyTestWebApplicationFactory fact
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var updatedProperty = await DeserializeResponse<PropertyQueryResponse>(response);
+            var updatedProperty = await DeserializeResponse<PropertyResponse>(response);
             updatedProperty.Should().NotBeNull();
             updatedProperty!.PropertyName.Should().Be(propertyName);
             updatedProperty.Version.Should().Be(version);

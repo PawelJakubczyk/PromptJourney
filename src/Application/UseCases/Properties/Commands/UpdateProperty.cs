@@ -22,20 +22,20 @@ public static class UpdateProperty
         string? MinValue = null,
         string? MaxValue = null,
         string? Description = null
-    ) : ICommand<PropertyCommandResponse>;
+    ) : ICommand<PropertyResponse>;
 
     public sealed class Handler
     (
         IPropertiesRepository propertiesRepository,
         IVersionRepository versionRepository,
         HybridCache cache
-    ) : ICommandHandler<Command, PropertyCommandResponse>
+    ) : ICommandHandler<Command, PropertyResponse>
     {
         private readonly IPropertiesRepository _propertiesRepository = propertiesRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
         private readonly HybridCache _cache = cache;
 
-        public async Task<Result<PropertyCommandResponse>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
             var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
@@ -47,25 +47,25 @@ public static class UpdateProperty
 
             var propertyResult = MidjourneyProperty.Create
             (
-                propertyNameResult.Value,
-                versionResult.Value,
-                parametersResult.Value,
-                defaultValueResult.Value,
-                minValueResult.Value,
-                maxValueResult.Value,
-                descriptionResult.Value
+                propertyNameResult,
+                versionResult,
+                parametersResult,
+                defaultValueResult,
+                minValueResult,
+                maxValueResult,
+                descriptionResult
             );
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(propertyResult)
                 .CongregateErrors(
-                    pipeline => pipeline.IfVersionNotExists(versionResult.Value, _versionRepository, cancellationToken),
-                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult.Value, versionResult.Value, _propertiesRepository, cancellationToken))
+                    pipeline => pipeline.IfVersionNotExists(versionResult, _versionRepository, cancellationToken),
+                    pipeline => pipeline.IfPropertyNotExists(propertyNameResult, versionResult, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository
                     .UpdatePropertyAsync(propertyResult.Value, cancellationToken))
-                .MapResult<MidjourneyProperty, PropertyCommandResponse>
-                    (property => PropertyCommandResponse.FromDomain(property));
+                .MapResult<MidjourneyProperty, PropertyResponse>
+                    (property => PropertyResponse.FromDomain(property));
 
             return result;
         }

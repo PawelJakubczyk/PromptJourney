@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -62,7 +61,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
     {
         // Arrange
         var emptyName = string.Empty;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
 
@@ -88,7 +87,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
     {
         // Arrange
         var whitespaceName = "   ";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
 
@@ -114,7 +113,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
     {
         // Arrange
         string? nullName = null;
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
 
@@ -140,7 +139,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
     {
         // Arrange
         var tooLongName = new string('a', 256);
-        var failureResult = CreateFailureResult<bool, DomainLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
 
@@ -166,7 +165,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -480,7 +479,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Repository error during existence check");
 
@@ -506,7 +505,7 @@ public sealed class CheckExistsTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var failureResult = CreateFailureResult<bool, ApplicationLayer>(
+        var failureResult = CreateFailureResult<bool>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

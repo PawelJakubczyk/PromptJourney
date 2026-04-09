@@ -101,7 +101,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
     // POST api/prompthistory
     [HttpPost]
-    public async Task<Results<Created<string>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> AddPrompt
+    public async Task<Results<Created<string>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> create
     (
         [FromBody] AddPromptRequest request, 
         CancellationToken cancellationToken
@@ -109,6 +109,8 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
     {
         var command = new AddPromptToHistory.Command
         (
+
+            request.historyId,
             request.Prompt,
             request.Version
         );
@@ -117,9 +119,12 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareCreateResponse(payload => 
-                CreatedAtAction(nameof(AddPrompt), null, new { historyId = payload })
+                CreatedAtAction(nameof(create), null, new { historyId = payload })
             )
-            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>
+            (
+                httpContext: HttpContext
+            );
 
         return result;
     }
@@ -127,6 +132,7 @@ public sealed class PromptHistoriesController(ISender sender) : ApiController(se
 
 // Request DTOs
 public sealed record AddPromptRequest(
+    string historyId,
     string Prompt,
     string Version
 );

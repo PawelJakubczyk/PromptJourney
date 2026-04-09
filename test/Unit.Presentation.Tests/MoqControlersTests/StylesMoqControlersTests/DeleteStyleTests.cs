@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -41,7 +40,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "NonExistentStyle";
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status404NotFound,
             $"Style '{styleName}' not found");
 
@@ -67,7 +66,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var emptyName = string.Empty;
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
 
@@ -93,7 +92,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var whitespaceName = "   ";
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
 
@@ -119,7 +118,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         string? nullName = null;
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
 
@@ -145,7 +144,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var tooLongName = new string('a', 256);
-        var failureResult = CreateFailureResult<DeleteResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
 
@@ -171,7 +170,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var failureResult = CreateFailureResult<DeleteResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -495,7 +494,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var failureResult = CreateFailureResult<DeleteResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Repository error during deletion");
 
@@ -521,7 +520,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "TestStyle";
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
 
@@ -572,7 +571,7 @@ public sealed class DeleteStyleTests : StylesControllerTestsBase
     {
         // Arrange
         var styleName = "DeletedStyle";
-        var failureResult = CreateFailureResult<DeleteResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<DeleteResponse>(
             StatusCodes.Status404NotFound,
             $"Style '{styleName}' not found - may have been deleted already");
 

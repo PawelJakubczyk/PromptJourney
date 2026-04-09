@@ -26,15 +26,13 @@ public interface IStyleRepository
     
     Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync(CancellationToken cancellationToken);
 
-    Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAnyAsync(TagsCollection tags, CancellationToken cancellationToken);
+    Task<Result<List<MidjourneyStyle>>> GetStylesByTags(TagsCollection tags, CancellationToken cancellationToken);
 
     Task<Result<MidjourneyStyle>> GetStyleByNameAsync(StyleName name, CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyle>>> GetStylesByDescriptionKeywordAsync(Keyword keyword, CancellationToken cancellationToken);
 
     Task<Result<List<Tag>>> GetAllStyleTagsAsync(CancellationToken cancellationToken);
-
-    Task<Result<List<MidjourneyStyle>>> GetStylesByTagsMatchAllAsync(TagsCollection tags, CancellationToken cancellationToken);
 
     Task<Result<List<MidjourneyStyle>>> GetStylesByTypeAsync(StyleType type, CancellationToken cancellationToken);
 }

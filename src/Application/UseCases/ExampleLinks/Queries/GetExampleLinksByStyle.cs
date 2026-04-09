@@ -11,7 +11,7 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyle
 {
-    public sealed record Query(string StyleName) : IQuery<List<ExampleLinkResponse>>;
+    public sealed record Query(string? StyleName) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler
     (
@@ -29,7 +29,7 @@ public static class GetExampleLinksByStyle
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(styleName)
-                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                .IfStyleNotExists(styleName, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .GetExampleLinksByStyleAsync(styleName.Value, cancellationToken))
                 .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -41,7 +40,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var styleName = "NonExistentStyle";
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status404NotFound,
             "Style not found");
         var senderMock = new Mock<ISender>();
@@ -65,7 +64,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var invalidStyleName = "";
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
         var senderMock = new Mock<ISender>();
@@ -89,7 +88,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         string? nullStyleName = null;
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
         var senderMock = new Mock<ISender>();
@@ -113,7 +112,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var whitespaceStyleName = "   ";
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
         var senderMock = new Mock<ISender>();
@@ -137,7 +136,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var tooLongStyleName = new string('a', 256);
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<string, DomainLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
         var senderMock = new Mock<ISender>();
@@ -379,7 +378,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<string, PersistenceLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status500InternalServerError,
             "Repository error during description update");
         var senderMock = new Mock<ISender>();
@@ -404,7 +403,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var request = new UpdateDescriptionRequest("New description");
-        var failureResult = CreateFailureResult<string, ApplicationLayer>(
+        var failureResult = CreateFailureResult<string>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
         var senderMock = new Mock<ISender>();

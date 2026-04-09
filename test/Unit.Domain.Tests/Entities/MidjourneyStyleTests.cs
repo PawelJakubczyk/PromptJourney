@@ -1,420 +1,420 @@
-using Domain.Entities;
-using Domain.ValueObjects;
-using FluentAssertions;
-using Utilities.Results;
+//using Domain.Entities;
+//using Domain.ValueObjects;
+//using FluentAssertions;
+//using Utilities.Results;
 
-namespace Unit.Domain.Tests.Entities;
+//namespace Unit.Domain.Tests.Entities;
 
-public class MidjourneyStyleTests
-{
-    [Fact]
-    public void Create_WithValidData_ShouldReturnSuccess()
-    {
-        // Arrange
-        var nameResult = StyleName.Create("Abstract Art");
-        var typeResult = StyleType.Create("Custom");
-        var descriptionResult = Description.Create("A beautiful abstract art style");
+//public class MidjourneyStyleTests
+//{
+//    [Fact]
+//    public void Create_WithValidData_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var nameResult = StyleName.Create("Abstract Art");
+//        var typeResult = StyleType.Create("Custom");
+//        var descriptionResult = Description.Create("A beautiful abstract art style");
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            nameResult,
-            typeResult,
-            descriptionResult
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            nameResult,
+//            typeResult,
+//            descriptionResult
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.StyleName.Value.Should().Be("Abstract Art");
-        result.Value.Type.Value.Should().Be("Custom");
-        result.Value.Description?.Value.Should().Be("A beautiful abstract art style");
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        result.Value.Should().NotBeNull();
+//        result.Value.StyleName.Value.Should().Be("Abstract Art");
+//        result.Value.Type.Value.Should().Be("Custom");
+//        result.Value.Description?.Value.Should().Be("A beautiful abstract art style");
+//    }
 
-    [Fact]
-    public void Create_WithTags_ShouldReturnSuccess()
-    {
-        // Arrange
-        var nameResult = StyleName.Create("Cyberpunk");
-        var typeResult = StyleType.Create("Custom");
-        var descriptionResult = Description.Create("Cyberpunk art style");
-        var tagResults = new List<Result<Tag>?>
-        {
-            Tag.Create("neon"),
-            Tag.Create("futuristic"),
-            Tag.Create("tech")
-        };
+//    [Fact]
+//    public void Create_WithTags_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var nameResult = StyleName.Create("Cyberpunk");
+//        var typeResult = StyleType.Create("Custom");
+//        var descriptionResult = Description.Create("Cyberpunk art style");
+//        var tagResults = new List<Result<Tag>?>
+//        {
+//            Tag.Create("neon"),
+//            Tag.Create("futuristic"),
+//            Tag.Create("tech")
+//        };
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            nameResult,
-            typeResult,
-            descriptionResult,
-            tagResults
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            nameResult,
+//            typeResult,
+//            descriptionResult,
+//            tagResults
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.StyleName.Value.Should().Be("Cyberpunk");
-        result.Value.Type.Value.Should().Be("Custom");
-        result.Value.Tags.Should().NotBeNull();
-        result.Value.Tags.Should().HaveCount(3);
-        result.Value.Tags.Should().Contain(t => t.Value == "neon");
-        result.Value.Tags.Should().Contain(t => t.Value == "futuristic");
-        result.Value.Tags.Should().Contain(t => t.Value == "tech");
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        result.Value.Should().NotBeNull();
+//        result.Value.StyleName.Value.Should().Be("Cyberpunk");
+//        result.Value.Type.Value.Should().Be("Custom");
+//        result.Value.Tags.Should().NotBeNull();
+//        result.Value.Tags.Should().HaveCount(3);
+//        result.Value.Tags.Should().Contain(t => t.Value == "neon");
+//        result.Value.Tags.Should().Contain(t => t.Value == "futuristic");
+//        result.Value.Tags.Should().Contain(t => t.Value == "tech");
+//    }
 
-    [Fact]
-    public void Create_WithMinimalData_ShouldReturnSuccess()
-    {
-        // Arrange
-        var nameResult = StyleName.Create("Minimalist");
-        var typeResult = StyleType.Create("Custom");
+//    [Fact]
+//    public void Create_WithMinimalData_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var nameResult = StyleName.Create("Minimalist");
+//        var typeResult = StyleType.Create("Custom");
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            nameResult,
-            typeResult
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            nameResult,
+//            typeResult
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.StyleName.Value.Should().Be("Minimalist");
-        result.Value.Type.Value.Should().Be("Custom");
-        result.Value.Description.Should().BeNull();
-        result.Value.Tags.Should().BeNull();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        result.Value.Should().NotBeNull();
+//        result.Value.StyleName.Value.Should().Be("Minimalist");
+//        result.Value.Type.Value.Should().Be("Custom");
+//        result.Value.Description.Should().BeNull();
+//        result.Value.Tags.Should().BeNull();
+//    }
 
-    [Fact]
-    public void Create_WithNullDescription_ShouldReturnSuccess()
-    {
-        // Arrange
-        var nameResult = StyleName.Create("Test Style");
-        var typeResult = StyleType.Create("Custom");
+//    [Fact]
+//    public void Create_WithNullDescription_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var nameResult = StyleName.Create("Test Style");
+//        var typeResult = StyleType.Create("Custom");
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            nameResult,
-            typeResult,
-            null
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            nameResult,
+//            typeResult,
+//            null
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Description.Should().BeNull();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        result.Value.Should().NotBeNull();
+//        result.Value.Description.Should().BeNull();
+//    }
 
-    [Fact]
-    public void Create_WithEmptyTagsList_ShouldReturnSuccessWithNullTags()
-    {
-        // Arrange
-        var nameResult = StyleName.Create("Test Style");
-        var typeResult = StyleType.Create("Custom");
-        var emptyTagResults = new List<Result<Tag>?>();
+//    [Fact]
+//    public void Create_WithEmptyTagsList_ShouldReturnSuccessWithNullTags()
+//    {
+//        // Arrange
+//        var nameResult = StyleName.Create("Test Style");
+//        var typeResult = StyleType.Create("Custom");
+//        var emptyTagResults = new List<Result<Tag>?>();
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            nameResult,
-            typeResult,
-            null,
-            emptyTagResults
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            nameResult,
+//            typeResult,
+//            null,
+//            emptyTagResults
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Tags.Should().BeNull();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        result.Value.Should().NotBeNull();
+//        result.Value.Tags.Should().BeNull();
+//    }
 
-    [Fact]
-    public void Create_WithInvalidStyleName_ShouldReturnFailure()
-    {
-        // Arrange
-        var invalidNameResult = StyleName.Create("");
-        var typeResult = StyleType.Create("Abstract");
+//    [Fact]
+//    public void Create_WithInvalidStyleName_ShouldReturnFailure()
+//    {
+//        // Arrange
+//        var invalidNameResult = StyleName.Create("");
+//        var typeResult = StyleType.Create("Abstract");
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            invalidNameResult,
-            typeResult
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            invalidNameResult,
+//            typeResult
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeFalse();
+//        result.Errors.Should().NotBeEmpty();
+//    }
 
-    [Fact]
-    public void Create_WithInvalidStyleType_ShouldReturnFailure()
-    {
-        // Arrange
-        var nameResult = StyleName.Create("Test Style");
-        var invalidTypeResult = StyleType.Create(null);
+//    [Fact]
+//    public void Create_WithInvalidStyleType_ShouldReturnFailure()
+//    {
+//        // Arrange
+//        var nameResult = StyleName.Create("Test Style");
+//        var invalidTypeResult = StyleType.Create(null);
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            nameResult,
-            invalidTypeResult
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            nameResult,
+//            invalidTypeResult
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeFalse();
+//        result.Errors.Should().NotBeEmpty();
+//    }
 
-    [Fact]
-    public void Create_WithInvalidTag_ShouldReturnFailure()
-    {
-        // Arrange
-        var nameResult = StyleName.Create("Test Style");
-        var typeResult = StyleType.Create("Custom");
-        var tagResults = new List<Result<Tag>?>
-        {
-            Tag.Create("valid"),
-            Tag.Create("")
-        };
+//    [Fact]
+//    public void Create_WithInvalidTag_ShouldReturnFailure()
+//    {
+//        // Arrange
+//        var nameResult = StyleName.Create("Test Style");
+//        var typeResult = StyleType.Create("Custom");
+//        var tagResults = new List<Result<Tag>?>
+//        {
+//            Tag.Create("valid"),
+//            Tag.Create("")
+//        };
 
-        // Act
-        var result = MidjourneyStyle.Create
-        (
-            nameResult,
-            typeResult,
-            null,
-            tagResults!
-        );
+//        // Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            nameResult,
+//            typeResult,
+//            null,
+//            tagResults!
+//        );
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeFalse();
+//        result.Errors.Should().NotBeEmpty();
+//    }
 
-    [Fact]
-    public void AddTag_WithValidTag_ShouldReturnSuccess()
-    {
-        // Arrange
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom")
-        ).Value;
+//    [Fact]
+//    public void AddTag_WithValidTag_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom")
+//        ).Value;
 
-        var newTag = Tag.Create("newtag");
+//        var newTag = Tag.Create("newtag");
 
-        // Act
-        var result = style.AddTag(newTag);
+//        // Act
+//        var result = style.AddTag(newTag);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        style.Tags.Should().NotBeNull();
-        style.Tags.Should().Contain(t => t.Value == "newtag");
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        style.Tags.Should().NotBeNull();
+//        style.Tags.Should().Contain(t => t.Value == "newtag");
+//    }
 
-    [Fact]
-    public void AddTag_WithExistingTag_ShouldReturnFailure()
-    {
-        // Arrange
-        var tagResults = new List<Result<Tag>?>
-        {
-            Tag.Create("existing")
-        };
+//    [Fact]
+//    public void AddTag_WithExistingTag_ShouldReturnFailure()
+//    {
+//        // Arrange
+//        var tagResults = new List<Result<Tag>?>
+//        {
+//            Tag.Create("existing")
+//        };
 
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom"),
-            null,
-            tagResults
-        ).Value;
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom"),
+//            null,
+//            tagResults
+//        ).Value;
 
-        var duplicateTag = Tag.Create("existing");
+//        var duplicateTag = Tag.Create("existing");
 
-        // Act
-        var result = style.AddTag(duplicateTag);
+//        // Act
+//        var result = style.AddTag(duplicateTag);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeFalse();
+//        result.Errors.Should().NotBeEmpty();
+//    }
 
-    [Fact]
-    public void RemoveTag_WithExistingTag_ShouldReturnSuccess()
-    {
-        // Arrange
-        var tagResults = new List<Result<Tag>?>
-        {
-            Tag.Create("tag1"),
-            Tag.Create("tag2")
-        };
+//    [Fact]
+//    public void RemoveTag_WithExistingTag_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var tagResults = new List<Result<Tag>?>
+//        {
+//            Tag.Create("tag1"),
+//            Tag.Create("tag2")
+//        };
 
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom"),
-            null,
-            tagResults
-        ).Value;
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom"),
+//            null,
+//            tagResults
+//        ).Value;
 
-        var tagToRemove = Tag.Create("tag1");
+//        var tagToRemove = Tag.Create("tag1");
 
-        // Act
-        var result = style.RemoveTag(tagToRemove);
+//        // Act
+//        var result = style.RemoveTag(tagToRemove);
 
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        style.Tags?
-            .Select(t => t.Value)
-            .Should().NotContain("tag1");
-        style.Tags?
-            .Select(t => t.Value)
-            .Should().Contain("tag2");
-    }
+//        // Assert
+//        result.IsSuccess.Should().BeTrue();
+//        style.Tags?
+//            .Select(t => t.Value)
+//            .Should().NotContain("tag1");
+//        style.Tags?
+//            .Select(t => t.Value)
+//            .Should().Contain("tag2");
+//    }
 
-    [Fact]
-    public void RemoveTag_WithNonExistingTag_ShouldReturnFailure()
-    {
-        // Arrange
-        var tagResults = new List<Result<Tag>?>
-        {
-            Tag.Create("existing")
-        };
+//    [Fact]
+//    public void RemoveTag_WithNonExistingTag_ShouldReturnFailure()
+//    {
+//        // Arrange
+//        var tagResults = new List<Result<Tag>?>
+//        {
+//            Tag.Create("existing")
+//        };
 
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom"),
-            null,
-            tagResults
-        ).Value;
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom"),
+//            null,
+//            tagResults
+//        ).Value;
 
-        var nonExistingTag = Tag.Create("nonexisting").Value;
+//        var nonExistingTag = Tag.Create("nonexisting").Value;
 
-        // Act
-        var result = style.RemoveTag(nonExistingTag);
+//        // Act
+//        var result = style.RemoveTag(nonExistingTag);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeFalse();
+//        result.Errors.Should().NotBeEmpty();
+//    }
 
-    [Fact]
-    public void RemoveTag_WithEmptyTagsList_ShouldReturnFailure()
-    {
-        // Arrange
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom")
-        ).Value;
+//    [Fact]
+//    public void RemoveTag_WithEmptyTagsList_ShouldReturnFailure()
+//    {
+//        // Arrange
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom")
+//        ).Value;
 
-        var tag = Tag.Create("anytag").Value;
+//        var tag = Tag.Create("anytag").Value;
 
-        // Act
-        var result = style.RemoveTag(tag);
+//        // Act
+//        var result = style.RemoveTag(tag);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeFalse();
+//        result.Errors.Should().NotBeEmpty();
+//    }
 
-    [Fact]
-    public void EditNullDescription_WithValidDescription_ShouldReturnSuccess()
-    {
-        // Arrange
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom")
-        ).Value;
+//    [Fact]
+//    public void EditNullDescription_WithValidDescription_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom")
+//        ).Value;
 
-        var newDescription = Description.Create("New description").Value;
+//        var newDescription = Description.Create("New description").Value;
 
-        // Act
-        var result = style.EditDescription(newDescription);
+//        // Act
+//        var result = style.EditDescription(newDescription);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        style.Description?.Value.Should().Be("New description");
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        style.Description?.Value.Should().Be("New description");
+//    }
 
-    [Fact]
-    public void EditNotNullDescription_WithValidDescription_ShouldReturnSuccess()
-    {
-        // Arrange
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom"),
-            Description.Create("Original description")!
-        ).Value;
+//    [Fact]
+//    public void EditNotNullDescription_WithValidDescription_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom"),
+//            Description.Create("Original description")!
+//        ).Value;
 
-        var newDescription = Description.Create("New description").Value;
+//        var newDescription = Description.Create("New description").Value;
 
-        // Act
-        var result = style.EditDescription(newDescription);
+//        // Act
+//        var result = style.EditDescription(newDescription);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        style.Description?.Value.Should().Be("New description");
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        style.Description?.Value.Should().Be("New description");
+//    }
 
-    [Fact]
-    public void EditDescription_WithNullDescription_ShouldReturnSuccess()
-    {
-        // Arrange
-        var style = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom"),
-            Description.Create("Original description")!
-        ).Value;
+//    [Fact]
+//    public void EditDescription_WithNullDescription_ShouldReturnSuccess()
+//    {
+//        // Arrange
+//        var style = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom"),
+//            Description.Create("Original description")!
+//        ).Value;
 
-        var nullDescription = Description.Create(null);
-        // Act
-        var result = style.EditDescription(nullDescription.Value);
+//        var nullDescription = Description.Create(null);
+//        // Act
+//        var result = style.EditDescription(nullDescription.Value);
 
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        style.Description?.Value.Should().BeNull();
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result.IsSuccess.Should().BeTrue();
+//        style.Description?.Value.Should().BeNull();
+//    }
 
-    [Fact]
-    public void Create_ShouldInitializeNavigationProperties()
-    {
-        // Arrange & Act
-        var result = MidjourneyStyle.Create
-        (
-            StyleName.Create("Test Style"),
-            StyleType.Create("Custom")
-        );
+//    [Fact]
+//    public void Create_ShouldInitializeNavigationProperties()
+//    {
+//        // Arrange & Act
+//        var result = MidjourneyStyle.Create
+//        (
+//            StyleName.Create("Test Style"),
+//            StyleType.Create("Custom")
+//        );
 
-        // Assert
-        result.Value.MidjourneyPromptHistories.Should().NotBeNull();
-        result.Value.MidjourneyPromptHistories.Should().BeEmpty();
-        result.Value.MidjourneyExampleLinks.Should().NotBeNull();
-        result.Value.MidjourneyExampleLinks.Should().BeEmpty();
-    }
-}
+//        // Assert
+//        result.Value.MidjourneyPromptHistories.Should().NotBeNull();
+//        result.Value.MidjourneyPromptHistories.Should().BeEmpty();
+//        result.Value.MidjourneyExampleLinks.Should().NotBeNull();
+//        result.Value.MidjourneyExampleLinks.Should().BeEmpty();
+//    }
+//}

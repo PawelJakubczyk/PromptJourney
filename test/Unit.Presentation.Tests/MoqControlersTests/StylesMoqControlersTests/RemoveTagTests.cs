@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.StylesMoqControlersTests;
@@ -41,7 +40,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "NonExistentStyle";
         var tag = "anytag";
-        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status404NotFound,
             "Style not found");
 
@@ -68,7 +67,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "nonexistenttag";
-        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status404NotFound,
             "Tag not found in style");
 
@@ -95,7 +94,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "";
         var tag = "validtag";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be empty");
 
@@ -122,7 +121,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be empty");
 
@@ -149,7 +148,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "";
         var tag = "";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name and tag cannot be empty");
 
@@ -176,7 +175,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         string? styleName = null;
         var tag = "validtag";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be null");
 
@@ -203,7 +202,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         string? tag = null;
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be null");
 
@@ -230,7 +229,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "   ";
         var tag = "validtag";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name cannot be whitespace");
 
@@ -257,7 +256,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "   ";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Tag cannot be whitespace");
 
@@ -284,7 +283,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = new string('a', 256);
         var tag = "validtag";
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Style name exceeds maximum length");
 
@@ -311,7 +310,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = new string('a', 256);
-        var failureResult = CreateFailureResult<StyleResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Tag exceeds maximum length");
 
@@ -617,7 +616,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "testtag";
-        var failureResult = CreateFailureResult<StyleResponse, PersistenceLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status500InternalServerError,
             "Repository error during tag removal");
 
@@ -644,7 +643,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         // Arrange
         var styleName = "TestStyle";
         var tag = "testtag";
-        var failureResult = CreateFailureResult<StyleResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<StyleResponse>(
             StatusCodes.Status400BadRequest,
             "Command handler failed");
 

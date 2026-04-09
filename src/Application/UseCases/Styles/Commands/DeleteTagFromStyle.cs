@@ -28,8 +28,8 @@ public static class DeleteTagFromStyle
                     pipeline => pipeline.CollectErrors(styleName),
                     pipeline => pipeline.CollectErrors(tag))
                 .CongregateErrors(
-                    pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
-                    pipeline => pipeline.IfTagNotExist(styleName.Value, tag.Value, _styleRepository, cancellationToken))
+                    pipeline => pipeline.IfStyleNotExists(styleName, _styleRepository, cancellationToken),
+                    pipeline => pipeline.IfTagNotExist(styleName, tag, _styleRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _styleRepository.DeleteTagFromStyleAsync(styleName.Value, tag.Value, cancellationToken))
                 .MapResult<MidjourneyStyle, StyleResponse>
                     (style => StyleResponse.FromDomain(style));

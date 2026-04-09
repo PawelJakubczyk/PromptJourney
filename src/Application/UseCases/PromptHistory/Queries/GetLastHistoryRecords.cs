@@ -10,7 +10,7 @@ namespace Application.UseCases.PromptHistory.Queries;
 
 public static class GetLastHistoryRecords
 {
-    public sealed record Query(int Count) : IQuery<List<PromptHistoryResponse>>;
+    public sealed record Query(int? Count) : IQuery<List<PromptHistoryResponse>>;
 
     public sealed class Handler
     (
@@ -21,13 +21,15 @@ public static class GetLastHistoryRecords
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var count = query.Count ?? 1;
+
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CongregateErrors(
-                    pipeline => pipeline.IfHistoryRecordsLimitNotGreaterThanZero(query.Count),
-                    pipeline => pipeline.IfHistoryCountExceedsAvailable(query.Count, _promptHistoryRepository, cancellationToken))
+                    pipeline => pipeline.IfHistoryRecordsLimitNotGreaterThanZero(count),
+                    pipeline => pipeline.IfHistoryCountExceedsAvailable(count, _promptHistoryRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _promptHistoryRepository
-                    .GetLastHistoryRecordsAsync(query.Count, cancellationToken))
+                    .GetLastHistoryRecordsAsync(count, cancellationToken))
                 .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>
                     (promptHistoryList => [.. promptHistoryList.Select(PromptHistoryResponse.FromDomain)]);
 

@@ -16,7 +16,7 @@ public class WorkflowPipelineHistoryValidationTests
     {
         var pipelineTask = Task.FromResult(WorkflowPipeline.Create([], false));
 
-        var result = await pipelineTask.IfHistoryLimitNotGreaterThanZero(0);
+        var result = await pipelineTask.IfHistoryRecordsLimitNotGreaterThanZero(0);
 
         result.Errors.Should().ContainSingle()
             .Which.Message.Should().Contain("History count must be greater than zero");
@@ -27,7 +27,7 @@ public class WorkflowPipelineHistoryValidationTests
     {
         var pipelineTask = Task.FromResult(WorkflowPipeline.Create([], false));
 
-        var result = await pipelineTask.IfHistoryLimitNotGreaterThanZero(5);
+        var result = await pipelineTask.IfHistoryRecordsLimitNotGreaterThanZero(5);
 
         result.Errors.Should().BeEmpty();
     }

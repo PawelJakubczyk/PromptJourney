@@ -12,9 +12,9 @@ public sealed record PromptHistoryResponse
 {
     public static PromptHistoryResponse FromDomain(MidjourneyPromptHistory history) =>
         new(
-            history.HistoryId,
+            history.HistoryId.Value,
             history.Prompt.Value,
             history.Version.Value,
-            history.CreatedOn
+            history.CreatedOn.Value
         );
 }

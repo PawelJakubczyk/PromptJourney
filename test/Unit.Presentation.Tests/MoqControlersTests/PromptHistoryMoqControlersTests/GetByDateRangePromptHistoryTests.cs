@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PromptHistoryMoqControlersTests;
@@ -73,7 +72,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = new DateTime(2024, 12, 31);
         var to = new DateTime(2024, 1, 1); // 'from' date after 'to' date
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Date range is not chronological: 'From' is after 'To'");
 
@@ -100,7 +99,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = DateTime.UtcNow.AddDays(1);
         var to = DateTime.UtcNow.AddDays(2);
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Date cannot be in the future");
 
@@ -127,7 +126,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = DateTime.UtcNow.AddDays(-1);
         var to = DateTime.UtcNow.AddDays(1);
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Date cannot be in the future");
 
@@ -154,7 +153,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = DateTime.UtcNow.AddDays(1);
         var to = DateTime.UtcNow.AddDays(2);
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, DomainLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Dates cannot be in the future");
 
@@ -181,7 +180,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = new DateTime(2024, 1, 1);
         var to = new DateTime(2024, 12, 31);
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
 
@@ -442,7 +441,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = new DateTime(2024, 1, 1);
         var to = new DateTime(2024, 12, 31);
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error");
 
@@ -469,7 +468,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         // Arrange
         var from = new DateTime(2024, 1, 1);
         var to = new DateTime(2024, 12, 31);
-        var failureResult = CreateFailureResult<List<PromptHistoryResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<PromptHistoryResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 

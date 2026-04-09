@@ -10,7 +10,7 @@ namespace Application.UseCases.ExampleLinks.Commands;
 
 public static class DeleteAllExampleLinksByStyle
 {
-    public sealed record Command(string StyleName) : ICommand<BulkDeleteResponse>;
+    public sealed record Command(string? StyleName) : ICommand<BulkDeleteResponse>;
 
     public sealed class Handler
     (
@@ -28,7 +28,7 @@ public static class DeleteAllExampleLinksByStyle
             var result = await WorkflowPipeline
                 .EmptyAsync()
                     .CollectErrors(styleName)
-                    .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                    .IfStyleNotExists(styleName, _styleRepository, cancellationToken)
                     .ExecuteIfNoErrors(() => _exampleLinkRepository
                         .DeleteAllExampleLinksByStyleAsync(styleName.Value, cancellationToken))
                     .MapResult<int, BulkDeleteResponse>(count => BulkDeleteResponse.Success(

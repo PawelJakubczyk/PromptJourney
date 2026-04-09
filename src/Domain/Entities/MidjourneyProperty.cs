@@ -5,7 +5,7 @@ using Utilities.Workflows;
 
 namespace Domain.Entities;
 
-public class MidjourneyProperty : IEntity
+public sealed class MidjourneyProperty : IEntity
 {
     // Columns
     public PropertyName PropertyName { get; private set; }
@@ -17,7 +17,12 @@ public class MidjourneyProperty : IEntity
     public Description Description { get; private set; }
     // Navigation
     public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
+
     // Constructors
+    #pragma warning disable CS8618
+    private MidjourneyProperty() { } // parameterless constructor for EF Core
+    #pragma warning restore CS8618
+
     private MidjourneyProperty
     (
         PropertyName propertyName,
@@ -49,33 +54,27 @@ public class MidjourneyProperty : IEntity
         Result<Description> descriptionResult
     )
     {
-        var paramsCollectionResultNonNull = paramsCollectionResult ?? Result<ParamsCollection>.Ok(ParamsCollection.None);
-        var defaultValueResultNonNull = defaultValueResult ?? Result<DefaultValue>.Ok(DefaultValue.None);
-        var minValueResultNonNull = minValueResult ?? Result<MinValue>.Ok(MinValue.None);
-        var maxValueResultNonNull = maxValueResult ?? Result<MaxValue>.Ok(MaxValue.None);
-        var descriptionResultNonNull = descriptionResult ?? Result<Description>.Ok(Description.None);
-
         var result = WorkflowPipeline
         .Empty()
         .CongregateErrors(
             pipeline => pipeline.CollectErrors(propertyNameResult),
             pipeline => pipeline.CollectErrors(versionResult),
-            pipeline => pipeline.CollectErrors(paramsCollectionResultNonNull),
-            pipeline => pipeline.CollectErrors(defaultValueResultNonNull),
-            pipeline => pipeline.CollectErrors(minValueResultNonNull),
-            pipeline => pipeline.CollectErrors(maxValueResultNonNull),
-            pipeline => pipeline.CollectErrors(descriptionResultNonNull))
+            pipeline => pipeline.CollectErrors(paramsCollectionResult),
+            pipeline => pipeline.CollectErrors(defaultValueResult),
+            pipeline => pipeline.CollectErrors(minValueResult),
+            pipeline => pipeline.CollectErrors(maxValueResult),
+            pipeline => pipeline.CollectErrors(descriptionResult))
         .ExecuteIfNoErrors(() =>
         {
             var versionBase = new MidjourneyProperty
             (
                 propertyNameResult.Value,
                 versionResult.Value,
-                paramsCollectionResultNonNull.Value,
-                defaultValueResultNonNull.Value,
-                minValueResultNonNull.Value,
-                maxValueResultNonNull.Value,
-                descriptionResultNonNull.Value
+                paramsCollectionResult.Value,
+                defaultValueResult.Value,
+                minValueResult.Value,
+                maxValueResult.Value,
+                descriptionResult.Value
             );
 
             return Result.Ok(versionBase);
@@ -86,29 +85,30 @@ public class MidjourneyProperty : IEntity
     }
 
     public Result<ParamsCollection> UpdateParamsCollection(Result<ParamsCollection> paramsCollection) =>
-        UpdateValue(paramsCollection);
+        UpdateValue(paramsCollection, v => Parameters = v);
 
     public Result<DefaultValue> UpdateDefaultValue(Result<DefaultValue> defaultValue) =>
-        UpdateValue(defaultValue);
+        UpdateValue(defaultValue, v => DefaultValue = v);
 
     public Result<MinValue> UpdateMinValue(Result<MinValue> minValue) =>
-        UpdateValue(minValue);
+        UpdateValue(minValue, v => MinValue = v);
 
     public Result<MaxValue> UpdateMaxValue(Result<MaxValue> maxValue) =>
-        UpdateValue(maxValue);
+        UpdateValue(maxValue, v => MaxValue = v);
 
     public Result<Description> UpdateDescription(Result<Description> description) =>
-        UpdateValue(description);
+        UpdateValue(description, v => Description = v);
 
-    private Result<TValue> UpdateValue<TValue>(Result<TValue> valueResult)
+    private Result<TValue> UpdateValue<TValue>(
+        Result<TValue> valueResult,
+        Action<TValue> setter)
     {
-        var result = WorkflowPipeline
-            .Empty()
-            .CollectErrors(valueResult)
-            .ExecuteIfNoErrors<TValue>(() => valueResult.Value)
-            .MapResult<TValue>();
+        if (valueResult.IsFailed)
+            return Result.Fail<TValue>(valueResult.Errors);
 
-        return result;
+        setter(valueResult.Value);
+
+        return Result.Ok(valueResult.Value);
     }
 }
 

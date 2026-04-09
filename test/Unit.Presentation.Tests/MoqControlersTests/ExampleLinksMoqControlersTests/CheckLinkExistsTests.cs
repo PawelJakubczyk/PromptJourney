@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
@@ -59,7 +58,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_WhenLinkIdIsInvalidGuid()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Invalid link ID format");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Invalid link ID format");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -78,7 +77,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_WhenLinkIdIsEmpty()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Link ID cannot be empty");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Link ID cannot be empty");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -97,7 +96,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_WhenLinkIdIsWhitespace()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Link ID cannot be whitespace");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Link ID cannot be whitespace");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -116,7 +115,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, PersistenceLayer>(StatusCodes.Status500InternalServerError, "Database connection failed");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status500InternalServerError, "Database connection failed");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -201,7 +200,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_ForInvalidInputs(string invalidLinkId)
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Invalid link ID");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Invalid link ID");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -220,7 +219,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     public async Task CheckLinkExists_ReturnsBadRequest_WhenNullLinkId()
     {
         // Arrange
-        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Link ID cannot be null");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Link ID cannot be null");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);
@@ -265,7 +264,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var malformedGuid = "12345678-1234-1234-1234-12345678";
-        var failureResult = CreateFailureResult<bool, DomainLayer>(StatusCodes.Status400BadRequest, "Malformed GUID format");
+        var failureResult = CreateFailureResult<bool>(StatusCodes.Status400BadRequest, "Malformed GUID format");
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<CheckExampleLinkExistsById.Query, bool>(failureResult);
         var controller = CreateController(senderMock);

@@ -11,7 +11,7 @@ namespace Application.UseCases.ExampleLinks.Queries;
 
 public static class GetExampleLinksByStyleAndVersion
 {
-    public sealed record Query(string StyleName, string Version) : IQuery<List<ExampleLinkResponse>>;
+    public sealed record Query(string? StyleName, string? Version) : IQuery<List<ExampleLinkResponse>>;
 
     public sealed class Handler
     (
@@ -35,8 +35,8 @@ public static class GetExampleLinksByStyleAndVersion
                     pipeline => pipeline.CollectErrors(styleName),
                     pipeline => pipeline.CollectErrors(version))
                 .CongregateErrors(
-                    pipeline => pipeline.IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken),
-                    pipeline => pipeline.IfVersionNotExists(version.Value, _versionRepository, cancellationToken))
+                    pipeline => pipeline.IfStyleNotExists(styleName, _styleRepository, cancellationToken),
+                    pipeline => pipeline.IfVersionNotExists(version, _versionRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _exampleLinksRepository
                     .GetExampleLinksByStyleAndVersionAsync(styleName.Value, version.Value, cancellationToken))
                 .MapResult<List<MidjourneyStyleExampleLink>, List<ExampleLinkResponse>>

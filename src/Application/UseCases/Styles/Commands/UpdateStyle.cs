@@ -30,12 +30,12 @@ public static class UpdateStyle
             var description = command.Description is not null ? Description.Create(command.Description) : Result.Ok(Description.None);
             var tags = command.Tags is not null ? TagsCollection.Create(command.Tags) : Result.Ok(TagsCollection.None);
 
-            var midjourneyStyle = MidjourneyStyle.Create(styleName, type, description.Value, tags.Value);
+            var midjourneyStyle = MidjourneyStyle.Create(styleName, type, description, tags);
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(midjourneyStyle)
-                .IfStyleNotExists(styleName.Value, _styleRepository, cancellationToken)
+                .IfStyleNotExists(styleName, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository
                     .UpdateStyleAsync(midjourneyStyle.Value, cancellationToken))
                 .MapResult(() => StyleResponse.FromDomain(midjourneyStyle.Value));

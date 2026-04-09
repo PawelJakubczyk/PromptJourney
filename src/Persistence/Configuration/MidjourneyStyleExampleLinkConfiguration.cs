@@ -17,6 +17,7 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
         builder.HasKey(link => link.Id);
 
         builder.Property(link => link.Id)
+            .HasConversion<LinkIDConverter, LinkIDComparer>()
             .HasColumnName("id")
             .HasColumnType(ColumnType.Uuid)
             .IsRequired();

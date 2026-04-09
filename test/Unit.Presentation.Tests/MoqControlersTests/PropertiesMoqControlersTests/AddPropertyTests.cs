@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.PropertiesMoqControlersTests;
@@ -28,7 +27,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             "Stylization parameter"
         );
 
-        var response = new PropertyCommandResponse(request.PropertyName, request.Version);
+        var response = new PropertyResponse(request.PropertyName, request.Version, request.Parameters, request.DefaultValue, request.MinValue, request.MaxValue, request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -38,7 +37,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(request, CancellationToken.None);
+        var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -58,8 +57,8 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             ["--s"]
         );
 
-        PropertyCommandResponse? nullResponse = null;
-        var result = Result.Ok<PropertyCommandResponse?>(nullResponse);
+        PropertyResponse? nullResponse = null;
+        var result = Result.Ok<PropertyResponse?>(nullResponse);
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddProperty.Command>(), It.IsAny<CancellationToken>()))
@@ -68,7 +67,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(request, CancellationToken.None);
+        var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
         actionResult
@@ -87,7 +86,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             []
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, DomainLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status400BadRequest,
             "Invalid property data");
 
@@ -99,7 +98,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(invalidRequest, CancellationToken.None);
+        var actionResult = await controller.Create(invalidRequest, CancellationToken.None);
 
         // Assert
         actionResult
@@ -119,7 +118,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
             ["--s"]
         );
 
-        var failureResult = CreateFailureResult<PropertyCommandResponse, ApplicationLayer>(
+        var failureResult = CreateFailureResult<PropertyResponse>(
             StatusCodes.Status404NotFound,
             "Version not found");
 
@@ -131,7 +130,7 @@ public sealed class AddPropertyTests : PropertiesControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.AddProperty(request, CancellationToken.None);
+        var actionResult = await controller.Create(request, CancellationToken.None);
 
         // Assert
         actionResult

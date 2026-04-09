@@ -10,7 +10,7 @@ namespace Application.UseCases.PromptHistory.Queries;
 
 public static class GetHistoryByDateRange
 {
-    public sealed record Query(DateTime From, DateTime To) : IQuery<List<PromptHistoryResponse>>;
+    public sealed record Query(DateTime? From, DateTime? To) : IQuery<List<PromptHistoryResponse>>;
 
     public sealed class Handler
     (
@@ -21,14 +21,17 @@ public static class GetHistoryByDateRange
 
         public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
         {
+            var from = query.From ?? DateTime.MinValue;
+            var to = query.To ?? DateTime.Now;
+
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CongregateErrors(
-                    pipeline => pipeline.IfDateInFuture(query.From),
-                    pipeline => pipeline.IfDateInFuture(query.To),
-                    pipeline => pipeline.IfDateRangeNotChronological(query.From, query.To))
+                    pipeline => pipeline.IfDateInFuture(from),
+                    pipeline => pipeline.IfDateInFuture(to),
+                    pipeline => pipeline.IfDateRangeNotChronological(from, to))
                 .ExecuteIfNoErrors(() => _promptHistoryRepository
-                    .GetHistoryByDateRangeAsync(query.From, query.To, cancellationToken))
+                    .GetHistoryByDateRangeAsync(from, to, cancellationToken))
                 .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>
                     (promptHistoryList => [.. promptHistoryList.Select(PromptHistoryResponse.FromDomain)]);
 

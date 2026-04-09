@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
-using Utilities.Constants;
 using Utilities.Errors;
 using Utilities.Results;
 using HttpJsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
@@ -46,11 +45,9 @@ public abstract class ControllerTestsBase
     };
 
     // Helper method to create error results
-    protected static Result<TResult> CreateFailureResult<TResult, TLayer>(int statusCode, string message)
-        where TLayer : ILayer
+    protected static Result<TResult> CreateFailureResult<TResult>(int statusCode, string message)
     {
         var error = ErrorBuilder.New()
-            .WithLayer<TLayer>()
             .WithMessage(message)
             .WithErrorCode(statusCode)
             .Build();

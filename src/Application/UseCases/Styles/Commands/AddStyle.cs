@@ -41,7 +41,7 @@ public static class AddStyle
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(style)
-                .IfStyleAlreadyExists(styleName.Value, _styleRepository, cancellationToken)
+                .IfStyleAlreadyExists(styleName, _styleRepository, cancellationToken)
                 .ExecuteIfNoErrors(() => _styleRepository
                     .AddStyleAsync(style.Value, cancellationToken))
                 .MapResult(() => StyleResponse.FromDomain(style.Value));

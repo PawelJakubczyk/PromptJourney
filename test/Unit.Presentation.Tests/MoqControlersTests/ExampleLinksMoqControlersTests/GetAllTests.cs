@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
-using Utilities.Constants;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
@@ -18,8 +17,8 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new(CorrectUrl, CorrectStyleName, CorrectVersion),
-            new("http://example2.com/image2.png", "ClassicStyle", "2.0")
+            new(Guid.NewGuid(), CorrectUrl, CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example2.com/image2.png", "ClassicStyle", "2.0")
         };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
@@ -52,7 +51,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenDatabaseErrorOccurs()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database connection failed");
         var senderMock = CreateSenderMock();
@@ -70,7 +69,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenRepositoryThrowsException()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, PersistenceLayer>(
+        var failureResult = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Repository error");
         var senderMock = CreateSenderMock();
@@ -88,7 +87,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_UsesSingletonQuery()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, CorrectStyleName, CorrectVersion) };
         var senderMock = CreateSenderMock();
         GetAllExampleLinks.Query? capturedQuery = null;
         senderMock
@@ -143,7 +142,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_ReturnsConsistentResults_WhenCalledMultipleTimes()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, CorrectStyleName, CorrectVersion) };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
@@ -167,7 +166,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var list = Enumerable.Range(1, count)
-            .Select(i => new ExampleLinkResponse($"http://example{i}.com/image.jpg", $"Style{i}", "1.0"))
+            .Select(i => new ExampleLinkResponse(Guid.NewGuid(), $"http://example{i}.com/image.jpg", $"Style{i}", "1.0"))
             .ToList();
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
@@ -186,10 +185,10 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
-            new("http://example2.com/image2.jpg", "ClassicStyle", "2.0"),
-            new("http://example3.com/image3.jpg", "Abstract", "5.2"),
-            new("http://example4.com/image4.jpg", "Minimal", "6.0")
+            new(Guid.NewGuid(), "http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example2.com/image2.jpg", "ClassicStyle", "2.0"),
+            new(Guid.NewGuid(), "http://example3.com/image3.jpg", "Abstract", "5.2"),
+            new(Guid.NewGuid(), "http://example4.com/image4.jpg", "Minimal", "6.0")
         };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
@@ -206,7 +205,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<ExampleLinkResponse>, ApplicationLayer>(
+        var failureResult = CreateFailureResult<List<ExampleLinkResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
         var senderMock = CreateSenderMock();
@@ -240,7 +239,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     public async Task GetAll_UsesSingletonPattern_VerifiesSameInstance()
     {
         // Arrange
-        var list = new List<ExampleLinkResponse> { new(CorrectUrl, CorrectStyleName, CorrectVersion) };
+        var list = new List<ExampleLinkResponse> { new(Guid.NewGuid(), CorrectUrl, CorrectStyleName, CorrectVersion) };
         var senderMock = CreateSenderMock();
         var capturedQueries = new List<GetAllExampleLinks.Query>();
         senderMock
@@ -265,9 +264,9 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example.com/image.jpg", "Style1", CorrectVersion),
-            new("https://secure.example.com/image.png", "Style2", CorrectVersion),
-            new("http://example.com/path/to/image.jpeg", "Style3", CorrectVersion)
+            new(Guid.NewGuid(), "http://example.com/image.jpg", "Style1", CorrectVersion),
+            new(Guid.NewGuid(), "https://secure.example.com/image.png", "Style2", CorrectVersion),
+            new(Guid.NewGuid(), "http://example.com/path/to/image.jpeg", "Style3", CorrectVersion)
         };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
@@ -302,7 +301,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var largeList = Enumerable.Range(1, 1000)
-            .Select(i => new ExampleLinkResponse($"http://example{i}.com/image{i}.jpg", $"Style{i % 10}", $"{i % 6}.0"))
+            .Select(i => new ExampleLinkResponse(Guid.NewGuid(), $"http://example{i}.com/image{i}.jpg", $"Style{i % 10}", $"{i % 6}.0"))
             .ToList();
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(largeList));
@@ -321,9 +320,9 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
-            new("http://example2.com/image2.jpg", CorrectStyleName, CorrectVersion),
-            new("http://example3.com/image3.jpg", CorrectStyleName, CorrectVersion)
+            new(Guid.NewGuid(), "http://example1.com/image1.jpg", CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example2.com/image2.jpg", CorrectStyleName, CorrectVersion),
+            new(Guid.NewGuid(), "http://example3.com/image3.jpg", CorrectStyleName, CorrectVersion)
         };
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
@@ -342,10 +341,10 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         // Arrange
         var list = new List<ExampleLinkResponse>
         {
-            new("http://example1.com/image1.jpg", "Style1", "5.2"),
-            new("http://example2.com/image2.jpg", "Style2", "5.2"),
-            new("http://example3.com/image3.jpg", "Style3", "5.2")
-        };
+            new(Guid.NewGuid(), "http://example1.com/image1.jpg", "Style1", "5.2"),
+            new(Guid.NewGuid(), "http://example2.com/image2.jpg", "Style2", "5.2"),
+            new(Guid.NewGuid(), "http://example3.com/image3.jpg", "Style3", "5.2")
+        }; 
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<GetAllExampleLinks.Query, List<ExampleLinkResponse>>(Result.Ok(list));
         var controller = CreateController(senderMock);
