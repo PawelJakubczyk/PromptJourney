@@ -22,7 +22,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(GetAllExampleLinks.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<ExampleLinkResponse>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<ExampleLinkResponse>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return styles;
     }
@@ -37,7 +37,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<ExampleLinkResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<ExampleLinkResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return styles;
     }
@@ -52,7 +52,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<List<ExampleLinkResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<List<ExampleLinkResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return styles;
     }
@@ -67,7 +67,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return exist;
     }
@@ -82,7 +82,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(query, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return exist;
     }
@@ -95,17 +95,18 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(CheckAnyExampleLinksExist.Query.Singleton, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse(payload => Ok(payload))
-            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<bool, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return exist;
     }
 
     // POST api/examplelinks
     [HttpPost]
-    public async Task<Results<Created<string>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
+    public async Task<Results<Created<ExampleLinkResponse>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> AddExampleLink([FromBody] AddExampleLinkRequest request, CancellationToken cancellationToken)
     {
         var command = new AddExampleLink.Command
         (
+            request.Id,
             request.Link,
             request.Style,
             request.Version
@@ -115,11 +116,11 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareCreateResponse(payload =>
-                CreatedAtAction(nameof(CheckLinkExists), new { link = payload }, payload))
-            .ToResultsCreatedAsync<string, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>
+                CreatedAtAction(nameof(CheckLinkExists), new { payload!.Id }, payload))
+            .ToResultsCreatedAsync<ExampleLinkResponse, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>
             (
                 httpContext: HttpContext,
-                locationFactory: version => $"/api/examplelinks/{request.Style}"
+                locationFactory: link => $"/api/examplelinks/{link!.Id}"
             );
 
         return result;
@@ -135,7 +136,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<DeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return result;
     }
@@ -150,7 +151,7 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
             .Send(command, cancellationToken)
             .IfErrorsPrepareErrorResponse()
             .ElsePrepareOKResponse()
-            .ToResultsOkAsync<BulkDeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>();
+            .ToResultsOkAsync<BulkDeleteResponse, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>(httpContext: HttpContext);
 
         return result;
     }
@@ -160,5 +161,6 @@ public sealed class ExampleLinksController(ISender sender) : ApiController(sende
 public sealed record AddExampleLinkRequest(
     string Link,
     string Style,
-    string Version
+    string Version,
+    string Id = null
 );

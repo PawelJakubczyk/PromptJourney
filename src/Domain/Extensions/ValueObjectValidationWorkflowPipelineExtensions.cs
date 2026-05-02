@@ -93,6 +93,26 @@ public static partial class ValueObjectValidationWorkflowPipelineExtensions
         return pipeline;
     }
 
+    public static WorkflowPipeline IfLengthTooLong<TValue, TPrimitive>
+    (
+        this WorkflowPipeline pipeline,
+        string value,
+        int maxLength)
+        where TValue : ValueObject<TPrimitive>
+    {
+        if (pipeline.BreakOnError)
+            return pipeline;
+
+        if (value?.Length > maxLength)
+        {
+            pipeline.Errors.Add(
+                ErrorFactories.TooLong<TValue>(value, maxLength)
+            );
+        }
+
+        return pipeline;
+    }
+
     public static WorkflowPipeline IfContainsSuspiciousContent<TValue>
     (
         this WorkflowPipeline pipeline,

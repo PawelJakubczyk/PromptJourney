@@ -14,8 +14,8 @@ public static class AddProperty
 {
     public sealed record Command
     (
-        string? Version,
         string? PropertyName,
+        string? Version,
         List<string?>? Parameters,
         string? DefaultValue = null,
         string? MinValue = null,
@@ -34,8 +34,8 @@ public static class AddProperty
 
         public async Task<Result<PropertyResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var versionResult = ModelVersion.Create(command.Version);
             var propertyNameResult = PropertyName.Create(command.PropertyName);
+            var versionResult = ModelVersion.Create(command.Version);
             var parametersResult = command.Parameters is not null ? ParamsCollection.Create(command.Parameters) : ParamsCollection.None;
             var defaultValueResult = command.DefaultValue is not null ? DefaultValue.Create(command.DefaultValue) : DefaultValue.None;
             var minValueResult = command.MinValue is not null ? MinValue.Create(command.MinValue) : MinValue.None;

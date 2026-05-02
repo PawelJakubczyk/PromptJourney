@@ -1,6 +1,7 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
+using Application.UseCases.ExampleLinks.Responses;
 using Domain.Entities;
 using Domain.ValueObjects;
 using Utilities.Results;
@@ -10,22 +11,22 @@ namespace Application.UseCases.ExampleLinks.Commands;
 
 public static class AddExampleLink
 {
-    public sealed record Command(string? Link, string? StyleName, string? Version) : ICommand<string>;
+    public sealed record Command(string? Id, string? Link, string? StyleName, string? Version) : ICommand<ExampleLinkResponse>;
 
     public sealed class Handler
     (
         IExampleLinksRepository exampleLinkRepository,
         IStyleRepository styleRepository,
         IVersionRepository versionRepository
-    ) : ICommandHandler<Command, string>
+    ) : ICommandHandler<Command, ExampleLinkResponse>
     {
         private readonly IExampleLinksRepository _exampleLinkRepository = exampleLinkRepository;
         private readonly IStyleRepository _styleRepository = styleRepository;
         private readonly IVersionRepository _versionRepository = versionRepository;
 
-        public async Task<Result<string>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<ExampleLinkResponse>> Handle(Command command, CancellationToken cancellationToken)
         {
-            var linkId = command.Link == null ? LinkID.Create() : LinkID.Create(command.Link);
+            var linkId = command.Id == null ? LinkID.Create() : LinkID.Create(command.Id);
             var link = ExampleLink.Create(command.Link);
             var styleName = StyleName.Create(command.StyleName);
             var version = ModelVersion.Create(command.Version);
@@ -47,7 +48,7 @@ public static class AddExampleLink
                         pipeline => pipeline.IfLinkAlreadyExists(link, _exampleLinkRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _exampleLinkRepository
                         .AddExampleLinkAsync(linkResult.Value, cancellationToken))
-                    .MapResult(() => linkResult.Value.Id.ToString());
+                    .MapResult(() => ExampleLinkResponse.FromDomain(linkResult.Value));
 
             return result;
         }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Persistence.Context;
@@ -11,9 +12,11 @@ using Persistence.Context;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(MidjourneyDbContext))]
-    partial class MidjourneyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260413100334_migration_update6")]
+    partial class migration_update6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,13 +232,13 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.MidjourneyVersion", "MidjourneyVersion")
+                    b.HasOne("Domain.Entities.MidjourneyVersion", "MidjourneyMaster")
                         .WithMany()
                         .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MidjourneyVersion");
+                    b.Navigation("MidjourneyMaster");
 
                     b.Navigation("MidjuorneyStyle");
                 });

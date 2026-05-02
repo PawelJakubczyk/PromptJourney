@@ -100,7 +100,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
     {
         var links = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Include(exampleLink => exampleLink.MidjuorneyStyle)
-            .Include(exampleLink => exampleLink.MidjourneyMaster)
+            .Include(exampleLink => exampleLink.MidjourneyVersion)
             .ToListAsync(cancellationToken);
 
         return Result.Ok(links);
@@ -110,7 +110,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
     {
         var item = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Include(exampleLink => exampleLink.MidjuorneyStyle)
-            .Include(exampleLink => exampleLink.MidjourneyMaster)
+            .Include(exampleLink => exampleLink.MidjourneyVersion)
             .FirstOrDefaultAsync(exampleLink => exampleLink.Id == id, cancellationToken);
 
         if (item is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExampleLinkNotFound(id.Value));
@@ -127,7 +127,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
     {
         var list = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Include(exampleLink => exampleLink.MidjuorneyStyle)
-            .Include(exampleLink => exampleLink.MidjourneyMaster)
+            .Include(exampleLink => exampleLink.MidjourneyVersion)
             .Where(exampleLink => exampleLink.Link == link)
             .ToListAsync(cancellationToken);
 
@@ -142,7 +142,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
     {
         var list = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Include(exampleLink => exampleLink.MidjuorneyStyle)
-            .Include(exampleLink => exampleLink.MidjourneyMaster)
+            .Include(exampleLink => exampleLink.MidjourneyVersion)
             .Where(exampleLink => exampleLink.StyleName == styleName)
             .ToListAsync(cancellationToken);
 
@@ -163,7 +163,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
 
         var list = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Include(exampleLink => exampleLink.MidjuorneyStyle)
-            .Include(exampleLink => exampleLink.MidjourneyMaster)
+            .Include(exampleLink => exampleLink.MidjourneyVersion)
             .Where(exampleLink => exampleLink.StyleName == styleName && exampleLink.Version == version)
             .ToListAsync(cancellationToken);
 

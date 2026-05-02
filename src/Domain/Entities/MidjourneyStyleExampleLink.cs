@@ -19,7 +19,7 @@ public sealed class MidjourneyStyleExampleLink : IEntity
 
     // Navigation
     public MidjourneyStyle MidjuorneyStyle { get; private set; } = null!;
-    public MidjourneyVersion MidjourneyMaster { get; private set; } = null!;
+    public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
 
     // Constructors
     #pragma warning disable CS8618

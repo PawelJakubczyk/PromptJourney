@@ -47,7 +47,7 @@ public class MidjourneyStyleExampleLinkConfiguration : IEntityTypeConfiguration<
             .HasPrincipalKey(style => style.StyleName)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(link => link.MidjourneyMaster)
+        builder.HasOne(link => link.MidjourneyVersion)
             .WithMany()
             .HasForeignKey(link => link.Version)
             .HasPrincipalKey(version => version.Version)
