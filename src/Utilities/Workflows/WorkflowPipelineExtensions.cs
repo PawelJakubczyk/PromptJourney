@@ -117,7 +117,7 @@ public static class WorkflowPipelineExtensions
         if (pipeline.BreakOnError || pipeline.Errors.Count > 0)
             return pipeline;
 
-        var actionResult = await action().ConfigureAwait(false);
+        var actionResult = await action();
 
         if (actionResult.IsFailed)
         {

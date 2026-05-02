@@ -8,7 +8,7 @@ namespace Domain.ValueObjects;
 
 public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?>
 {
-    public const int MaxLength = 200;
+    public const int MaxLength = 800;
     public override bool IsNone => false;
 
     private ExampleLink(string value) : base(value) { }

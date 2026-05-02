@@ -79,8 +79,8 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     {
         var command = new AddProperty.Command
         (
-            request.Version,
             request.PropertyName,
+            request.Version,
             request.Parameters,
             request.DefaultValue,
             request.MinValue,
@@ -121,8 +121,8 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
     {
         var command = new UpdateProperty.Command
         (
-            request.Version,
             request.PropertyName,
+            request.Version,
             request.Parameters,
             request.DefaultValue,
             request.MinValue,
@@ -181,8 +181,8 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 // Request DTOs
 public sealed record PropertyRequest
 (
-    string Version,
     string PropertyName,
+    string Version,
     List<string?> Parameters,
     string? DefaultValue = null,
     string? MinValue = null,
@@ -192,8 +192,8 @@ public sealed record PropertyRequest
 
 public sealed record PatchPropertyRequest
 (
-    string Version,
     string PropertyName,
+    string Version,
     string CharacteristicToUpdate,
     string? NewValue
 );

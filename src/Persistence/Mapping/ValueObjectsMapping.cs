@@ -263,7 +263,7 @@ public static class GuidValueObjectMapping<TValueObject>
                 vo => vo.Value,
 
                 // DB -> Domain
-                guid => Factory(guid.ToString("N"))
+                guid => Factory(guid.ToString("D"))
             )
         { }
     }
@@ -279,7 +279,7 @@ public static class GuidValueObjectMapping<TValueObject>
                 vo => vo.Value.GetHashCode(),
 
                 // Snapshot (deep copy)
-                vo => Factory(vo.Value.ToString("N"))
+                vo => Factory(vo.Value.ToString("D"))
             )
         { }
     }

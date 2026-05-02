@@ -14,7 +14,7 @@ public sealed record ExampleLinkResponse
     new(
         exampleLink.Id.Value,
         exampleLink.Link.Value, 
-        exampleLink.MidjuorneyStyle.StyleName.Value, 
+        exampleLink.StyleName.Value, 
         exampleLink.Version.Value
         );
 }

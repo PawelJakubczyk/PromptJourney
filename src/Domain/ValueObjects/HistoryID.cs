@@ -8,7 +8,7 @@ namespace Domain.ValueObjects;
 
 public record HistoryID : ValueObject<Guid>, ICreatable<HistoryID, string?>
 {
-    public const int ExactLength = 32;
+    public const int ExactLength = 36;
     public override bool IsNone => false;
     public Guid ValueAsGuid { get; }
 
@@ -21,11 +21,15 @@ public record HistoryID : ValueObject<Guid>, ICreatable<HistoryID, string?>
     {
         value = value?.Trim();
 
+        if (string.IsNullOrEmpty(value))
+        {
+            Create();
+        }
+
         var result = WorkflowPipeline
             .Empty()
-            .IfHistoryIdNullOrWhitespace(value)
             .CongregateErrors(
-                pipeline => pipeline.IfLengthNotExact<HistoryID>(value!, ExactLength),
+                pipeline => pipeline.IfLengthTooLong<LinkID, Guid>(value!, ExactLength),
                 pipeline => pipeline.IfGuidFormatInvalid(value!))
             .ExecuteIfNoErrors<HistoryID>(() => new HistoryID(Guid.Parse(value!)))
             .MapResult<HistoryID>();
@@ -40,28 +44,5 @@ public record HistoryID : ValueObject<Guid>, ICreatable<HistoryID, string?>
         var result = Result.Ok(new HistoryID(value));
 
         return result;
-    }
-}
-
-file static partial class HistoryIDErrorsExtensions
-{
-
-    internal static WorkflowPipeline IfHistoryIdNullOrWhitespace
-    (
-        this WorkflowPipeline pipeline,
-        string? value
-    )
-    {
-        if (pipeline.BreakOnError)
-            return pipeline;
-
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            pipeline.Errors.Add(
-                ErrorFactories.NullOrWhitespace<HistoryID>(value)
-            );
-        }
-
-        return pipeline;
     }
 }
