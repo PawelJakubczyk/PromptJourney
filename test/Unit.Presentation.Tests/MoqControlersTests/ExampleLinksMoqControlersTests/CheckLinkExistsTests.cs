@@ -23,7 +23,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(CorrectId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult
@@ -41,7 +41,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(CorrectId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult
@@ -121,7 +121,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.CheckLinkExists(CorrectId, CancellationToken.None);
+        var actionResult = await controller.CheckLinkExists(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult
@@ -144,11 +144,11 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var linkId = CorrectId;
 
         // Act
-        await controller.CheckLinkExists(linkId, CancellationToken.None);
+        await controller.CheckLinkExists(linkId.ToString(), CancellationToken.None);
 
         // Assert
         capturedQuery.Should().NotBeNull();
-        capturedQuery!.Id.Should().Be(linkId);
+        capturedQuery!.Id.Should().Be(linkId.ToString());
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var action = () => controller.CheckLinkExists(CorrectId, cts.Token);
+        var action = () => controller.CheckLinkExists(CorrectId.ToString(), cts.Token);
 
         // Assert
         await action.Should().ThrowAsync<OperationCanceledException>()
@@ -244,8 +244,8 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult1 = await controller.CheckLinkExists(linkId, CancellationToken.None);
-        var actionResult2 = await controller.CheckLinkExists(linkId, CancellationToken.None);
+        var actionResult1 = await controller.CheckLinkExists(linkId.ToString(), CancellationToken.None);
+        var actionResult2 = await controller.CheckLinkExists(linkId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult1
@@ -289,7 +289,7 @@ public sealed class CheckLinkExistsTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.CheckLinkExists(linkId, CancellationToken.None);
+        await controller.CheckLinkExists(linkId.ToString(), CancellationToken.None);
 
         // Assert
         senderMock.Verify(s => s.Send(It.IsAny<CheckExampleLinkExistsById.Query>(), It.IsAny<CancellationToken>()), Times.Once);

@@ -3,6 +3,7 @@ using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests.Base;
 using FluentAssertions;
 using Utilities.Results;
+using Application.UseCases.ExampleLinks.Responses;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.ExampleLinksMoqControlersTests;
 
@@ -13,7 +14,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(resultOk);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(resultOk);
         var controller = CreateController(senderMock);
 
         // Act
@@ -31,7 +32,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureInvalidLinkFormat);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureInvalidLinkFormat);
         var controller = CreateController(senderMock);
 
         // Act
@@ -49,7 +50,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureStyleNameTooLong);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureStyleNameTooLong);
         var controller = CreateController(senderMock);
 
         // Act
@@ -67,7 +68,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureInvalidVersionFormat);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureInvalidVersionFormat);
         var controller = CreateController(senderMock);
 
         // Act
@@ -85,7 +86,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureAllFieldsRequired);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureAllFieldsRequired);
         var controller = CreateController(senderMock);
 
         // Act
@@ -103,7 +104,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureLinkAlreadyExists);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureLinkAlreadyExists);
         var controller = CreateController(senderMock);
 
         // Act
@@ -121,7 +122,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureStyleNotFound);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureStyleNotFound);
         var controller = CreateController(senderMock);
 
         // Act
@@ -139,7 +140,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureVersionNotFound);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureVersionNotFound);
         var controller = CreateController(senderMock);
 
         // Act
@@ -157,7 +158,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureStyleAndVersionNotFound);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureStyleAndVersionNotFound);
         var controller = CreateController(senderMock);
 
         // Act
@@ -177,7 +178,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var cts = new CancellationTokenSource();
         cts.Cancel();
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendThrowsOperationCanceledForAny<string>();
+        senderMock.SetupSendThrowsOperationCanceledForAny<ExampleLinkResponse>();
         var controller = CreateController(senderMock);
 
         // Act 
@@ -198,10 +199,10 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     {
         // Arrange
         var request = new AddExampleLinkRequest(link, style, version);
-        var id = Guid.NewGuid().ToString();
-        var result = Result.Ok(id);
+        var id = Guid.NewGuid();
+        var result = Result.Ok(new ExampleLinkResponse(id, link, style, version));
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(result);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(result);
         var controller = CreateController(senderMock);
 
         // Act
@@ -211,7 +212,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeCreatedResult()
-            .WithValue(id);
+            .WithValue(id.ToString());
     }
 
     [Theory]
@@ -226,7 +227,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Arrange
         var request = new AddExampleLinkRequest(link ?? string.Empty, style ?? string.Empty, version ?? string.Empty);
         var senderMock = CreateSenderMock();
-        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, string>(failureInvalidInputData);
+        senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(failureInvalidInputData);
         var controller = CreateController(senderMock);
 
         // Act

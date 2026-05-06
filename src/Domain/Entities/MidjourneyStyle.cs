@@ -15,10 +15,10 @@ public sealed class MidjourneyStyle : IEntity
 
     // Navigation properties
     private List<MidjourneyPromptHistory> PromptHistories { get; set; } = [];
-    public IReadOnlyCollection<MidjourneyPromptHistory> MidjourneyPromptHistories => PromptHistories.AsReadOnly();
+    public IReadOnlyCollection<MidjourneyPromptHistory> MidjourneyPromptHistories => PromptHistories;
 
     private List<MidjourneyStyleExampleLink> ExampleLink { get; set; } = [];
-    public IReadOnlyCollection<MidjourneyStyleExampleLink> MidjourneyExampleLinks => ExampleLink.AsReadOnly();
+    public IReadOnlyCollection<MidjourneyStyleExampleLink> MidjourneyExampleLinks => ExampleLink;
 
     // Constructors
     #pragma warning disable CS8618
