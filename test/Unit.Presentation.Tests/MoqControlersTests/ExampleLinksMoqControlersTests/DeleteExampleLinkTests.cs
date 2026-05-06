@@ -21,7 +21,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        var actionResult = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValue(deleteResponse);
@@ -39,7 +39,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        var actionResult = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult.Should().BeNotFoundResult().WithMessage($"Link '{CorrectId}' not found");
@@ -129,7 +129,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        var actionResult = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed" );
@@ -149,11 +149,11 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         captured.Should().NotBeNull();
-        captured!.Name.Should().Be(CorrectId);
+        captured!.Name.Should().Be(CorrectId.ToString());
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var action = () => controller.DeleteExampleLink(CorrectId, cts.Token);
+        var action = () => controller.DeleteExampleLink(CorrectId.ToString(), cts.Token);
 
         // Assert
         await action.Should().ThrowAsync<OperationCanceledException>()
@@ -184,7 +184,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         senderMock.Verify(
@@ -265,8 +265,8 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var r1 = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
-        var r2 = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        var r1 = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
+        var r2 = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         r1.Should().BeOkResult().WithValue(response);
@@ -285,7 +285,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        var actionResult = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult.Should().BeBadRequestResult().WithMessage("Repository error during deletion");
@@ -320,7 +320,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        var actionResult = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult.Should().BeBadRequestResult().WithMessage("Command handler failed");
@@ -337,7 +337,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var start = DateTime.UtcNow;
 
         // Act
-        await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         (DateTime.UtcNow - start).Should().BeLessThan(TimeSpan.FromSeconds(1));
@@ -355,7 +355,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act
-        var actionResult = await controller.DeleteExampleLink(CorrectId, CancellationToken.None);
+        var actionResult = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
         actionResult.Should().BeOkResult().WithValue(deleteResponse);

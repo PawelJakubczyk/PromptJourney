@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Application.UseCases.ExampleLinks.Responses;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
@@ -38,7 +39,7 @@ public class ExampleLinksControllerTestsBase : ControllerTestsBase
     protected const string ErrorCanceledOperation = "The operation was canceled.";
 
     // ID constant
-    protected static readonly string CorrectId = Guid.NewGuid().ToString();
+    protected static readonly Guid CorrectId = Guid.NewGuid();
 
 
     // Standard valid request
@@ -114,67 +115,73 @@ public class ExampleLinksControllerTestsBase : ControllerTestsBase
     );
 
     // Standard success result
-    protected static readonly Result<string> resultOk = Result.Ok(CorrectId);
+    protected static readonly Result<ExampleLinkResponse> resultOk = Result.Ok(new ExampleLinkResponse
+    (
+        CorrectId,
+        CorrectUrl,
+        CorrectStyleName,
+        CorrectVersion
+    )); 
 
     // Failure results for AddExampleLink scenarios
-    protected static readonly Result<string> failureInvalidLinkFormat = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureInvalidLinkFormat =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageInvalidLinkFormat
         );
 
-    protected static readonly Result<string> failureStyleNameTooLong = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureStyleNameTooLong =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageStyleNameTooLong
         );
 
-    protected static readonly Result<string> failureInvalidVersionFormat = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureInvalidVersionFormat =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageInvalidVersionFormat
         );
 
-    protected static readonly Result<string> failureAllFieldsRequired = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureAllFieldsRequired =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageAllFieldsRequired
         );
 
-    protected static readonly Result<string> failureInvalidInputData = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureInvalidInputData =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status400BadRequest,
             ErrorMessageInvalidInputData
         );
 
-    protected static readonly Result<string> failureLinkAlreadyExists = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureLinkAlreadyExists =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status409Conflict,
             ErrorMessageLinkAlreadyExists
         );
 
-    protected static readonly Result<string> failureStyleNotFound = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureStyleNotFound =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status409Conflict,
             ErrorMessageStyleNotFound
         );
 
-    protected static readonly Result<string> failureVersionNotFound = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureVersionNotFound =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status404NotFound,
             ErrorMessageVersionNotFound
         );
 
-    protected static readonly Result<string> failureStyleAndVersionNotFound = 
-        CreateFailureResult<string>
+    protected static readonly Result<ExampleLinkResponse> failureStyleAndVersionNotFound =
+        CreateFailureResult<ExampleLinkResponse>
         (
             StatusCodes.Status404NotFound,
             ErrorMessageStyleAndVersionNotFound
