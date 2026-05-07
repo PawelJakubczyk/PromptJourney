@@ -27,14 +27,14 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     // Query Methods
     public async Task<Result<List<MidjourneyStyle>>> GetAllStylesAsync(CancellationToken cancellationToken)
     {
-        var styles = await _midjourneyDbContext.MidjourneyStyle.ToListAsync(cancellationToken);
+        var styles = await _midjourneyDbContext.MidjourneyStyles.ToListAsync(cancellationToken);
 
         return Result.Ok(styles);
     }
 
     public async Task<Result<MidjourneyStyle>> GetStyleByNameAsync(StyleName name, CancellationToken cancellationToken)
     {
-        var style = await _midjourneyDbContext.MidjourneyStyle
+        var style = await _midjourneyDbContext.MidjourneyStyles
             .Include(s => s.MidjourneyExampleLinks)
             .FirstOrDefaultAsync(s => s.StyleName == name, cancellationToken);
 
@@ -45,7 +45,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<List<MidjourneyStyle>>> GetStylesByTypeAsync(StyleType type, CancellationToken cancellationToken)
     {
-        var styles = await _midjourneyDbContext.MidjourneyStyle
+        var styles = await _midjourneyDbContext.MidjourneyStyles
             .Include(s => s.MidjourneyExampleLinks)
             .Where(s => s.Type == type)
             .ToListAsync(cancellationToken);
@@ -59,7 +59,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
         var tagValues = tags.CollectionValues.ToArray();
        
-        var styles = _midjourneyDbContext.MidjourneyStyle
+        var styles = _midjourneyDbContext.MidjourneyStyles
             .Include(s => s.MidjourneyExampleLinks)
             .AsEnumerable()
             .Where(s => s.Tags != null && s.Tags.CollectionValues.Any(t => tagValues.Contains(t)))
@@ -70,7 +70,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<List<MidjourneyStyle>>> GetStylesByDescriptionKeywordAsync(Keyword keyword, CancellationToken cancellationToken)
     {
-        var styles = await _midjourneyDbContext.MidjourneyStyle
+        var styles = await _midjourneyDbContext.MidjourneyStyles
             .Include(s => s.MidjourneyExampleLinks)
             .Where(s => s.Description != null && EF.Functions.Like(s.Description.Value, $"%{keyword.Value}%"))
             .ToListAsync(cancellationToken);
@@ -87,7 +87,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<bool>> CheckStyleExistsAsync(StyleName name, CancellationToken cancellationToken)
     {
-        var exist = await _midjourneyDbContext.MidjourneyStyle
+        var exist = await _midjourneyDbContext.MidjourneyStyles
             .AnyAsync(s => s.StyleName == name, cancellationToken);
 
         return Result.Ok(exist);
@@ -95,7 +95,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<bool>> CheckTagExistsInStyleAsync(StyleName styleName, Tag tag, CancellationToken cancellationToken)
     {
-        var style = await _midjourneyDbContext.MidjourneyStyle
+        var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<bool>(DomainErrors.StyleNotFound(styleName));
@@ -112,7 +112,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
     // Command Methods
     public async Task<Result<MidjourneyStyle>> AddStyleAsync(MidjourneyStyle style, CancellationToken cancellationToken)
     {
-        await _midjourneyDbContext.MidjourneyStyle.AddAsync(style, cancellationToken);
+        await _midjourneyDbContext.MidjourneyStyles.AddAsync(style, cancellationToken);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
         // If style has tags, check cached supported tag values and invalidate if new tag(s) were introduced
@@ -136,7 +136,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<MidjourneyStyle>> UpdateStyleAsync(MidjourneyStyle style, CancellationToken cancellationToken)
     {
-        var existingStyle = await _midjourneyDbContext.MidjourneyStyle
+        var existingStyle = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == style.StyleName, cancellationToken);
 
         if (existingStyle is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(style.StyleName));
@@ -150,13 +150,13 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<MidjourneyStyle>> DeleteStyleAsync(StyleName styleName, CancellationToken cancellationToken)
     {
-        var style = await _midjourneyDbContext.MidjourneyStyle
+        var style = await _midjourneyDbContext.MidjourneyStyles
             .Include(s => s.MidjourneyExampleLinks)
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
 
-        _midjourneyDbContext.MidjourneyStyle.Remove(style);
+        _midjourneyDbContext.MidjourneyStyles.Remove(style);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
 
         await InvalidateCacheAsync(cancellationToken);
@@ -165,7 +165,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<MidjourneyStyle>> AddTagToStyleAsync(StyleName styleName, Tag tagResult, CancellationToken cancellationToken)
     {
-        var style = await _midjourneyDbContext.MidjourneyStyle
+        var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
@@ -188,7 +188,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             throw new ArgumentException("Invalid tag provided", nameof(tagResult));
         }
 
-        var style = await _midjourneyDbContext.MidjourneyStyle
+        var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
@@ -204,7 +204,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
 
     public async Task<Result<MidjourneyStyle>> UpdateStyleDescriptionAsync(StyleName styleName, Description description, CancellationToken cancellationToken)
     {
-        var style = await _midjourneyDbContext.MidjourneyStyle
+        var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
         if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
@@ -223,7 +223,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             _tagCacheKey,
             async (ct) =>
             {
-                var tags = await _midjourneyDbContext.MidjourneyStyle
+                var tags = await _midjourneyDbContext.MidjourneyStyles
                     .Where(style => style.Tags != null && !style.Tags.IsNone && style.Tags.Value.Count != 0)
                     .SelectMany(style => style.Tags.Value)
                     .Select(tag => tag)
@@ -245,7 +245,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             _tagSupportedCacheKey,
             async (ct) =>
             {
-                var styles = await _midjourneyDbContext.MidjourneyStyle
+                var styles = await _midjourneyDbContext.MidjourneyStyles
                 .AsNoTracking()
                 .Select(style => new { style.StyleName, style.Tags })
                 .ToListAsync(ct);

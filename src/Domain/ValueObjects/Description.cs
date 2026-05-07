@@ -24,7 +24,7 @@ public record Description : ValueObject<string>, ICreatable<Description, string?
 
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<Description>(value, MaxLength),
                 pipeline => pipeline.IfContainsSuspiciousContent<Description>(value))
             .ExecuteIfNoErrors<Description>(() => new Description(value))

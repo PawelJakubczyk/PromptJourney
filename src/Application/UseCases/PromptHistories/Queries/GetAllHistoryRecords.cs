@@ -1,16 +1,18 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.Extensions;
-using Application.UseCases.PromptHistory.Responses;
-using Domain.Entities;
+using Application.UseCases.PromptHistories.Responses;
 using Utilities.Results;
+using Domain.Entities;
 using Utilities.Workflows;
 
-namespace Application.UseCases.PromptHistory.Queries;
+namespace Application.UseCases.PromptHistories.Queries;
 
-public static class GetLastHistoryRecords
+public static class GetAllHistoryRecords
 {
-    public sealed record Query(int? Count) : IQuery<List<PromptHistoryResponse>>;
+    public sealed record Query : IQuery<List<PromptHistoryResponse>>
+    {
+        public static readonly Query Singleton = new();
+    };
 
     public sealed class Handler
     (
@@ -19,17 +21,12 @@ public static class GetLastHistoryRecords
     {
         private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
 
-        public async Task<Result<List<PromptHistoryResponse>>> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result<List<PromptHistoryResponse>>> Handle(Query _, CancellationToken cancellationToken)
         {
-            var count = query.Count ?? 1;
-
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CongregateErrors(
-                    pipeline => pipeline.IfHistoryRecordsLimitNotGreaterThanZero(count),
-                    pipeline => pipeline.IfHistoryCountExceedsAvailable(count, _promptHistoryRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _promptHistoryRepository
-                    .GetLastHistoryRecordsAsync(count, cancellationToken))
+                    .GetAllHistoryRecordsAsync(cancellationToken))
                 .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>
                     (promptHistoryList => [.. promptHistoryList.Select(PromptHistoryResponse.FromDomain)]);
 

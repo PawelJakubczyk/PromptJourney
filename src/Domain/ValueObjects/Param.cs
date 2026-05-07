@@ -20,7 +20,7 @@ public record Param : ValueObject<string>, ICreatable<Param, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<Param>(value)
-            .CongregateErrors(
+            .AggregateErrors(
                  pipeline => pipeline.IfLengthTooLong<Param>(value!, MaxLength),
                  pipeline => pipeline.IfNotStartsWithDoubleDash(value!))
             .ExecuteIfNoErrors<Param>(() => new Param(value!))

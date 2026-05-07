@@ -25,7 +25,7 @@ public sealed record DefaultValue : ValueObject<string>, ICreatable<DefaultValue
 
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<DefaultValue>(value!, MaxLength),
                 pipeline => pipeline.IfContainsSuspiciousContent<DefaultValue>(value))
             .ExecuteIfNoErrors<DefaultValue>(() => new DefaultValue(value))

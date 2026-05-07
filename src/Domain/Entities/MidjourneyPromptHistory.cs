@@ -47,7 +47,7 @@ public sealed class MidjourneyPromptHistory : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.CollectErrors(historyId),
                 pipeline => pipeline.CollectErrors(prompt),
                 pipeline => pipeline.CollectErrors(version))

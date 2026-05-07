@@ -56,7 +56,7 @@ public sealed class MidjourneyProperty : IEntity
     {
         var result = WorkflowPipeline
         .Empty()
-        .CongregateErrors(
+        .AggregateErrors(
             pipeline => pipeline.CollectErrors(propertyNameResult),
             pipeline => pipeline.CollectErrors(versionResult),
             pipeline => pipeline.CollectErrors(paramsCollectionResult),

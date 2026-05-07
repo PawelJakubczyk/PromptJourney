@@ -21,7 +21,7 @@ public record ExampleLink : ValueObject<string>, ICreatable<ExampleLink, string?
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<ExampleLink>(value)
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<ExampleLink>(value!, MaxLength),
                 pipeline => pipeline.IfLinkFormatInvalid(value!))
             .ExecuteIfNoErrors<ExampleLink>(() => new ExampleLink(value!))

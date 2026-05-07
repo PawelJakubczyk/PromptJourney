@@ -6,7 +6,7 @@ using Domain.ValueObjects;
 using Utilities.Results;
 using Utilities.Workflows;
 
-namespace Application.UseCases.PromptHistory.Commands;
+namespace Application.UseCases.PromptHistories.Commands;
 
 public static class AddPromptToHistory
 {

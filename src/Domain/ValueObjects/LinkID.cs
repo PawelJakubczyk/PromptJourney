@@ -24,7 +24,7 @@ public record LinkID : ValueObject<Guid>, ICreatable<LinkID, string?>
 
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<LinkID, Guid>(value!, ExactLength),
                 pipeline => pipeline.IfGuidFormatInvalid(value!))
             .ExecuteIfNoErrors<LinkID>(() => new LinkID(Guid.Parse(value!)))

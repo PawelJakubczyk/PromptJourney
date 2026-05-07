@@ -1,12 +1,12 @@
 using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.Extensions;
-using Application.UseCases.PromptHistory.Responses;
+using Application.UseCases.PromptHistories.Responses;
 using Domain.Entities;
 using Utilities.Results;
 using Utilities.Workflows;
 
-namespace Application.UseCases.PromptHistory.Queries;
+namespace Application.UseCases.PromptHistories.Queries;
 
 public static class GetHistoryByDateRange
 {

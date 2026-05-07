@@ -50,7 +50,7 @@ public sealed class MidjourneyStyleExampleLink : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.CollectErrors(idResult),
                 pipeline => pipeline.CollectErrors(linkResult),
                 pipeline => pipeline.CollectErrors(styleNameResult),

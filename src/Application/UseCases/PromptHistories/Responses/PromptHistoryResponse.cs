@@ -1,6 +1,6 @@
 using Domain.Entities;
 
-namespace Application.UseCases.PromptHistory.Responses;
+namespace Application.UseCases.PromptHistories.Responses;
 
 public sealed record PromptHistoryResponse
 (

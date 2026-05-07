@@ -5,7 +5,7 @@ using Application.UseCases.Common.Responses;
 using Utilities.Workflows;
 using Domain.ValueObjects;
 
-namespace Application.UseCases.PromptHistory.Commands;
+namespace Application.UseCases.PromptHistories.Commands;
 
 public sealed class DeleteHistoryRecordById
 {

@@ -20,7 +20,7 @@ public record ModelVersion : ValueObject<string>, ICreatable<ModelVersion, strin
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<ModelVersion>(value)
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<ModelVersion>(value!, MaxLength),
                 pipeline => pipeline.IfVersionFormatInvalid(value!))
             .ExecuteIfNoErrors<ModelVersion>(() => new ModelVersion(value!))

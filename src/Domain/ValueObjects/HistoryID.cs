@@ -28,7 +28,7 @@ public record HistoryID : ValueObject<Guid>, ICreatable<HistoryID, string?>
 
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<LinkID, Guid>(value!, ExactLength),
                 pipeline => pipeline.IfGuidFormatInvalid(value!))
             .ExecuteIfNoErrors<HistoryID>(() => new HistoryID(Guid.Parse(value!)))

@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Utilities.Results;
 using Application.Abstractions.IRepository;
 
-namespace Application.UseCases.PromptHistory.Queries;
+namespace Application.UseCases.PromptHistories.Queries;
 
 public static class CalculateHistoricalRecordCount
 {

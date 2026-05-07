@@ -19,7 +19,7 @@ public record Keyword : ValueObject<string>, ICreatable<Keyword, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<Keyword>(value)
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<Keyword>(value!, MaxLength),
                 pipeline => pipeline.IfContainsSuspiciousContent<Keyword>(value!))
             .ExecuteIfNoErrors<Keyword>(() => new Keyword(value!))
