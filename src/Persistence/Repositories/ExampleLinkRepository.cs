@@ -1,7 +1,6 @@
 using Application.Abstractions.IRepository;
 using Application.UseCases.Common.Responses;
 using Domain.Entities;
-using Domain.Errors;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Context;
@@ -25,11 +24,11 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
     {
         var versionExist = await _versionsRepository.CheckVersionExistsAsync(exampleLink.Version, cancellationToken);
         if (versionExist.Value is false)
-            return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.VersionNotFound(exampleLink.Version));
+            return Result.Fail<MidjourneyStyleExampleLink>(ErrorFactories.NotFound(exampleLink.Version));
 
         var styleExists = await _stylesRepository.CheckStyleExistsAsync(exampleLink.StyleName, cancellationToken);
         if (styleExists.Value is false)
-            return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.StyleNotFound(exampleLink.StyleName));
+            return Result.Fail<MidjourneyStyleExampleLink>(ErrorFactories.NotFound(exampleLink.StyleName));
 
         await _midjourneyDbContext.MidjourneyStyleExampleLinks.AddAsync(exampleLink, cancellationToken);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -40,7 +39,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
     {
         var styleExists = await _stylesRepository.CheckStyleExistsAsync(styleName, cancellationToken);
         if (styleExists.Value is false)
-            return Result.Fail<BulkDeleteResponse>(DomainErrors.StyleNotFound(styleName));
+            return Result.Fail<BulkDeleteResponse>(ErrorFactories.NotFound(styleName));
 
         var exampleLinks = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Where(exampleLink => exampleLink.StyleName == styleName)
@@ -113,7 +112,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
             .Include(exampleLink => exampleLink.MidjourneyVersion)
             .FirstOrDefaultAsync(exampleLink => exampleLink.Id == id, cancellationToken);
 
-        if (item is null) return Result.Fail<MidjourneyStyleExampleLink>(DomainErrors.ExampleLinkNotFound(id.Value));
+        if (item is null) return Result.Fail<MidjourneyStyleExampleLink>(ErrorFactories.NotFound(id.Value));
         
 
         return Result.Ok(item);
@@ -159,7 +158,7 @@ public sealed class ExampleLinkRepository(MidjourneyDbContext midjourneyDbContex
         var versionExist = await _versionsRepository.CheckVersionExistsAsync(version, cancellationToken);
 
         if (versionExist.Value is false)
-            return Result.Fail<List<MidjourneyStyleExampleLink>>(DomainErrors.VersionNotFound(version));
+            return Result.Fail<List<MidjourneyStyleExampleLink>>(ErrorFactories.NotFound(version));
 
         var list = await _midjourneyDbContext.MidjourneyStyleExampleLinks
             .Include(exampleLink => exampleLink.MidjuorneyStyle)

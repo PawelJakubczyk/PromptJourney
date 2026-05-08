@@ -22,7 +22,7 @@ public sealed class GetByVersionTests(MidjourneyTestWebApplicationFactory factor
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var versionResponse = await DeserializeResponse<UserResponse>(response);
+            var versionResponse = await DeserializeResponse<VersionResponse>(response);
             versionResponse.Should().NotBeNull();
             versionResponse!.Version.Should().Be(version);
         }
@@ -67,7 +67,7 @@ public sealed class GetByVersionTests(MidjourneyTestWebApplicationFactory factor
         {
             response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
 
-            var versionResponse = await DeserializeResponse<UserResponse>(response);
+            var versionResponse = await DeserializeResponse<VersionResponse>(response);
             versionResponse.Should().NotBeNull();
             versionResponse!.Version.Should().NotBeNullOrEmpty();
             versionResponse.Parameter.Should().NotBeNullOrEmpty();
@@ -93,7 +93,7 @@ public sealed class GetByVersionTests(MidjourneyTestWebApplicationFactory factor
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            var versionResponse = await DeserializeResponse<UserResponse>(response);
+            var versionResponse = await DeserializeResponse<VersionResponse>(response);
             versionResponse.Should().NotBeNull();
         }
     }
@@ -113,8 +113,8 @@ public sealed class GetByVersionTests(MidjourneyTestWebApplicationFactory factor
 
         if (response1.StatusCode == HttpStatusCode.OK && response2.StatusCode == HttpStatusCode.OK)
         {
-            var version1 = await DeserializeResponse<UserResponse>(response1);
-            var version2 = await DeserializeResponse<UserResponse>(response2);
+            var version1 = await DeserializeResponse<VersionResponse>(response1);
+            var version2 = await DeserializeResponse<VersionResponse>(response2);
 
             version1.Should().BeEquivalentTo(version2);
         }

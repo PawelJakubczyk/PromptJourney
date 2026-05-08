@@ -28,7 +28,7 @@ public static class WorkflowPipelineExtensions
         return pipeline;
     }
 
-    public static async Task<WorkflowPipeline> CongregateErrors
+    public static async Task<WorkflowPipeline> AggregateErrors
     (
         this Task<WorkflowPipeline> pipelineTask,
         params Func<Task<WorkflowPipeline>, Task<WorkflowPipeline>>[] validationBlocks)

@@ -1,3 +1,4 @@
+using Application.UseCases.Users.Responses;
 using Application.UseCases.Versions.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.VersionsControllersTests.Base;
@@ -31,7 +32,7 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         // Assert
         AssertOkResponse<UserResponse>(response);
 
-        var versions = await DeserializeResponse<List<UserResponse>>(response);
+        var versions = await DeserializeResponse<List<VersionResponse>>(response);
         versions.Should().NotBeNull();
 
         if (versions.Count != 0)
@@ -54,8 +55,8 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var versions1 = await DeserializeResponse<List<UserResponse>>(response1);
-        var versions2 = await DeserializeResponse<List<UserResponse>>(response2);
+        var versions1 = await DeserializeResponse<List<VersionResponse>>(response1);
+        var versions2 = await DeserializeResponse<List<VersionResponse>>(response2);
 
         versions1.Should().BeEquivalentTo(versions2);
     }

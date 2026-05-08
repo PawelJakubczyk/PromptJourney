@@ -1,10 +1,10 @@
 using Application.Abstractions.IRepository;
 using Domain.Entities;
-using Domain.Errors;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
+using Utilities.Errors;
 using Utilities.Results;
 
 namespace Persistence.Repositories;
@@ -38,7 +38,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             .Include(s => s.MidjourneyExampleLinks)
             .FirstOrDefaultAsync(s => s.StyleName == name, cancellationToken);
 
-        if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(name));
+        if (style is null) return Result.Fail<MidjourneyStyle>(ErrorFactories.NotFound(name));
 
         return Result.Ok(style);
     }
@@ -98,11 +98,11 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-        if (style is null) return Result.Fail<bool>(DomainErrors.StyleNotFound(styleName));
+        if (style is null) return Result.Fail<bool>(ErrorFactories.NotFound(styleName));
 
         if (tag.IsNone)
         {
-            return Result.Fail<bool>(DomainErrors.TagNotFound(tag));
+            return Result.Fail<bool>(ErrorFactories.NotFound(tag));
         }
 
         var exists = !style.Tags.IsNone && style.Tags.Value.Any(t => t.Value == tag.Value);
@@ -139,7 +139,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         var existingStyle = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == style.StyleName, cancellationToken);
 
-        if (existingStyle is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(style.StyleName));
+        if (existingStyle is null) return Result.Fail<MidjourneyStyle>(ErrorFactories.NotFound(style.StyleName));
 
         _midjourneyDbContext.Entry(existingStyle).CurrentValues.SetValues(style);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -154,7 +154,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
             .Include(s => s.MidjourneyExampleLinks)
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-        if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
+        if (style is null) return Result.Fail<MidjourneyStyle>(ErrorFactories.NotFound(styleName));
 
         _midjourneyDbContext.MidjourneyStyles.Remove(style);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -168,7 +168,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-        if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
+        if (style is null) return Result.Fail<MidjourneyStyle>(ErrorFactories.NotFound(styleName));
 
         style.AddTag(tagResult);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
@@ -191,7 +191,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-        if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
+        if (style is null) return Result.Fail<MidjourneyStyle>(ErrorFactories.NotFound(styleName));
 
         // Extract value and remove by Tag (avoid passing Result<Tag> into domain method)
         var tag = tagResult.Value;
@@ -207,7 +207,7 @@ public sealed class StylesRepository(MidjourneyDbContext dbContext, HybridCache 
         var style = await _midjourneyDbContext.MidjourneyStyles
             .FirstOrDefaultAsync(s => s.StyleName == styleName, cancellationToken);
 
-        if (style is null) return Result.Fail<MidjourneyStyle>(DomainErrors.StyleNotFound(styleName));
+        if (style is null) return Result.Fail<MidjourneyStyle>(ErrorFactories.NotFound(styleName));
 
         style.UpdateDescription(description);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);

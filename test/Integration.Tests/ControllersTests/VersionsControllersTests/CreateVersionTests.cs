@@ -32,7 +32,7 @@ public sealed class CreateVersionTests(MidjourneyTestWebApplicationFactory facto
         if (response.StatusCode == HttpStatusCode.Created)
         {
             response.Headers.Location.Should().NotBeNull();
-            var createdVersion = await DeserializeResponse<UserResponse>(response);
+            var createdVersion = await DeserializeResponse<VersionResponse>(response);
             createdVersion.Should().NotBeNull();
             createdVersion!.Version.Should().Be(request.Version);
         }

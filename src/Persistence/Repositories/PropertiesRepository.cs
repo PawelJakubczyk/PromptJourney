@@ -1,7 +1,5 @@
 using Application.Abstractions.IRepository;
-using Domain.Abstractions;
 using Domain.Entities;
-using Domain.Errors;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +7,6 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Persistence.Context;
 using Utilities.Errors;
 using Utilities.Results;
-using static Domain.Entities.MidjourneyProperty;
 
 namespace Persistence.Repositories;
 
@@ -44,7 +41,7 @@ public sealed class PropertiesRepository(MidjourneyDbContext midjourneyDbContext
         var property = properties
             .FirstOrDefault(p => p.PropertyName == propertyName && p.Version == version);
 
-        if (property is null) return Result.Fail<MidjourneyProperty>(DomainErrors.PropertyNotFound(propertyName));
+        if (property is null) return Result.Fail<MidjourneyProperty>(ErrorFactories.NotFound(propertyName));
 
         return Result.Ok(property);
     }

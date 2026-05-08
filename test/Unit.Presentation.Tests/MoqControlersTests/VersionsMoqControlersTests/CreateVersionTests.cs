@@ -22,7 +22,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "New version 7.0"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -54,7 +54,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Version cannot be empty");
+        var failureResult = Result.Fail<VersionResponse>("Version cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -82,7 +82,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Parameter cannot be empty");
+        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -110,7 +110,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Version cannot be null");
+        var failureResult = Result.Fail<VersionResponse>("Version cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -138,7 +138,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Parameter cannot be null");
+        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -166,7 +166,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Version cannot be whitespace");
+        var failureResult = Result.Fail<VersionResponse>("Version cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -194,7 +194,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Parameter cannot be whitespace");
+        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -222,7 +222,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Version already exists");
+        var failureResult = Result.Fail<VersionResponse>("Version already exists");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -251,7 +251,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Version exceeds maximum length");
+        var failureResult = Result.Fail<VersionResponse>("Version exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -280,7 +280,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Parameter exceeds maximum length");
+        var failureResult = Result.Fail<VersionResponse>("Parameter exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -308,7 +308,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, null, null);
+        var response = new VersionResponse(request.Version, request.Parameter, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -342,7 +342,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Complete version with all details"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -375,7 +375,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             null
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), null);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -408,7 +408,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Version without release date"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, null, request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, null, request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -441,7 +441,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Niji version 7"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -480,7 +480,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             $"Test version {version}"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -514,14 +514,14 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Test description"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         AddVersion.Command? capturedCommand = null;
 
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<UserResponse>>, CancellationToken>((command, ct) =>
+            .Callback<IRequest<Result<VersionResponse>>, CancellationToken>((command, ct) =>
             {
                 capturedCommand = command as AddVersion.Command;
             })
@@ -577,7 +577,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, null, null);
+        var response = new VersionResponse(request.Version, request.Parameter, null, null);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -607,7 +607,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             longDescription
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -640,7 +640,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -672,7 +672,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Repository error during version creation");
+        var failureResult = Result.Fail<VersionResponse>("Repository error during version creation");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -700,7 +700,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             DateTime.UtcNow.ToString("o")
         );
 
-        var failureResult = Result.Fail<UserResponse>("Command handler failed");
+        var failureResult = Result.Fail<VersionResponse>("Command handler failed");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -729,7 +729,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Performance test version"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(request.ReleaseDate!), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -759,7 +759,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Future version"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(futureDate), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(futureDate), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -793,7 +793,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Past version"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(pastDate), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(pastDate), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -827,7 +827,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
             "Beta version"
         );
 
-        var response = new UserResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
+        var response = new VersionResponse(request.Version, request.Parameter, DateTime.Parse(releaseDate), request.Description);
         var result = Result.Ok(response);
         var senderMock = new Mock<ISender>();
         senderMock

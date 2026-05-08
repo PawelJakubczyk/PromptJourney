@@ -15,7 +15,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithList_WhenVersionsExist()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, "Version 1.0"),
             new("2.0", "--v 2.0", DateTime.UtcNow, "Version 2.0")
@@ -46,7 +46,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithEmptyList_WhenNoVersionsExist()
     {
         // Arrange
-        var emptyList = new List<UserResponse>();
+        var emptyList = new List<VersionResponse>();
         var result = Result.Ok(emptyList);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -72,7 +72,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenRepositoryFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<UserResponse>>(
+        var failureResult = CreateFailureResult<List<VersionResponse>>(
             StatusCodes.Status500InternalServerError,
             "Database error");
 
@@ -98,7 +98,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithMultipleVersions()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow.AddYears(-3), "Version 1.0"),
             new("2.0", "--v 2.0", DateTime.UtcNow.AddYears(-2), "Version 2.0"),
@@ -133,7 +133,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     {
         // Arrange
         var versions = Enumerable.Range(1, 10)
-            .Select(i => new UserResponse(
+            .Select(i => new VersionResponse(
                 $"{i}.0",
                 $"--v {i}.0",
                 DateTime.UtcNow.AddMonths(-i),
@@ -165,7 +165,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithVersionsHavingNullDescriptions()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, null),
             new("2.0", "--v 2.0", DateTime.UtcNow, "Version 2.0"),
@@ -197,7 +197,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithVersionsHavingNullReleaseDates()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", null, "Version 1.0"),
             new("2.0", "--v 2.0", DateTime.UtcNow, "Version 2.0"),
@@ -229,7 +229,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithMixedVersionTypes()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, "Standard version 1.0"),
             new("2.5", "--v 2.5", DateTime.UtcNow, "Standard version 2.5"),
@@ -263,7 +263,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithVersionsHavingSpecialCharactersInDescription()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, "Version with spéciál characters 🎨"),
             new("2.0", "--v 2.0", DateTime.UtcNow, "Version with symbols @#$%^&*()")
@@ -294,14 +294,14 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_VerifiesQueryIsCalledWithSingleton()
     {
         // Arrange
-        var versions = new List<UserResponse>();
+        var versions = new List<VersionResponse>();
         var result = Result.Ok(versions);
         var senderMock = new Mock<ISender>();
         GetAllVersions.Query? capturedQuery = null;
 
         senderMock
             .Setup(s => s.Send(It.IsAny<GetAllVersions.Query>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<Result<List<UserResponse>>>, CancellationToken>((query, ct) =>
+            .Callback<IRequest<Result<List<VersionResponse>>>, CancellationToken>((query, ct) =>
             {
                 capturedQuery = query as GetAllVersions.Query;
             })
@@ -346,7 +346,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_VerifiesSenderIsCalledOnce()
     {
         // Arrange
-        var versions = new List<UserResponse>();
+        var versions = new List<VersionResponse>();
         var result = Result.Ok(versions);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -368,7 +368,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsConsistentResults_ForMultipleCalls()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, "Version 1.0")
         };
@@ -406,7 +406,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsBadRequest_WhenQueryHandlerFails()
     {
         // Arrange
-        var failureResult = CreateFailureResult<List<UserResponse>>(
+        var failureResult = CreateFailureResult<List<VersionResponse>>(
             StatusCodes.Status400BadRequest,
             "Query handler failed");
 
@@ -435,7 +435,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
         var date2 = new DateTime(2021, 6, 1, 0, 0, 0, DateTimeKind.Utc);
         var date3 = new DateTime(2022, 12, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", date1, "First version"),
             new("2.0", "--v 2.0", date2, "Second version"),
@@ -468,7 +468,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     {
         // Arrange
         var longDescription = new string('A', 1000) + " This is a very long description for testing purposes.";
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, longDescription),
             new("2.0", "--v 2.0", DateTime.UtcNow, "Short description")
@@ -499,7 +499,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithBetaAndAlphaVersions()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("7.0-alpha", "--v 7.0", DateTime.UtcNow, "Alpha version"),
             new("7.0-beta", "--v 7.0", DateTime.UtcNow, "Beta version"),
@@ -531,7 +531,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithVersionsHavingDifferentParameters()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, "Version 1"),
             new("2.0", "--version 2.0", DateTime.UtcNow, "Version 2"),
@@ -564,7 +564,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_RespondsQuickly_ForPerformanceTest()
     {
         // Arrange
-        var versions = new List<UserResponse>();
+        var versions = new List<VersionResponse>();
         var result = Result.Ok(versions);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -586,7 +586,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithVersionsHavingMinimalData()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", null, null),
             new("2.0", "--v 2.0", null, null)
@@ -617,7 +617,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithVersionsHavingCompleteData()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, "Complete version with all fields populated"),
             new("2.0", "--v 2.0", DateTime.UtcNow, "Another complete version")
@@ -648,7 +648,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     public async Task GetAll_ReturnsOkWithSingleVersion()
     {
         // Arrange
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("1.0", "--v 1.0", DateTime.UtcNow, "Only version")
         };
@@ -679,7 +679,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
     {
         // Arrange
         var futureDate = DateTime.UtcNow.AddMonths(6);
-        var versions = new List<UserResponse>
+        var versions = new List<VersionResponse>
         {
             new("8.0", "--v 8.0", futureDate, "Future version"),
             new("9.0", "--v 9.0", futureDate.AddMonths(3), "Another future version")

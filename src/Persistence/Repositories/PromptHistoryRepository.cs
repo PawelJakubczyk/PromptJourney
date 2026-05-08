@@ -1,7 +1,6 @@
 using Application.Abstractions.IRepository;
 using Application.UseCases.Common.Responses;
 using Domain.Entities;
-using Domain.Errors;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +35,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         var historyRecord = await _midjourneyDbContext.MidjourneyPromptHistories
             .FirstOrDefaultAsync(history => history.HistoryId == historyId, cancellationToken);
 
-        if (historyRecord is null) return Result.Fail<DeleteResponse>(DomainErrors.HistoryNotFoundError(historyId.Value));
+        if (historyRecord is null) return Result.Fail<DeleteResponse>(ErrorFactories.NotFound(historyId.Value));
 
         _midjourneyDbContext.MidjourneyPromptHistories.Remove(historyRecord);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);

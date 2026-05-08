@@ -35,12 +35,12 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
             ? DateTime.ParseExact(releaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
             : null;
 
-        var versionResponse = new UserResponse(version, command, releaseDateTime, description);
+        var versionResponse = new VersionResponse(version, command, releaseDateTime, description);
 
         var result = Result.Ok(versionResponse);
 
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetVersion.Query, UserResponse>(result);
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(result);
         var controller = CreateController(senderMock);
 
         // Act
@@ -63,14 +63,14 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Arrange
         var noFoundMessage = ErrorsMessages.NotFoundMessage(version);
 
-        var failureResult = CreateFailureResult<UserResponse>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status404NotFound,
             noFoundMessage
         );
 
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetVersion.Query, UserResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -92,14 +92,14 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Arrange
         var nullOrWhitespaceVersionMessage = ErrorsMessages.NullOrWhitespaceMessage<ModelVersion>();
 
-        var failureResult = CreateFailureResult<UserResponse>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status400BadRequest,
             nullOrWhitespaceVersionMessage
         );
 
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetVersion.Query, UserResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -131,14 +131,14 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         // Arrange
         var invalidFormatVersionMessage = ModelVersionErrorsExtensions.InvalidVersionFormatMessage;
 
-        var failureResult = CreateFailureResult<UserResponse>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status400BadRequest,
             invalidFormatVersionMessage
         );
 
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetVersion.Query, UserResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -158,14 +158,14 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var tooLongVersion = new string('1', 256);
         var tooLongVersionMessage = ErrorsMessages.TooLongMessage<ModelVersion>(tooLongVersion, ModelVersion.MaxLength);
 
-        var failureResult = CreateFailureResult<UserResponse>
+        var failureResult = CreateFailureResult<VersionResponse>
         (
             StatusCodes.Status400BadRequest,
             tooLongVersionMessage
         );
 
         var senderMock = new Mock<ISender>();
-        senderMock.SetupSendReturnsForRequest<GetVersion.Query, UserResponse>(failureResult);
+        senderMock.SetupSendReturnsForRequest<GetVersion.Query, VersionResponse>(failureResult);
         var controller = CreateController(senderMock);
 
         // Act
@@ -205,7 +205,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var versionResponse = new UserResponse(version, "--v 1.0", DateTime.UtcNow, "Version 1.0");
+        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, "Version 1.0");
         var result = Result.Ok(versionResponse);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -228,7 +228,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var versionResponse = new UserResponse(version, "--v 1.0", DateTime.UtcNow, "Version 1.0");
+        var versionResponse = new VersionResponse(version, "--v 1.0", DateTime.UtcNow, "Version 1.0");
         var result = Result.Ok(versionResponse);
         var senderMock = new Mock<ISender>();
         senderMock
@@ -260,7 +260,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
     {
         // Arrange
         var version = "1.0";
-        var failureResult = CreateFailureResult<UserResponse>(
+        var failureResult = CreateFailureResult<VersionResponse>(
             StatusCodes.Status500InternalServerError,
             "Repository error during version retrieval");
 
