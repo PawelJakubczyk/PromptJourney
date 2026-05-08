@@ -22,7 +22,7 @@ public static class UpdateDescriptionInStyle
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CongregateErrors(
+                .AggregateErrors(
                     pipeline => pipeline.CollectErrors(styleName),
                     pipeline => pipeline.CollectErrors(description))
                 .IfStyleNotExists(styleName, _styleRepository, cancellationToken)

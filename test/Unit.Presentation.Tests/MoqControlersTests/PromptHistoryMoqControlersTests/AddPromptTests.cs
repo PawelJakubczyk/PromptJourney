@@ -1,4 +1,4 @@
-﻿using Application.UseCases.PromptHistory.Commands;
+﻿using Application.UseCases.PromptHistories.Commands;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;

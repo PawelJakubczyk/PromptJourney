@@ -18,7 +18,7 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
 
-        var versions = await DeserializeResponse<List<VersionResponse>>(response);
+        var versions = await DeserializeResponse<List<UserResponse>>(response);
         versions.Should().NotBeNull();
     }
 
@@ -29,9 +29,9 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         var response = await Client.GetAsync(BaseUrl);
 
         // Assert
-        AssertOkResponse<VersionResponse>(response);
+        AssertOkResponse<UserResponse>(response);
 
-        var versions = await DeserializeResponse<List<VersionResponse>>(response);
+        var versions = await DeserializeResponse<List<UserResponse>>(response);
         versions.Should().NotBeNull();
 
         if (versions.Count != 0)
@@ -54,8 +54,8 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var versions1 = await DeserializeResponse<List<VersionResponse>>(response1);
-        var versions2 = await DeserializeResponse<List<VersionResponse>>(response2);
+        var versions1 = await DeserializeResponse<List<UserResponse>>(response1);
+        var versions2 = await DeserializeResponse<List<UserResponse>>(response2);
 
         versions1.Should().BeEquivalentTo(versions2);
     }

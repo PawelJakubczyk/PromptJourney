@@ -26,7 +26,7 @@ public static class GetHistoryByDateRange
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                .CongregateErrors(
+                .AggregateErrors(
                     pipeline => pipeline.IfDateInFuture(from),
                     pipeline => pipeline.IfDateInFuture(to),
                     pipeline => pipeline.IfDateRangeNotChronological(from, to))
