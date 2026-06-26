@@ -13,8 +13,9 @@ public sealed class MidjourneyUser : IEntity
     public Email Email { get; private set; }
     public PasswordHash PasswordHash { get; private set; } = null!;
     public Role Role { get; private set; } = null!;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    #pragma warning disable CS8618
+#pragma warning disable CS8618
     private MidjourneyUser() { } // parameterless constructor for EF Core
     #pragma warning restore CS8618
 

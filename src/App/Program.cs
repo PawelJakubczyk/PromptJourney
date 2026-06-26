@@ -29,7 +29,8 @@ try
         .RegisterApplicationLayer()
         .RegisterPersistenceLayer(builder.Environment)
         //.RegisterInfrastructureLayer()
-        .RegisterPresentationLayer();
+        .RegisterPresentationLayer()
+        .RegisterAuthentication(builder.Configuration);
 
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
@@ -49,13 +50,7 @@ try
 
     // register global exception handler early in the pipeline
     webApplication.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-
-    webApplication
-        .UseHttpsRedirection()
-        //.UseApplicationLayer()
-        .UsePresentationLayer();
-        //.UsePersistenceLayer();
-
+    webApplication.UsePresentationLayer();
     webApplication.MapControllers();
 
     //Run the application
