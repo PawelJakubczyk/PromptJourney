@@ -59,9 +59,9 @@ public class ExampleLinkTests
     [Fact]
     public void Create_WithValueExceedingMaxLength_ShouldReturnFailure()
     {
-        // Arrange - Create a URL that exceeds 200 characters
-        var longDomain = new string('a', 190);
-        var tooLongUrl = $"https://{longDomain}.com"; // This will exceed 200 chars
+        // Arrange - Create a URL that exceeds ExampleLink.MaxLength characters
+        var longDomain = new string('a', ExampleLink.MaxLength + 10);
+        var tooLongUrl = $"https://{longDomain}.com";
 
         // Act
         var result = ExampleLink.Create(tooLongUrl);
@@ -75,26 +75,31 @@ public class ExampleLinkTests
     [Fact]
     public void Create_WithValueAtMaxLength_ShouldReturnSuccess()
     {
-        // Arrange - Create a valid URL exactly at 200 characters
-        var domainPart = new string('a', 180);
-        _ = $"https://{domainPart}.com"; // Should be exactly 200 chars or close
-
-        // Adjust to exactly 200 characters
-        var adjustedUrl = "https://" + new string('a', 185) + ".com"; // 193 chars - close to limit
+        // Arrange
+        var urlPrefix = "https://";
+        var label = new string('a', 62) + ".";
+        var domainPart = string.Concat(Enumerable.Repeat(label, 4));
+        var urlSuffix = "com";
+        var remaining = ExampleLink.MaxLength - (urlPrefix.Length + domainPart.Length + urlSuffix.Length);
+        var path = "/" + new string('b', remaining - 1);
+        var adjustedUrl = urlPrefix + domainPart + urlSuffix + path;
 
         // Act
         var result = ExampleLink.Create(adjustedUrl);
 
         // Assert
         result.Should().NotBeNull();
-        // This might fail due to URL format validation, so let's test with a proper URL structure
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Value.Should().Be(adjustedUrl);
+        result.Value.Value.Should().HaveLength(ExampleLink.MaxLength);
     }
 
     [Fact]
     public void Create_WithValidLongUrl_ShouldReturnSuccess()
     {
         // Arrange - Create a realistic long URL within limits
-        var longPath = new string('a', 150);
+        var longPath = new string('a', ExampleLink.MaxLength - 20);
         var longUrl = $"https://example.com/path/{longPath}/image.jpg";
 
         // Act
@@ -138,13 +143,6 @@ public class ExampleLinkTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Value.Should().Be(validUrlStructure);
-    }
-
-    [Fact]
-    public void MaxLength_ShouldBe200()
-    {
-        // Assert
-        ExampleLink.MaxLength.Should().Be(200);
     }
 
     [Theory]

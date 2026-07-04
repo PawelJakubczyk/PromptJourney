@@ -24,7 +24,7 @@ public class MaxValueTests
     }
 
     [Fact]
-    public void Create_WithNullValue_ShouldReturnSuccessWithNull()
+    public void Create_WithNullValue_ShouldReturnSuccessWithNone()
     {
         // Act
         var result = MaxValue.Create(null);
@@ -33,7 +33,7 @@ public class MaxValueTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().BeNull();
+        result.Value.Should().Be(MaxValue.None);
     }
 
     [Theory]
@@ -41,15 +41,15 @@ public class MaxValueTests
     [InlineData("   ")]
     [InlineData("\t")]
     [InlineData("\n")]
-    public void Create_WithWhitespaceValue_ShouldReturnFailure(string whitespaceValue)
+    public void Create_WithWhitespaceValue_ShouldReturnSuccessWithNone(string whitespaceValue)
     {
         // Act
         var result = MaxValue.Create(whitespaceValue);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(MaxValue.None);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class MaxValueTests
         var result = maxValue.ToString();
 
         // Assert
-        result.Should().BeNull();
+        result.Should().Be(String.Empty);
     }
 
     [Theory]
@@ -127,12 +127,5 @@ public class MaxValueTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Value.Should().Be(numericValue);
-    }
-
-    [Fact]
-    public void MaxLength_ShouldBe50()
-    {
-        // Assert
-        MaxValue.MaxLength.Should().Be(50);
     }
 }

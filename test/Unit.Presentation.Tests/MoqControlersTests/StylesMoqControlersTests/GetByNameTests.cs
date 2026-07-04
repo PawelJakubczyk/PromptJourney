@@ -467,7 +467,7 @@ public sealed class GetByNameTests : StylesControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Repository error occurred");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

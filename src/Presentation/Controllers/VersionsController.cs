@@ -3,10 +3,12 @@ using Application.UseCases.Versions.Commands;
 using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.Pipeline;
+using static Domain.ValueObjects.Role;
 
 namespace Presentation.Controllers;
 
@@ -16,6 +18,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 {
     // GET api/versions
     [HttpGet]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<VersionResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken)
     {
         var versions = await Sender
@@ -29,6 +32,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // GET api/versions/supported
     [HttpGet("supported")]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<string>>, BadRequest<ProblemDetails>>> GetSupported(CancellationToken cancellationToken)
     {
         var versions = await Sender
@@ -42,6 +46,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // GET api/versions/no-empty
     [HttpGet("no-empty")]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckAnyExists(CancellationToken cancellationToken)
     {
         var exists = await Sender
@@ -53,8 +58,9 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
         return exists;
     }
 
-    // ✅ GET api/versions/latest
+    // GET api/versions/latest
     [HttpGet("latest")]
+    [AllowAnonymous]
     public async Task<Results<Ok<VersionResponse>, NotFound<ProblemDetails>>> GetLatest(
         CancellationToken cancellationToken)
     {
@@ -69,6 +75,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // GET api/versions/{version}
     [HttpGet("{version}")]
+    [AllowAnonymous]
     public async Task<Results<Ok<VersionResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByVersion(
         string version, 
         CancellationToken cancellationToken)
@@ -86,6 +93,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // GET api/versions/{version}/exists
     [HttpGet("{version}/exists")]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckExists(string version, CancellationToken cancellationToken)
     {
         var query = new CheckVersionExists.Query(version);
@@ -101,6 +109,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // GET api/versions/{parameter}/parameterexists
     [HttpGet("{parameter}/parameterexists")]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckParameterExists(string parameter, CancellationToken cancellationToken)
     {
         var query = new CheckParameterExists.Query(parameter);
@@ -116,6 +125,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // POST api/versions
     [HttpPost]
+    [Authorize]
     public async Task<Results<Created<VersionResponse>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create
     (
         [FromBody] CreateVersionRequest request, 
@@ -145,6 +155,7 @@ public sealed class VersionsController(ISender sender) : ApiController(sender)
 
     // DELETE api/versions/{version}
     [HttpDelete("{version}")]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Delete
     (
         string version,

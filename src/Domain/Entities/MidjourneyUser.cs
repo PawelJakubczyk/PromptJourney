@@ -8,19 +8,25 @@ namespace Domain.Entities;
 public sealed class MidjourneyUser : IEntity
 {
     // Columns
-    public UserId UserId { get; private set; }
+    public UserID UserId { get; private set; }
     public UserName UserName { get; private set; }
     public Email Email { get; private set; }
     public PasswordHash PasswordHash { get; private set; } = null!;
     public Role Role { get; private set; } = null!;
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public CreatedOn CreatedOn { get; private set; } = null!;
+    public bool IsDeleted { get; private set; } = false;
+    public DeletedAt DeletedAt { get; private set; } = DeletedAt.None;
 
-#pragma warning disable CS8618
+    // Navigation properties
+    private List<MidjourneyPromptHistory> Histories { get; set; } = [];
+    public IReadOnlyCollection<MidjourneyPromptHistory> MidjourneyHistories => Histories;
+
+    #pragma warning disable CS8618
     private MidjourneyUser() { } // parameterless constructor for EF Core
     #pragma warning restore CS8618
 
     private MidjourneyUser(
-        UserId userId,
+        UserID userId,
         UserName userName,
         Email email
     )
@@ -32,7 +38,7 @@ public sealed class MidjourneyUser : IEntity
 
     // Basic creation (without password/role)
     public static Result<MidjourneyUser> Create(
-        Result<UserId> userIdResult,
+        Result<UserID> userIdResult,
         Result<UserName> userNameResult,
         Result<Email> emailResult
     )
@@ -61,11 +67,12 @@ public sealed class MidjourneyUser : IEntity
 
     // Full registration (with password + role)
     public static Result<MidjourneyUser> Register(
-        Result<UserId> userIdResult,
+        Result<UserID> userIdResult,
         Result<UserName> userNameResult,
         Result<Email> emailResult,
         Result<PasswordHash> passwordHashResult,
-        Result<Role> roleResult
+        Result<Role> roleResult,
+        Result<CreatedOn>? createdOnResult = null
     )
     {
         var result = WorkflowPipeline
@@ -86,7 +93,8 @@ public sealed class MidjourneyUser : IEntity
                 )
                 {
                     PasswordHash = passwordHashResult.Value,
-                    Role = roleResult.Value
+                    Role = roleResult.Value,
+                    CreatedOn = createdOnResult?.Value ?? CreatedOn.Create().Value
                 };
 
                 return Result.Ok(user);
@@ -97,6 +105,29 @@ public sealed class MidjourneyUser : IEntity
     }
 
     // Update methods
+    public Result<MidjourneyUser> SoftDelete()
+    {
+        var deletedAtResult = DeletedAt.Create();
+
+        if (deletedAtResult.IsFailed)
+            return Result.Fail<MidjourneyUser>(deletedAtResult.Errors);
+
+        DeletedAt = deletedAtResult.Value;
+        IsDeleted = true;
+
+        return Result.Ok(this);
+    }
+
+    public Result<MidjourneyUser> Restore()
+    {
+        var deletedAtResult = DeletedAt.None;
+
+        DeletedAt = deletedAtResult;
+        IsDeleted = false;
+
+        return Result.Ok(this);
+    }
+
     public Result<UserName> UpdateUserName(Result<UserName> userNameResult) =>
         UpdateValue(userNameResult, name => UserName = name);
 

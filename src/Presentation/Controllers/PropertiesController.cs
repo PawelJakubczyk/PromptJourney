@@ -3,10 +3,12 @@ using Application.UseCases.Properties.Commands;
 using Application.UseCases.Properties.Queries;
 using Application.UseCases.Properties.Responses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.Pipeline;
+using static Domain.ValueObjects.Role;
 
 namespace Presentation.Controllers;
 
@@ -18,6 +20,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // GET api/properties/{version}
     [HttpGet("{version}")]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<PropertyResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetAllPropertiesByVersion
     (
         string version,
@@ -37,6 +40,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // GET api/properties
     [HttpGet]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<PropertyResponse>>, BadRequest<ProblemDetails>>> GetAll
         (CancellationToken cancellationToken)
     {
@@ -51,6 +55,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // GET api/properties/{version}/{propertyName}/exists
     [HttpGet("{version}/{propertyName}/exists")]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckPropertyExists
     (
         string version,
@@ -71,6 +76,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // POST api/properties
     [HttpPost]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Created<PropertyResponse>, Conflict<ProblemDetails>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Create
     (
         [FromBody] PropertyRequest request,
@@ -113,6 +119,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // PUT api/properties
     [HttpPut]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<PropertyResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateProperty
     (
         [FromBody] PropertyRequest request,
@@ -141,6 +148,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // PATCH api/properties
     [HttpPatch]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<PropertyResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> PatchProperty
     (
         [FromBody] PatchPropertyRequest request,
@@ -166,6 +174,7 @@ public sealed class PropertiesController(ISender sender) : ApiController(sender)
 
     // DELETE api/properties/{version}/{propertyName}
     [HttpDelete("{version}/{propertyName}")]
+    [Authorize(Policy = AdminAccess)]
     public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> DeleteProperty(string version, string propertyName, CancellationToken cancellationToken)
     {
         var result = await Sender

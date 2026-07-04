@@ -31,7 +31,8 @@ public class ParamTests
     public void Create_WithValueAtMaxLength_ShouldReturnSuccess()
     {
         // Arrange
-        var maxLengthValue = new string('A', Param.MaxLength);
+        var paramPrefix = "--param";
+        var maxLengthValue = paramPrefix + new string('A', Param.MaxLength - paramPrefix.Length);
 
         // Act
         var result = Param.Create(maxLengthValue);
@@ -40,7 +41,7 @@ public class ParamTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(maxLengthValue);
+        result.Value.Value.Should().Be(maxLengthValue.ToLower());
         result.Value.Value.Should().HaveLength(Param.MaxLength);
     }
 

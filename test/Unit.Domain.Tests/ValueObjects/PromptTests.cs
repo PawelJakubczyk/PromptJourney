@@ -28,15 +28,15 @@ public class PromptTests
     [InlineData("   ")]
     [InlineData("\t")]
     [InlineData("\n")]
-    public void Create_WithNullOrWhitespaceValue_ShouldReturnFailure(string invalidValue)
+    public void Create_WithNullOrWhitespaceValue_ShouldReturnSuccessWithNone(string invalidValue)
     {
         // Act
         var result = Prompt.Create(invalidValue);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(Prompt.None);
     }
 
     [Fact]

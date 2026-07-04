@@ -95,7 +95,7 @@ public class CollectionValueObjectsMappingTests
         var paramsCollection = converter.ConvertFromProvider(dbValue) as ParamsCollection;
 
         // Assert
-        paramsCollection.Should().BeNull();
+        paramsCollection.Should().Be(ParamsCollection.None);
     }
 
     [Fact]
@@ -394,7 +394,7 @@ public class CollectionValueObjectsMappingTests
         var tagsCollection = converter.ConvertFromProvider(dbValue) as TagsCollection;
 
         // Assert
-        tagsCollection.Should().BeNull();
+        tagsCollection.Should().Be(TagsCollection.None);
     }
 
     [Fact]

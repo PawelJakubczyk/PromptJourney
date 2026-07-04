@@ -74,7 +74,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
         // Arrange
         var failureResult = CreateFailureResult<List<VersionResponse>>(
             StatusCodes.Status500InternalServerError,
-            "Database error");
+            "An unexpected error occurred while processing your request.");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -91,7 +91,7 @@ public sealed class GetAllVersionsTests : VersionsControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Database error");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

@@ -39,7 +39,7 @@ public class TagTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(maxLengthValue);
+        result.Value.Value.Should().Be(maxLengthValue.ToLower());
         result.Value.Value.Should().HaveLength(Tag.MaxLength);
     }
 
@@ -57,7 +57,7 @@ public class TagTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(tagWithSpecialChars);
+        result.Value.Value.Should().Be(tagWithSpecialChars.ToLower());
     }
 
     // Invalid Creation Tests

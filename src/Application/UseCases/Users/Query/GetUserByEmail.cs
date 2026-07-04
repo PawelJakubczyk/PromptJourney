@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
 using Application.UseCases.Users.Responses;
+using Domain.Entities;
 using Domain.ValueObjects;
 using Utilities.Results;
 using Utilities.Workflows;
@@ -20,13 +21,13 @@ public static class GetUserByEmail
         {
             var email = Email.Create(query.Email);
 
-            var userResult = await _userRepository.GetUserByEmailAsync(email.Value, ct);
-
-            var result = WorkflowPipeline
-                .Empty()
+            var result = await WorkflowPipeline
+                .EmptyAsync()
                 .CollectErrors(email)
-                .CollectErrors(userResult)
-                .MapResult(() => UserResponse.FromDomain(userResult.Value));
+                .ExecuteIfNoErrors(() => _userRepository
+                    .GetUserByEmailAsync(email.Value, ct))
+                .MapResult<MidjourneyUser, UserResponse>
+                    (user => UserResponse.FromDomain(user));
 
             return result;
         }

@@ -12,7 +12,7 @@ namespace Application.UseCases.Users.Commands;
 
 public static class RegisterUser
 {
-    public sealed record Command(string UserName, string Email, string Password)
+    public sealed record Command(string UserName, string Email, string Password, string Role = "User")
         : ICommand<UserResponse>;
 
     public sealed class Handler
@@ -26,13 +26,13 @@ public static class RegisterUser
 
         public async Task<Result<UserResponse>> Handle(Command command, CancellationToken ct)
         {
-            var userId = UserId.Create();
+            var userId = UserID.Create();
             var userName = UserName.Create(command.UserName);
             var email = Email.Create(command.Email);
 
             var hashed = _passwordHasher.Hash(command.Password);
             var passwordHash = PasswordHash.Create(hashed);
-            var role = Role.Create("User");
+            var role = Role.Create(command.Role);
 
             var user = MidjourneyUser.Register(
                 userId,
@@ -45,11 +45,8 @@ public static class RegisterUser
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(user)
-                .AggregateErrors(
-                    pipeline => pipeline.IfUserNameAlreadyExists(userName, _userRepository, ct),
-                    pipeline => pipeline.IfUserEmailAlreadyExists(email, _userRepository, ct)
-                )
-                .ExecuteIfNoErrors(() => _userRepository.AddUserAsync(user.Value, ct))
+                .IfUserAlreadyExists(email, userName, _userRepository, ct)
+                .ExecuteIfNoErrors(() => _userRepository.RegisterUserAsync(user.Value, ct))
                 .MapResult(() => UserResponse.FromDomain(user.Value));
 
             return result;

@@ -394,7 +394,7 @@ public sealed class UpdateDescriptionTests : StylesControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Repository error during description update");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

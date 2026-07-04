@@ -11,10 +11,19 @@ public record Role : ValueObject<string>, ICreatable<Role, string?>
     public const int MaxLength = 10;
     public override bool IsNone => false;
 
+    public const string User = nameof(User);
+    public const string Moderator = nameof(Moderator);
+    public const string Admin = nameof(Admin);
+
+    public const string UserAccess = $"{User}Access";
+    public const string ModeratorAccess = $"{Moderator}Access";
+    public const string AdminAccess = $"{Admin}Access";
+
     internal static readonly HashSet<string> AllowedRoles =
     [
-        "User",
-        "Admin"
+        User,
+        Moderator,
+        Admin
     ];
 
     private Role(string value) : base(value) { }

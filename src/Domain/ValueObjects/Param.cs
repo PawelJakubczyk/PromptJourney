@@ -9,7 +9,7 @@ namespace Domain.ValueObjects;
 
 public record Param : ValueObject<string>, ICreatable<Param, string?>
 {
-    public const int MaxLength = 12;
+    public const int MaxLength = 20;
     public override bool IsNone => false;
     private Param(string value) : base(value) { }
 

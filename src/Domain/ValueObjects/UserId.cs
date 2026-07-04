@@ -5,14 +5,14 @@ using Utilities.Workflows;
 
 namespace Domain.ValueObjects;
 
-public record UserId : ValueObject<Guid>, ICreatable<UserId, string?>
+public record UserID : ValueObject<Guid>, ICreatable<UserID, string?>
 {
     public const int ExactLength = 36;
     public override bool IsNone => false;
 
-    private UserId(Guid value) : base(value) { }
+    private UserID(Guid value) : base(value) { }
 
-    public static Result<UserId> Create(string? value)
+    public static Result<UserID> Create(string? value)
     {
         value = value?.Trim();
 
@@ -22,17 +22,17 @@ public record UserId : ValueObject<Guid>, ICreatable<UserId, string?>
         var result = WorkflowPipeline
             .Empty()
             .AggregateErrors(
-                pipeline => pipeline.IfLengthTooLong<UserId, Guid>(value!, ExactLength),
+                pipeline => pipeline.IfLengthTooLong<UserID, Guid>(value!, ExactLength),
                 pipeline => pipeline.IfGuidFormatInvalid(value!))
-            .ExecuteIfNoErrors<UserId>(() => new UserId(Guid.Parse(value!)))
-            .MapResult<UserId>();
+            .ExecuteIfNoErrors<UserID>(() => new UserID(Guid.Parse(value!)))
+            .MapResult<UserID>();
 
         return result;
     }
 
-    public static Result<UserId> Create()
+    public static Result<UserID> Create()
     {
         var value = Guid.NewGuid();
-        return Result.Ok(new UserId(value));
+        return Result.Ok(new UserID(value));
     }
 }

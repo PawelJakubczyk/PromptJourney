@@ -3,10 +3,12 @@ using Application.UseCases.Styles.Commands;
 using Application.UseCases.Styles.Queries;
 using Application.UseCases.Styles.Responses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
 using Presentation.Controllers.Pipeline;
+using static Domain.ValueObjects.Role;
 
 namespace Presentation.Controllers;
 
@@ -17,6 +19,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
     // Queries //
     // GET api/styles
     [HttpGet]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<StyleResponse>>, BadRequest<ProblemDetails>>> GetAll(CancellationToken cancellationToken) 
     {
         var query = GetAllStyles.Query.Singleton;
@@ -32,6 +35,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles/{name}
     [HttpGet("{name}")]
+    [AllowAnonymous]
     public async Task<Results<Ok<StyleResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByName
     (
         string name, 
@@ -51,6 +55,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles/by-type/{type}
     [HttpGet("by-type/{type}")]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByType
     (
         string type, 
@@ -70,6 +75,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles/by-tags?tags=tag1&tags=tag2
     [HttpGet("by-tags")]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<StyleResponse>>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> GetByTags
     (
         [FromQuery] List<string?> tags, 
@@ -89,6 +95,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles/by-description?keyword=forest
     [HttpGet("by-description")]
+    [AllowAnonymous]
     public async Task<Results<Ok<List<StyleResponse>>, BadRequest<ProblemDetails>>> GetByDescription
     (
         [FromQuery] string keyword, 
@@ -108,6 +115,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles/{name}/exists
     [HttpGet("{name}/exists")]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckExists
     (
         string name, 
@@ -127,6 +135,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // GET api/styles/{styleName}/tags/{tag}/exists
     [HttpGet("{styleName}/tags/{tag}/exists")]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Ok<bool>, BadRequest<ProblemDetails>>> CheckTagExists
     (
         string styleName, 
@@ -149,6 +158,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // POST api/styles
     [HttpPost]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Created<StyleResponse>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> Create
     (
         [FromBody] CreateStyleRequest request,
@@ -178,6 +188,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // PUT api/styles/
     [HttpPut]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Ok<StyleResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Update
     (
         [FromBody] UpdateStyleRequest request,
@@ -206,6 +217,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // DELETE api/styles/{name}
     [HttpDelete("{name}")]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Ok<DeleteResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> Delete
     (
         string name, 
@@ -225,6 +237,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // POST api/styles/{name}/tags/{tag}
     [HttpPost("{name}/tags/{tag}")]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Ok<string>, NotFound<ProblemDetails>, Conflict<ProblemDetails>, BadRequest<ProblemDetails>>> AddTag
     (
         string name, 
@@ -245,6 +258,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // DELETE api/styles/{name}/tags/{tag}
     [HttpDelete("{name}/tags/{tag}")]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Ok<StyleResponse>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> RemoveTag
     (
         string name, 
@@ -265,6 +279,7 @@ public sealed class StylesController(ISender sender) : ApiController(sender)
 
     // PUT api/styles/{name}/description
     [HttpPut("{name}/description")]
+    [Authorize(Policy = ModeratorAccess)]
     public async Task<Results<Ok<string?>, NotFound<ProblemDetails>, BadRequest<ProblemDetails>>> UpdateDescription
     (
         string name, 

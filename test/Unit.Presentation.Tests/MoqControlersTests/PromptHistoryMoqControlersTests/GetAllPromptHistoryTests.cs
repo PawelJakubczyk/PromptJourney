@@ -85,7 +85,7 @@ public sealed class GetAllPromptHistoryTests : PromptHistoryControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Database connection failed");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

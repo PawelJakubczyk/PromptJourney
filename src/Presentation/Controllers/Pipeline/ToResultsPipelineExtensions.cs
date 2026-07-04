@@ -22,15 +22,31 @@ public static class ToResultsPipelineExtensions
         
         var (title, detail, type) = status switch
         {
-            400 => ("Validation failed", "One or more fields contain invalid values.", "https://api.promptjourney.com/errors/validation"),
+            400 => (
+                "Validation failed", 
+                "One or more fields contain invalid values.", 
+                "https://api.promptjourney.com/errors/validation"),
+            401 => (
+                "Unauthorized",  
+                list.FirstOrDefault()?.Message ?? "You are not authorized to perform this action.", 
+                "https://api.promptjourney.com/errors/unauthorized"),
             404 => (
                 "Resource not found",
                 list.FirstOrDefault()?.Message ?? "The requested resource could not be found.",
                 "https://api.promptjourney.com/errors/not-found"
             ),
-            409 => ("Conflict", GetConflictDetail(list), "https://api.promptjourney.com/errors/conflict"),
-            500 => ("Internal server error", "An unexpected error occurred while processing your request.", "https://api.promptjourney.com/errors/internal"),
-            _ => ("Error", "An error occurred while processing your request.", "https://api.promptjourney.com/errors/generic")
+            409 => (
+                "Conflict", 
+                GetConflictDetail(list), 
+                "https://api.promptjourney.com/errors/conflict"),
+            500 => (
+                "Internal server error", 
+                "An unexpected error occurred while processing your request.", 
+                "https://api.promptjourney.com/errors/internal"),
+            _ => (
+                "Error", 
+                "An error occurred while processing your request.", 
+                "https://api.promptjourney.com/errors/generic")
         };
 
         var requestInfo = GetRequestInfo(httpContext);
@@ -182,6 +198,7 @@ public static class ToResultsPipelineExtensions
             if (typeof(TError1) == typeof(BadRequest<ProblemDetails>)) return (TError1)(object)TypedResults.BadRequest(problem);
             if (typeof(TError2) == typeof(BadRequest<ProblemDetails>)) return (TError2)(object)TypedResults.BadRequest(problem);
         }
+
         else if (status == 404)
         {
             if (typeof(TError1) == typeof(NotFound<ProblemDetails>)) return (TError1)(object)TypedResults.NotFound(problem);

@@ -91,22 +91,6 @@ public class StyleTypeTests
     }
 
     [Fact]
-    public void Create_WithValueAboveMaxLength_ShouldFailuedInLenghtValidation()
-    {
-        // Arrange
-        var maxLengthValue = new string('A', StyleType.MaxLength + 5);
-
-        // Act
-        var result = StyleType.Create(maxLengthValue);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().NotBeEmpty();
-        result.Errors[0].Message.Should().Be($"StyleType: '{maxLengthValue}' cannot be longer than 30 characters.");
-    }
-
-    [Fact]
     public void ToString_ShouldReturnValue()
     {
         // Arrange

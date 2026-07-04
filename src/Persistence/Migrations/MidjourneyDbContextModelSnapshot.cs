@@ -39,6 +39,9 @@ namespace Persistence.Migrations
                         .HasColumnType("varchar(1000)")
                         .HasColumnName("prompt");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("Uuid");
+
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasColumnType("varchar(10)")
@@ -48,6 +51,8 @@ namespace Persistence.Migrations
 
                     b.HasIndex("Prompt")
                         .HasDatabaseName("IX_midjourney_prompt_history_prompt");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("Version");
 
@@ -157,6 +162,52 @@ namespace Persistence.Migrations
                     b.ToTable("midjourney_style_example_links", "public");
                 });
 
+            modelBuilder.Entity("Domain.Entities.MidjourneyUser", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("Uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(320)")
+                        .HasColumnName("email");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("Boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("varchar(512)")
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("role");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("user_name");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("UserName")
+                        .HasDatabaseName("IX_midjourney_user_user_name");
+
+                    b.ToTable("midjourney_user", "public");
+                });
+
             modelBuilder.Entity("Domain.Entities.MidjourneyVersion", b =>
                 {
                     b.Property<string>("Version")
@@ -169,7 +220,7 @@ namespace Persistence.Migrations
 
                     b.Property<string>("Parameter")
                         .IsRequired()
-                        .HasColumnType("varchar(12)")
+                        .HasColumnType("varchar(20)")
                         .HasColumnName("parameter");
 
                     b.Property<DateTimeOffset>("ReleaseDate")
@@ -201,11 +252,19 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.MidjourneyPromptHistory", b =>
                 {
+                    b.HasOne("Domain.Entities.MidjourneyUser", "MidjourneyUser")
+                        .WithMany("MidjourneyHistories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.MidjourneyVersion", "MidjourneyVersion")
                         .WithMany("MidjourneyHistories")
                         .HasForeignKey("Version")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("MidjourneyUser");
 
                     b.Navigation("MidjourneyVersion");
                 });
@@ -258,6 +317,11 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.MidjourneyStyle", b =>
                 {
                     b.Navigation("MidjourneyExampleLinks");
+                });
+
+            modelBuilder.Entity("Domain.Entities.MidjourneyUser", b =>
+                {
+                    b.Navigation("MidjourneyHistories");
                 });
 
             modelBuilder.Entity("Domain.Entities.MidjourneyVersion", b =>

@@ -7,7 +7,7 @@ using static Persistence.Mapping.ValueObjectsMapping;
 
 namespace Persistence.Configuration;
 
-public class MidjourneyPropertiesConfiguration : IEntityTypeConfiguration<MidjourneyProperty>
+public class MidjourneyPropertyConfiguration : IEntityTypeConfiguration<MidjourneyProperty>
 {
     public virtual void Configure(EntityTypeBuilder<MidjourneyProperty> builder)
     {

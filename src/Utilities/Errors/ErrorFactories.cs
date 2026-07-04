@@ -258,4 +258,15 @@ public class ErrorFactories
             .WithErrorCode(StatusCodes.Status400BadRequest)
             .WithErrorCodeString("INVALID_JSON")
             .Build();
+
+    // ========================================
+    // Authentication/Authorization Errors
+    // ========================================
+
+    public static Error Unauthorized(string? details = null) =>
+            ErrorBuilder.New()
+                .WithMessage(UnauthorizedMessage(details))
+                .WithErrorCode(StatusCodes.Status401Unauthorized)
+                .WithErrorCodeString("UNAUTHORIZED")
+                .Build();
 }

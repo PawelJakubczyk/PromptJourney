@@ -1,4 +1,4 @@
-using Domain.Abstractions;
+﻿using Domain.Abstractions;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -50,6 +50,20 @@ public static class ValueObjectsMapping
     public sealed class TagConverter : ValueObjectsMapping<Tag, string>.Converter { }
     public sealed class TagComparer : ValueObjectsMapping<Tag, string>.Comparer { }
 
+    public sealed class UserNameConverter : ValueObjectsMapping<UserName, string>.Converter { }
+    public sealed class UserNameComparer : ValueObjectsMapping<UserName, string>.Comparer { }
+
+    public sealed class EmailConverter : ValueObjectsMapping<Email, string>.Converter { }
+    public sealed class EmailComparer : ValueObjectsMapping<Email, string>.Comparer { }
+
+    public sealed class PasswordHashConverter : ValueObjectsMapping<PasswordHash, string>.Converter { }
+    public sealed class PasswordHashComparer : ValueObjectsMapping<PasswordHash, string>.Comparer { }
+
+    public sealed class RoleConverter : ValueObjectsMapping<Role, string>.Converter { }
+    public sealed class RoleComparer : ValueObjectsMapping<Role, string>.Comparer { }
+
+
+
     // ================================================================
     // COLLECTION VALUE OBJECT CONVERTERS & COMPARERS
     // ================================================================
@@ -73,6 +87,10 @@ public static class ValueObjectsMapping
 
     public sealed class CreatedOnComparer : DateTimeValueObjectMapping<CreatedOn>.Comparer { }
 
+    public sealed class DeletedAtConverter : DateTimeValueObjectMapping<DeletedAt>.Converter { }
+
+    public sealed class DeletedAtComparer : DateTimeValueObjectMapping<DeletedAt>.Comparer { }
+
     // ================================================================
     // ID VALUE OBJECT (Guid) CONVERTERS & COMPARERS
     // ================================================================
@@ -85,6 +103,11 @@ public static class ValueObjectsMapping
     public sealed class HistoryIDConverter : GuidValueObjectMapping<HistoryID>.Converter { }
 
     public sealed class HistoryIDComparer : GuidValueObjectMapping<HistoryID>.Comparer { }
+
+
+    public sealed class UserIDConverter : GuidValueObjectMapping<UserID>.Converter { }
+
+    public sealed class UserIDComparer : GuidValueObjectMapping<UserID>.Comparer { }
 }
 
 // ================================================================

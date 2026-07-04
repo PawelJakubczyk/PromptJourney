@@ -1,33 +1,34 @@
 ﻿using Application.Abstractions;
 using Application.Abstractions.IRepository;
-using Application.UseCases.Users.Responses;
+using Application.Extensions;
+using Application.UseCases.Common.Responses;
 using Domain.ValueObjects;
 using Utilities.Results;
 using Utilities.Workflows;
 
-namespace Application.UseCases.Users.Queries;
+namespace Application.UseCases.Users.Commands;
 
-public static class GetUserById
+public static class DeleteUserById
 {
-    public sealed record Query(string UserId) : IQuery<UserResponse>;
+    public sealed record Command(string UserId) : ICommand<DeleteResponse>;
 
     public sealed class Handler(IUserRepository userRepository)
-        : IQueryHandler<Query, UserResponse>
+        : ICommandHandler<Command, DeleteResponse>
     {
         private readonly IUserRepository _userRepository = userRepository;
 
-        public async Task<Result<UserResponse>> Handle(Query query, CancellationToken ct)
+        public async Task<Result<DeleteResponse>> Handle(Command command, CancellationToken ct)
         {
-            var id = UserId.Create(query.UserId);
+            var userId = UserID.Create(command.UserId);
 
-            var userResult = await _userRepository.GetUserByIdAsync(id.Value, ct);
-
-            var result = WorkflowPipeline
-                .Empty()
-                .CollectErrors(id)
-                .CollectErrors(userResult)
-                .MapResult(() => UserResponse.FromDomain(userResult.Value));
-
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .CollectErrors(userId)
+                .IfUserIdNotExists(userId, _userRepository, ct)
+                .ExecuteIfNoErrors(() =>
+                    _userRepository.DeleteUserByIdAsync(userId.Value, ct))
+                .MapResult(() =>
+                    DeleteResponse.Success($"User '{userId.Value}' was successfully deleted."));
             return result;
         }
     }

@@ -62,7 +62,7 @@ public sealed class GetAllTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.GetAll(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed");
+        actionResult.Should().BeBadRequestResult().WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

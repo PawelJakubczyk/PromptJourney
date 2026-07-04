@@ -25,4 +25,6 @@ public record CreatedOn : ValueObject<DateTimeOffset>, ICreatable<CreatedOn, str
 
         return result;
     }
+
+    public static Result<CreatedOn> Create() => Result.Ok(new CreatedOn(DateTimeOffset.UtcNow));
 }
