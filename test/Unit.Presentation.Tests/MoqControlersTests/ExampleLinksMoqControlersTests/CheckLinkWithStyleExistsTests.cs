@@ -117,7 +117,7 @@ public sealed class CheckLinkWithStyleExistsTests : ExampleLinksControllerTestsB
         var actionResult = await controller.CheckLinkWithStyleExists(CorrectStyleName, CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed");
+        actionResult.Should().BeBadRequestResult().WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

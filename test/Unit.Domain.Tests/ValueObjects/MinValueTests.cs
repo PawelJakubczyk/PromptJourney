@@ -24,7 +24,7 @@ public class MinValueTests
     }
 
     [Fact]
-    public void Create_WithNullValue_ShouldReturnSuccessWithNull()
+    public void Create_WithNullValue_ShouldReturnSuccessWithNone()
     {
         // Act
         var result = MinValue.Create(null);
@@ -33,7 +33,7 @@ public class MinValueTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().BeNull();
+        result.Value.Should().Be(MinValue.None);
     }
 
     [Theory]
@@ -41,15 +41,15 @@ public class MinValueTests
     [InlineData("   ")]
     [InlineData("\t")]
     [InlineData("\n")]
-    public void Create_WithWhitespaceValue_ShouldReturnFailure(string whitespaceValue)
+    public void Create_WithWhitespaceValue_ShouldReturnSuccessWithNone(string whitespaceValue)
     {
         // Act
         var result = MinValue.Create(whitespaceValue);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(MinValue.None);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class MinValueTests
     }
 
     [Fact]
-    public void ToString_WithNullValue_ShouldReturnNull()
+    public void ToString_WithNullValue_ShouldReturnEmptyString()
     {
         // Arrange
         var minValue = MinValue.Create(null).Value;
@@ -108,7 +108,7 @@ public class MinValueTests
         var result = minValue.ToString();
 
         // Assert
-        result.Should().BeNull();
+        result.Should().Be(String.Empty);
     }
 
     [Theory]

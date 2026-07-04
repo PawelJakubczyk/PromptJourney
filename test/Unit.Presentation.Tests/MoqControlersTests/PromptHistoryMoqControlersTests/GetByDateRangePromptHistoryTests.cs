@@ -1,5 +1,5 @@
-using Application.UseCases.PromptHistory.Queries;
-using Application.UseCases.PromptHistory.Responses;
+using Application.UseCases.PromptHistories.Queries;
+using Application.UseCases.PromptHistories.Responses;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -199,7 +199,7 @@ public sealed class GetByDateRangePromptHistoryTests : PromptHistoryControllerTe
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Database connection failed");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

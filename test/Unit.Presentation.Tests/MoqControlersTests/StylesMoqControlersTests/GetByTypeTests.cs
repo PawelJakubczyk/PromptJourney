@@ -550,7 +550,7 @@ public sealed class GetByTypeTests : StylesControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Repository error during type search");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

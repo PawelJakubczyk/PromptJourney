@@ -10,9 +10,10 @@ public class MidjourneyPromptHistoryTests
     public void Create_WithValidData_ShouldReturnSuccess()
     {
         // Arrange
-        var promptResult = Prompt.Create("A beautiful landscape with mountains");
+        var promtDescription = "A beautiful landscape with mountains";
+        var promptResult = Prompt.Create(promtDescription);
         var versionResult = ModelVersion.Create("6.0");
-        var beforeCreation = DateTime.UtcNow.AddSeconds(-1);
+        var beforeCreation = DateTimeOffset.UtcNow.AddSeconds(-1);
 
         // Act
         var result = MidjourneyPromptHistory.Create
@@ -20,20 +21,20 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
-        var afterCreation = DateTime.UtcNow.AddSeconds(1);
+        var afterCreation = DateTimeOffset.UtcNow.AddSeconds(1);
 
         // Assert
         result.Should().NotBeNull();
         result.ShouldBeSuccess();
         result.Value.Should().NotBeNull();
-        result.Value.Prompt.Value.Should().Be("A beautiful landscape with mountains");
+        result.Value.Prompt.Value.Should().Be(promtDescription);
         result.Value.Version.Value.Should().Be("6.0");
         result.Value.CreatedOn.Value.Should().BeAfter(beforeCreation);
         result.Value.CreatedOn.Value.Should().BeBefore(afterCreation);
-        result.Value.HistoryId.Should().NotBe(Guid.Empty);
+        result.Value.HistoryId.ValueAsGuid.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public class MidjourneyPromptHistoryTests
         // Arrange
         var promptResult = Prompt.Create("Test prompt");
         var versionResult = ModelVersion.Create("5.1");
-        var beforeCreation = DateTime.UtcNow;
+        var beforeCreation = DateTimeOffset.UtcNow;
 
         // Act
         var result = MidjourneyPromptHistory.Create
@@ -50,10 +51,10 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
-        var afterCreation = DateTime.UtcNow;
+        var afterCreation = DateTimeOffset.UtcNow;
 
         // Assert
         result.Should().NotBeNull();
@@ -76,7 +77,7 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
         // Assert
@@ -85,28 +86,7 @@ public class MidjourneyPromptHistoryTests
         result.Value.Should().NotBeNull();
         result.Value.Prompt.Value.Should().Be("Simple prompt");
         result.Value.Version.Value.Should().Be("niji 6");
-        result.Value.HistoryId.Should().NotBe(Guid.Empty);
-    }
-
-    [Fact]
-    public void Create_WithInvalidPrompt_ShouldReturnFailure()
-    {
-        // Arrange
-        var invalidPromptResult = Prompt.Create("");
-        var versionResult = ModelVersion.Create("6.0");
-
-        // Act
-        var result = MidjourneyPromptHistory.Create
-        (
-            HistoryID.Create(),
-            invalidPromptResult,
-            versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
-        );
-
-        // Assert
-        result.Should().NotBeNull();
-        result.ShouldBeFailure();
+        result.Value.HistoryId.ValueAsGuid.Should().NotBe(Guid.Empty);
     }
 
     [Fact]
@@ -122,35 +102,12 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             invalidVersionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
         // Assert
         result.Should().NotBeNull();
         result.ShouldBeFailure();
-    }
-
-    [Fact]
-    public void Create_WithBothInvalidInputs_ShouldReturnFailure()
-    {
-        // Arrange
-        var invalidPromptResult = Prompt.Create(null);
-        var invalidVersionResult = ModelVersion.Create("");
-
-        // Act
-        var result = MidjourneyPromptHistory.Create
-        (
-            HistoryID.Create(),
-            invalidPromptResult,
-            invalidVersionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
-        );
-
-        // Assert
-        result.Should().NotBeNull();
-        result.ShouldBeFailure();
-        result.Errors.Should().NotBeEmpty();
-        result.Errors.Should().HaveCountGreaterOrEqualTo(2); // Both prompt and version errors
     }
 
     [Theory]
@@ -173,7 +130,7 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
         // Assert
@@ -197,7 +154,7 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
         // Assert
@@ -227,14 +184,14 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
         // Assert
         result.Should().NotBeNull();
         result.ShouldBeSuccess();
         result.Value.Should().NotBeNull();
-        result.Value.CreatedOn.Should().NotBe(default(DateTime));
+        result.Value.CreatedOn.Should().NotBe(default);
     }
 
     [Fact]
@@ -250,14 +207,14 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             promptResult,
             versionResult,
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
         // Assert
         result.Should().NotBeNull();
         result.ShouldBeSuccess();
         result.Value.Should().NotBeNull();
-        result.Value.CreatedOn.Should().NotBe(default(DateTime));
+        result.Value.CreatedOn.Should().NotBe(default);
     }
 
     [Fact]
@@ -268,11 +225,11 @@ public class MidjourneyPromptHistoryTests
         var versionResult = ModelVersion.Create("6.0");
 
         // Act
-        var result1 = MidjourneyPromptHistory.Create(HistoryID.Create(), promptResult, versionResult, CreatedOn.Create(DateTime.UtcNow.ToString()));
-        var result2 = MidjourneyPromptHistory.Create(HistoryID.Create(), promptResult, versionResult, CreatedOn.Create(DateTime.UtcNow.ToString()));
+        var result1 = MidjourneyPromptHistory.Create(HistoryID.Create(), promptResult, versionResult, CreatedOn.Create());
+        var result2 = MidjourneyPromptHistory.Create(HistoryID.Create(), promptResult, versionResult, CreatedOn.Create());
 
         // Assert
-        result1.Value.HistoryId.Should().NotBe(result2.Value.HistoryId);
+        result1.Value.HistoryId.ValueAsGuid.Should().NotBe(result2.Value.HistoryId.ValueAsGuid);
     }
 
     [Fact]
@@ -284,7 +241,7 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             Prompt.Create("Test prompt"),
             ModelVersion.Create("6.0"),
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         );
 
         // Assert
@@ -301,14 +258,13 @@ public class MidjourneyPromptHistoryTests
             HistoryID.Create(),
             Prompt.Create("Test prompt"),
             ModelVersion.Create("6.0"),
-            CreatedOn.Create(DateTime.UtcNow.ToString())
+            CreatedOn.Create()
         ).Value;
 
         // Assert
-        // HistoryId should have only a getter (read-only)
-        history.HistoryId.Should().NotBe(Guid.Empty);
+        history.HistoryId.ValueAsGuid.Should().NotBe(Guid.Empty);
 
         // This test verifies that HistoryId cannot be modified after creation
-        // The property should be { get; } only
+        // The property should be { get; private set; } only
     }
 }

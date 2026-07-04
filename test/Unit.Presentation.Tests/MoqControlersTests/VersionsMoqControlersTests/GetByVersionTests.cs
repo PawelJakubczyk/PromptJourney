@@ -262,7 +262,7 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         var version = "1.0";
         var failureResult = CreateFailureResult<VersionResponse>(
             StatusCodes.Status500InternalServerError,
-            "Repository error during version retrieval");
+            "An unexpected error occurred while processing your request.");
 
         var senderMock = new Mock<ISender>();
         senderMock
@@ -279,6 +279,6 @@ public sealed class GetByVersionTests : VersionsControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Repository error during version retrieval");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 }

@@ -1,3 +1,4 @@
+using Application.UseCases.Users.Responses;
 using Application.UseCases.Versions.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.VersionsControllersTests.Base;
@@ -18,7 +19,7 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
 
-        var versions = await DeserializeResponse<List<VersionResponse>>(response);
+        var versions = await DeserializeResponse<List<UserResponse>>(response);
         versions.Should().NotBeNull();
     }
 
@@ -29,7 +30,7 @@ public sealed class GetAllVersionsTests(MidjourneyTestWebApplicationFactory fact
         var response = await Client.GetAsync(BaseUrl);
 
         // Assert
-        AssertOkResponse<VersionResponse>(response);
+        AssertOkResponse<UserResponse>(response);
 
         var versions = await DeserializeResponse<List<VersionResponse>>(response);
         versions.Should().NotBeNull();

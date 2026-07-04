@@ -12,11 +12,13 @@ public sealed class MidjourneyPromptHistory : IEntity
     public Prompt Prompt { get; private set; }
     public ModelVersion Version { get; private set; }
     public CreatedOn CreatedOn { get; private set; }
+    public UserID UserId { get; private set; }
 
     // Navigation
+    public MidjourneyUser MidjourneyUser { get; private set; } = null!;
     public MidjourneyVersion MidjourneyVersion { get; private set; } = null!;
     private List<MidjourneyStyle> Styles { get; set; } = [];
-    public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles.AsReadOnly();
+    public IReadOnlyCollection<MidjourneyStyle> MidjourneyStyles => Styles;
 
     // Constructors
     #pragma warning disable CS8618
@@ -47,7 +49,7 @@ public sealed class MidjourneyPromptHistory : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.CollectErrors(historyId),
                 pipeline => pipeline.CollectErrors(prompt),
                 pipeline => pipeline.CollectErrors(version))

@@ -1,0 +1,36 @@
+using Application.Abstractions;
+using Application.Abstractions.IRepository;
+using Application.UseCases.PromptHistories.Responses;
+using Utilities.Results;
+using Domain.Entities;
+using Utilities.Workflows;
+
+namespace Application.UseCases.PromptHistories.Queries;
+
+public static class GetAllHistoryRecords
+{
+    public sealed record Query : IQuery<List<PromptHistoryResponse>>
+    {
+        public static readonly Query Singleton = new();
+    };
+
+    public sealed class Handler
+    (
+        IPromptHistoryRepository promptHistoryRepository
+    ) : IQueryHandler<Query, List<PromptHistoryResponse>>
+    {
+        private readonly IPromptHistoryRepository _promptHistoryRepository = promptHistoryRepository;
+
+        public async Task<Result<List<PromptHistoryResponse>>> Handle(Query _, CancellationToken cancellationToken)
+        {
+            var result = await WorkflowPipeline
+                .EmptyAsync()
+                .ExecuteIfNoErrors(() => _promptHistoryRepository
+                    .GetAllHistoryRecordsAsync(cancellationToken))
+                .MapResult<List<MidjourneyPromptHistory>, List<PromptHistoryResponse>>
+                    (promptHistoryList => [.. promptHistoryList.Select(PromptHistoryResponse.FromDomain)]);
+
+            return result;
+        }
+    }
+}

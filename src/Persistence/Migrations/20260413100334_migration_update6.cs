@@ -17,7 +17,7 @@ namespace Persistence.Migrations
                 type: "varchar(800)",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "varchar(200)");
+                oldType: "varchar(800)");
         }
 
         /// <inheritdoc />
@@ -27,10 +27,10 @@ namespace Persistence.Migrations
                 name: "link",
                 schema: "public",
                 table: "midjourney_style_example_links",
-                type: "varchar(200)",
+                type: "varchar(800)",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "varchar(800)");
+                oldType: "varchar(200)");
         }
     }
 }

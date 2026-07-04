@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using System.Reflection;
-
-//var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+﻿//var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 //var category = Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
 //var logger = loggerFactory.CreateLogger(category);
 

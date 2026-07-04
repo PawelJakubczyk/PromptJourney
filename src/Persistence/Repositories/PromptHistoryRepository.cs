@@ -1,7 +1,6 @@
 using Application.Abstractions.IRepository;
 using Application.UseCases.Common.Responses;
 using Domain.Entities;
-using Domain.Errors;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +21,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         CancellationToken cancellationToken
     )
     {
-        await _midjourneyDbContext.MidjourneyPromptHistory.AddAsync(history, cancellationToken);
+        await _midjourneyDbContext.MidjourneyPromptHistories.AddAsync(history, cancellationToken);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
         return Result.Ok(history);
     }
@@ -33,12 +32,12 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         CancellationToken cancellationToken
     )
     {
-        var historyRecord = await _midjourneyDbContext.MidjourneyPromptHistory
+        var historyRecord = await _midjourneyDbContext.MidjourneyPromptHistories
             .FirstOrDefaultAsync(history => history.HistoryId == historyId, cancellationToken);
 
-        if (historyRecord is null) return Result.Fail<DeleteResponse>(DomainErrors.HistoryNotFoundError(historyId.Value));
+        if (historyRecord is null) return Result.Fail<DeleteResponse>(ErrorFactories.NotFound(historyId.Value));
 
-        _midjourneyDbContext.MidjourneyPromptHistory.Remove(historyRecord);
+        _midjourneyDbContext.MidjourneyPromptHistories.Remove(historyRecord);
         await _midjourneyDbContext.SaveChangesAsync(cancellationToken);
         return Result.Ok(DeleteResponse.Success($"History record with Id: '{historyId}' deleted successfully."));
     }
@@ -46,13 +45,13 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
     // For Queries
     public async Task<Result<int>> CalculateHistoricalRecordCountAsync(CancellationToken cancellationToken)
     {
-        var count = await _midjourneyDbContext.MidjourneyPromptHistory.CountAsync(cancellationToken);
+        var count = await _midjourneyDbContext.MidjourneyPromptHistories.CountAsync(cancellationToken);
         return Result.Ok(count);
     }
 
     public async Task<Result<List<MidjourneyPromptHistory>>> GetAllHistoryRecordsAsync(CancellationToken cancellationToken)
     {
-        var records = await _midjourneyDbContext.MidjourneyPromptHistory
+        var records = await _midjourneyDbContext.MidjourneyPromptHistories
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
             .OrderByDescending(history => history.CreatedOn)
@@ -67,7 +66,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         CancellationToken cancellationToken
     )
     {
-        var record = await _midjourneyDbContext.MidjourneyPromptHistory
+        var record = await _midjourneyDbContext.MidjourneyPromptHistories
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
             .FirstOrDefaultAsync(history => history.HistoryId == historyId, cancellationToken);
@@ -92,7 +91,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         CancellationToken cancellationToken
     )
     {
-        var records = await _midjourneyDbContext.MidjourneyPromptHistory
+        var records = await _midjourneyDbContext.MidjourneyPromptHistories
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
             .Where(history => history.CreatedOn.Value >= dateFrom && history.CreatedOn.Value <= dateTo)
@@ -110,7 +109,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
     {
         var pattern = keyword.ToString();
 
-        var records = await _midjourneyDbContext.MidjourneyPromptHistory
+        var records = await _midjourneyDbContext.MidjourneyPromptHistories
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
             .Where(history => EF.Functions.Like(history.Prompt.Value, pattern))
@@ -126,7 +125,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         CancellationToken cancellationToken
     )
     {
-        var records = await _midjourneyDbContext.MidjourneyPromptHistory
+        var records = await _midjourneyDbContext.MidjourneyPromptHistories
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
             .Where(history => history.Version == version)
@@ -142,7 +141,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         CancellationToken cancellationToken
     )
     {
-        var list = await _midjourneyDbContext.MidjourneyPromptHistory
+        var list = await _midjourneyDbContext.MidjourneyPromptHistories
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
             .OrderByDescending(history => history.CreatedOn)
@@ -164,7 +163,7 @@ public sealed class PromptHistoryRepository(MidjourneyDbContext midjourneyDbCont
         if (pageNumber <= 0)
             throw new ArgumentException("Page number must be greater than zero", nameof(pageNumber));
 
-        var list = await _midjourneyDbContext.MidjourneyPromptHistory
+        var list = await _midjourneyDbContext.MidjourneyPromptHistories
             .Include(history => history.MidjourneyVersion)
             .Include(history => history.MidjourneyStyles)
             .OrderByDescending(history => history.CreatedOn)

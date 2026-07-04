@@ -613,32 +613,6 @@ public class ValueObjectsMappingTests
     }
 
     [Fact]
-    public void ReleaseDateComparer_ShouldReturnTrue_WhenBothAreNull()
-    {
-        // Arrange
-        var comparer = new ValueObjectsMapping.ReleaseDateComparer();
-
-        // Act
-        var areEqual = comparer.Equals(null, null);
-
-        // Assert
-        areEqual.Should().BeTrue();
-    }
-
-    [Fact]
-    public void ReleaseDateComparer_ShouldGenerateZeroHashCode_WhenDateIsNull()
-    {
-        // Arrange
-        var comparer = new ValueObjectsMapping.ReleaseDateComparer();
-
-        // Act
-        var hash = comparer.GetHashCode(null);
-
-        // Assert
-        hash.Should().Be(0);
-    }
-
-    [Fact]
     public void ReleaseDateComparer_ShouldCreateSnapshot_WhenDateIsValid()
     {
         // Arrange

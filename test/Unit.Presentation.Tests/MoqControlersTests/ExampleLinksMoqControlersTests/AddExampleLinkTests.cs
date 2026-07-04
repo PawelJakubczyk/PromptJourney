@@ -24,7 +24,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeCreatedResult()
-            .WithValue(CorrectId);
+            .WithValue(resultOk.Value);
     }
 
     [Fact]
@@ -182,10 +182,10 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         var controller = CreateController(senderMock);
 
         // Act 
-        var actiom = () => controller.AddExampleLink(requestOk, cts.Token);
+        var action = () => controller.AddExampleLink(requestOk, cts.Token);
 
         // Assert
-        await actiom
+        await action
             .Should()
             .ThrowAsync<OperationCanceledException>()
             .WithMessage(ErrorCanceledOperation);
@@ -200,7 +200,8 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         // Arrange
         var request = new AddExampleLinkRequest(link, style, version);
         var id = Guid.NewGuid();
-        var result = Result.Ok(new ExampleLinkResponse(id, link, style, version));
+        var response = new ExampleLinkResponse(id, link, style, version);
+        var result = Result.Ok(response);
         var senderMock = CreateSenderMock();
         senderMock.SetupSendReturnsForRequest<AddExampleLink.Command, ExampleLinkResponse>(result);
         var controller = CreateController(senderMock);
@@ -212,7 +213,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
         actionResult
             .Should()
             .BeCreatedResult()
-            .WithValue(id.ToString());
+            .WithValue(response);
     }
 
     [Theory]
@@ -221,7 +222,7 @@ public sealed class AddExampleLinkTests : ExampleLinksControllerTestsBase
     [InlineData("http://example.com", "Style", "")]
     [InlineData(null, "Style", "1.0")]
     [InlineData("http://example.com", null, "1.0")]
-        [InlineData("http://example.com", "Style", null)]
+    [InlineData("http://example.com", "Style", null)]
     public async Task AddExampleLink_ReturnsBadRequest_ForInvalidInputCombinations(string? link, string? style, string? version)
     {
         // Arrange

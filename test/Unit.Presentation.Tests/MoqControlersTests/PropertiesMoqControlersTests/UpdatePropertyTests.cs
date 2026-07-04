@@ -375,7 +375,7 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Database connection failed");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]
@@ -391,8 +391,8 @@ public sealed class UpdatePropertyTests : PropertiesControllerTestsBase
         var description = "Chaos parameter";
 
         var request = new PropertyRequest(
-            version,
             propertyName,
+            version,
             parameters,
             defaultValue,
             minValue,

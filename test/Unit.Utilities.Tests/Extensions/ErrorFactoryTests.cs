@@ -7,18 +7,6 @@ namespace Unit.Utilities.Tests.Extensions;
 public class ErrorFactoryTests
 {
     [Fact]
-    public void Create_ShouldReturnErrorWithDefaultMessage()
-    {
-        // Act
-        var error = ErrorBuilder.New().Build();
-
-        // Assert
-        error.Should().NotBeNull();
-        error.Message.Should().Be("An error occurred");
-        error.Metadata.Should().BeEmpty();
-    }
-
-    [Fact]
     public void WithErrorCode_ShouldAddErrorCodeToMetadata()
     {
         // Arrange

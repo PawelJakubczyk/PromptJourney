@@ -24,7 +24,7 @@ public class DefaultValueTests
     }
 
     [Fact]
-    public void Create_WithNullValue_ShouldReturnSuccessWithNull()
+    public void Create_WithNullValue_ShouldReturnSuccessWithNone()
     {
         // Act
         var result = DefaultValue.Create(null);
@@ -33,7 +33,7 @@ public class DefaultValueTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().BeNull();
+        result.Value.Value.Should().Be(string.Empty);
     }
 
     [Theory]
@@ -41,16 +41,17 @@ public class DefaultValueTests
     [InlineData("   ")]
     [InlineData("\t")]
     [InlineData("\n")]
-    public void Create_WithWhitespaceValue_ShouldReturnFailure(string whitespaceValue)
+    public void Create_WithWhitespaceValue_ShouldReturnNone(string whitespaceValue)
     {
         // Act
         var result = DefaultValue.Create(whitespaceValue);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-        result.Errors[0].Message.Should().Be("DefaultValue: cannot be whitespace.");
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Should().Be(DefaultValue.None);
+        result.Value.Value.Should().Be(string.Empty);
     }
 
     [Fact]
@@ -101,7 +102,7 @@ public class DefaultValueTests
     }
 
     [Fact]
-    public void ToString_WithNullValue_ShouldReturnNull()
+    public void ToString_WithNullValue_ShouldReturnNone()
     {
         // Arrange
         var defaultValue = DefaultValue.Create(null).Value;
@@ -110,7 +111,7 @@ public class DefaultValueTests
         var result = defaultValue.ToString();
 
         // Assert
-        result.Should().BeNull();
+        result.Should().Be(DefaultValue.None.ToString());
     }
 
     [Theory]

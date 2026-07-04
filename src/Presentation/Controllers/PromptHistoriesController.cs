@@ -1,6 +1,6 @@
-using Application.UseCases.PromptHistory.Commands;
-using Application.UseCases.PromptHistory.Queries;
-using Application.UseCases.PromptHistory.Responses;
+using Application.UseCases.PromptHistories.Commands;
+using Application.UseCases.PromptHistories.Queries;
+using Application.UseCases.PromptHistories.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

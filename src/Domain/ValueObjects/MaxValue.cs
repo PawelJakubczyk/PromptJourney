@@ -22,7 +22,7 @@ public record MaxValue : ValueObject<string>, ICreatable<MaxValue, string?>
 
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<MaxValue>(value, MaxLength),
                 pipeline => pipeline.IfContainsSuspiciousContent<MaxValue>(value))
             .ExecuteIfNoErrors<MaxValue>(() => new MaxValue(value))

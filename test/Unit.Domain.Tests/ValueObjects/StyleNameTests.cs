@@ -18,7 +18,7 @@ public class StyleNameTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(validValue);
+        result.Value.Value.Should().Be(validValue.ToLower());
     }
 
     [Theory]
@@ -36,7 +36,7 @@ public class StyleNameTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(validValue);
+        result.Value.Value.Should().Be(validValue.ToLower());
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class StyleNameTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(maxLengthValue);
+        result.Value.Value.Should().Be(maxLengthValue.ToLower());
         result.Value.Value.Should().HaveLength(StyleName.MaxLength);
     }
 
@@ -69,7 +69,7 @@ public class StyleNameTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(valueWithSpecialChars);
+        result.Value.Value.Should().Be(valueWithSpecialChars.ToLower());
     }
 
     [Theory]
@@ -115,7 +115,7 @@ public class StyleNameTests
         var result = styleNameObj.ToString();
 
         // Assert
-        result.Should().Be(styleName);
+        result.Should().Be(styleName.ToLower());
     }
 
     [Fact]

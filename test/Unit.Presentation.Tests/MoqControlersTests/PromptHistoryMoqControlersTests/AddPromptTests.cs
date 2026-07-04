@@ -1,4 +1,4 @@
-﻿using Application.UseCases.PromptHistory.Commands;
+﻿using Application.UseCases.PromptHistories.Commands;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -380,7 +380,7 @@ public sealed class AddPromptTests : PromptHistoryControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Database connection failed");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

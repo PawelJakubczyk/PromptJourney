@@ -79,7 +79,7 @@ public class KeywordTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(maxLengthValue);
+        result.Value.Value.Should().Be(maxLengthValue.ToLower());
         result.Value.Value.Should().HaveLength(Keyword.MaxLength);
     }
 
@@ -111,6 +111,6 @@ public class KeywordTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().Be(keywordFormat);
+        result.Value.Value.Should().Be(keywordFormat.ToLower());
     }
 }

@@ -1,4 +1,4 @@
-using Application.UseCases.PromptHistory.Queries;
+using Application.UseCases.PromptHistories.Queries;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -79,7 +79,7 @@ public sealed class GetRecordCountPromptHistoryTests : PromptHistoryControllerTe
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Database connection failed");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

@@ -8,6 +8,92 @@ namespace Application.Extensions;
 
 public static class EntityExistenceValidationWorkflowPipelineExtensions
 {
+    public static Task<WorkflowPipeline> IfUserAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Result<Email> email,
+        Result<UserName> userName,
+        IUserRepository repository,
+        CancellationToken ct
+    )
+    {
+        return pipelineTask.ValidateExistence(
+            email,
+            (_, cancellationToken) => repository.CheckUserExistsByEmailOrUserNameAsync(
+                email.Value,
+                userName.Value,
+                cancellationToken
+            ),
+            "User (email or username)",
+            shouldExist: false,
+            ct
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfUserNameAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Result<UserName> userName,
+        IUserRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfAlreadyExist
+        (
+            userName,
+            repository.CheckUserNameExistsAsync,
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfUserIdNotExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Result<UserID> userId,
+        IUserRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfNotExist
+        (
+            userId,
+            repository.CheckUserIdExistsAsync,
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfUserEmailNotExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Result<Email> email,
+        IUserRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfNotExist
+        (
+            email,
+            repository.CheckUserEmailExistsAsync,
+            cancellationToken
+        );
+    }
+
+    public static Task<WorkflowPipeline> IfUserEmailAlreadyExists
+    (
+        this Task<WorkflowPipeline> pipelineTask,
+        Result<Email> email,
+        IUserRepository repository,
+        CancellationToken cancellationToken
+    )
+    {
+        return pipelineTask.IfAlreadyExist
+        (
+            email,
+            repository.CheckUserEmailExistsAsync,
+            cancellationToken
+        );
+    }
+
     public static Task<WorkflowPipeline> IfVersionNotExists
     (
         this Task<WorkflowPipeline> pipelineTask,

@@ -198,7 +198,7 @@ public sealed class GetByDescriptionTests : StylesControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Database connection failed");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

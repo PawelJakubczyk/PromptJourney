@@ -11,7 +11,7 @@ public class ErrorsMessages
 
     // String Messages
     public static string NullOrWhitespaceMessage<TType>() => $"{typeof(TType).Name}: value cannot be null or whitespace.";
-    public static string WhitespaceMessage<TType>() =>  $"{typeof(TType).Name}: value cannot be whitespace.";
+    public static string WhitespaceMessage<TType>() => $"{typeof(TType).Name}: value cannot be whitespace.";
     public static string TooLongMessage<TType>(string? value, int maxLength) => $"{typeof(TType).Name}: '{value}' cannot be longer than {maxLength} characters.";
 
     // Numeric Errors
@@ -59,4 +59,9 @@ public class ErrorsMessages
     => details is null
         ? "Invalid JSON format: The request body contains malformed JSON."
         : $"Invalid JSON format: {details}";
+
+    public static string UnauthorizedMessage(string? details = null)
+    => details is null
+        ? "Unauthorized access."
+        : $"Unauthorized access: {details}.";
 }

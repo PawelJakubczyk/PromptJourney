@@ -634,7 +634,7 @@ public sealed class RemoveTagTests : StylesControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Repository error during tag removal");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

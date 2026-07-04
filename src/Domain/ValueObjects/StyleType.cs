@@ -1,6 +1,6 @@
 using Domain.Abstractions;
-using Domain.Errors;
 using Domain.Extensions;
+using Utilities.Errors;
 using Utilities.Results;
 using Utilities.Workflows;
 
@@ -39,7 +39,7 @@ internal static class StyleTypeErrorsExtensions
 
         if (!Enum.TryParse<StyleTypeEnum>(value, true, out var _))
         {
-            pipeline.Errors.Add(DomainErrors.InvalidStyleTypeNotAllowed(value, typeof(StyleTypeEnum)));
+            pipeline.Errors.Add(ErrorFactories.OptionNotAllowed<StyleType>(value, typeof(StyleTypeEnum)));
         }
 
         return pipeline;

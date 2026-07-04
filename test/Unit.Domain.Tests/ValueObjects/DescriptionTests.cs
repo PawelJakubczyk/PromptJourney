@@ -24,7 +24,7 @@ public class DescriptionTests
     }
 
     [Fact]
-    public void Create_WithNullValue_ShouldReturnSuccessWithNull()
+    public void Create_WithNullValue_ShouldReturnSuccessWithNone()
     {
         // Act
         var result = Description.Create(null);
@@ -33,7 +33,7 @@ public class DescriptionTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Value.Should().BeNull();
+        result.Value.Should().Be(Description.None);
     }
 
     [Fact]
@@ -60,15 +60,15 @@ public class DescriptionTests
     [InlineData("   ")]
     [InlineData("\t")]
     [InlineData("\n")]
-    public void Create_WithWhitespaceValue_ShouldReturnFailure(string whitespaceValue)
+    public void Create_WithWhitespaceValue_ShouldReturnNone(string whitespaceValue)
     {
         // Act
         var result = Description.Create(whitespaceValue);
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(Description.None);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class DescriptionTests
     }
 
     [Fact]
-    public void ToString_WithNullValue_ShouldReturnNull()
+    public void ToString_WithNullValue_ShouldReturnNone()
     {
         // Arrange
         var description = Description.Create(null).Value;
@@ -112,7 +112,7 @@ public class DescriptionTests
         var result = description.ToString();
 
         // Assert
-        result.Should().BeNull();
+        result.Should().Be(Description.None.ToString());
     }
 
     // Constants Tests

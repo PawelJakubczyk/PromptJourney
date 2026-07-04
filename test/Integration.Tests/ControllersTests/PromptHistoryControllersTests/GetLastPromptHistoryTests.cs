@@ -1,4 +1,4 @@
-using Application.UseCases.PromptHistory.Responses;
+using Application.UseCases.PromptHistories.Responses;
 using FluentAssertions;
 using Integration.Tests.ControllersTests.PromptHistoryControllersTests.Base;
 using System.Net;

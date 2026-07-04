@@ -22,7 +22,7 @@ public record MinValue : ValueObject<string>, ICreatable<MinValue, string?>
 
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<MinValue>(value, MaxLength),
                 pipeline => pipeline.IfContainsSuspiciousContent<MinValue>(value))
             .ExecuteIfNoErrors<MinValue>(() => new MinValue(value))

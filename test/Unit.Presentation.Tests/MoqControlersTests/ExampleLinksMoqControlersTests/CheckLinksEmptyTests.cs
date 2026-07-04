@@ -53,7 +53,7 @@ public sealed class CheckLinksEmptyTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.CheckLinksEmpty(CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed");
+        actionResult.Should().BeBadRequestResult().WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

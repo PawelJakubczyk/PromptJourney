@@ -581,7 +581,7 @@ public sealed class GetByTagsTests : StylesControllerTestsBase
         actionResult
             .Should()
             .BeBadRequestResult()
-            .WithMessage("Repository error during tag search");
+            .WithMessage("An unexpected error occurred while processing your request.");
     }
 
     [Fact]

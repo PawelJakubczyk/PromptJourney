@@ -132,7 +132,7 @@ public sealed class DeleteExampleLinkTests : ExampleLinksControllerTestsBase
         var actionResult = await controller.DeleteExampleLink(CorrectId.ToString(), CancellationToken.None);
 
         // Assert
-        actionResult.Should().BeBadRequestResult().WithMessage("Database connection failed" );
+        actionResult.Should().BeBadRequestResult().WithMessage("An unexpected error occurred while processing your request." );
     }
 
     [Fact]

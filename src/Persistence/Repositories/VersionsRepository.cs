@@ -1,6 +1,5 @@
 using Application.Abstractions.IRepository;
 using Domain.Entities;
-using Domain.Errors;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -51,7 +50,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
         var foundVersion = allVersions.FirstOrDefault(version => version.Version.Value == modelVersion.Value);
 
         if (foundVersion is null) 
-            return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(modelVersion));
+            return Result.Fail<MidjourneyVersion>(ErrorFactories.NotFound(modelVersion));
 
         return Result.Ok(foundVersion);
     }
@@ -102,7 +101,7 @@ public sealed class VersionsRepository(MidjourneyDbContext dbContext, HybridCach
 
         if (existingVersion is null)
         {
-            return Result.Fail<MidjourneyVersion>(DomainErrors.VersionNotFound(version));
+            return Result.Fail<MidjourneyVersion>(ErrorFactories.NotFound(version));
         }
 
         _dbContext.MidjourneyVersions.Remove(existingVersion);

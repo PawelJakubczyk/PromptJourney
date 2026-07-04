@@ -51,6 +51,13 @@ public class MidjourneyPromptHistoryConfiguration : IEntityTypeConfiguration<Mid
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
+            .HasOne(history => history.MidjourneyUser)
+            .WithMany(user => user.MidjourneyHistories)
+            .HasForeignKey(history => history.UserId)
+            .HasPrincipalKey(user => user.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
             .HasMany(history => history.MidjourneyStyles)
             .WithMany(style => style.MidjourneyPromptHistories);
 

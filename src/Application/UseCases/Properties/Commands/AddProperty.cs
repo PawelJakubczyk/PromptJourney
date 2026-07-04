@@ -56,7 +56,7 @@ public static class AddProperty
             var result = await WorkflowPipeline
                 .EmptyAsync()
                 .CollectErrors(property)
-                .CongregateErrors(
+                .AggregateErrors(
                     pipeline => pipeline.IfVersionNotExists(versionResult, _versionRepository, cancellationToken),
                     pipeline => pipeline.IfPropertyAlreadyExists(propertyNameResult, versionResult, _propertiesRepository, cancellationToken))
                 .ExecuteIfNoErrors(() => _propertiesRepository

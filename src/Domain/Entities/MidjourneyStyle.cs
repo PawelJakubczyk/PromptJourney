@@ -49,7 +49,7 @@ public sealed class MidjourneyStyle : IEntity
     {
         var result = WorkflowPipeline
         .Empty()
-        .CongregateErrors(
+        .AggregateErrors(
             pipeline => pipeline.CollectErrors(nameResult),
             pipeline => pipeline.CollectErrors(typeResult),
             pipeline => pipeline.CollectErrors(descriptionResult),

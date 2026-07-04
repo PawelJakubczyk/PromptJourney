@@ -9,7 +9,7 @@ namespace Domain.ValueObjects;
 
 public record Param : ValueObject<string>, ICreatable<Param, string?>
 {
-    public const int MaxLength = 12;
+    public const int MaxLength = 20;
     public override bool IsNone => false;
     private Param(string value) : base(value) { }
 
@@ -20,7 +20,7 @@ public record Param : ValueObject<string>, ICreatable<Param, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<Param>(value)
-            .CongregateErrors(
+            .AggregateErrors(
                  pipeline => pipeline.IfLengthTooLong<Param>(value!, MaxLength),
                  pipeline => pipeline.IfNotStartsWithDoubleDash(value!))
             .ExecuteIfNoErrors<Param>(() => new Param(value!))

@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.IRepository;
+﻿using Application.Abstractions.Auth;
+using Application.Abstractions.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Persistence.Context;
 using Persistence.Repositories;
 using Persistence.Repositories.Utilities;
+using Persistence.Services;
 
 namespace Persistence.Registrations;
 
@@ -25,16 +27,21 @@ public static class PersistenceRegistration
             });
         }
 
-        // Add caching used by repositories
+        // Auth services
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<ITokenService, TokenService>();
+
+        // Caching
         services.AddMemoryCache();
         services.AddSingleton<HybridCache, DefaultHybridCache>();
 
-        // Register repositories
+        // Repositories
         services.AddScoped<IVersionRepository, VersionsRepository>();
         services.AddScoped<IStyleRepository, StylesRepository>();
         services.AddScoped<IExampleLinksRepository, ExampleLinkRepository>();
         services.AddScoped<IPropertiesRepository, PropertiesRepository>();
         services.AddScoped<IPromptHistoryRepository, PromptHistoryRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

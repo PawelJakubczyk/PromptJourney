@@ -49,7 +49,7 @@ public sealed class MidjourneyVersion : IEntity
     {
         var result = WorkflowPipeline
             .Empty()
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.CollectErrors(versionResult),
                 pipeline => pipeline.CollectErrors(parameterResult),
                 pipeline => pipeline.CollectErrors(releaseDate),

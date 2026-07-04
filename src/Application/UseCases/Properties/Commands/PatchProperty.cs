@@ -34,10 +34,10 @@ public static class PatchProperty
 
             var result = await WorkflowPipeline
                 .EmptyAsync()
-                    .CongregateErrors(
+                    .AggregateErrors(
                         pipeline => pipeline.CollectErrors(versionResult),
                         pipeline => pipeline.CollectErrors(propertyNameResult))
-                    .CongregateErrors(
+                    .AggregateErrors(
                         pipeline => pipeline.IfVersionNotExists(versionResult, _versionRepository, cancellationToken),
                         pipeline => pipeline.IfPropertyNotExists(propertyNameResult, versionResult, _propertiesRepository, cancellationToken))
                     .ExecuteIfNoErrors(() => _propertiesRepository

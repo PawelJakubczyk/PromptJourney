@@ -19,7 +19,7 @@ public record Tag : ValueObject<string>, ICreatable<Tag, string?>
         var result = WorkflowPipeline
             .Empty()
             .IfNullOrWhitespace<Tag>(value)
-            .CongregateErrors(
+            .AggregateErrors(
                 pipeline => pipeline.IfLengthTooLong<Tag>(value!, MaxLength),
                 pipeline => pipeline.IfContainsSuspiciousContent<Tag>(value!))
             .ExecuteIfNoErrors<Tag>(() => new Tag(value!))

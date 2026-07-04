@@ -1,10 +1,14 @@
 ﻿using Application.UseCases.Versions.Commands;
+using Application.UseCases.Versions.Queries;
 using Application.UseCases.Versions.Responses;
+using Domain.ValueObjects;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Presentation.Controllers;
 using Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests.Base;
+using Utilities.Errors;
 using Utilities.Results;
 
 namespace Unit.Presentation.Tests.MoqControlersTests.VersionsMoqControlersTests;
@@ -18,7 +22,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o"),
+            DateTime.UtcNow.ToString("yyyy-MM-dd"),
             "New version 7.0"
         );
 
@@ -51,10 +55,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Version cannot be empty");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Version cannot be empty"
+        );
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -79,10 +86,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be empty");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Parameter cannot be empty");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -107,10 +116,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             null!,
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Version cannot be null");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Version cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -135,10 +146,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             null!,
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be null");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Parameter cannot be null");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -163,10 +176,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "   ",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Version cannot be whitespace");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Version cannot be whitespace");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -191,10 +206,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "   ",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Parameter cannot be whitespace");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Parameter cannot be whitespace");
+
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -213,16 +231,19 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     }
 
     [Fact]
-    public async Task Create_ReturnsBadRequest_WhenVersionAlreadyExists()
+    public async Task Create_ReturnsConflict_WhenVersionAlreadyExists()
     {
         // Arrange
         var request = new CreateVersionRequest(
             "1.0",
             "--v 1.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Version already exists");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status409Conflict,
+            "Version already exists");
+
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -236,7 +257,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         // Assert
         actionResult
             .Should()
-            .BeBadRequestResult()
+            .BeConflictResult()
             .WithMessage("Version already exists");
     }
 
@@ -248,10 +269,12 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             tooLongVersion,
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Version exceeds maximum length");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Version exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -273,14 +296,16 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsBadRequest_WhenParameterExceedsMaxLength()
     {
         // Arrange
-        var tooLongParameter = new string('v', 256);
+        var tooLongParameter = "--" + new string('v', Param.MaxLength);
         var request = new CreateVersionRequest(
             "7.0",
             tooLongParameter,
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Parameter exceeds maximum length");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Parameter exceeds maximum length");
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -305,7 +330,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
         var response = new VersionResponse(request.Version, request.Parameter, null, null);
@@ -334,7 +359,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithCompleteRequest()
     {
         // Arrange
-        var releaseDate = DateTime.UtcNow.ToString("o");
+        var releaseDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
@@ -371,7 +396,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o"),
+            DateTime.UtcNow.ToString("yyyy-MM-dd"),
             null
         );
 
@@ -437,7 +462,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "niji 7",
             "--niji 7",
-            DateTime.UtcNow.ToString("o"),
+            DateTime.UtcNow.ToString("yyyy-MM-dd"),
             "Niji version 7"
         );
 
@@ -476,7 +501,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             version,
             parameter,
-            DateTime.UtcNow.ToString("o"),
+            DateTime.UtcNow.ToString("yyyy-MM-dd"),
             $"Test version {version}"
         );
 
@@ -506,7 +531,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_VerifiesCommandIsCalledWithCorrectParameters()
     {
         // Arrange
-        var releaseDate = DateTime.UtcNow.ToString("o");
+        var releaseDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
@@ -547,7 +572,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
         var cts = new CancellationTokenSource();
@@ -574,7 +599,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
         var response = new VersionResponse(request.Version, request.Parameter, null, null);
@@ -603,7 +628,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o"),
+            DateTime.UtcNow.ToString("yyyy-MM-dd"),
             longDescription
         );
 
@@ -636,7 +661,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o"),
+            DateTime.UtcNow.ToString("yyyy-MM-dd"),
             "Description with spéciál characters, émojis 🎨 and symbols @#$%^&*()"
         );
 
@@ -669,10 +694,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Repository error during version creation");
+        var failureResult = CreateFailureResult<VersionResponse>(
+            StatusCodes.Status400BadRequest,
+            "Repository error during version creation");
+
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -697,10 +725,13 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o")
+            DateTime.UtcNow.ToString("yyyy-MM-dd")
         );
 
-        var failureResult = Result.Fail<VersionResponse>("Command handler failed");
+        var failureResult = CreateFailureResult<VersionResponse>(
+             StatusCodes.Status400BadRequest,
+             "Command handler failed");
+
         var senderMock = new Mock<ISender>();
         senderMock
             .Setup(s => s.Send(It.IsAny<AddVersion.Command>(), It.IsAny<CancellationToken>()))
@@ -725,7 +756,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
         var request = new CreateVersionRequest(
             "7.0",
             "--v 7.0",
-            DateTime.UtcNow.ToString("o"),
+            DateTime.UtcNow.ToString("yyyy-MM-dd"),
             "Performance test version"
         );
 
@@ -751,7 +782,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithFutureReleaseDate()
     {
         // Arrange
-        var futureDate = DateTime.UtcNow.AddMonths(3).ToString("o");
+        var futureDate = DateTime.UtcNow.AddMonths(3).ToString("yyyy-MM-dd");
         var request = new CreateVersionRequest(
             "8.0",
             "--v 8.0",
@@ -785,7 +816,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithPastReleaseDate()
     {
         // Arrange
-        var pastDate = DateTime.UtcNow.AddYears(-1).ToString("o");
+        var pastDate = DateTime.UtcNow.AddYears(-1).ToString("yyyy-MM-dd");
         var request = new CreateVersionRequest(
             "6.5",
             "--v 6.5",
@@ -819,7 +850,7 @@ public sealed class CreateVersionTests : VersionsControllerTestsBase
     public async Task Create_ReturnsCreated_WithVersionContainingDash()
     {
         // Arrange
-        var releaseDate = DateTimeOffset.UtcNow.ToString("o");
+        var releaseDate = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd");
         var request = new CreateVersionRequest(
             "7.0-beta",
             "--v 7.0",

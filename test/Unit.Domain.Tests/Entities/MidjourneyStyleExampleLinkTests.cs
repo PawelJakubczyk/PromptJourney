@@ -28,7 +28,7 @@ public class MidjourneyStyleExampleLinkTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Link.Value.Should().Be("https://example.com/image.jpg");
-        result.Value.StyleName.Value.Should().Be("Abstract Art");
+        result.Value.StyleName.Value.Should().Be("Abstract Art".ToLower());
         result.Value.Version.Value.Should().Be("6.0");
     }
 
@@ -151,7 +151,7 @@ public class MidjourneyStyleExampleLinkTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Link.Value.Should().Be(url);
-        result.Value.StyleName.Value.Should().Be(styleName);
+        result.Value.StyleName.Value.Should().Be(styleName.ToLower());
         result.Value.Version.Value.Should().Be(version);
     }
 
@@ -239,7 +239,7 @@ public class MidjourneyStyleExampleLinkTests
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
-            result.Value.StyleName.Value.Should().Be(longStyleName);
+            result.Value.StyleName.Value.Should().Be(longStyleName.ToLower());
         }
     }
 
